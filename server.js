@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const { WebSocketServer } = require('ws');
 const app = express();
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 9500;
 
 // Initialize database
 require('./config/db');
@@ -23,7 +23,7 @@ const auth = new XboxLiveAuth(
 const oauth = new MicrosoftOAuth(
   process.env.MICROSOFT_CLIENT_ID,
   process.env.MICROSOFT_CLIENT_SECRET,
-  'http://localhost:9000/auth/callback'
+  `http://localhost:${process.env.PORT || 9500}/auth/callback`
 );
 
 // Active bots storage (in production, use Redis or database)
@@ -450,3 +450,23 @@ app.use((req, res) => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+// Graceful shutdown
+const shutdown = () => {
+  console.log('Received shutdown signal, shuttingting down gracefully');
+  server.close(async (err) => {
+    if (err) {
+      console.error('Error closing server:', err);
+      process.exit(1);
+    }
+    // Close WebSocket server
+    wss.close(() => {
+      console.log('WebSocket server closed');
+    });
+    console.log('Server closed');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
