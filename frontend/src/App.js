@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MicrosoftLogin from './components/MicrosoftLogin';
+import SimpleLogin from './components/SimpleLogin';
 import Dashboard from './components/Dashboard';
 import './App.css';
 
@@ -8,7 +8,6 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check if user is authenticated (from localStorage or session)
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -29,7 +28,7 @@ function App() {
   };
 
   if (!isAuthenticated) {
-    return <MicrosoftLogin onLogin={handleLogin} />;
+    return <SimpleLogin onLogin={handleLogin} />;
   }
 
   return (

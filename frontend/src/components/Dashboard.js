@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BotControls from './BotControls';
 import StatusDisplay from './StatusDisplay';
-import io from 'socket.io-client';
 
 const Dashboard = ({ user, onLogout }) => {
   const [botStatus, setBotStatus] = useState({ connected: false, message: 'Not connected' });
@@ -13,62 +12,112 @@ const Dashboard = ({ user, onLogout }) => {
   const [food, setFood] = useState(20);
   const [experience, setExperience] = useState(0);
   const [gamemode, setGamemode] = useState('survival');
+  const [currentBotId, setCurrentBotId] = useState(null);
+  const wsRef = useRef(null);
 
   useEffect(() => {
-    // Connect to WebSocket for real-time updates
-    const socket = io(process.env.REACT_APP_API_URL || window.location.origin);
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
     
-    socket.on('status_update', (data) => {
-      setBotStatus(data.data);
-      if (data.data.position) {
-        setPosition(data.data.position);
-      }
-      if (data.data.inventory) {
-        setInventory(data.data.inventory);
-      }
-      if (data.data.health !== undefined) {
-        setHealth(data.data.health);
-      }
-      if (data.data.food !== undefined) {
-        setFood(data.data.food);
-      }
-      if (data.data.experience !== undefined) {
-        setExperience(data.data.experience);
-      }
-      if (data.data.gamemode !== undefined) {
-        setGamemode(data.data.gamemode);
-      }
-      if (data.data.message) {
-        setLogs(prev => [...prev, { 
-          text: data.data.message, 
-          timestamp: new Date().toLocaleTimeString() 
-        }]);
-        // Keep only last 50 logs
-        if (logs.length > 50) setLogs(prev => prev.slice(-50));
-      }
-    });
+    const connectWebSocket = () => {
+      wsRef.current = new WebSocket(wsUrl);
+      
+      wsRef.current.onopen = () => {
+        console.log('WebSocket connected');
+        wsRef.current.send(JSON.stringify({ type: 'register_bot', data: { botId: 'dashboard' } }));
+        wsRef.current.send(JSON.stringify({ type: 'get_status' }));
+      };
+      
+      wsRef.current.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          if (message.type === 'status_update' || message.type === 'status_list') {
+            const bots = message.data.bots || [];
+            if (bots.length > 0) {
+              const botData = bots[0];
+              setBotStatus({ connected: botData.connected, message: botData.message || 'Connected' });
+              if (botData.position) {
+                setPosition(botData.position);
+              }
+              if (botData.inventory) {
+                setInventory(botData.inventory);
+              }
+              if (botData.health !== undefined) {
+                setHealth(botData.health);
+              }
+              if (botData.food !== undefined) {
+                setFood(botData.food);
+              }
+              if (botData.experience !== undefined) {
+                setExperience(botData.experience);
+              }
+              if (botData.gamemode !== undefined) {
+                setGamemode(botData.gamemode);
+              }
+            }
+          } else if (message.type === 'command_ack') {
+            setLogs(prev => [...prev, { 
+              text: message.data.message, 
+              timestamp: new Date().toLocaleTimeString(),
+              type: 'success'
+            }]);
+          } else if (message.type === 'error') {
+            setLogs(prev => [...prev, { 
+              text: message.data.message, 
+              timestamp: new Date().toLocaleTimeString(),
+              type: 'error'
+            }]);
+          }
+        } catch (err) {
+          console.error('Error parsing WebSocket message:', err);
+        }
+      };
+      
+      wsRef.current.onclose = () => {
+        console.log('WebSocket disconnected, reconnecting in 3s...');
+        setTimeout(connectWebSocket, 3000);
+      };
+      
+      wsRef.current.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    };
     
-    socket.on('llm_advice', (data) => {
-      setLlmAdvice(data.advice);
-    });
+    connectWebSocket();
     
-    return () => socket.disconnect();
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
   }, []);
 
   const handleStartBot = async () => {
     try {
+      setLogs(prev => [...prev, { 
+        text: `Starting bot: ${user.username}...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+      
       const response = await fetch('/api/bot/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: user.username,
-          accessToken: user.accessToken // In real app, this would come from auth flow
-        })
+        body: JSON.stringify({ username: user.username })
       });
       
-      if (!response.ok) throw new Error('Failed to start bot');
+      const data = await response.json();
       
-      // In a real implementation, we'd get the botId and store it
+      if (!response.ok) throw new Error(data.error || 'Failed to start bot');
+      
+      setCurrentBotId(data.botId);
+      setBotStatus({ connected: true, message: data.message });
+      
+      setLogs(prev => [...prev, { 
+        text: `Bot started successfully with ID: ${data.botId}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
     } catch (error) {
       setLogs(prev => [...prev, { 
         text: `Error starting bot: ${error.message}`, 
@@ -79,11 +128,45 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   const handleStopBot = async () => {
-    // In a real implementation, we'd need the botId
-    setLogs(prev => [...prev, { 
-      text: 'Stopping bot...', 
-      timestamp: new Date().toLocaleTimeString() 
-    }]);
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot to stop', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+    
+    try {
+      setLogs(prev => [...prev, { 
+        text: 'Stopping bot...', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+      
+      const response = await fetch(`/api/bot/${currentBotId}/stop`, {
+        method: 'POST'
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.error || 'Failed to stop bot');
+      
+      setCurrentBotId(null);
+      setBotStatus({ connected: false, message: 'Disconnected' });
+      
+      setLogs(prev => [...prev, { 
+        text: 'Bot stopped successfully', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error stopping bot: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
   };
 
   const handleGetLLMAdvice = async () => {
@@ -115,20 +198,30 @@ const Dashboard = ({ user, onLogout }) => {
 
   const handleStartAutomatic = async () => {
     try {
+      setLogs(prev => [...prev, { 
+        text: `Starting automatic behavior for ${user.username}...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+      
       const response = await fetch('/api/bot/automatic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: user.username,
-          accessToken: user.accessToken,
           mode: 'survival'
         })
       });
       
-      if (!response.ok) throw new Error('Failed to start automatic behavior');
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.error || 'Failed to start automatic behavior');
+      
+      setCurrentBotId(data.botId);
+      setBotStatus({ connected: true, message: data.message });
       
       setLogs(prev => [...prev, { 
-        text: 'Started automatic behavior', 
+        text: `Automatic behavior started: ${data.message}`, 
         timestamp: new Date().toLocaleTimeString(),
         type: 'success'
       }]);

@@ -5,139 +5,53 @@ const { WebSocketServer } = require('ws');
 const app = express();
 const PORT = process.env.PORT || 9500;
 
-// Initialize database
 require('./config/db');
 require('./config/models/BotConfig');
 
-// Middleware
 app.use(express.json());
 app.use(express.static('frontend/build'));
 
-// Authentication services
-const XboxLiveAuth = require('./auth/xboxLive');
-const MicrosoftOAuth = require('./auth/oauth');
-const auth = new XboxLiveAuth(
-  process.env.MICROSOFT_CLIENT_ID,
-  process.env.MICROSOFT_CLIENT_SECRET
-);
-const oauth = new MicrosoftOAuth(
-  process.env.MICROSOFT_CLIENT_ID,
-  process.env.MICROSOFT_CLIENT_SECRET,
-  `http://localhost:${process.env.PORT || 9500}/auth/callback`
-);
-
-// Active bots storage (in production, use Redis or database)
 const activeBots = new Map();
-const botConnections = new Map(); // Store WebSocket connections for bots
+const botConnections = new Map();
 
-// Basic route
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    serverMode: 'offline',
+    note: 'Configure server.properties with online-mode=false for offline authentication'
+  });
 });
 
-// Auth routes
-app.get('/auth/microsoft/login', (req, res) => {
-  try {
-    const authUrl = oauth.getAuthUrl();
-    res.redirect(authUrl);
-  } catch (error) {
-    res.status(500).json({ error: `Failed to generate auth URL: ${error.message}` });
-  }
-});
-
-app.get('/auth/callback', async (req, res) => {
-  try {
-    const { code, state, error } = req.query;
-    
-    if (error) {
-      return res.status(400).json({ error: `Authentication failed: ${error}` });
-    }
-    
-    if (!code || !state) {
-      return res.status(400).json({ error: 'Missing code or state parameter' });
-    }
-    
-    // Validate state to prevent CSRF
-    const isValid = await oauth.consumeState(state);
-    if (!isValid) {
-      return res.status(400).json({ error: 'Invalid state parameter' });
-    }
-    
-    // Exchange code for tokens
-    try {
-      const authData = await auth.getAuthToken(code);
-      // In a full implementation, we'd continue to XSTS and Minecraft tokens
-      // For now, we'll return the auth data and let frontend handle next steps
-      res.json({ 
-        success: true, 
-        data: authData,
-        message: 'Authentication successful. Continue to get XSTS and Minecraft tokens.'
-      });
-    } catch (tokenError) {
-      res.status(400).json({ error: `Token exchange failed: ${tokenError.message}` });
-    }
-  } catch (error) {
-    res.status(500).json({ error: `Callback processing failed: ${error.message}` });
-  }
-});
-
-// Keep existing endpoints for direct token exchanges (used by bot)
-app.post('/auth/xboxlive', async (req, res) => {
-  try {
-    const { code } = req.body;
-    const authData = await auth.getAuthToken(code);
-    res.json(authData);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.post('/auth/xsts', async (req, res) => {
-  try {
-    const { userToken } = req.body;
-    const xstsData = await auth.getXSTSToken(userToken);
-    res.json(xstsData);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.post('/auth/minecraft', async (req, res) => {
-  try {
-    const { xstsToken } = req.body;
-    const minecraftData = await auth.getMinecraftToken(xstsToken);
-    res.json(minecraftData);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-// Bot control endpoints
 app.post('/api/bot/start', async (req, res) => {
   try {
-    const { username, accessToken } = req.body;
+    const { username } = req.body;
     
-    if (!username || !accessToken) {
-      return res.status(400).json({ error: 'Username and accessToken are required' });
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
     }
     
-    // Create bot instance
+    const validUsername = /^[a-zA-Z0-9_]{3,16}$/.test(username);
+    if (!validUsername) {
+      return res.status(400).json({ error: 'Invalid username format (3-16 characters, letters, numbers, underscores)' });
+    }
+    
     const MinecraftBot = require('./bot/index');
-    const bot = new MinecraftBot({ host: process.env.MINECRAFT_SERVER_HOST || 'localhost', port: process.env.MINECRAFT_SERVER_PORT || 25565 });
+    const bot = new MinecraftBot({ 
+      host: process.env.MINECRAFT_SERVER_HOST || 'localhost', 
+      port: process.env.MINECRAFT_SERVER_PORT || 25565 
+    });
     
-    // Connect bot
-    await bot.connect(username, accessToken);
+    await bot.connect(username, null);
     
-    // Generate bot ID
     const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Store bot
     activeBots.set(botId, bot);
     
     res.json({ 
       success: true, 
       botId,
-      message: 'Bot started successfully'
+      username,
+      message: 'Bot started successfully (offline mode)'
     });
   } catch (error) {
     console.error('Error starting bot:', error);
@@ -147,20 +61,20 @@ app.post('/api/bot/start', async (req, res) => {
 
 app.post('/api/bot/automatic', async (req, res) => {
   try {
-    const { username, accessToken, mode } = req.body;
+    const { username, mode } = req.body;
     
-    if (!username || !accessToken) {
-      return res.status(400).json({ error: 'Username and accessToken are required' });
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
     }
     
-    // Create bot instance
     const MinecraftBot = require('./bot/index');
-    const bot = new MinecraftBot({ host: process.env.MINECRAFT_SERVER_HOST || 'localhost', port: process.env.MINECRAFT_SERVER_PORT || 25565 });
+    const bot = new MinecraftBot({ 
+      host: process.env.MINECRAFT_SERVER_HOST || 'localhost', 
+      port: process.env.MINECRAFT_SERVER_PORT || 25565 
+    });
     
-    // Connect bot
-    await bot.connect(username, accessToken);
+    await bot.connect(username, null);
     
-    // Start automatic behavior
     await bot.behaviors.automaticBehavior({ 
       mode: mode || 'survival',
       targetBlockType: 'oak_log',
@@ -169,9 +83,13 @@ app.post('/api/bot/automatic', async (req, res) => {
       gatherRadius: 30
     });
     
+    const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    activeBots.set(botId, bot);
+    
     res.json({ 
       success: true,
-      message: `Automatic behavior started in ${mode || 'survival'} mode`
+      botId,
+      message: `Automatic behavior started in ${mode || 'survival'} mode (offline)`
     });
   } catch (error) {
     console.error('Error starting automatic behavior:', error);
