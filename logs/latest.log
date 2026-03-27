@@ -1,0 +1,28 @@
+[17:32:07] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[17:32:08] [ServerMain/INFO]: No existing world data, creating new world
+[17:32:08] [ServerMain/INFO]: Loaded 1470 recipes
+[17:32:08] [ServerMain/INFO]: Loaded 1584 advancements
+[17:32:08] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[17:32:08] [Server thread/INFO]: Loading properties
+[17:32:08] [Server thread/INFO]: Default game type: SURVIVAL
+[17:32:08] [Server thread/INFO]: Generating keypair
+[17:32:08] [Server thread/INFO]: Starting Minecraft server on *:25565
+[17:32:09] [Server thread/INFO]: Preparing level "world"
+[17:32:09] [Server thread/INFO]: Selecting global world spawn...
+[17:32:11] [Server thread/INFO]: Loading 0 persistent chunks...
+[17:32:11] [Server thread/INFO]: Preparing spawn area: 100%
+[17:32:11] [Server thread/INFO]: Time elapsed: 1882 ms
+[17:32:11] [Server thread/INFO]: Done (2.063s)! For help, type "help"
+[17:33:11] [Server thread/INFO]: Server empty for 60 seconds, pausing
+[17:35:01] [User Authenticator #1/INFO]: Disconnecting TestBot (/127.0.0.1:35438): Failed to verify username!
+[17:35:01] [User Authenticator #1/ERROR]: Username 'TestBot' tried to join with an invalid session
+[17:35:01] [Server thread/INFO]: TestBot (/127.0.0.1:35438) lost connection: Failed to verify username!
+[17:37:07] [User Authenticator #2/INFO]: Disconnecting TestBot (/127.0.0.1:48828): Failed to verify username!
+[17:37:07] [User Authenticator #2/ERROR]: Username 'TestBot' tried to join with an invalid session
+[17:37:07] [Server thread/INFO]: TestBot (/127.0.0.1:48828) lost connection: Failed to verify username!
+[17:38:43] [User Authenticator #3/INFO]: Disconnecting TestBot (/127.0.0.1:33026): Failed to verify username!
+[17:38:43] [User Authenticator #3/ERROR]: Username 'TestBot' tried to join with an invalid session
+[17:38:43] [Server thread/INFO]: TestBot (/127.0.0.1:33026) lost connection: Failed to verify username!
+[17:39:18] [User Authenticator #4/INFO]: Disconnecting test (/127.0.0.1:50172): Failed to verify username!
+[17:39:18] [User Authenticator #4/ERROR]: Username 'test' tried to join with an invalid session
+[17:39:18] [Server thread/INFO]: test (/127.0.0.1:50172) lost connection: Failed to verify username!
