@@ -15,6 +15,8 @@ let minecraftServerProcess = null;
 // Default host and port for bot server
 let botHost = 'localhost';
 let botPort = 9500;
+// Default Minecraft server jar path
+let minecraftJarPath = null;
 
 function startBotServer() {
   if (botServerProcess) {
@@ -63,8 +65,9 @@ function startMinecraftServer() {
     return;
   }
 
-  if (!fs.existsSync(MINECRAFT_SERVER_JAR)) {
-    console.log(`Minecraft server jar not found at ${MINECRAFT_SERVER_JAR}`);
+  const jarPath = minecraftJarPath || MINECRAFT_SERVER_JAR;
+  if (!fs.existsSync(jarPath)) {
+    console.log(`Minecraft server jar not found at ${jarPath}`);
     return;
   }
 
@@ -72,10 +75,10 @@ function startMinecraftServer() {
   minecraftServerProcess = spawn('java', [
     '-Xmx1G', 
     '-jar', 
-    MINECRAFT_SERVER_JAR, 
+    jarPath, 
     'nogui'
   ], {
-    cwd: MINECRAFT_SERVER_DIR,
+    cwd: path.dirname(jarPath),
     stdio: 'inherit'
   });
 
@@ -268,6 +271,7 @@ Usage:
 Options:
   --host <host>   Bot server host (default: localhost)
   --port <port>   Bot server port (default: 9500)
+  --jar <path>    Path to Minecraft server jar file (default: resources/minecraft_server.1.21.11.jar)
 
 Commands:
   bot:server:start                    Start the Minecraft AI Bot server
@@ -289,6 +293,7 @@ Commands:
 Examples:
   minebot --host 0.0.0.0 --port 8080 bot:server:start
   minebot bot:server:start
+  minebot --jar /path/to/server.jar mc:server:start
   minebot mc:server:start
   minebot bot:start MyBotUsername
   minebot bot:automatic MyBotUsername building
@@ -312,6 +317,9 @@ for (let i = 0; i < args.length; i++) {
       console.log('Error: Port must be a number');
       process.exit(1);
     }
+    i++;
+  } else if (args[i] === '--jar' && i + 1 < args.length) {
+    minecraftJarPath = args[i + 1];
     i++;
   } else if (!command && !args[i].startsWith('-')) {
     command = args[i];
