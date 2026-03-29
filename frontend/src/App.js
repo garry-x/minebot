@@ -33,10 +33,6 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Minecraft AI Robot Controller</h1>
-        <button onClick={handleLogout}>Logout</button>
-      </header>
       <main>
         <Dashboard user={user} onLogout={handleLogout} />
       </main>
