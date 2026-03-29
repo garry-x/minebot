@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BotControls from './BotControls';
-import StatusDisplay from './StatusDisplay';
+import MonitoringDashboard from './MonitoringDashboard';
+import './Dashboard.css';
 
 const Dashboard = ({ user, onLogout }) => {
   const [botStatus, setBotStatus] = useState({ connected: false, message: 'Not connected' });
@@ -12,6 +13,7 @@ const Dashboard = ({ user, onLogout }) => {
   const [food, setFood] = useState(20);
   const [experience, setExperience] = useState(0);
   const [gamemode, setGamemode] = useState('survival');
+  const [exploration, setExploration] = useState(0);
   const [currentBotId, setCurrentBotId] = useState(null);
   const wsRef = useRef(null);
 
@@ -53,6 +55,9 @@ const Dashboard = ({ user, onLogout }) => {
               }
               if (botData.gamemode !== undefined) {
                 setGamemode(botData.gamemode);
+              }
+              if (botData.exploration !== undefined) {
+                setExploration(parseFloat(botData.exploration));
               }
             }
           } else if (message.type === 'command_ack') {
@@ -255,7 +260,7 @@ const Dashboard = ({ user, onLogout }) => {
         </div>
         
         <div className="right-panel">
-          <StatusDisplay 
+          <MonitoringDashboard 
             botStatus={botStatus}
             position={position}
             inventory={inventory}
@@ -265,6 +270,7 @@ const Dashboard = ({ user, onLogout }) => {
             food={food}
             experience={experience}
             gamemode={gamemode}
+            exploration={exploration}
           />
         </div>
       </div>
