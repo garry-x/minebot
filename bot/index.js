@@ -14,6 +14,8 @@ class MinecraftBot {
     this.pathfinder = null;
     this.statusInterval = null;
     this.botId = options.botId || null;
+    this.botServerHost = options.botServerHost || 'localhost';
+    this.botServerPort = options.botServerPort || 9500;
   }
 
 async connect(username, accessToken) {
@@ -183,29 +185,30 @@ async connect(username, accessToken) {
     });
   }
 
-   setupWebSocket() {
-     // Connect to the backend WebSocket server
-     const wsPort = this.options.botServerPort || 9500;
-     this.ws = new WebSocket(`ws://localhost:${wsPort}/bot/status`);
-     
-     this.ws.on('open', () => {
-       console.log('WebSocket connected to backend');
-       
-       // Register this bot's WebSocket connection with the backend
-       if (this.ws.readyState === WebSocket.OPEN) {
-         this.ws.send(JSON.stringify({
-           type: 'register_bot',
-           data: { 
-             botId: this.botId || `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` 
-           }
-         }));
-       }
-       
-       // Start sending periodic status updates
-       this.statusInterval = setInterval(() => {
-         this.sendStatusUpdate();
-       }, 3000); // Update every 3 seconds to match backend broadcast interval
-     });
+    setupWebSocket() {
+      // Connect to the backend WebSocket server
+      const wsHost = this.options.botServerHost || 'localhost';
+      const wsPort = this.options.botServerPort || 9500;
+      this.ws = new WebSocket(`ws://${wsHost}:${wsPort}/bot/status`);
+      
+      this.ws.on('open', () => {
+        console.log(`WebSocket connected to backend at ${wsHost}:${wsPort}`);
+        
+        // Register this bot's WebSocket connection with the backend
+        if (this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({
+            type: 'register_bot',
+            data: { 
+              botId: this.botId || `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` 
+            }
+          }));
+        }
+        
+        // Start sending periodic status updates
+        this.statusInterval = setInterval(() => {
+          this.sendStatusUpdate();
+        }, 3000); // Update every 3 seconds to match backend broadcast interval
+      });
     
     this.ws.on('message', (data) => {
       try {
