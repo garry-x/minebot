@@ -111,14 +111,7 @@ async connect(username, accessToken) {
       reject(err);
     });
 
-    this.bot.once('end', () => {
-      console.log('[Bot] Bot ended');
-      this.isConnected = false;
-      if (!isResolved) {
-        isResolved = true;
-        clearTimeout(connectTimeout);
-      }
-    });
+    // The end/disconnect handler is in setupEventListeners()
     
     // Add a timeout to prevent hanging
     setTimeout(() => {
