@@ -383,6 +383,7 @@ minebot - Minecraft AI Robot System
 Systems:
   bot         Bot control
   mc          Minecraft server control
+  server      Bot server management
   dev         Start development mode
 
 Bot Actions (minebot bot <action>):
@@ -424,6 +425,8 @@ Examples:
   minebot bot a MyBot survival
   minebot mc start
   minebot mc s
+  minebot server start
+  minebot server stop
   minebot status
   minebot status --json
 `);
