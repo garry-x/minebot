@@ -4,6 +4,7 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 const fs = require('fs');
 const path = require('path');
+const util = require('util');
 const app = express();
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 9500;
@@ -16,75 +17,65 @@ if (!fs.existsSync(LOG_DIR)) {
 const LOG_FILE = path.join(LOG_DIR, 'bot_server.log');
 const pidFile = path.join(LOG_DIR, 'bot_server.pid');
 
-// Redirect console output to log file
+// Redirect console output to log file only (no terminal output)
 const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
 console.log = function(...args) {
-  originalConsoleLog.apply(console, args);
-  logStream.write(args.join(' ') + '\n');
+  logStream.write(util.format(...args) + '\n');
 };
 console.error = function(...args) {
-  originalConsoleError.apply(console, args);
-  logStream.write(args.join(' ') + '\n');
+  logStream.write(util.format(...args) + '\n');
 };
 console.warn = function(...args) {
-  originalConsoleError.apply(console, args);
-  logStream.write('WARN: ' + args.join(' ') + '\n');
+  logStream.write('WARN: ' + util.format(...args) + '\n');
 };
 console.info = function(...args) {
-  originalConsoleLog.apply(console, args);
-  logStream.write(args.join(' ') + '\n');
+  logStream.write(util.format(...args) + '\n');
 };
 
-// Check if PID file exists and contains a stale PID
-let existingPidRaw = '';
-try {
-  existingPidRaw = fs.readFileSync(pidFile, 'utf8').trim();
-} catch (e) {
-  // PID file doesn't exist, OK
-}
-
-if (existingPidRaw) {
-  const existingPid = parseInt(existingPidRaw);
-  // Validate PID is a valid positive integer
-  if (!Number.isInteger(existingPid) || existingPid <= 0 || existingPid === process.pid) {
-    // Invalid PID, remove stale file
-    try {
-      console.log('Removing invalid PID file');
-      fs.unlinkSync(pidFile);
-      existingPidRaw = '';
-    } catch (unlinkErr) {
-      // Ignore unlink errors
-    }
-  } else if (existingPid !== process.pid) {
-    try {
-      process.kill(existingPid, 0);
-      // Process exists, another instance is running
-      console.error(`Another instance is already running (PID: ${existingPid})`);
-      process.exit(1);
-    } catch (e) {
-      // Process doesn't exist, stale PID file, remove it
-      console.log('Removing stale PID file');
-      try {
-        fs.unlinkSync(pidFile);
-        existingPidRaw = '';
-      } catch (unlinkErr) {
-        // Ignore unlink errors
-      }
-    }
-  }
-}
-
 // Atomically create and write PID file
+let fd;
 try {
-  const fd = fs.openSync(pidFile, 'wx');
+  fd = fs.openSync(pidFile, 'wx');
   fs.writeSync(fd, process.pid.toString());
   fs.closeSync(fd);
   console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
 } catch (e) {
-  console.error(`Another instance is already running (PID file exists)`);
-  process.exit(1);
+  // PID file exists, read it to check if it's stale
+  try {
+    const existingPidRaw = fs.readFileSync(pidFile, 'utf8').trim();
+    const existingPid = parseInt(existingPidRaw);
+    
+    if (!Number.isInteger(existingPid) || existingPid <= 0) {
+      // Invalid PID, remove stale file and retry
+      console.log('Removing invalid PID file');
+      fs.unlinkSync(pidFile);
+      fd = fs.openSync(pidFile, 'wx');
+      fs.writeSync(fd, process.pid.toString());
+      fs.closeSync(fd);
+      console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+    } else if (existingPid === process.pid) {
+      // Same process, just continue
+      console.log(`PID file already owned by this process: ${process.pid}`);
+    } else {
+      try {
+        process.kill(existingPid, 0);
+        // Process exists, another instance is running
+        console.error(`Another instance is already running (PID: ${existingPid})`);
+        process.exit(1);
+      } catch (e) {
+        // Process doesn't exist, stale PID file, remove it and retry
+        console.log('Removing stale PID file');
+        fs.unlinkSync(pidFile);
+        fd = fs.openSync(pidFile, 'wx');
+        fs.writeSync(fd, process.pid.toString());
+        fs.closeSync(fd);
+        console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+      }
+    }
+  } catch (readErr) {
+    console.error(`Failed to read PID file: ${readErr.message}`);
+    process.exit(1);
+  }
 }
 
 require('./config/db');
@@ -125,7 +116,7 @@ app.get('/api/bots', (req, res) => {
       botId: botId,
       username: bot.bot.username,
       connected: bot.isConnected,
-      state: bot.bot.isDead() ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+      state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
       health: bot.bot.health,
       maxHealth: 20,
       food: bot.bot.food,
@@ -580,3 +571,19 @@ const shutdown = () => {
 
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
+process.on('exit', (code) => {
+  try {
+    fs.unlinkSync(pidFile);
+  } catch (e) {
+    // PID file might not exist, ignore
+  }
+});
+process.on('uncaughtException', (err) => {
+  console.error(`Uncaught exception: ${err.message}`);
+  try {
+    fs.unlinkSync(pidFile);
+  } catch (e) {
+    // Ignore
+  }
+  process.exit(1);
+});

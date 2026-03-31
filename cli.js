@@ -300,15 +300,22 @@ function botControl(action, username, botId, mode) {
       makeRequest({
         hostname: botHost,
         port: botPort,
-        path: '/api/health',
+        path: '/api/bots',
         method: 'GET'
       })
       .then(data => {
-        console.log(`Bot server: ${data.status}`);
-        console.log(`  Mode: ${data.serverMode}`);
+        console.log(`Bots (${data.count}):`);
+        data.bots.forEach(bot => {
+          console.log(`  ${bot.username} (${bot.botId})`);
+          console.log(`    State: ${bot.state}`);
+          console.log(`    Connected: ${bot.connected}`);
+          if (bot.position) {
+            console.log(`    Position: ${bot.position.x}, ${bot.position.y}, ${bot.position.z}`);
+          }
+        });
       })
       .catch(err => {
-        console.log(`Bot server: NOT RUNNING`);
+        console.log(`Error: ${err.message}`);
       });
       break;
       
@@ -588,6 +595,34 @@ function showSystemStatus(jsonOutput) {
     });
   }
   
+  function getBots() {
+    return new Promise((resolve, reject) => {
+      const req = http.request(`http://${botHost}:${botPort}/api/bots`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ bots: parsed });
+          } catch (e) {
+            resolve({ bots: null });
+          }
+        });
+      });
+      
+      req.on('error', () => {
+        resolve({ bots: null });
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        resolve({ bots: null });
+      });
+      
+      req.end();
+    });
+  }
+  
   function getMinecraftStatus() {
     return new Promise((resolve) => {
       const net = require('net');
@@ -613,7 +648,7 @@ function showSystemStatus(jsonOutput) {
   }
   
   async function showStatus(showJson) {
-    const [botStatus, mcStatus] = await Promise.all([getStatus(), getMinecraftStatus()]);
+    const [botStatus, botsStatus, mcStatus] = await Promise.all([getStatus(), getBots(), getMinecraftStatus()]);
     
     if (showJson) {
       const status = {
@@ -622,6 +657,10 @@ function showSystemStatus(jsonOutput) {
           uptimeSeconds: botStatus.botServer.uptimeSeconds,
           serverMode: botStatus.botServer.serverMode
         } : { status: 'OFFLINE' },
+        bots: botsStatus.bots ? {
+          count: botsStatus.bots.count,
+          bots: botsStatus.bots.bots
+        } : { count: 0, bots: [] },
         mcServer: mcStatus.mcServer ? { status: 'RUNNING' } : { status: 'OFFLINE' }
       };
       console.log(JSON.stringify(status, null, 2));
@@ -635,6 +674,13 @@ function showSystemStatus(jsonOutput) {
         console.log(`  Mode: ${botStatus.botServer.serverMode}`);
       } else {
         console.log('Bot Server: OFFLINE');
+      }
+      
+      if (botsStatus.bots && botsStatus.bots.count > 0) {
+        console.log(`Bots (${botsStatus.bots.count}):`);
+        botsStatus.bots.bots.forEach(bot => {
+          console.log(`  ${bot.username}: ${bot.state} (${bot.connected ? 'connected' : 'disconnected'})`);
+        });
       }
       
       console.log(`Minecraft Server: ${mcStatus.mcServer ? 'RUNNING' : 'OFFLINE'}`);
