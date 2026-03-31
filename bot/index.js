@@ -47,24 +47,10 @@ async connect(username, accessToken) {
 
       console.log('[Bot] Setting up event listeners');
       this.setupEventListeners();
-      this.setupWebSocket();
-
-      // Track if we've resolved to avoid double-resolution
-      let isResolved = false;
-      
-      // Set up timeout for connection
-      const connectTimeout = setTimeout(() => {
-        if (!isResolved && !this.isConnected) {
-          console.log('[Bot] Connection timeout after 30 seconds');
-          reject(new Error('Connection timeout - failed to spawn'));
-          if (this.bot) {
-            this.bot.end();
-            this.bot = null;
-          }
-        }
-      }, 30000);
 
       this.bot.once('spawn', () => {
+        // Set up WebSocket connection after bot spawns
+        this.setupWebSocket();
         console.log('[Bot] Bot spawned');
         this.isConnected = true;
         // Load and attach mcData after bot is ready (pathfinder needs it)
