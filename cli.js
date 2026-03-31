@@ -403,39 +403,35 @@ function botControl(action, username, botId, mode) {
 }
 
 function showHelp() {
-  console.log(`
+  console.log(`Usage: minebot [OPTIONS] COMMAND [ARGS...]
+
 Minecraft AI Robot System
 
-Usage:
-  minebot [options] <command> [arguments]
+Commands:
+  bot:server:start           Start the bot server
+  bot:server:stop            Stop the bot server
+  bot:server:restart         Restart the bot server
+  mc:server:start            Start the Minecraft server
+  mc:server:stop             Stop the Minecraft server
+  mc:server:restart          Restart the Minecraft server
+  bot:start USERNAME         Start a bot
+  bot:stop BOTID             Stop a bot
+  bot:automatic USERNAME     Start automatic behavior
+  bot:status                 Show status
+  bot:list                   List bots
+  dev                        Start development mode
+  help                       Show this help
 
 Options:
-  --host <host>    Bot server host (default: localhost)
-  --port <port>    Bot server port (default: 9500)
-  --jar <path>     Path to Minecraft server jar (default: resources/minecraft_server.1.21.11.jar)
-
-Commands:
-  bot:server:start                  Start the Minecraft AI Bot server
-  bot:server:stop                   Stop the Minecraft AI Bot server
-  bot:server:restart                Restart the Minecraft AI Bot server
-  mc:server:start                   Start the Minecraft Java Server (port 25565)
-  mc:server:stop                    Stop the Minecraft Java Server
-  mc:server:restart                 Restart the Minecraft Java Server
-  bot:start <username>              Start a bot with the given username
-  bot:stop <botId>                  Stop a bot by its ID
-  bot:automatic <username> [mode]   Start automatic behavior (survival|creative|building|gathering)
-  bot:status                        Show status of all services
-  bot:list                          Check bot server status
-  dev                               Start development environment
-  help                              Show this help message
+  --host HOST    Bot server host (default: localhost)
+  --port PORT    Bot server port (default: 9500)
+  --jar PATH     Path to Minecraft server jar
 
 Examples:
   minebot bot:server:start
-  minebot mc:server:start
   minebot bot:start MyBot
-  minebot bot:automatic MyBot survival
-  minebot --host 0.0.0.0 --port 8080 bot:server:start
-`);
+  minebot mc:server:start
+  minebot bot:automatic MyBot survival`);
 }
 
 // Main CLI logic
