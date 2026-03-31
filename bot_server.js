@@ -23,6 +23,7 @@ app.use(express.static('frontend/build'));
 
 const activeBots = new Map();
 const botConnections = new Map();
+const botServerStartTime = Date.now();
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -30,7 +31,33 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     serverMode: 'online',
     mcServer: process.env.MINECRAFT_SERVER_HOST || 'localhost',
-    mcPort: process.env.MINECRAFT_SERVER_PORT || 25565
+    mcPort: process.env.MINECRAFT_SERVER_PORT || 25565,
+    uptimeSeconds: Math.floor((Date.now() - botServerStartTime) / 1000)
+  });
+});
+
+app.get('/api/bots', (req, res) => {
+  const bots = Array.from(activeBots.entries()).map(([botId, bot]) => {
+    if (!bot.bot) return null;
+    
+    return {
+      botId: botId,
+      username: bot.bot.username,
+      connected: bot.isConnected,
+      state: bot.bot.isDead() ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+      health: bot.bot.health,
+      maxHealth: 20,
+      food: bot.bot.food,
+      foodSaturation: bot.bot.foodSaturation,
+      position: bot.bot.entity.position,
+      gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
+      joinedAt: bot.botTime || bot.bot.joinTime || null
+    };
+  }).filter(Boolean);
+  
+  res.json({
+    count: bots.length,
+    bots: bots
   });
 });
 

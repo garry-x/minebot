@@ -376,10 +376,8 @@ Bot Actions (minebot bot <action>):
   stop <id>        Stop a bot by ID
   st <id>          Alias for stop
   automatic <user> [mode]
-                   Start automatic behavior (survival|creative|building|gathering)
+                    Start automatic behavior (survival|creative|building|gathering)
   a <user> [mode]  Alias for automatic
-  status           Show service status
-  stat             Alias for status
   list             List bots
   ls               Alias for list
 
@@ -391,6 +389,10 @@ MC Actions (minebot mc <action>):
   restart       Restart Minecraft server
   r             Alias for restart
 
+Top-level commands:
+  status [--json]  Show system status
+  help            Show this help message
+
 Examples:
   minebot bot start MyBot
   minebot bot s MyBot
@@ -398,6 +400,8 @@ Examples:
   minebot bot a MyBot survival
   minebot mc start
   minebot mc s
+  minebot status
+  minebot status --json
 `);
 }
 
@@ -420,7 +424,6 @@ const aliases = {
     s: 'start',
     st: 'stop',
     a: 'automatic',
-    stat: 'status',
     ls: 'list'
   },
   mc: {
@@ -448,10 +451,6 @@ switch(system) {
       case 'automatic':
       case 'a':
         botControl('automatic', commandArgs[0], null, commandArgs[1]);
-        break;
-      case 'status':
-      case 'stat':
-        botControl('status');
         break;
       case 'list':
       case 'ls':
@@ -495,6 +494,11 @@ switch(system) {
     startBotServer();
     break;
     
+  case 'status':
+    const jsonOutput = args.length > 1 && args[1] === '--json';
+    showSystemStatus(jsonOutput);
+    break;
+    
   case 'help':
   case '-h':
   case '--help':
@@ -509,4 +513,91 @@ switch(system) {
       console.log('Run "minebot help" for available commands');
     }
     process.exit(1);
+}
+
+function showSystemStatus(jsonOutput) {
+  const http = require('http');
+  
+  function getStatus() {
+    return new Promise((resolve, reject) => {
+      const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ botServer: parsed });
+          } catch (e) {
+            resolve({ botServer: null });
+          }
+        });
+      });
+      
+      req.on('error', () => {
+        resolve({ botServer: null });
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        resolve({ botServer: null });
+      });
+      
+      req.end();
+    });
+  }
+  
+  function getMinecraftStatus() {
+    return new Promise((resolve) => {
+      const net = require('net');
+      const socket = new net.Socket();
+      
+      socket.setTimeout(2000);
+      socket.connect({ host: 'localhost', port: 25565 }, () => {
+        socket.destroy();
+        resolve({ mcServer: true });
+      });
+      
+      socket.on('error', () => {
+        resolve({ mcServer: false });
+      });
+      
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve({ mcServer: false });
+      });
+      
+      socket.end();
+    });
+  }
+  
+  async function showStatus(showJson) {
+    const [botStatus, mcStatus] = await Promise.all([getStatus(), getMinecraftStatus()]);
+    
+    if (showJson) {
+      const status = {
+        botServer: botStatus.botServer ? {
+          status: botStatus.botServer.status,
+          uptimeSeconds: botStatus.botServer.uptimeSeconds,
+          serverMode: botStatus.botServer.serverMode
+        } : { status: 'OFFLINE' },
+        mcServer: mcStatus.mcServer ? { status: 'RUNNING' } : { status: 'OFFLINE' }
+      };
+      console.log(JSON.stringify(status, null, 2));
+    } else {
+      console.log('System Status:');
+      console.log('==============');
+      
+      if (botStatus.botServer) {
+        console.log(`Bot Server: ${botStatus.botServer.status}`);
+        console.log(`  Uptime: ${botStatus.botServer.uptimeSeconds || 0} seconds`);
+        console.log(`  Mode: ${botStatus.botServer.serverMode}`);
+      } else {
+        console.log('Bot Server: OFFLINE');
+      }
+      
+      console.log(`Minecraft Server: ${mcStatus.mcServer ? 'RUNNING' : 'OFFLINE'}`);
+    }
+  }
+  
+  showStatus(jsonOutput);
 }
