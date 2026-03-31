@@ -72,6 +72,7 @@ async connect(username, accessToken) {
             this.pathfinder = new Pathfinder(this.bot);
             this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
             this.events = require('./events')(this.bot);
+            this.events.setupListeners();
            
            // Generate bot ID if not already set
            if (!this.botId) {
