@@ -186,6 +186,7 @@ async connect(username, accessToken) {
 
     // Handle end/disconnect
     this.bot.on('end', () => {
+      console.log('[Bot] End event triggered - connection closed');
       this.isConnected = false;
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({
