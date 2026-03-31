@@ -279,8 +279,6 @@ default:
   }
 
     sendStatusUpdate() {
-      // Do not send status updates from bot to server; server broadcasts status directly from bot object
-      return;
       if (!this.isConnected || !this.bot || !this.ws) return;
       
       try {
