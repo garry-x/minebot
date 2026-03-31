@@ -381,37 +381,10 @@ function showHelp() {
 minebot - Minecraft AI Robot System
 
 Systems:
-  bot         Bot control
-  mc          Minecraft server control
-  server      Bot server management
+  bot         Bot control (use "minebot bot help" for details)
+  mc          Minecraft server control (use "minebot mc help" for details)
+  server      Bot server management (use "minebot server help" for details)
   dev         Start development mode
-
-Bot Actions (minebot bot <action>):
-  start <user>     Start a bot with username
-  s <user>         Alias for start
-  stop <id>        Stop a bot by ID
-  st <id>          Alias for stop
-  automatic <user> [mode]
-                    Start automatic behavior (survival|creative|building|gathering)
-  a <user> [mode]  Alias for automatic
-  list             List bots
-  ls               Alias for list
-
-MC Actions (minebot mc <action>):
-  start         Start Minecraft server
-  s             Alias for start
-  stop          Stop Minecraft server
-  st            Alias for stop
-  restart       Restart Minecraft server
-  r             Alias for restart
-
-Server Actions (minebot server <action>):
-  start         Start bot server
-  s             Alias for start
-  stop          Stop bot server
-  st            Alias for stop
-  restart       Restart bot server
-  r             Alias for restart
 
 Top-level commands:
   status [--json]  Show system status (bot server, bots, Minecraft server)
@@ -423,6 +396,7 @@ Examples:
   minebot bot s MyBot
   minebot bot stop bot_123
   minebot bot a MyBot survival
+  minebot bot list
   minebot mc start
   minebot mc s
   minebot server start
@@ -488,15 +462,59 @@ switch(system) {
       case 'ls':
         botControl('list');
         break;
+      case 'help':
+      case '-h':
+      case '--help':
+        console.log(`minebot bot <action> - Bot control
+
+Bot Actions:
+  start <user>     Start a bot with username
+  s <user>         Alias for start
+  stop <id>        Stop a bot by ID
+  st <id>          Alias for stop
+  automatic <user> [mode]
+                    Start automatic behavior (survival|creative|building|gathering)
+  a <user> [mode]  Alias for automatic
+  list             List bots
+  ls               Alias for list
+
+Examples:
+  minebot bot start MyBot
+  minebot bot s MyBot
+  minebot bot stop bot_123
+  minebot bot a MyBot survival
+  minebot bot list
+`);
+        break;
       default:
         console.log(`Unknown bot action: ${action}`);
-        console.log('Run "minebot help" for available commands');
+        console.log('Run "minebot bot help" for available commands');
         process.exit(1);
     }
     break;
     
   case 'mc':
     switch(action) {
+      case 'help':
+      case '-h':
+      case '--help':
+        console.log(`minebot mc <action> - Minecraft server control
+
+MC Actions:
+  start         Start Minecraft server
+  s             Alias for start
+  stop          Stop Minecraft server
+  st            Alias for stop
+  restart       Restart Minecraft server
+  r             Alias for restart
+
+Examples:
+  minebot mc start
+  minebot mc s
+  minebot mc stop
+  minebot mc r
+`);
+        break;
       case 'start':
       case 's':
         startMinecraftServer();
@@ -511,13 +529,33 @@ switch(system) {
         break;
       default:
         console.log(`Unknown MC action: ${action}`);
-        console.log('Run "minebot help" for available commands');
+        console.log('Run "minebot mc help" for available commands');
         process.exit(1);
     }
     break;
     
   case 'server':
     switch(action) {
+      case 'help':
+      case '-h':
+      case '--help':
+        console.log(`minebot server <action> - Bot server management
+
+Server Actions:
+  start         Start bot server
+  s             Alias for start
+  stop          Stop bot server
+  st            Alias for stop
+  restart       Restart bot server
+  r             Alias for restart
+
+Examples:
+  minebot server start
+  minebot server s
+  minebot server stop
+  minebot server r
+`);
+        break;
       case 'start':
       case 's':
         startBotServer();
@@ -532,7 +570,7 @@ switch(system) {
         break;
       default:
         console.log(`Unknown server action: ${action}`);
-        console.log('Run "minebot help" for available commands');
+        console.log('Run "minebot server help" for available commands');
         process.exit(1);
     }
     break;
