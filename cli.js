@@ -389,6 +389,14 @@ MC Actions (minebot mc <action>):
   restart       Restart Minecraft server
   r             Alias for restart
 
+Server Actions (minebot server <action>):
+  start         Start bot server
+  s             Alias for start
+  stop          Stop bot server
+  st            Alias for stop
+  restart       Restart bot server
+  r             Alias for restart
+
 Top-level commands:
   status [--json]  Show system status
   help            Show this help message
@@ -427,6 +435,11 @@ const aliases = {
     ls: 'list'
   },
   mc: {
+    s: 'start',
+    st: 'stop',
+    r: 'restart'
+  },
+  server: {
     s: 'start',
     st: 'stop',
     r: 'restart'
@@ -479,6 +492,27 @@ switch(system) {
         break;
       default:
         console.log(`Unknown MC action: ${action}`);
+        console.log('Run "minebot help" for available commands');
+        process.exit(1);
+    }
+    break;
+    
+  case 'server':
+    switch(action) {
+      case 'start':
+      case 's':
+        startBotServer();
+        break;
+      case 'stop':
+      case 'st':
+        stopBotServer();
+        break;
+      case 'restart':
+      case 'r':
+        restartBotServer();
+        break;
+      default:
+        console.log(`Unknown server action: ${action}`);
         console.log('Run "minebot help" for available commands');
         process.exit(1);
     }
