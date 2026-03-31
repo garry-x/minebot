@@ -7,3 +7,6 @@ frontend/dist/
 npm-debug.log*
 server.log
 world/
+logs/
+resources/
+libraries/
