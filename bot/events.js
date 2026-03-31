@@ -41,6 +41,11 @@ module.exports = function(bot) {
       bot.on('wake', () => {
         console.log(`Bot woke up`);
       });
+      
+      // Listen for respawn (after death)
+      bot.on('respawn', () => {
+        console.log(`Bot respawned`);
+      });
     }
   };
 };

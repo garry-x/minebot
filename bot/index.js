@@ -129,6 +129,7 @@ async connect(username, accessToken) {
 
     // Handle death
     this.bot.on('death', () => {
+      console.log('[Bot] Bot died');
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({
           type: 'status_update',
@@ -139,6 +140,16 @@ async connect(username, accessToken) {
           }
         }));
       }
+    });
+
+    // Handle respawn - bot comes back to life after death
+    this.bot.on('respawn', () => {
+      console.log('[Bot] Bot respawned');
+      this.isConnected = true;
+      // Send status update to update position after respawn
+      setTimeout(() => {
+        this.sendStatusUpdate();
+      }, 1000);
     });
 
     // Handle error
@@ -243,9 +254,6 @@ async connect(username, accessToken) {
       // Ignore status updates from server - we don't need to act on them
       break;
 
-        case 'status_update':
-          // Ignore status updates from server - we don't need to act on them
-          break;
 default:
         console.warn('Unknown WebSocket message type:', message.type);
     }
@@ -270,9 +278,6 @@ default:
       // Ignore status updates from server - we don't need to act on them
       break;
 
-        case 'status_update':
-          // Ignore status updates from server - we don't need to act on them
-          break;
 default:
         console.warn('Unknown command action:', commandData.action);
     }
