@@ -305,8 +305,7 @@ function botControl(action, username, botId, mode) {
       break;
       
     case 'status':
-      console.log('=== Service Status ===');
-      
+      console.log('bot server:');
       const http = require('http');
       const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
         let data = '';
@@ -315,23 +314,23 @@ function botControl(action, username, botId, mode) {
           try {
             const parsed = JSON.parse(data);
             if (res.statusCode === 200) {
-              console.log(`bot server: RUNNING`);
+              console.log(`  RUNNING`);
             } else {
-              console.log(`bot server: ERROR`);
+              console.log(`  ERROR`);
             }
           } catch (e) {
-            console.log(`bot server: NOT RUNNING`);
+            console.log(`  NOT RUNNING`);
           }
         });
       });
       
       req.on('error', () => {
-        console.log(`bot server: NOT RUNNING`);
+        console.log(`  NOT RUNNING`);
       });
       
       req.on('timeout', () => {
         req.destroy();
-        console.log(`bot server: TIMEOUT`);
+        console.log(`  TIMEOUT`);
       });
       
       req.end();
@@ -342,16 +341,16 @@ function botControl(action, username, botId, mode) {
       socket.setTimeout(2000);
       socket.connect({ host: 'localhost', port: 25565 }, () => {
         socket.destroy();
-        console.log(`minecraft server: RUNNING`);
+        console.log('minecraft server: RUNNING');
       });
       
       socket.on('error', () => {
-        console.log(`minecraft server: NOT RUNNING`);
+        console.log('minecraft server: NOT RUNNING');
       });
       
       socket.on('timeout', () => {
         socket.destroy();
-        console.log(`minecraft server: NOT RUNNING`);
+        console.log('minecraft server: NOT RUNNING');
       });
       
       break;
@@ -362,120 +361,151 @@ function botControl(action, username, botId, mode) {
 }
 
 function showHelp() {
-  console.log(`Usage: minebot [OPTIONS] <command> [args...]
+  console.log(`Usage: minebot <system> <action> [args...]
 
-Minecraft AI Robot System
+minebot - Minecraft AI Robot System
 
-Commands:
-  bot_server_start    Start the bot server
-  bot_server_stop     Stop the bot server
-  bot_server_restart  Restart the bot server
-  mc_server_start     Start the Minecraft server
-  mc_server_stop      Stop the Minecraft server
-  mc_server_restart   Restart the Minecraft server
-  bot_start <user>    Start a bot with username
-  bot_stop <id>       Stop a bot by ID
-  bot_automatic <user> [mode]
-                      Start automatic behavior (survival|creative|building|gathering)
-  bot_status          Show service status
-  bot_list            List bots
+Systems:
+  bot         Bot control
+  mc          Minecraft server control
+  dev         Start development mode
 
-Options:
-  --host <host>    Bot server host (default: localhost)
-  --port <port>    Bot server port (default: 9500)
-  --jar <path>     Path to Minecraft server jar
+Bot Actions (minebot bot <action>):
+  start <user>     Start a bot with username
+  s <user>         Alias for start
+  stop <id>        Stop a bot by ID
+  st <id>          Alias for stop
+  automatic <user> [mode]
+                   Start automatic behavior (survival|creative|building|gathering)
+  a <user> [mode]  Alias for automatic
+  status           Show service status
+  stat             Alias for status
+  list             List bots
+  ls               Alias for list
+
+MC Actions (minebot mc <action>):
+  start         Start Minecraft server
+  s             Alias for start
+  stop          Stop Minecraft server
+  st            Alias for stop
+  restart       Restart Minecraft server
+  r             Alias for restart
 
 Examples:
-  minebot bot_server_start
-  minebot bot_start MyBot
-  minebot mc_server_start
-  minebot bot_automatic MyBot survival`);
+  minebot bot start MyBot
+  minebot bot s MyBot
+  minebot bot stop bot_123
+  minebot bot a MyBot survival
+  minebot mc start
+  minebot mc s
+`);
 }
 
 // Main CLI logic
 const args = process.argv.slice(2);
-let command = null;
-let commandArgs = [];
 
-// Parse global options
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '--host' && i + 1 < args.length) {
-    botHost = args[i + 1];
-    i++;
-  } else if (args[i] === '--port' && i + 1 < args.length) {
-    botPort = parseInt(args[i + 1], 10);
-    if (isNaN(botPort)) {
-      console.log('Error: port must be a number');
-      process.exit(1);
-    }
-    i++;
-  } else if (args[i] === '--jar' && i + 1 < args.length) {
-    minecraftJarPath = args[i + 1];
-    i++;
-  } else if (!command && !args[i].startsWith('-')) {
-    command = args[i];
-  } else {
-    commandArgs.push(args[i]);
+if (args.length === 0) {
+  showHelp();
+  process.exit(0);
+}
+
+// Parse system and action (2-level subcommands)
+const system = args[0];
+let action = args[1];
+const commandArgs = args.slice(2);
+
+// Define aliases
+const aliases = {
+  bot: {
+    s: 'start',
+    st: 'stop',
+    a: 'automatic',
+    stat: 'status',
+    ls: 'list'
+  },
+  mc: {
+    s: 'start',
+    st: 'stop',
+    r: 'restart'
   }
+};
+
+// Resolve aliases
+if (aliases[system] && aliases[system][action]) {
+  action = aliases[system][action];
 }
 
-// Convert colon to underscore for command matching
-if (command) {
-  command = command.replace(/:/g, '_');
-}
-
-switch(command) {
-  case 'bot_server_start':
-    startBotServer();
+switch(system) {
+  case 'bot':
+    switch(action) {
+      case 'start':
+        botControl('start', commandArgs[0]);
+        break;
+      case 'stop':
+      case 'st':
+        botControl('stop', null, commandArgs[0]);
+        break;
+      case 'automatic':
+      case 'a':
+        botControl('automatic', commandArgs[0], null, commandArgs[1]);
+        break;
+      case 'status':
+      case 'stat':
+        botControl('status');
+        break;
+      case 'list':
+      case 'ls':
+        botControl('list');
+        break;
+      default:
+        console.log(`Unknown bot action: ${action}`);
+        console.log('Run "minebot help" for available commands');
+        process.exit(1);
+    }
     break;
-  case 'mc_server_start':
-    startMinecraftServer();
+    
+  case 'mc':
+    switch(action) {
+      case 'start':
+      case 's':
+        startMinecraftServer();
+        break;
+      case 'stop':
+      case 'st':
+        stopMinecraftServer();
+        break;
+      case 'restart':
+      case 'r':
+        restartMinecraftServer();
+        break;
+      default:
+        console.log(`Unknown MC action: ${action}`);
+        console.log('Run "minebot help" for available commands');
+        process.exit(1);
+    }
     break;
-  case 'bot_server_stop':
-    stopBotServer();
-    break;
-  case 'bot_server_restart':
-    restartBotServer();
-    break;
-  case 'mc_server_stop':
-    stopMinecraftServer();
-    break;
-  case 'mc_server_restart':
-    restartMinecraftServer();
-    break;
-  case 'bot_start':
-    botControl('start', commandArgs[0]);
-    break;
-  case 'bot_stop':
-    botControl('stop', null, commandArgs[0]);
-    break;
-  case 'bot_automatic':
-    botControl('automatic', commandArgs[0], null, commandArgs[1]);
-    break;
-  case 'bot_status':
-    botControl('status');
-    break;
-  case 'bot_list':
-    botControl('list');
-    break;
+    
   case 'dev':
     console.log('Starting development environment...');
     startBotServer();
     break;
+    
   case 'prod':
     console.log('Starting bot server...');
     startBotServer();
     break;
+    
   case 'help':
   case '-h':
   case '--help':
     showHelp();
     break;
+    
   default:
-    if (!command) {
+    if (!system) {
       showHelp();
     } else {
-      console.log(`Unknown command: ${command}`);
+      console.log(`Unknown system: ${system}`);
       console.log('Run "minebot help" for available commands');
     }
     process.exit(1);
