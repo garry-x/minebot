@@ -404,38 +404,37 @@ function botControl(action, username, botId, mode) {
 
 function showHelp() {
   console.log(`
-Minecraft AI Robot System CLI
+Minecraft AI Robot System
 
 Usage:
-  minebot [options] <command> [options]
+  minebot [options] <command> [arguments]
 
 Options:
-  --host <host>   Bot server host (default: localhost)
-  --port <port>   Bot server port (default: 9500)
-  --jar <path>    Path to Minecraft server jar file (default: resources/minecraft_server.1.21.11.jar)
+  --host <host>    Bot server host (default: localhost)
+  --port <port>    Bot server port (default: 9500)
+  --jar <path>     Path to Minecraft server jar (default: resources/minecraft_server.1.21.11.jar)
 
 Commands:
-  bot:server:start                    Start the Minecraft AI Bot server
-  bot:server:stop                     Stop the Minecraft AI Bot server
-  bot:server:restart                  Restart the Minecraft AI Bot server
-  mc:server:start                     Start the Minecraft Java Server (port 25565)
-  mc:server:stop                      Stop the Minecraft Java Server
-  mc:server:restart                   Restart the Minecraft Java Server
-    bot:status                          Show status of all services
-   bot:start <username>                Start a bot with the given username
-  bot:stop <botId>                    Stop a bot by its ID
-  bot:automatic <username> [mode]     Start automatic behavior for a bot (mode: survival|creative|building|gathering)
-  bot:list                            Check bot server status
-  dev                                 Start development environment (bot server + frontend)
-  prod                                Build and start in production mode
-  help                                Show this help message
+  bot:server:start                  Start the Minecraft AI Bot server
+  bot:server:stop                   Stop the Minecraft AI Bot server
+  bot:server:restart                Restart the Minecraft AI Bot server
+  mc:server:start                   Start the Minecraft Java Server (port 25565)
+  mc:server:stop                    Stop the Minecraft Java Server
+  mc:server:restart                 Restart the Minecraft Java Server
+  bot:start <username>              Start a bot with the given username
+  bot:stop <botId>                  Stop a bot by its ID
+  bot:automatic <username> [mode]   Start automatic behavior (survival|creative|building|gathering)
+  bot:status                        Show status of all services
+  bot:list                          Check bot server status
+  dev                               Start development environment
+  help                              Show this help message
 
 Examples:
-  minebot --host 0.0.0.0 --port 8080 bot:server:start
   minebot bot:server:start
-  minebot --jar /path/to/server.jar mc:server:start
-   minebot mc:server:start
-   minebot bot:start MyBotUsername
+  minebot mc:server:start
+  minebot bot:start MyBot
+  minebot bot:automatic MyBot survival
+  minebot --host 0.0.0.0 --port 8080 bot:server:start
 `);
 }
 
