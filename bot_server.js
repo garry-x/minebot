@@ -117,6 +117,7 @@ app.get('/api/bots', (req, res) => {
       username: bot.bot.username,
       connected: bot.isConnected,
       state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+      mode: bot.currentMode || null,
       health: bot.bot.health,
       maxHealth: 20,
       food: bot.bot.food,
@@ -196,6 +197,9 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     const bot = botEntry[1];
     const botId = botEntry[0];
+    
+    // Track current automatic mode
+    bot.currentMode = mode || 'survival';
     
     // Start automatic behavior in background (don't block response)
     bot.behaviors.automaticBehavior({ 

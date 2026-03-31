@@ -308,6 +308,9 @@ function botControl(action, username, botId, mode) {
         data.bots.forEach(bot => {
           console.log(`  ${bot.username} (${bot.botId})`);
           console.log(`    State: ${bot.state}`);
+          if (bot.mode) {
+            console.log(`    Mode: ${bot.mode}`);
+          }
           console.log(`    Connected: ${bot.connected}`);
           if (bot.position) {
             console.log(`    Position: ${bot.position.x}, ${bot.position.y}, ${bot.position.z}`);
@@ -728,6 +731,9 @@ function showSystemStatus(jsonOutput) {
         console.log(`Bots (${botsStatus.bots.count}):`);
         botsStatus.bots.bots.forEach(bot => {
           console.log(`  ${bot.username}: ${bot.state} (${bot.connected ? 'connected' : 'disconnected'})`);
+          if (bot.mode) {
+            console.log(`    Mode: ${bot.mode}`);
+          }
         });
       }
       
