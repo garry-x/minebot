@@ -413,7 +413,8 @@ Server Actions (minebot server <action>):
   r             Alias for restart
 
 Top-level commands:
-  status [--json]  Show system status
+  status [--json]  Show system status (bot server, bots, Minecraft server)
+                   --json    Output in JSON format
   help            Show this help message
 
 Examples:
