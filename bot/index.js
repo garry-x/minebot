@@ -49,6 +49,21 @@ async connect(username, accessToken) {
       this.setupEventListeners();
       this.setupWebSocket();
 
+      // Track if we've resolved to avoid double-resolution
+      let isResolved = false;
+      
+      // Set up timeout for connection
+      const connectTimeout = setTimeout(() => {
+        if (!isResolved && !this.isConnected) {
+          console.log('[Bot] Connection timeout after 30 seconds');
+          reject(new Error('Connection timeout - failed to spawn'));
+          if (this.bot) {
+            this.bot.end();
+            this.bot = null;
+          }
+        }
+      }, 30000);
+
       this.bot.once('spawn', () => {
         console.log('[Bot] Bot spawned');
         this.isConnected = true;
@@ -78,8 +93,10 @@ async connect(username, accessToken) {
            if (!this.botId) {
              this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
            }
-           console.log(`[Bot] Bot ready with ID: ${this.botId}`);
-           resolve();
+            console.log(`[Bot] Bot ready with ID: ${this.botId}`);
+            isResolved = true;
+            clearTimeout(connectTimeout);
+            resolve();
           } catch (initError) {
             console.error(`[Bot] Error initializing modules:`, initError);
             reject(initError);
@@ -89,12 +106,18 @@ async connect(username, accessToken) {
 
     this.bot.once('error', (err) => {
       console.log(`[Bot] Error: ${err.message}`);
+      isResolved = true;
+      clearTimeout(connectTimeout);
       reject(err);
     });
 
     this.bot.once('end', () => {
       console.log('[Bot] Bot ended');
       this.isConnected = false;
+      if (!isResolved) {
+        isResolved = true;
+        clearTimeout(connectTimeout);
+      }
     });
     
     // Add a timeout to prevent hanging
@@ -253,6 +276,10 @@ async connect(username, accessToken) {
         break;
       case 'status_update':
       // Ignore status updates from server - we don't need to act on them
+      break;
+      case 'registration_ack':
+      // Acknowledgment that bot is registered - log it
+      console.log('Bot registration acknowledged');
       break;
 
 default:
