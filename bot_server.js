@@ -10,6 +10,15 @@ require('./config/db');
 require('./config/models/BotConfig');
 
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.static('frontend/build'));
 
 const activeBots = new Map();
@@ -19,8 +28,9 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    serverMode: 'offline',
-    note: 'Bot server running. For Minecraft Java Server, use: minebot mc:server:start'
+    serverMode: 'online',
+    mcServer: process.env.MINECRAFT_SERVER_HOST || 'localhost',
+    mcPort: process.env.MINECRAFT_SERVER_PORT || 25565
   });
 });
 
@@ -41,11 +51,13 @@ app.post('/api/bot/start', async (req, res) => {
       return res.status(400).json({ error: 'Invalid username format (3-16 characters, letters, numbers, underscores)' });
     }
     
-    console.log(`[API] Creating bot instance for host: ${process.env.MINECRAFT_SERVER_HOST || 'localhost'}:${process.env.MINECRAFT_SERVER_PORT || 25565}`);
+    const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
+    const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
+    console.log(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
     const MinecraftBot = require('./bot/index');
     const bot = new MinecraftBot({ 
-      host: process.env.MINECRAFT_SERVER_HOST || 'localhost', 
-      port: process.env.MINECRAFT_SERVER_PORT || 25565,
+      host: mcHost, 
+      port: mcPort,
       botServerHost: process.env.HOST || 'localhost',
       botServerPort: process.env.PORT || 9500
     });
@@ -77,30 +89,42 @@ app.post('/api/bot/automatic', async (req, res) => {
       return res.status(400).json({ error: 'Username is required' });
     }
     
-     const MinecraftBot = require('./bot/index');
-     const bot = new MinecraftBot({ 
-       host: process.env.MINECRAFT_SERVER_HOST || 'localhost', 
-       port: process.env.MINECRAFT_SERVER_PORT || 25565,
-       botServerHost: process.env.HOST || 'localhost',
-       botServerPort: process.env.PORT || 9500
-     });
+    let foundBotEntry = Array.from(activeBots.entries()).find(([bid, b]) => b.bot && b.bot.username === username);
+    let bot;
     
-    await bot.connect(username, null);
+    if (!foundBotEntry) {
+      const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
+      const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
+      const MinecraftBot = require('./bot/index');
+      bot = new MinecraftBot({ 
+        host: mcHost, 
+        port: mcPort,
+        botServerHost: process.env.HOST || 'localhost',
+        botServerPort: process.env.PORT || 9500
+      });
+      
+      await bot.connect(username, null);
+      const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      activeBots.set(botId, bot);
+    } else {
+      bot = foundBotEntry[1];
+      console.log(`[API] Reusing existing bot for username: ${username}`);
+    }
     
-     await bot.behaviors.automaticBehavior({ 
-       mode: mode || 'survival',
-       targetBlockType: 'oak_log',
-       structureType: 'house',
-       structureSize: { width: 4, length: 4, height: 3 },
-       gatherRadius: 100
-     });
-    
-    const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    activeBots.set(botId, bot);
+    // Start automatic behavior in background (don't block response)
+    bot.behaviors.automaticBehavior({ 
+      mode: mode || 'survival',
+      targetBlockType: 'oak_log',
+      structureType: 'house',
+      structureSize: { width: 4, length: 4, height: 3 },
+      gatherRadius: 100
+    }).catch(err => {
+      console.error('Error in automatic behavior:', err);
+    });
     
     res.json({ 
       success: true,
-      botId,
+      botId: bot.botId,
       username,
       message: `Automatic behavior started in ${mode || 'survival'} mode (offline)`
     });
@@ -225,8 +249,12 @@ function handleWebSocketMessage(ws, message) {
       }
       break;
     case 'status_update':
-      // Status updates from bots are handled via the broadcast mechanism
-      // No action needed here
+      // Forward status updates from bots to all frontend clients
+      console.log('Forwarding status update from bot:', message.data);
+      ws.send(JSON.stringify({
+        type: 'status_update',
+        data: { bots: [message.data] }
+      }));
       break;
     case 'error':
       // Error messages from bots are logged but don't require special handling
@@ -334,7 +362,11 @@ function broadcastStatusUpdate() {
             const position = bot.bot.entity.position.floored();
             const health = bot.bot.health;
             const food = bot.bot.food;
-            const experience = bot.bot.experience;
+            // Experience is an object with level/points/progress in mineflayer
+            const experience = bot.bot.experience || 0;
+            const experiencePoints = typeof experience === 'object' 
+              ? experience.points || experience.level || 0 
+              : experience;
             const gamemode = bot.bot.gameMode === 0 ? 'survival' : 'creative';
             const inventory = bot.bot.inventory.items().map(item => ({
               type: item.name,
@@ -347,7 +379,7 @@ function broadcastStatusUpdate() {
               position: { x: position.x, y: position.y, z: position.z },
               health,
               food,
-              experience,
+              experience: experiencePoints,
               gamemode,
               inventory
             };

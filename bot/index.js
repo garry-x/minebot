@@ -22,13 +22,22 @@ async connect(username, accessToken) {
   return new Promise((resolve, reject) => {
     console.log(`[Bot] Creating bot with username: ${username}`);
     console.log(`[Bot] Target server: ${this.options.host || 'localhost'}:${this.options.port || 25565}`);
-    this.bot = mineflayer.createBot({
-        host: this.options.host || 'localhost',
-        port: this.options.port || 25565,
-        username: username,
-        accessToken: accessToken,
-        version: '1.21.11' // Match server version
-      });
+    
+    // For offline mode, we need to provide a dummy access token
+    // This prevents connection errors in some server configurations
+    const botOptions = {
+      host: this.options.host || 'localhost',
+      port: this.options.port || 25565,
+      username: username,
+      version: '1.21.11' // Match server version
+    };
+    
+    // Only use accessToken if provided
+    if (accessToken && accessToken.trim() !== '') {
+      botOptions.accessToken = accessToken;
+    }
+    
+    this.bot = mineflayer.createBot(botOptions);
 
       // Set botId if not already set
       if (!this.botId) {
@@ -36,49 +45,33 @@ async connect(username, accessToken) {
         console.log(`[Bot] Bot ID set to: ${this.botId}`);
       }
 
-     // Load and attach mcData immediately after bot creation
-     const mcData = require('minecraft-data')(this.bot.version);
-     console.log('[Bot] mcData loaded:', !!mcData);
-     if (!mcData) {
-       console.error('[Bot] mcData is null or undefined!');
-       throw new Error('Failed to load mcData');
-     }
-     // Attach mcData to bot's _client for pathfinder access
-     this.bot._client.mcData = mcData;
-     console.log('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
+      console.log('[Bot] Setting up event listeners');
+      this.setupEventListeners();
+      this.setupWebSocket();
 
-     // Load pathfinder plugin now that mcData is attached
-     console.log('[Bot] About to load pathfinder plugin...');
-     const { pathfinder } = require('mineflayer-pathfinder');
-     console.log('[Bot] Pathfinder plugin loaded');
-     this.bot.loadPlugin(pathfinder);
-     console.log('[Bot] Pathfinder plugin loaded successfully');
-
-     console.log('[Bot] Setting up event listeners');
-     this.setupEventListeners();
-     this.setupWebSocket();
-
-     this.bot.once('spawn', () => {
-       console.log('[Bot] Bot spawned');
-       this.isConnected = true;
-       // Wait a bit for bot to fully initialize
-       setTimeout(() => {
-         try {
-           console.log('[Bot] Bot version:', this.bot.version);
-           
-           // Load pathfinder plugin (now that mcData is already attached)
-           console.log('[Bot] About to load pathfinder plugin...');
-           // Clear the require cache to ensure we get our modified version
-           delete require.cache[require.resolve('mineflayer-pathfinder')];
-           const { pathfinder } = require('mineflayer-pathfinder');
-           console.log('[Bot] Pathfinder plugin loaded');
-           this.bot.loadPlugin(pathfinder);
-           console.log('[Bot] Pathfinder plugin loaded successfully');
-           
-           // Initialize modules after bot is ready
-           this.pathfinder = new Pathfinder(this.bot);
-           this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
-           this.events = require('./events')(this.bot);
+      this.bot.once('spawn', () => {
+        console.log('[Bot] Bot spawned');
+        this.isConnected = true;
+        // Load and attach mcData after bot is ready (pathfinder needs it)
+        const mcData = require('minecraft-data')(this.bot.version);
+        console.log('[Bot] mcData loaded:', !!mcData);
+        if (!mcData) {
+          console.error('[Bot] mcData is null or undefined!');
+          throw new Error('Failed to load mcData');
+        }
+        // Attach mcData to bot's _client for pathfinder access
+        this.bot._client.mcData = mcData;
+        console.log('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
+        
+        // Wait a bit for bot to fully initialize
+        setTimeout(() => {
+          try {
+            console.log('[Bot] Bot version:', this.bot.version);
+            
+            // Initialize modules after bot is ready
+            this.pathfinder = new Pathfinder(this.bot);
+            this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
+            this.events = require('./events')(this.bot);
            
            // Generate bot ID if not already set
            if (!this.botId) {
@@ -86,12 +79,12 @@ async connect(username, accessToken) {
            }
            console.log(`[Bot] Bot ready with ID: ${this.botId}`);
            resolve();
-         } catch (initError) {
-           console.error(`[Bot] Error initializing modules:`, initError);
-           reject(initError);
-         }
-       }, 1500); // Increased timeout
-     });
+          } catch (initError) {
+            console.error(`[Bot] Error initializing modules:`, initError);
+            reject(initError);
+          }
+        }, 1500); // Increased timeout
+      });
 
     this.bot.once('error', (err) => {
       console.log(`[Bot] Error: ${err.message}`);
@@ -106,14 +99,14 @@ async connect(username, accessToken) {
     // Add a timeout to prevent hanging
     setTimeout(() => {
       if (!this.isConnected) {
-        console.log('[Bot] Connection timeout after 10 seconds');
+        console.log('[Bot] Connection timeout after 30 seconds');
         reject(new Error('Connection timeout - failed to spawn'));
         if (this.bot) {
           this.bot.end();
           this.bot = null;
         }
       }
-    }, 10000);
+    }, 30000);
   });
 }
 
@@ -189,10 +182,10 @@ async connect(username, accessToken) {
       // Connect to the backend WebSocket server
       const wsHost = this.options.botServerHost || 'localhost';
       const wsPort = this.options.botServerPort || 9500;
-      this.ws = new WebSocket(`ws://${wsHost}:${wsPort}/bot/status`);
+      this.ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
       
       this.ws.on('open', () => {
-        console.log(`WebSocket connected to backend at ${wsHost}:${wsPort}`);
+        console.log(`WebSocket connected to backend at ${wsHost}:${wsPort}/`);
         
         // Register this bot's WebSocket connection with the backend
         if (this.ws.readyState === WebSocket.OPEN) {
@@ -246,7 +239,14 @@ async connect(username, accessToken) {
       case 'fly':
         this.behaviors.flyTo(message.data);
         break;
-      default:
+      case 'status_update':
+      // Ignore status updates from server - we don't need to act on them
+      break;
+
+        case 'status_update':
+          // Ignore status updates from server - we don't need to act on them
+          break;
+default:
         console.warn('Unknown WebSocket message type:', message.type);
     }
   }
@@ -266,47 +266,56 @@ async connect(username, accessToken) {
       case 'sprint':
         this.bot.setControlState('sprint', commandData.state || true);
         break;
-      default:
+      case 'status_update':
+      // Ignore status updates from server - we don't need to act on them
+      break;
+
+        case 'status_update':
+          // Ignore status updates from server - we don't need to act on them
+          break;
+default:
         console.warn('Unknown command action:', commandData.action);
     }
   }
 
-   sendStatusUpdate() {
-     if (!this.isConnected || !this.bot || !this.ws) return;
-     
-     try {
-       const position = this.bot.entity.position.floored();
-       const health = this.bot.health;
-       const food = this.bot.food;
-       const experience = this.bot.experience;
-       const inventory = this.bot.inventory.items().map(item => ({
-         type: item.name,
-         count: item.count,
-         metadata: item.metadata
-       }));
-       
-       // Calculate exploration percentage (simplified)
-       const exploration = Math.min((this.bot.entity.position.distanceTo(new Vec3(0, 64, 0)) / 1000) * 100, 100);
-       
-       if (this.ws.readyState === WebSocket.OPEN) {
-         this.ws.send(JSON.stringify({
-           type: 'status_update',
-           data: {
-             connected: this.isConnected,
-             position: { x: position.x, y: position.y, z: position.z },
-             health,
-             food,
-             experience,
-             exploration: exploration.toFixed(1),
-             inventory,
-             message: `Bot at (${position.x}, ${position.y}, ${position.z})`
-           }
-         }));
-       }
-     } catch (err) {
-       console.error('Error sending status update:', err);
-     }
-   }
+    sendStatusUpdate() {
+      // Do not send status updates from bot to server; server broadcasts status directly from bot object
+      return;
+      if (!this.isConnected || !this.bot || !this.ws) return;
+      
+      try {
+        const position = this.bot.entity.position.floored();
+        const health = this.bot.health;
+        const food = this.bot.food;
+        const experience = this.bot.experience;
+        const inventory = this.bot.inventory.items().map(item => ({
+          type: item.name,
+          count: item.count,
+          metadata: item.metadata
+        }));
+        
+        // Calculate exploration percentage (simplified)
+        const exploration = Math.min((this.bot.entity.position.distanceTo(new Vec3(0, 64, 0)) / 1000) * 100, 100);
+        
+        if (this.ws.readyState === WebSocket.OPEN) {
+          this.ws.send(JSON.stringify({
+            type: 'status_update',
+            data: {
+              connected: this.isConnected,
+              position: { x: position.x, y: position.y, z: position.z },
+              health,
+              food,
+              experience,
+              exploration: exploration,
+              inventory,
+              message: `Bot at (${position.x}, ${position.y}, ${position.z})`
+            }
+          }));
+        }
+      } catch (err) {
+        console.error('Error sending status update:', err);
+      }
+    }
 
   async disconnect() {
     if (this.bot) {

@@ -18,14 +18,14 @@ const Dashboard = ({ user, onLogout }) => {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}`;
+    // Connect to the bot server on port 9500
+    const wsUrl = `ws://localhost:9500`;
     
     const connectWebSocket = () => {
       wsRef.current = new WebSocket(wsUrl);
       
       wsRef.current.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('WebSocket connected to bot server');
         wsRef.current.send(JSON.stringify({ type: 'register_bot', data: { botId: 'dashboard' } }));
         wsRef.current.send(JSON.stringify({ type: 'get_status' }));
       };
@@ -51,13 +51,21 @@ const Dashboard = ({ user, onLogout }) => {
                 setFood(botData.food);
               }
               if (botData.experience !== undefined) {
-                setExperience(botData.experience);
+                // Experience can be a number or an object with level/points/progress
+                const expValue = typeof botData.experience === 'object' 
+                  ? botData.experience.points || botData.experience.level || 0 
+                  : botData.experience;
+                setExperience(expValue);
               }
               if (botData.gamemode !== undefined) {
                 setGamemode(botData.gamemode);
               }
               if (botData.exploration !== undefined) {
-                setExploration(parseFloat(botData.exploration));
+                // Exploration can be a number or an object
+                const expValue = typeof botData.exploration === 'object' 
+                  ? botData.exploration.points || botData.exploration.progress || 0 
+                  : botData.exploration;
+                setExploration(parseFloat(expValue) || 0);
               }
             }
           } else if (message.type === 'command_ack') {
@@ -105,7 +113,7 @@ const Dashboard = ({ user, onLogout }) => {
         type: 'info'
       }]);
       
-      const response = await fetch('/api/bot/start', {
+      const response = await fetch('http://localhost:9500/api/bot/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: user.username })
@@ -149,7 +157,7 @@ const Dashboard = ({ user, onLogout }) => {
         type: 'info'
       }]);
       
-      const response = await fetch(`/api/bot/${currentBotId}/stop`, {
+      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/stop`, {
         method: 'POST'
       });
       
@@ -176,7 +184,7 @@ const Dashboard = ({ user, onLogout }) => {
 
   const handleGetLLMAdvice = async () => {
     try {
-      const response = await fetch('/api/llm/strategy', {
+      const response = await fetch('http://localhost:9500/api/llm/strategy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -209,7 +217,7 @@ const Dashboard = ({ user, onLogout }) => {
         type: 'info'
       }]);
       
-      const response = await fetch('/api/bot/automatic', {
+      const response = await fetch('http://localhost:9500/api/bot/automatic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -242,14 +250,20 @@ const Dashboard = ({ user, onLogout }) => {
   return (
     <div className="dashboard">
       <div className="header">
-        <h2>Welcome, {user.username}!</h2>
-        <div className="user-info">
-          <p>Role: {user.role || 'Player'}</p>
+        <div className="header-content">
+          <h1>Minecraft AI Robot Controller</h1>
+          <div className="user-info">
+            <span className="username">{user.username}</span>
+            <span className="role">{user.role || 'Player'}</span>
+            <button onClick={onLogout} className="logout-btn">
+              Logout
+            </button>
+          </div>
         </div>
       </div>
       
-      <div className="content">
-        <div className="left-panel">
+      <div className="main-content">
+        <div className="controls-section">
           <BotControls 
             onStartBot={handleStartBot}
             onStopBot={handleStopBot}
@@ -259,7 +273,8 @@ const Dashboard = ({ user, onLogout }) => {
           />
         </div>
         
-        <div className="right-panel">
+        <div className="monitoring-section">
+          <h2 className="section-title">Bot Monitoring Dashboard</h2>
           <MonitoringDashboard 
             botStatus={botStatus}
             position={position}

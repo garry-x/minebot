@@ -1,172 +1,174 @@
-const mineflayer = require('mineflayer');
-const { pathfinder, Movements, goals: { GoalBlock, GoalNear, GoalFollow } } = require('mineflayer-pathfinder');
 const Vec3 = require('vec3');
 
 class Pathfinder {
   constructor(bot) {
     this.bot = bot;
-    this.movements = new Movements(bot);
-    this.bot.loadPlugin(pathfinder);
-    
-    // Enable jumping and sprinting by default
-    this.movements.allowSprint = true;
-    this.movements.allowJump = true;
-    this.movements.allowParkour = true;
+    console.log('[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)');
   }
-
-  /**
-   * Move to a specific position
-   * @param {Object} target - Target position {x, y, z}
-   * @param {Object} options - Movement options
-   * @returns {Promise} - Resolves when movement completes or fails
-   */
+  
   async moveTo(target, options = {}) {
     const { 
       range = 1, 
       timeout = 30000, 
-      useParkour = true,
       useSprint = true,
-      useJump = true
+      useJump = true,
+      useParkour = true
     } = options;
+  
+    console.log(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
     
     return new Promise((resolve, reject) => {
-      // Configure movements
-      this.movements.allowSprint = useSpark;
-      this.movements.allowJump = useJump;
-      this.movements.allowParkour = useParkour;
+      const startTime = Date.now();
       
-      // Set goal
-      const goal = new GoalNear(target.x, target.y, target.z, range);
+      const checkArrival = () => {
+        const pos = this.bot.entity.position;
+        const dist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
+        return dist <= range;
+      };
       
-      // Start pathfinding
-      this.bot.pathfinder.setGoal(goal, () => {
-        // Clear any existing timeout
-        if (this.timeoutId) {
-          clearTimeout(this.timeoutId);
-          this.timeoutId = null;
+      // Try to move towards target using basic movement
+      const tryMove = async () => {
+        if (checkArrival()) {
+          console.log('[Pathfinder] Reached target');
+          resolve();
+          return;
         }
         
-        // Check if we've reached the goal
-        if (this.bot.pathfinder.isMoving()) {
-          // Still moving, wait a bit more
-          this.timeoutId = setTimeout(() => {
-            if (this.bot.pathfinder.isMoving()) {
-              // Still moving after timeout, consider it stuck
-              this.bot.pathfinder.stop();
-              reject(new Error('Movement timeout - bot appears stuck'));
-            } else {
-              // Successfully reached goal
-              resolve();
-            }
-          }, 5000); // Additional wait time
-        } else {
-          // Already at goal
-          resolve();
+        if (Date.now() - startTime > timeout) {
+          console.log('[Pathfinder] Timeout reached');
+          reject(new Error('Movement timeout'));
+          return;
         }
-      });
+        
+        try {
+          // Get direction to target
+          const pos = this.bot.entity.position;
+          const dx = target.x - pos.x;
+          const dz = target.z - pos.z;
+          
+          // Calculate yaw and pitch to face target
+          const yaw = Math.atan2(dx, dz);
+          const pitch = Math.atan2(target.y - pos.y, Math.sqrt(dx*dx + dz*dz));
+          
+          // Look at target
+          this.bot.look(yaw + Math.PI, pitch);
+          
+          // Move forward
+          this.bot.setControlState('forward', true);
+          
+          // Sprint if allowed
+          if (useSprint) {
+            this.bot.setControlState('sprint', true);
+          }
+          
+          // Jump if allowed and bot is on ground
+          if (useJump && this.bot.onGround) {
+            this.bot.setControlState('jump', true);
+          }
+          
+          // Check if we've moved closer
+          const oldDist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          const newDist = this.bot.entity.position.distanceTo(new Vec3(target.x, target.y, target.z));
+          
+          // If we haven't made progress, try jumping or adjusting
+          if (newDist >= oldDist && this.bot.onGround) {
+            this.bot.setControlState('jump', true);
+            setTimeout(() => this.bot.setControlState('jump', false), 200);
+          }
+          
+          // Continue checking
+          setTimeout(tryMove, 200);
+          
+        } catch (err) {
+          console.error('[Pathfinder] Error during movement:', err);
+          reject(err);
+        }
+      };
       
-      // Set timeout for the entire operation
-      this.timeoutId = setTimeout(() => {
-        if (this.bot.pathfinder.isMoving()) {
-          this.bot.pathfinder.stop();
-          reject(new Error('Movement timeout exceeded'));
-        }
-      }, timeout);
+      tryMove();
     });
   }
 
-  /**
-   * Move to a specific block
-   * @param {Object} blockPosition - Block position {x, y, z}
-   * @param {Object} options - Movement options
-   * @returns {Promise} - Resolves when movement completes or fails
-   */
   async moveToBlock(blockPosition, options = {}) {
     return this.moveTo(blockPosition, options);
   }
 
-  /**
-   * Follow an entity
-   * @param {Object} entity - Entity to follow
-   * @param {Object} options - Follow options
-   * @returns {Promise} - Resolves when following starts
-   */
   async follow(entity, options = {}) {
     const { 
       distance = 2, 
       timeout = 30000 
     } = options;
     
+    console.log(`[Pathfinder] Following entity: ${entity.name}`);
+    
     return new Promise((resolve, reject) => {
-      const goal = new GoalFollow(entity, distance);
+      const startTime = Date.now();
       
-      this.bot.pathfinder.setGoal(goal, () => {
-        resolve();
-      });
-      
-      // Set timeout
-      this.timeoutId = setTimeout(() => {
-        if (this.bot.pathfinder.isMoving()) {
-          this.bot.pathfinder.stop();
-          reject(new Error('Follow timeout exceeded'));
+      const tryFollow = async () => {
+        if (Date.now() - startTime > timeout) {
+          reject(new Error('Follow timeout'));
+          return;
         }
-      }, timeout);
+        
+        try {
+          const pos = this.bot.entity.position;
+          const entityPos = entity.position;
+          const dist = pos.distanceTo(entityPos);
+          
+          if (dist <= distance) {
+            console.log('[Pathfinder] Caught up to entity');
+            resolve();
+            return;
+          }
+          
+          // Face the entity
+          const dx = entityPos.x - pos.x;
+          const dz = entityPos.z - pos.z;
+          const yaw = Math.atan2(dx, dz);
+          const pitch = Math.atan2(entityPos.y - pos.y, Math.sqrt(dx*dx + dz*dz));
+          
+          this.bot.look(yaw + Math.PI, pitch);
+          this.bot.setControlState('forward', true);
+          
+          setTimeout(tryFollow, 300);
+          
+        } catch (err) {
+          reject(err);
+        }
+      };
+      
+      tryFollow();
     });
   }
 
-  /**
-   * Stop current movement
-   */
   stop() {
-    if (this.timeoutId) {
-      clearTimeout(this.timeoutId);
-      this.timeoutId = null;
-    }
-    this.bot.pathfinder.stop();
+    this.bot.setControlState('forward', false);
+    this.bot.setControlState('sprint', false);
+    this.bot.setControlState('jump', false);
+    console.log('[Pathfinder] Movement stopped');
   }
 
-  /**
-   * Check if the bot is currently moving
-   * @returns {boolean} - True if moving, false otherwise
-   */
   isMoving() {
-    return this.bot.pathfinder.isMoving();
+    return this.bot.controlState.forward || 
+           this.bot.controlState.sprint || 
+           this.bot.controlState.jump;
   }
 
-  /**
-   * Set movement permissions
-   * @param {boolean} allowSprint - Whether to allow sprinting
-   * @param {boolean} allowJump - Whether to allow jumping
-   * @param {boolean} allowParkour - Whether to allow parkour
-   */
   setMovementPermissions(allowSprint, allowJump, allowParkour) {
-    this.movements.allowSprint = allowSprint;
-    this.movements.allowJump = allowJump;
-    this.movements.allowParkour = allowParkour;
+    // Not applicable for simple pathfinder
+    console.log('[Pathfinder] setMovementPermissions not applicable');
   }
 
-  /**
-   * Fly to a specific position (simplified implementation)
-   * Note: True flying would require creative mode or special plugins
-   * @param {Object} target - Target position {x, y, z}
-   * @param {number} speed - Flying speed multiplier
-   * @returns {Promise} - Resolves when flight completes
-   */
   async flyTo(target, speed = 1) {
-    // In survival mode, we simulate flying by moving normally
-    // In creative mode, we could set the bot's velocity directly
-    // For now, we'll just use regular movement
     return this.moveTo(target, { 
-      timeout: 60000, // Longer timeout for flying
-      useSprint: false, // Don't sprint while "flying"
-      useParkour: false  // Don't use parkour while "flying"
+      timeout: 60000,
+      useSprint: false,
+      useJump: false
     });
   }
 
-  /**
-   * Set bot velocity (for flying in creative mode)
-   * @param {Object} velocity - Velocity vector {x, y, z}
-   */
   setVelocity(velocity) {
     if (this.bot.creative) {
       this.bot.entity.setVelocity(velocity);

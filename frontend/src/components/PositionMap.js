@@ -6,6 +6,11 @@ const PositionMap = ({ position, exploration }) => {
   const cellSize = 20; // pixels per cell
   const gridSize = Math.floor(mapSize / cellSize); // 10x10 grid
   
+  // Handle exploration as either a number or an object
+  const expValue = typeof exploration === 'object' 
+    ? exploration.points || exploration.progress || 0 
+    : exploration;
+  
   // Convert world position to grid coordinates (simplified)
   const gridX = Math.floor((position.x + 50) / 10) % gridSize;
   const gridZ = Math.floor((position.z + 50) / 10) % gridSize;
@@ -14,7 +19,7 @@ const PositionMap = ({ position, exploration }) => {
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const isBot = row === gridX && col === gridZ;
-      const isExplored = Math.random() < exploration / 100; // Simplified exploration
+      const isExplored = Math.random() < expValue / 100; // Simplified exploration
       
       cells.push(
         <div
@@ -40,7 +45,7 @@ const PositionMap = ({ position, exploration }) => {
           X: {position.x} Y: {position.y} Z: {position.z}
         </div>
       </div>
-      <div className="exploration-label">Explored: {exploration.toFixed(1)}%</div>
+      <div className="exploration-label">Explored: {expValue.toFixed(1)}%</div>
     </div>
   );
 };

@@ -2,7 +2,11 @@ import React from 'react';
 import './StatusIndicators.css';
 
 const StatusIndicators = ({ health, food, experience, gamemode }) => {
-  const xpPercentage = Math.min((experience / 1000) * 100, 100); // Assuming 1000 XP for level
+  // Handle experience as either a number or an object with level/points/progress
+  const expValue = typeof experience === 'object' 
+    ? experience.points || experience.level || 0 
+    : experience;
+  const xpPercentage = Math.min((expValue / 1000) * 100, 100); // Assuming 1000 XP for level
   
   return (
     <div className="status-indicators-container">
@@ -39,7 +43,7 @@ const StatusIndicators = ({ health, food, experience, gamemode }) => {
               className="status-bar-fill experience"
               style={{ width: `${xpPercentage}%` }}
             >
-              <div className="status-bar-text">{experience} XP</div>
+              <div className="status-bar-text">{expValue} XP</div>
             </div>
           </div>
         </div>

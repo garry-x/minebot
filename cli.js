@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { execSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -18,40 +18,100 @@ let botPort = 9500;
 // Default Minecraft server jar path
 let minecraftJarPath = null;
 
+// Timeout settings
+const STARTUP_TIMEOUT_MS = 30000; // 30 seconds
+
+// PID file paths
+const BOT_PID_FILE = path.join(__dirname, 'logs', 'bot_server.pid');
+const MINECRAFT_PID_FILE = path.join(__dirname, 'logs', 'minecraft_server.pid');
+
+function savePid(pid, type) {
+  const LOG_DIR = path.join(__dirname, 'logs');
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+  fs.writeFileSync(type === 'bot' ? BOT_PID_FILE : MINECRAFT_PID_FILE, pid.toString());
+}
+
+function loadPid(type) {
+  const pidFile = type === 'bot' ? BOT_PID_FILE : MINECRAFT_PID_FILE;
+  try {
+    if (fs.existsSync(pidFile)) {
+      return parseInt(fs.readFileSync(pidFile, 'utf8').trim(), 10);
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
 function startBotServer() {
   if (botServerProcess) {
     console.log('Bot server is already running');
     return;
   }
 
+  const LOG_DIR = path.join(__dirname, 'logs');
+  const LOG_FILE = path.join(LOG_DIR, 'bot_server.log');
+  
+  // Create logs directory if it doesn't exist
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
+
   console.log(`Starting Minecraft AI Bot Server on ${botHost}:${botPort}...`);
-  const env = Object.create(process.env);
-  env.HOST = botHost;
-  env.PORT = botPort;
-  botServerProcess = spawn('node', [BOT_SERVER_SCRIPT], {
-    stdio: 'inherit',
+  console.log(`Log file: ${LOG_FILE}`);
+  
+  // Write start script to file
+  const startScript = `
+#!/bin/bash
+nohup node ${BOT_SERVER_SCRIPT} > ${LOG_FILE} 2>&1 &
+echo \$! > ${BOT_PID_FILE}
+`;
+  const scriptFile = '/tmp/start_bot_server.sh';
+  fs.writeFileSync(scriptFile, startScript);
+  fs.chmodSync(scriptFile, '755');
+  
+  spawn('bash', [scriptFile], {
+    stdio: ['pipe', 'pipe', 'pipe'],
     detached: true,
-    env: env
+    env: process.env
   });
-
-  botServerProcess.unref();
-
-  botServerProcess.on('close', (code) => {
-    console.log(`Bot server process exited with code ${code}`);
-    botServerProcess = null;
-  });
+  
+  // Wait for PID file to be created
+  const waitPid = () => {
+    if (fs.existsSync(BOT_PID_FILE)) {
+      const pid = parseInt(fs.readFileSync(BOT_PID_FILE, 'utf8').trim(), 10);
+      console.log(`Bot server started with PID ${pid}`);
+      return;
+    }
+    setTimeout(waitPid, 100);
+  };
+  waitPid();
 }
 
 function stopBotServer() {
-  if (!botServerProcess) {
+  const pid = loadPid('bot');
+  if (!pid) {
     console.log('Bot server is not running');
     return;
   }
 
-  console.log('Stopping bot server...');
-  botServerProcess.kill();
-  botServerProcess = null;
-  console.log('Bot server stopped');
+  try {
+    process.kill(pid, 'SIGTERM');
+    console.log('Stopping bot server...');
+    setTimeout(() => {
+      try {
+        fs.unlinkSync(BOT_PID_FILE);
+      } catch (e) {}
+      console.log('Bot server stopped');
+    }, 1000);
+  } catch (e) {
+    console.log('Bot server is not running');
+    try {
+      fs.unlinkSync(BOT_PID_FILE);
+    } catch (e2) {}
+  }
 }
 
 function restartBotServer() {
@@ -71,21 +131,67 @@ function startMinecraftServer() {
     return;
   }
 
-  console.log('Starting Minecraft Java Server...');
-  minecraftServerProcess = spawn('java', [
-    '-Xmx1G', 
-    '-jar', 
-    jarPath, 
-    'nogui'
-  ], {
-    cwd: path.dirname(jarPath),
-    stdio: 'inherit'
-  });
+  const LOG_DIR = path.join(__dirname, 'logs');
+  const LOG_FILE = path.join(LOG_DIR, 'minecraft_server.log');
+  
+  // Create logs directory if it doesn't exist
+  if (!fs.existsSync(LOG_DIR)) {
+    fs.mkdirSync(LOG_DIR, { recursive: true });
+  }
 
-  minecraftServerProcess.on('close', (code) => {
-    console.log(`Minecraft server process exited with code ${code}`);
-    minecraftServerProcess = null;
+  console.log('Starting Minecraft Java Server...');
+  console.log(`Log file: ${LOG_FILE}`);
+  
+  // Write start script to file
+  const startScript = `
+#!/bin/bash
+nohup java -Xmx1G -jar ${jarPath} nogui > ${LOG_FILE} 2>&1 &
+echo \$! > ${MINECRAFT_PID_FILE}
+`;
+  const scriptFile = '/tmp/start_mc_server.sh';
+  fs.writeFileSync(scriptFile, startScript);
+  fs.chmodSync(scriptFile, '755');
+  
+  spawn('bash', [scriptFile], {
+    stdio: ['pipe', 'pipe', 'pipe'],
+    detached: true,
+    env: process.env
   });
+  
+  // Wait for PID file to be created
+  const waitPid = () => {
+    if (fs.existsSync(MINECRAFT_PID_FILE)) {
+      const pid = parseInt(fs.readFileSync(MINECRAFT_PID_FILE, 'utf8').trim(), 10);
+      console.log(`Minecraft server started with PID ${pid}`);
+      return;
+    }
+    setTimeout(waitPid, 100);
+  };
+  waitPid();
+}
+
+function stopMinecraftServer() {
+  const pid = loadPid('minecraft');
+  if (!pid) {
+    console.log('Minecraft server is not running');
+    return;
+  }
+
+  try {
+    process.kill(pid, 'SIGTERM');
+    console.log('Stopping Minecraft server...');
+    setTimeout(() => {
+      try {
+        fs.unlinkSync(MINECRAFT_PID_FILE);
+      } catch (e) {}
+      console.log('Minecraft server stopped');
+    }, 1000);
+  } catch (e) {
+    console.log('Minecraft server is not running');
+    try {
+      fs.unlinkSync(MINECRAFT_PID_FILE);
+    } catch (e2) {}
+  }
 }
 
 function stopMinecraftServer() {
@@ -103,17 +209,6 @@ function stopMinecraftServer() {
 function restartMinecraftServer() {
   stopMinecraftServer();
   setTimeout(startMinecraftServer, 3000);
-}
-
-function buildFrontend() {
-  console.log('Building frontend...');
-  execSync('npm run build', { cwd: FRONTEND_DIR, stdio: 'inherit' });
-  console.log('Frontend built successfully');
-}
-
-function startFrontendDev() {
-  console.log('Starting frontend development server...');
-  execSync('npm start', { cwd: FRONTEND_DIR, stdio: 'inherit' });
 }
 
 function botControl(action, username, botId, mode) {
@@ -245,15 +340,72 @@ function botControl(action, username, botId, mode) {
         method: 'GET'
       })
       .then(data => {
-        console.log('Server status:');
+        console.log('Bot server status:');
         console.log(`  Status: ${data.status}`);
         console.log(`  Mode: ${data.serverMode}`);
         console.log(`  Timestamp: ${data.timestamp}`);
         console.log(`  Note: ${data.note}`);
       })
       .catch(err => {
-        console.log(`Error checking server: ${err.message}`);
+        console.log(`Bot server: NOT RUNNING`);
+        console.log(`  Error: ${err.message}`);
       });
+      break;
+      
+    case 'status':
+      console.log('=== Service Status ===');
+      
+      // Check bot server
+      const http = require('http');
+      const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            if (res.statusCode === 200) {
+              console.log(`Bot server: RUNNING on ${botHost}:${botPort}`);
+              console.log(`  Status: ${parsed.status}`);
+              console.log(`  Mode: ${parsed.serverMode}`);
+            } else {
+              console.log('Bot server: ERROR');
+            }
+          } catch (e) {
+            console.log('Bot server: NOT RUNNING');
+          }
+        });
+      });
+      
+      req.on('error', () => {
+        console.log('Bot server: NOT RUNNING');
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        console.log('Bot server: TIMEOUT');
+      });
+      
+      req.end();
+
+      // Check Minecraft server
+      const net = require('net');
+      const socket = new net.Socket();
+      
+      socket.setTimeout(2000);
+      socket.connect({ host: 'localhost', port: 25565 }, () => {
+        socket.destroy();
+        console.log('Minecraft server: RUNNING on localhost:25565');
+      });
+      
+      socket.on('error', () => {
+        console.log('Minecraft server: NOT RUNNING');
+      });
+      
+      socket.on('timeout', () => {
+        socket.destroy();
+        console.log('Minecraft server: NOT RUNNING');
+      });
+      
       break;
       
     default:
@@ -280,9 +432,8 @@ Commands:
   mc:server:start                     Start the Minecraft Java Server (port 25565)
   mc:server:stop                      Stop the Minecraft Java Server
   mc:server:restart                   Restart the Minecraft Java Server
-  frontend:build                      Build the frontend for production
-  frontend:dev                        Start frontend development server
-  bot:start <username>                Start a bot with the given username
+    bot:status                          Show status of all services
+   bot:start <username>                Start a bot with the given username
   bot:stop <botId>                    Stop a bot by its ID
   bot:automatic <username> [mode]     Start automatic behavior for a bot (mode: survival|creative|building|gathering)
   bot:list                            Check bot server status
@@ -294,10 +445,8 @@ Examples:
   minebot --host 0.0.0.0 --port 8080 bot:server:start
   minebot bot:server:start
   minebot --jar /path/to/server.jar mc:server:start
-  minebot mc:server:start
-  minebot bot:start MyBotUsername
-  minebot bot:automatic MyBotUsername building
-  minebot dev
+   minebot mc:server:start
+   minebot bot:start MyBotUsername
 `);
 }
 
@@ -332,14 +481,14 @@ switch(command) {
   case 'bot:server:start':
     startBotServer();
     break;
+  case 'mc:server:start':
+    startMinecraftServer();
+    break;
   case 'bot:server:stop':
     stopBotServer();
     break;
   case 'bot:server:restart':
     restartBotServer();
-    break;
-  case 'mc:server:start':
-    startMinecraftServer();
     break;
   case 'mc:server:stop':
     stopMinecraftServer();
@@ -347,34 +496,26 @@ switch(command) {
   case 'mc:server:restart':
     restartMinecraftServer();
     break;
-  case 'frontend:build':
-    buildFrontend();
-    break;
-  case 'frontend:dev':
-    startFrontendDev();
-    break;
   case 'bot:start':
     botControl('start', commandArgs[0]);
     break;
   case 'bot:stop':
     botControl('stop', null, commandArgs[0]);
     break;
-  case 'bot:automatic':
-    botControl('automatic', commandArgs[0], null, commandArgs[1]);
-    break;
-  case 'bot:list':
-    botControl('list');
-    break;
+   case 'bot:automatic':
+     botControl('automatic', commandArgs[0], null, commandArgs[1]);
+     break;
+   case 'bot:status':
+     botControl('status');
+     break;
+   case 'bot:list':
+     botControl('list');
+     break;
   case 'dev':
     console.log('Starting development environment...');
     startBotServer();
-    // Start frontend in background
-    const frontendProc = spawn('npm', ['start'], { cwd: FRONTEND_DIR, stdio: 'inherit' });
-    frontendProc.unref();
     break;
   case 'prod':
-    console.log('Building frontend...');
-    buildFrontend();
     console.log('Starting bot server...');
     startBotServer();
     break;

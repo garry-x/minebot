@@ -26,12 +26,18 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
 
   return (
     <div className="bot-controls">
-      <h3>Bot Controls</h3>
+      <div className="controls-header">
+        <h2>Bot Controls</h2>
+        <div className="status-indicator">
+          <div className={`status-dot ${botStatus.connected ? 'connected' : 'disconnected'}`}></div>
+          <span>{botStatus.connected ? 'Connected' : 'Disconnected'}</span>
+        </div>
+      </div>
       
       <div className="control-group">
-        <label>Building Configuration:</label>
-        <div>
-          <label>Width: </label>
+        <h3>Building Configuration</h3>
+        <div className="config-row">
+          <label>Width</label>
           <input
             type="number"
             value={buildingConfig.width}
@@ -39,8 +45,8 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
             min="1"
           />
         </div>
-        <div>
-          <label>Length: </label>
+        <div className="config-row">
+          <label>Length</label>
           <input
             type="number"
             value={buildingConfig.length}
@@ -48,8 +54,8 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
             min="1"
           />
         </div>
-        <div>
-          <label>Height: </label>
+        <div className="config-row">
+          <label>Height</label>
           <input
             type="number"
             value={buildingConfig.height}
@@ -57,8 +63,8 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
             min="1"
           />
         </div>
-        <div>
-          <label>Block Type: </label>
+        <div className="config-row">
+          <label>Block Type</label>
           <select
             value={buildingConfig.blockType}
             onChange={(e) => setBuildingConfig({...buildingConfig, blockType: e.target.value})}
@@ -71,28 +77,32 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
         </div>
       </div>
       
-      <div className="control-buttons">
+      <div className="control-actions">
         <button 
           onClick={handleStartClick}
           disabled={botStatus.connected}
+          className="action-button primary"
         >
           {botStatus.connected ? 'Connected' : 'Start Bot'}
         </button>
         <button 
           onClick={handleStopClick}
           disabled={!botStatus.connected}
+          className="action-button secondary"
         >
           {botStatus.connected ? 'Stop Bot' : 'Disconnected'}
         </button>
         <button 
           onClick={handleAdviceClick}
           disabled={!botStatus.connected}
+          className="action-button info"
         >
           Get LLM Strategy Advice
         </button>
         <button 
           onClick={handleAutomaticClick}
-          disabled={botStatus.connected}
+          disabled={!botStatus.connected}
+          className="action-button warning"
         >
           {botStatus.connected ? 'Automatic Running' : 'Start Automatic'}
         </button>
