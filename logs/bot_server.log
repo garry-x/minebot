@@ -1,21 +1,2578 @@
-node:events:486
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use 0.0.0.0:9500
-    at Server.setupListenHandle [as _listen2] (node:net:1948:16)
-    at listenInCluster (node:net:2005:12)
-    at node:net:2214:7
-    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
-Emitted 'error' event on WebSocketServer instance at:
-    at Server.emit (node:events:508:28)
-    at emitErrorNT (node:net:1984:8)
-    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 9500
+WebSocket server listening on 0.0.0.0:9500
+Server running on 0.0.0.0:9500
+Connected to SQLite database
+[API] Received request to start bot with username: FinalTest
+[API] Creating bot instance for host: localhost:25565
+[API] Attempting to connect bot...
+[Bot] Creating bot with username: FinalTest
+[Bot] Target server: localhost:25565
+[Bot] Bot ID set to: bot_1774946107193_ezwt09ka3
+[Bot] Setting up event listeners
+[Bot] Bot spawned
+[Bot] mcData loaded: true
+[Bot] mcData attached to _client: true
+WebSocket client connected
+WebSocket connected to backend at localhost:9500/
+Registered WebSocket for bot bot_1774946107193_ezwt09ka3
+Bot registration acknowledged
+[Bot] Bot version: 1.21.11
+[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
+[Bot] Bot ready with ID: bot_1774946107193_ezwt09ka3
+[API] Bot started successfully with ID: bot_1774946109259_36r372v5y
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
 }
-
-Node.js v24.14.0
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 20,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 15.833333969116211,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 10.5,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: 6, y: 74, z: 8 },
+  health: 3.333333969116211,
+  food: 20,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 1.464581851587681,
+  inventory: [],
+  message: 'Bot at (6, 74, 8)'
+}
+[Bot] Bot died
+Forwarding status update from bot: { connected: true, message: 'Bot died', position: null }
+[Bot] Bot respawned
+Bot respawned
+TypeError: Cannot read properties of undefined (reading 'experience')
+    at EventEmitter.<anonymous> (/data/code/minebot/bot/events.js:7:54)
+    at EventEmitter.emit (node:events:508:28)
+    at Client.<anonymous> (/data/code/minebot/node_modules/mineflayer/lib/plugins/experience.js:13:9)
+    at Client.emit (node:events:508:28)
+    at emitPacket (/data/code/minebot/node_modules/minecraft-protocol/src/client.js:85:12)
+    at FullPacketParser.<anonymous> (/data/code/minebot/node_modules/minecraft-protocol/src/client.js:114:9)
+    at FullPacketParser.emit (node:events:508:28)
+    at addChunk (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:323:12)
+    at readableAddChunk (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:300:9)
+    at Readable.push (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:246:10)
+Bot error: TypeError: Cannot read properties of undefined (reading 'experience')
+    at EventEmitter.<anonymous> (/data/code/minebot/bot/events.js:7:54)
+    at EventEmitter.emit (node:events:508:28)
+    at Client.<anonymous> (/data/code/minebot/node_modules/mineflayer/lib/plugins/experience.js:13:9)
+    at Client.emit (node:events:508:28)
+    at emitPacket (/data/code/minebot/node_modules/minecraft-protocol/src/client.js:85:12)
+    at FullPacketParser.<anonymous> (/data/code/minebot/node_modules/minecraft-protocol/src/client.js:114:9)
+    at FullPacketParser.emit (node:events:508:28)
+    at addChunk (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:323:12)
+    at readableAddChunk (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:300:9)
+    at Readable.push (/data/code/minebot/node_modules/readable-stream/lib/internal/streams/readable.js:246:10)
+[Bot] Error: Cannot read properties of undefined (reading 'experience')
+Forwarding status update from bot: {
+  connected: true,
+  message: "Bot error: Cannot read properties of undefined (reading 'experience')",
+  position: null
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Error: client timed out after 30000 milliseconds
+    at Timeout._onTimeout (/data/code/minebot/node_modules/minecraft-protocol/src/client/keepalive.js:18:28)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+Bot error: Error: client timed out after 30000 milliseconds
+    at Timeout._onTimeout (/data/code/minebot/node_modules/minecraft-protocol/src/client/keepalive.js:18:28)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+Forwarding status update from bot: {
+  connected: true,
+  message: 'Bot error: client timed out after 30000 milliseconds',
+  position: null
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+Forwarding status update from bot: {
+  connected: true,
+  position: { x: -10, y: 84, z: 2 },
+  health: 0,
+  food: 19,
+  experience: { level: 0, points: 0, progress: 0 },
+  exploration: 2.2282279955157196,
+  inventory: [],
+  message: 'Bot at (-10, 84, 2)'
+}
+[Bot] End event triggered - connection closed
+Forwarding status update from bot: { connected: false, message: 'Bot disconnected', position: null }

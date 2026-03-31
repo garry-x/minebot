@@ -1,18 +1,16 @@
-[13:31:17] [ServerMain/ERROR]: Failed to load properties from file: server.properties
-java.nio.file.NoSuchFileException: server.properties
-	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92)
-	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106)
-	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
-	at java.base/sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:261)
-	at java.base/java.nio.file.Files.newByteChannel(Files.java:380)
-	at java.base/java.nio.file.Files.newByteChannel(Files.java:432)
-	at java.base/java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:420)
-	at java.base/java.nio.file.Files.newInputStream(Files.java:160)
-	at asc.b(SourceFile:62)
-	at arz.a(SourceFile:154)
-	at asa.<init>(SourceFile:12)
-	at net.minecraft.server.Main.main(SourceFile:115)
-	at net.minecraft.bundler.Main.lambda$run$0(Main.java:54)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-[13:31:17] [ServerMain/WARN]: Failed to load eula.txt
-[13:31:17] [ServerMain/INFO]: You need to agree to the EULA in order to run the server. Go to eula.txt for more info.
+[16:17:55] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[16:17:55] [ServerMain/INFO]: Loaded 1470 recipes
+[16:17:55] [ServerMain/INFO]: Loaded 1584 advancements
+[16:17:55] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[16:17:55] [Server thread/INFO]: Loading properties
+[16:17:55] [Server thread/INFO]: Default game type: SURVIVAL
+[16:17:55] [Server thread/INFO]: Generating keypair
+[16:17:55] [Server thread/INFO]: Starting Minecraft server on *:25565
+[16:17:55] [Server thread/INFO]: Preparing level "world"
+[16:17:56] [Server thread/INFO]: Loading 0 persistent chunks...
+[16:17:56] [Server thread/INFO]: Preparing spawn area: 100%
+[16:17:56] [Server thread/INFO]: Time elapsed: 13 ms
+[16:17:56] [Server thread/INFO]: Done (0.161s)! For help, type "help"
+[16:18:01] [User Authenticator #1/INFO]: Disconnecting TestBotUser (/127.0.0.1:38948): Failed to verify username!
+[16:18:01] [User Authenticator #1/ERROR]: Username 'TestBotUser' tried to join with an invalid session
+[16:18:01] [Server thread/INFO]: TestBotUser (/127.0.0.1:38948) lost connection: Failed to verify username!
