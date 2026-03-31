@@ -48,6 +48,9 @@ async connect(username, accessToken) {
       console.log('[Bot] Setting up event listeners');
       this.setupEventListeners();
 
+      let isResolved = false;
+      let connectTimeout = null;
+
       this.bot.once('spawn', () => {
         // Set up WebSocket connection after bot spawns
         this.setupWebSocket();
@@ -79,16 +82,16 @@ async connect(username, accessToken) {
            if (!this.botId) {
              this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
            }
-            console.log(`[Bot] Bot ready with ID: ${this.botId}`);
-            isResolved = true;
-            clearTimeout(connectTimeout);
-            resolve();
-          } catch (initError) {
-            console.error(`[Bot] Error initializing modules:`, initError);
-            reject(initError);
-          }
-        }, 1500); // Increased timeout
-      });
+              console.log(`[Bot] Bot ready with ID: ${this.botId}`);
+              isResolved = true;
+              clearTimeout(connectTimeout);
+              resolve();
+            } catch (initError) {
+              console.error(`[Bot] Error initializing modules:`, initError);
+              reject(initError);
+            }
+          }, 1500); // Increased timeout
+        });
 
     this.bot.once('error', (err) => {
       console.log(`[Bot] Error: ${err.message}`);
@@ -100,8 +103,8 @@ async connect(username, accessToken) {
     // The end/disconnect handler is in setupEventListeners()
     
     // Add a timeout to prevent hanging
-    setTimeout(() => {
-      if (!this.isConnected) {
+    connectTimeout = setTimeout(() => {
+      if (!isResolved) {
         console.log('[Bot] Connection timeout after 30 seconds');
         reject(new Error('Connection timeout - failed to spawn'));
         if (this.bot) {

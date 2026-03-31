@@ -145,6 +145,7 @@ function startMinecraftServer() {
   // Write start script to file
   const startScript = `
 #!/bin/bash
+cd ${MINECRAFT_SERVER_DIR}
 nohup java -Xmx1G -jar ${jarPath} nogui > ${LOG_FILE} 2>&1 &
 echo \$! > ${MINECRAFT_PID_FILE}
 `;
@@ -192,18 +193,6 @@ function stopMinecraftServer() {
       fs.unlinkSync(MINECRAFT_PID_FILE);
     } catch (e2) {}
   }
-}
-
-function stopMinecraftServer() {
-  if (!minecraftServerProcess) {
-    console.log('Minecraft server is not running');
-    return;
-  }
-
-  console.log('Stopping Minecraft server...');
-  minecraftServerProcess.kill();
-  minecraftServerProcess = null;
-  console.log('Minecraft server stopped');
 }
 
 function restartMinecraftServer() {
