@@ -55,7 +55,6 @@ function startBotServer() {
   const startScript = `
 #!/bin/bash
 nohup node ${BOT_SERVER_SCRIPT} > ${LOG_FILE} 2>&1 &
-echo \$! > ${BOT_PID_FILE}
 `;
   const scriptFile = '/tmp/start_bot_server.sh';
   fs.writeFileSync(scriptFile, startScript);
@@ -67,15 +66,7 @@ echo \$! > ${BOT_PID_FILE}
     env: process.env
   });
   
-  const waitPid = () => {
-    if (fs.existsSync(BOT_PID_FILE)) {
-      const pid = parseInt(fs.readFileSync(BOT_PID_FILE, 'utf8').trim(), 10);
-      console.log(`Bot server started with PID ${pid}`);
-      return;
-    }
-    setTimeout(waitPid, 100);
-  };
-  waitPid();
+  console.log('Bot server started');
 }
 
 function stopBotServer() {
@@ -121,33 +112,50 @@ function startMinecraftServer() {
     fs.mkdirSync(LOG_DIR, { recursive: true });
   }
 
+  const existingPid = loadPid('minecraft');
+  if (existingPid) {
+    try {
+      process.kill(existingPid, 0);
+      console.log(`Minecraft server is already running with PID ${existingPid}`);
+      return;
+    } catch (e) {
+      console.log('Removing stale PID file');
+      try {
+        fs.unlinkSync(MINECRAFT_PID_FILE);
+      } catch (e2) {}
+    }
+  }
+
   console.log('Starting Minecraft server...');
   
   const startScript = `
 #!/bin/bash
 cd ${MINECRAFT_SERVER_DIR}
 nohup java -Xmx1G -jar ${jarPath} nogui > ${LOG_FILE} 2>&1 &
-echo \$! > ${MINECRAFT_PID_FILE}
+echo \$!
 `;
   const scriptFile = '/tmp/start_mc_server.sh';
   fs.writeFileSync(scriptFile, startScript);
   fs.chmodSync(scriptFile, '755');
   
-  spawn('bash', [scriptFile], {
+  const child = spawn('bash', [scriptFile], {
     stdio: ['pipe', 'pipe', 'pipe'],
     detached: true,
     env: process.env
   });
   
-  const waitPid = () => {
-    if (fs.existsSync(MINECRAFT_PID_FILE)) {
-      const pid = parseInt(fs.readFileSync(MINECRAFT_PID_FILE, 'utf8').trim(), 10);
+  let output = '';
+  child.stdout.on('data', (data) => {
+    output += data.toString();
+  });
+  
+  child.on('close', (code) => {
+    const pid = parseInt(output.trim(), 10);
+    if (!isNaN(pid)) {
+      savePid(pid, 'minecraft');
       console.log(`Minecraft server started with PID ${pid}`);
-      return;
     }
-    setTimeout(waitPid, 100);
-  };
-  waitPid();
+  });
 }
 
 function stopMinecraftServer() {

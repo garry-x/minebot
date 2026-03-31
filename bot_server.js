@@ -2,9 +2,90 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { WebSocketServer } = require('ws');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 9500;
+
+// Setup log file and PID file paths
+const LOG_DIR = path.join(__dirname, 'logs');
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR, { recursive: true });
+}
+const LOG_FILE = path.join(LOG_DIR, 'bot_server.log');
+const pidFile = path.join(LOG_DIR, 'bot_server.pid');
+
+// Redirect console output to log file
+const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+console.log = function(...args) {
+  originalConsoleLog.apply(console, args);
+  logStream.write(args.join(' ') + '\n');
+};
+console.error = function(...args) {
+  originalConsoleError.apply(console, args);
+  logStream.write(args.join(' ') + '\n');
+};
+console.warn = function(...args) {
+  originalConsoleError.apply(console, args);
+  logStream.write('WARN: ' + args.join(' ') + '\n');
+};
+console.info = function(...args) {
+  originalConsoleLog.apply(console, args);
+  logStream.write(args.join(' ') + '\n');
+};
+
+// Check if PID file exists and contains a stale PID
+let existingPidRaw = '';
+try {
+  existingPidRaw = fs.readFileSync(pidFile, 'utf8').trim();
+} catch (e) {
+  // PID file doesn't exist, OK
+}
+
+if (existingPidRaw) {
+  const existingPid = parseInt(existingPidRaw);
+  // Validate PID is a valid positive integer
+  if (!Number.isInteger(existingPid) || existingPid <= 0 || existingPid === process.pid) {
+    // Invalid PID, remove stale file
+    try {
+      console.log('Removing invalid PID file');
+      fs.unlinkSync(pidFile);
+      existingPidRaw = '';
+    } catch (unlinkErr) {
+      // Ignore unlink errors
+    }
+  } else if (existingPid !== process.pid) {
+    try {
+      process.kill(existingPid, 0);
+      // Process exists, another instance is running
+      console.error(`Another instance is already running (PID: ${existingPid})`);
+      process.exit(1);
+    } catch (e) {
+      // Process doesn't exist, stale PID file, remove it
+      console.log('Removing stale PID file');
+      try {
+        fs.unlinkSync(pidFile);
+        existingPidRaw = '';
+      } catch (unlinkErr) {
+        // Ignore unlink errors
+      }
+    }
+  }
+}
+
+// Atomically create and write PID file
+try {
+  const fd = fs.openSync(pidFile, 'wx');
+  fs.writeSync(fd, process.pid.toString());
+  fs.closeSync(fd);
+  console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+} catch (e) {
+  console.error(`Another instance is already running (PID file exists)`);
+  process.exit(1);
+}
 
 require('./config/db');
 require('./config/models/BotConfig');
@@ -185,10 +266,14 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
 
 // WebSocket endpoint for bot status and control
 const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+let serverStarted = false;
+
 server.listen(PORT, HOST, () => {
   console.log(`WebSocket server listening on ${HOST}:${PORT}`);
+  serverStarted = true;
 });
-const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws, req) => {
   console.log('WebSocket client connected');
@@ -468,25 +553,28 @@ app.use((req, res) => {
   });
 });
 
-// Start server
-server.listen(PORT, HOST, () => {
-  console.log(`Server running on ${HOST}:${PORT}`);
-});
-
 // Graceful shutdown
 const shutdown = () => {
-  console.log('Received shutdown signal, shuttingting down gracefully');
+  console.log('Received shutdown signal, shutting down gracefully');
   server.close(async (err) => {
     if (err) {
       console.error('Error closing server:', err);
+      logStream.end();
       process.exit(1);
     }
     // Close WebSocket server
     wss.close(() => {
       console.log('WebSocket server closed');
+      logStream.end();
+      // Clean up PID file on graceful shutdown
+      try {
+        fs.unlinkSync(pidFile);
+      } catch (e) {
+        // PID file might not exist, ignore
+      }
+      console.log('Server closed');
+      process.exit(0);
     });
-    console.log('Server closed');
-    process.exit(0);
   });
 };
 
