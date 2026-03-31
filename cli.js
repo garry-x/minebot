@@ -457,7 +457,11 @@ switch(system) {
       case 'automatic':
       case 'a':
         const autoMode = commandArgs[0] && ['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : (commandArgs[1] || 'survival');
-        const autoUsername = commandArgs[0] && !['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : `auto_${Date.now().toString(36)}`;
+        const autoUsername = commandArgs[0] && !['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : commandArgs[0];
+        if (!autoUsername) {
+          console.log('Error: username is required for automatic behavior. Use "minebot bot start <user>" first.');
+          process.exit(1);
+        }
         botControl('automatic', autoUsername, null, autoMode);
         break;
       case 'list':
@@ -474,11 +478,9 @@ Bot Actions:
   s <user>         Alias for start
   stop <id>        Stop a bot by ID
   st <id>          Alias for stop
-  automatic <user|mode> [mode]
-                    Start automatic behavior (survival|creative|building|gathering)
-                    If one arg: treated as mode (username auto-generated)
-                    If two args: first is username, second is mode
-  a <user|mode> [mode]  Alias for automatic
+  automatic <user> [mode]
+                    Start automatic behavior on existing bot (survival|creative|building|gathering)
+  a <user> [mode]  Alias for automatic
   list             List bots
   ls               Alias for list
 
@@ -487,8 +489,6 @@ Examples:
   minebot bot s MyBot
   minebot bot stop bot_123
   minebot bot a MyBot survival
-  minebot bot automatic building
-  minebot bot automatic myuser creative
   minebot bot list
 `);
         break;

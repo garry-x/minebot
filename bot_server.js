@@ -188,27 +188,14 @@ app.post('/api/bot/automatic', async (req, res) => {
       return res.status(400).json({ error: 'Username is required' });
     }
     
-    let foundBotEntry = Array.from(activeBots.entries()).find(([bid, b]) => b.bot && b.bot.username === username);
-    let bot;
+    const botEntry = Array.from(activeBots.entries()).find(([bid, b]) => b.bot && b.bot.username === username);
     
-    if (!foundBotEntry) {
-      const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
-      const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
-      const MinecraftBot = require('./bot/index');
-      bot = new MinecraftBot({ 
-        host: mcHost, 
-        port: mcPort,
-        botServerHost: process.env.HOST || 'localhost',
-        botServerPort: process.env.PORT || 9500
-      });
-      
-      await bot.connect(username, null);
-      const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      activeBots.set(botId, bot);
-    } else {
-      bot = foundBotEntry[1];
-      console.log(`[API] Reusing existing bot for username: ${username}`);
+    if (!botEntry) {
+      return res.status(404).json({ error: `Bot with username "${username}" not found. Use "bot start" to create a bot first.` });
     }
+    
+    const bot = botEntry[1];
+    const botId = botEntry[0];
     
     // Start automatic behavior in background (don't block response)
     bot.behaviors.automaticBehavior({ 
@@ -223,9 +210,9 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     res.json({ 
       success: true,
-      botId: bot.botId,
+      botId: botId,
       username,
-      message: `Automatic behavior started in ${mode || 'survival'} mode (offline)`
+      message: `Automatic behavior started in ${mode || 'survival'} mode`
     });
   } catch (error) {
     console.error('Error starting automatic behavior:', error);
