@@ -4,39 +4,50 @@ const sqlite3 = require('sqlite3').verbose();
 
 class BotState {
   static createTable() {
-    const sql = `
-      CREATE TABLE IF NOT EXISTS bot_states (
-        bot_id TEXT PRIMARY KEY,
-        username TEXT NOT NULL,
-        mode TEXT DEFAULT 'survival',
-        position_x REAL,
-        position_y REAL,
-        position_z REAL,
-        health INTEGER DEFAULT 20,
-        food INTEGER DEFAULT 20,
-        status TEXT DEFAULT 'active',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
-    
-    db.run(sql);
-    
-    const serverSql = `
-      CREATE TABLE IF NOT EXISTS server_states (
-        server_type TEXT PRIMARY KEY,
-        status TEXT DEFAULT 'running',
-        port INTEGER,
-        pid INTEGER,
-        uptime_seconds INTEGER DEFAULT 0,
-        last_started_at TIMESTAMP,
-        last_stopped_at TIMESTAMP,
-        metadata TEXT,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
-    
-    db.run(serverSql);
+    return new Promise((resolve, reject) => {
+      const sql = `
+        CREATE TABLE IF NOT EXISTS bot_states (
+          bot_id TEXT PRIMARY KEY,
+          username TEXT NOT NULL,
+          mode TEXT DEFAULT 'survival',
+          position_x REAL,
+          position_y REAL,
+          position_z REAL,
+          health INTEGER DEFAULT 20,
+          food INTEGER DEFAULT 20,
+          status TEXT DEFAULT 'active',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+      
+      db.run(sql, function(err) {
+        if (err) {
+          return reject(err);
+        }
+        
+        const serverSql = `
+          CREATE TABLE IF NOT EXISTS server_states (
+            server_type TEXT PRIMARY KEY,
+            status TEXT DEFAULT 'running',
+            port INTEGER,
+            pid INTEGER,
+            uptime_seconds INTEGER DEFAULT 0,
+            last_started_at TIMESTAMP,
+            last_stopped_at TIMESTAMP,
+            metadata TEXT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          )
+        `;
+        
+        db.run(serverSql, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    });
   }
   
   static saveBot(botId, data) {
@@ -117,27 +128,21 @@ class BotState {
   
   static deleteAllBots() {
     return new Promise((resolve, reject) => {
-      const dbPath = path.resolve(__dirname, '../../bot_config.db');
-      const db = new sqlite3.Database(dbPath);
-      
       db.serialize(() => {
         db.run('BEGIN TRANSACTION');
         
         db.run('UPDATE bot_states SET status = ?', ['stopped'], function(err) {
           if (err) {
             db.run('ROLLBACK');
-            db.close();
             return reject(err);
           }
           
           db.run('DELETE FROM bot_states', [], function(err) {
             if (err) {
               db.run('ROLLBACK');
-              db.close();
               return reject(err);
             }
             db.run('COMMIT');
-            db.close();
             resolve(this.changes);
           });
         });

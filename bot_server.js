@@ -108,8 +108,7 @@ const activeBots = new Map();
 const botConnections = new Map();
 const botServerStartTime = Date.now();
 
-// Initialize database tables
-BotState.createTable();
+// Initialize database tables (async - will be awaited in server.listen)
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -557,6 +556,13 @@ async function attemptBotReconnect(savedBot) {
 server.listen(PORT, HOST, async () => {
   console.log(`WebSocket server listening on ${HOST}:${PORT}`);
   serverStarted = true;
+  
+  // Initialize database tables first to avoid race condition
+  try {
+    await BotState.createTable();
+  } catch (err) {
+    console.error(`[Server] Failed to create database tables: ${err.message}`);
+  }
   
   // Save bot server state
   try {
