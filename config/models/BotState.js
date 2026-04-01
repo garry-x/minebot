@@ -1,4 +1,6 @@
 const db = require('../db');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 
 class BotState {
   static createTable() {
@@ -109,6 +111,36 @@ class BotState {
       db.run(sql, [botId], function(err) {
         if (err) reject(err);
         else resolve(this.changes);
+      });
+    });
+  }
+  
+  static deleteAllBots() {
+    return new Promise((resolve, reject) => {
+      const dbPath = path.resolve(__dirname, '../../bot_config.db');
+      const db = new sqlite3.Database(dbPath);
+      
+      db.serialize(() => {
+        db.run('BEGIN TRANSACTION');
+        
+        db.run('UPDATE bot_states SET status = ?', ['stopped'], function(err) {
+          if (err) {
+            db.run('ROLLBACK');
+            db.close();
+            return reject(err);
+          }
+          
+          db.run('DELETE FROM bot_states', [], function(err) {
+            if (err) {
+              db.run('ROLLBACK');
+              db.close();
+              return reject(err);
+            }
+            db.run('COMMIT');
+            db.close();
+            resolve(this.changes);
+          });
+        });
       });
     });
   }

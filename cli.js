@@ -385,26 +385,58 @@ function botControl(action, username, botId, mode) {
       break;
       
     case 'removeAll':
-      makeRequest({
-        hostname: botHost,
-        port: botPort,
-        path: '/api/bots',
-        method: 'DELETE'
-      })
-      .then(data => {
-        console.log(`All bots removed successfully`);
-        if (data.message) {
-          console.log(`  ${data.message}`);
-        }
-      })
-      .catch(err => {
-        console.log(`Error: ${err.message}`);
-      });
+      const http = require('http');
+      
+      function tryRemoveAll(retryCount = 0) {
+        const req = http.request({
+          hostname: botHost,
+          port: botPort,
+          path: '/api/bots',
+          method: 'DELETE'
+        }, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              if (res.statusCode >= 200 && res.statusCode < 300) {
+                console.log(`All bots removed successfully`);
+                if (parsed.message) {
+                  console.log(`  ${parsed.message}`);
+                }
+              } else {
+                throw new Error(parsed.error || `HTTP ${res.statusCode}`);
+              }
+            } catch (e) {
+              console.log(`Request failed: ${e.message}`);
+              if (retryCount < 3) {
+                console.log(`Retrying... (attempt ${retryCount + 1})`);
+                setTimeout(() => tryRemoveAll(retryCount + 1), 1000);
+              } else {
+                console.log(`Error: Failed to remove all bots after 3 attempts`);
+              }
+            }
+          });
+        });
+        
+        req.on('error', (err) => {
+          console.log(`Connection error: ${err.message}`);
+          if (retryCount < 3) {
+            console.log(`Retrying... (attempt ${retryCount + 1})`);
+            setTimeout(() => tryRemoveAll(retryCount + 1), 1000);
+          } else {
+            console.log(`Error: Failed to remove all bots after 3 attempts`);
+          }
+        });
+        
+        req.end();
+      }
+      
+      tryRemoveAll();
       break;
       
     case 'status':
       console.log('bot server:');
-      const http = require('http');
       const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);

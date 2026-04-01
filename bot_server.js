@@ -25,11 +25,8 @@ const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
 
 function formatLogMessage(...args) {
   const message = util.format(...args);
-  if (verbose) {
-    const timestamp = new Date().toISOString();
-    return `[${timestamp}] ${message}\n`;
-  }
-  return message + '\n';
+  const timestamp = new Date().toISOString();
+  return `[${timestamp}] ${message}\n`;
 }
 
 console.log = function(...args) {
@@ -405,24 +402,31 @@ app.delete('/api/bots', async (req, res) => {
       activeBots.delete(botId);
     }
     
-    // Delete all bots from database
+    // Clear the retry queue to prevent auto-reconnect
+    retryQueue.clear();
+    
+    // Delete all bots from database in a single transaction
     const bots = await BotState.getAllBots();
-    let deletedCount = 0;
+    console.log(`[API] Found ${bots.length} bots to remove`);
+    
+    // First, stop all bots to prevent auto-reconnect
     for (const bot of bots) {
       try {
-        await BotState.deleteBot(bot.bot_id);
-        deletedCount++;
+        await BotState.updateBotStatus(bot.bot_id, 'stopped');
       } catch (err) {
-        console.error(`[API] Failed to delete bot ${bot.bot_id}: ${err.message}`);
+        console.error(`[API] Failed to stop bot ${bot.bot_id}: ${err.message}`);
       }
     }
     
-    console.log(`[API] All bots removed: ${deletedCount} bots deleted`);
+    // Then delete all bots
+    const removedCount = await BotState.deleteAllBots();
+    
+    console.log(`[API] All bots removed: ${removedCount} bots removed`);
     
     res.json({
       success: true,
-      deleted: deletedCount,
-      message: `Removed ${deletedCount} bots from database and server`
+      removed: removedCount,
+      message: `Removed ${removedCount} bots from database and server`
     });
   } catch (error) {
     console.error('Error removing all bots:', error);
@@ -441,6 +445,7 @@ app.delete('/api/bot/:botId', async (req, res) => {
       activeBots.delete(botId);
     }
     
+    await BotState.updateBotStatus(botId, 'stopped');
     const deleted = await BotState.deleteBot(botId);
     
     console.log(`[API] Bot removed: ${botId}`);
@@ -490,7 +495,8 @@ async function attemptBotReconnect(savedBot) {
       host: mcHost, 
       port: mcPort,
       botServerHost: process.env.HOST || 'localhost',
-      botServerPort: process.env.PORT || 9500
+      botServerPort: process.env.PORT || 9500,
+      botId: savedBot.bot_id
     });
     
     console.log(`[Server] Attempting to reconnect bot: ${savedBot.username} (${savedBot.bot_id})`);
@@ -656,7 +662,9 @@ function handleWebSocketMessage(ws, message) {
       break;
     case 'status_update':
       // Forward status updates from bots to all frontend clients
-      console.log('Forwarding status update from bot:', message.data);
+      if (verbose) {
+        console.log('Forwarding status update from bot:', message.data);
+      }
       ws.send(JSON.stringify({
         type: 'status_update',
         data: { bots: [message.data] }
@@ -664,7 +672,9 @@ function handleWebSocketMessage(ws, message) {
       break;
     case 'error':
       // Error messages from bots are logged but don't require special handling
-      console.log('Received error message from bot:', message.data.message);
+      if (verbose) {
+        console.log('Received error message from bot:', message.data.message);
+      }
       break;
     default:
       ws.send(JSON.stringify({
