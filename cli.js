@@ -54,7 +54,7 @@ function startBotServer() {
   
   const startScript = `
 #!/bin/bash
-nohup node ${BOT_SERVER_SCRIPT} > ${LOG_FILE} 2>&1 &
+VERBOSE_FLAG=${verbose ? '"--verbose"' : '""'}; nohup node ${BOT_SERVER_SCRIPT} $VERBOSE_FLAG > ${LOG_FILE} 2>&1 &
 `;
   const scriptFile = '/tmp/start_bot_server.sh';
   fs.writeFileSync(scriptFile, startScript);
@@ -516,10 +516,20 @@ if (args.length === 0) {
   process.exit(0);
 }
 
+// Parse verbose flag
+let verbose = false;
+const nonFlagArgs = args.filter(arg => {
+  if (arg === '--verbose') {
+    verbose = true;
+    return false;
+  }
+  return true;
+});
+
 // Parse system and action (2-level subcommands)
-const system = args[0];
-let action = args[1];
-const commandArgs = args.slice(2);
+const system = nonFlagArgs[0];
+let action = nonFlagArgs[1];
+const commandArgs = nonFlagArgs.slice(2);
 
 switch(system) {
   case 'bot':

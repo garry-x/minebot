@@ -9,6 +9,9 @@ const app = express();
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 9500;
 
+// Parse verbose flag
+const verbose = process.argv.includes('--verbose');
+
 // Setup log file and PID file paths
 const LOG_DIR = path.join(__dirname, 'logs');
 if (!fs.existsSync(LOG_DIR)) {
@@ -19,17 +22,27 @@ const pidFile = path.join(LOG_DIR, 'bot_server.pid');
 
 // Redirect console output to log file only (no terminal output)
 const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
+
+function formatLogMessage(...args) {
+  const message = util.format(...args);
+  if (verbose) {
+    const timestamp = new Date().toISOString();
+    return `[${timestamp}] ${message}\n`;
+  }
+  return message + '\n';
+}
+
 console.log = function(...args) {
-  logStream.write(util.format(...args) + '\n');
+  logStream.write(formatLogMessage(...args));
 };
 console.error = function(...args) {
-  logStream.write(util.format(...args) + '\n');
+  logStream.write(formatLogMessage(...args));
 };
 console.warn = function(...args) {
-  logStream.write('WARN: ' + util.format(...args) + '\n');
+  logStream.write('WARN: ' + formatLogMessage(...args));
 };
 console.info = function(...args) {
-  logStream.write(util.format(...args) + '\n');
+  logStream.write(formatLogMessage(...args));
 };
 
 // Atomically create and write PID file
