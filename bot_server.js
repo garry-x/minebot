@@ -79,7 +79,8 @@ try {
 }
 
 require('./config/db');
-require('./config/models/BotConfig');
+const BotConfig = require('./config/models/BotConfig');
+const BotState = require('./config/models/BotState');
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -96,6 +97,9 @@ app.use(express.static('frontend/build'));
 const activeBots = new Map();
 const botConnections = new Map();
 const botServerStartTime = Date.now();
+
+// Initialize database tables
+BotState.createTable();
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -118,6 +122,7 @@ app.get('/api/bots', (req, res) => {
       connected: bot.isConnected,
       state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
       mode: bot.currentMode || null,
+      deadReason: bot.deadReason || null,
       health: bot.bot.health,
       maxHealth: 20,
       food: bot.bot.food,
@@ -163,18 +168,37 @@ app.post('/api/bot/start', async (req, res) => {
     });
     
     console.log(`[API] Attempting to connect bot...`);
-    await bot.connect(username, null);
+    await bot.connect(username, null, true);
     
     const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     activeBots.set(botId, bot);
     
     console.log(`[API] Bot started successfully with ID: ${botId}`);
+    
     res.json({ 
       success: true, 
       botId,
       username,
-      message: 'Bot started successfully (offline mode)'
+      mode: 'survival',
+      message: 'Bot started successfully (offline mode) with automatic behavior enabled'
     });
+    
+    // Save bot state to persistent store
+    try {
+      const position = bot.bot.entity.position;
+      await BotState.saveBot(botId, {
+        username: bot.bot.username,
+        mode: 'survival',
+        position_x: position.x,
+        position_y: position.y,
+        position_z: position.z,
+        health: bot.bot.health,
+        food: bot.bot.food,
+        status: 'active'
+      });
+    } catch (saveErr) {
+      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+    }
   } catch (error) {
     console.error('Error starting bot:', error);
     res.status(500).json({ error: `Failed to start bot: ${error.message}` });
@@ -200,6 +224,23 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     // Track current automatic mode
     bot.currentMode = mode || 'survival';
+    
+    // Save bot state to persistent store
+    try {
+      const position = bot.bot.entity.position;
+      await BotState.saveBot(botId, {
+        username: bot.bot.username,
+        mode: mode || 'survival',
+        position_x: position.x,
+        position_y: position.y,
+        position_z: position.z,
+        health: bot.bot.health,
+        food: bot.bot.food,
+        status: 'active'
+      });
+    } catch (saveErr) {
+      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+    }
     
     // Start automatic behavior in background (don't block response)
     bot.behaviors.automaticBehavior({ 
@@ -236,6 +277,13 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
     await bot.disconnect();
     activeBots.delete(botId);
     
+    // Update bot status in persistent store
+    try {
+      await BotState.updateBotStatus(botId, 'stopped');
+    } catch (saveErr) {
+      console.error(`[API] Failed to update bot state: ${saveErr.message}`);
+    }
+    
     res.json({
       success: true,
       message: 'Bot stopped successfully'
@@ -246,15 +294,197 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
   }
 });
 
+app.post('/api/bot/:botId/restart', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    
+    const savedBot = await BotState.getBotById(botId);
+    
+    if (!savedBot) {
+      return res.status(404).json({ error: 'Bot not found in database' });
+    }
+    
+    if (activeBots.has(botId)) {
+      return res.status(400).json({ error: 'Bot is already running' });
+    }
+    
+    const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
+    const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
+    const MinecraftBot = require('./bot/index');
+    const bot = new MinecraftBot({ 
+      host: mcHost, 
+      port: mcPort,
+      botServerHost: process.env.HOST || 'localhost',
+      botServerPort: process.env.PORT || 9500
+    });
+    
+    console.log(`[API] Attempting to restart bot: ${savedBot.username} (${botId})`);
+    
+    await bot.connect(savedBot.username, null, savedBot.mode === 'survival');
+    
+    activeBots.set(botId, bot);
+    
+    // Update bot status to active
+    try {
+      const position = bot.bot.entity.position;
+      await BotState.saveBot(botId, {
+        username: bot.bot.username,
+        mode: savedBot.mode || 'survival',
+        position_x: position.x,
+        position_y: position.y,
+        position_z: position.z,
+        health: bot.bot.health,
+        food: bot.bot.food,
+        status: 'active'
+      });
+    } catch (saveErr) {
+      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+    }
+    
+    console.log(`[API] Bot restarted successfully: ${botId}`);
+    
+    res.json({
+      success: true,
+      botId,
+      username: savedBot.username,
+      message: 'Bot restarted successfully'
+    });
+  } catch (error) {
+    console.error('Error restarting bot:', error);
+    res.status(500).json({ error: `Failed to restart bot: ${error.message}` });
+  }
+});
+
+app.post('/api/bot/cleanup', async (req, res) => {
+  try {
+    const { daysOld } = req.body || { daysOld: 30 };
+    
+    const deleted = await BotState.cleanupOldBots(daysOld);
+    
+    console.log(`[API] Cleanup completed: ${deleted} stale bot entries removed`);
+    
+    res.json({
+      success: true,
+      deleted,
+      message: `Removed ${deleted} stale bot entries older than ${daysOld} days`
+    });
+  } catch (error) {
+    console.error('Error cleaning up bots:', error);
+    res.status(500).json({ error: `Failed to cleanup bots: ${error.message}` });
+  }
+});
+
 // WebSocket endpoint for bot status and control
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 let serverStarted = false;
 
-server.listen(PORT, HOST, () => {
+// Retry queue for failed bot connections
+const retryQueue = new Map();
+
+// Auto-reconnect saved bots
+async function autoReconnectBots() {
+  console.log('[Server] Loading saved bots for auto-reconnect...');
+  const savedBots = await BotState.getActiveBots();
+  
+  if (savedBots.length === 0) {
+    console.log('[Server] No active bots to reconnect');
+    return;
+  }
+  
+  for (const savedBot of savedBots) {
+    await attemptBotReconnect(savedBot);
+  }
+}
+
+// Attempt to reconnect a single bot with hybrid approach
+async function attemptBotReconnect(savedBot) {
+  try {
+    const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
+    const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
+    const MinecraftBot = require('./bot/index');
+    const bot = new MinecraftBot({ 
+      host: mcHost, 
+      port: mcPort,
+      botServerHost: process.env.HOST || 'localhost',
+      botServerPort: process.env.PORT || 9500
+    });
+    
+    console.log(`[Server] Attempting to reconnect bot: ${savedBot.username} (${savedBot.bot_id})`);
+    
+    await bot.connect(savedBot.username, null, savedBot.mode === 'survival');
+    
+    const botId = savedBot.bot_id;
+    activeBots.set(botId, bot);
+    
+    console.log(`[Server] Bot reconnected successfully: ${botId}`);
+  } catch (err) {
+    console.error(`[Server] Failed to reconnect bot ${savedBot.bot_id}: ${err.message}`);
+    
+    // Check if we should retry
+    const retryInfo = retryQueue.get(savedBot.bot_id);
+    if (retryInfo && retryInfo.retries >= 3) {
+      console.log(`[Server] Max retries reached for bot ${savedBot.bot_id}. Marking as stopped for manual review.`);
+      try {
+        await BotState.updateBotStatus(savedBot.bot_id, 'stopped');
+        retryQueue.delete(savedBot.bot_id);
+      } catch (saveErr) {
+        console.error(`[Server] Failed to update bot status: ${saveErr.message}`);
+      }
+      return;
+    }
+    
+    // Schedule retry after 10 seconds
+    const retryDelay = 10000; // 10 seconds
+    const nextRetry = retryInfo ? retryInfo.retries + 1 : 1;
+    retryQueue.set(savedBot.bot_id, { 
+      username: savedBot.username, 
+      mode: savedBot.mode, 
+      retries: nextRetry 
+    });
+    
+    console.log(`[Server] Scheduling retry for bot ${savedBot.bot_id} in ${retryDelay/1000} seconds (attempt ${nextRetry}/3)`);
+    
+    setTimeout(async () => {
+      const currentRetryInfo = retryQueue.get(savedBot.bot_id);
+      if (currentRetryInfo) {
+        console.log(`[Server] Retrying bot: ${savedBot.bot_id} (attempt ${currentRetryInfo.retries}/3)`);
+        await attemptBotReconnect(savedBot);
+        if (!activeBots.has(savedBot.bot_id)) {
+          retryQueue.set(savedBot.bot_id, { 
+            username: currentRetryInfo.username, 
+            mode: currentRetryInfo.mode, 
+            retries: currentRetryInfo.retries + 1 
+          });
+        } else {
+          retryQueue.delete(savedBot.bot_id);
+        }
+      }
+    }, retryDelay);
+  }
+}
+
+// Start server and auto-reconnect bots
+server.listen(PORT, HOST, async () => {
   console.log(`WebSocket server listening on ${HOST}:${PORT}`);
   serverStarted = true;
+  
+  // Save bot server state
+  try {
+    await BotState.saveServerState('bot_server', {
+      status: 'running',
+      port: PORT,
+      pid: process.pid,
+      uptime_seconds: 0,
+      last_started_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error(`[Server] Failed to save bot server state: ${err.message}`);
+  }
+  
+  // Auto-reconnect saved bots
+  await autoReconnectBots();
 });
 
 wss.on('connection', (ws, req) => {
@@ -498,6 +728,21 @@ function broadcastStatusUpdate() {
 // Set up periodic status broadcasting
 setInterval(broadcastStatusUpdate, 3000); // Broadcast every 3 seconds for more real-time feel
 
+// Set up periodic server state saving
+setInterval(async () => {
+  try {
+    await BotState.saveServerState('bot_server', {
+      status: 'running',
+      port: PORT,
+      pid: process.pid,
+      uptime_seconds: Math.floor((Date.now() - botServerStartTime) / 1000),
+      last_updated_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error(`[Server] Failed to save periodic server state: ${err.message}`);
+  }
+}, 3000); // Save server state every 3 seconds
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -505,6 +750,11 @@ app.use((err, req, res, next) => {
     error: 'Something went wrong!',
     message: err.message 
   });
+});
+
+// Cleanup retry queue on server shutdown
+process.on('beforeExit', () => {
+  retryQueue.clear();
 });
 
 // Mock LLM endpoint for frontend
@@ -536,8 +786,31 @@ app.use((req, res) => {
 });
 
 // Graceful shutdown
-const shutdown = () => {
+const shutdown = async () => {
   console.log('Received shutdown signal, shutting down gracefully');
+  
+  // Update bot server state
+  try {
+    await BotState.saveServerState('bot_server', {
+      status: 'stopped',
+      port: PORT,
+      pid: process.pid,
+      uptime_seconds: Math.floor((Date.now() - botServerStartTime) / 1000),
+      last_stopped_at: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error(`[Server] Failed to save bot server state: ${err.message}`);
+  }
+  
+  // Mark all active bots as stopped
+  for (const [botId, bot] of activeBots.entries()) {
+    try {
+      await BotState.updateBotStatus(botId, 'stopped');
+    } catch (err) {
+      console.error(`[Server] Failed to update bot ${botId} status: ${err.message}`);
+    }
+  }
+  
   server.close(async (err) => {
     if (err) {
       console.error('Error closing server:', err);

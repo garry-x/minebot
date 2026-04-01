@@ -32,21 +32,26 @@ module.exports = function(bot, pathfinder) {
   };
 
   // Helper function to find blocks nearby
-  const findBlocks = (blockNames, maxDistance = 32) => {
-    const positions = [];
-    for (const blockName of blockNames) {
-      // Using the correct method for finding blocks in mineflayer 4.x
-      const block = bot.findBlock({
-        point: bot.entity.position,
-        matching: blockName,
-        maxDistance: maxDistance
-      });
-      if (block) {
-        positions.push(block.position);
-      }
-    }
-    return positions;
-  };
+   const findBlocks = (blockNames, maxDistance = 32) => {
+     const positions = [];
+     for (const blockName of blockNames) {
+       // Using the correct method for finding blocks in mineflayer 4.x
+       const block = bot.findBlock({
+         point: bot.entity.position,
+         matching: blockName,
+         maxDistance: maxDistance
+       });
+       if (block) {
+         positions.push(block.position);
+       }
+     }
+     return positions;
+   };
+   
+   // Helper to get the wrapper object (the this context)
+   const getWrapper = () => {
+     return bot.__wrapper || null;
+   };
 
   return {
     // Building behaviors
@@ -231,16 +236,23 @@ module.exports = function(bot, pathfinder) {
     },
     
     // New: Automatic behavior without LLM
-    automaticBehavior: async function(options = {}) {
-      const { 
-        mode = 'survival', // survival, building, gathering
-        targetBlockType = 'oak_log',
-        structureType = 'house',
-        structureSize = { width: 5, length: 5, height: 3 },
-        gatherRadius = 30
-      } = options;
-      
-      console.log(`Starting automatic behavior in ${mode} mode`);
+     automaticBehavior: async function(options = {}) {
+       const { 
+         mode = 'survival', // survival, building, gathering
+         targetBlockType = 'oak_log',
+         structureType = 'house',
+         structureSize = { width: 5, length: 5, height: 3 },
+         gatherRadius = 30
+       } = options;
+       
+       // Track current automatic mode on the wrapper object
+       const wrapper = getWrapper();
+       if (wrapper) {
+         wrapper.currentMode = mode;
+         console.log(`[Behaviors] Setting currentMode to: ${mode}`);
+       }
+       
+       console.log(`Starting automatic behavior in ${mode} mode`);
       
       try {
         switch (mode) {

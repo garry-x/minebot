@@ -16,12 +16,15 @@ class MinecraftBot {
     this.botId = options.botId || null;
     this.botServerHost = options.botServerHost || 'localhost';
     this.botServerPort = options.botServerPort || 9500;
+    this.deadReason = null;
+    this.currentMode = null;
   }
 
-async connect(username, accessToken) {
+async connect(username, accessToken, startAutomatic = false) {
   return new Promise((resolve, reject) => {
     console.log(`[Bot] Creating bot with username: ${username}`);
     console.log(`[Bot] Target server: ${this.options.host || 'localhost'}:${this.options.port || 25565}`);
+    console.log(`[Bot] Start automatic: ${startAutomatic}`);
     
     // For offline mode, we need to provide a dummy access token
     // This prevents connection errors in some server configurations
@@ -38,6 +41,7 @@ async connect(username, accessToken) {
     }
     
     this.bot = mineflayer.createBot(botOptions);
+    this.startAutomatic = startAutomatic;
 
       // Set botId if not already set
       if (!this.botId) {
@@ -47,16 +51,23 @@ async connect(username, accessToken) {
 
       console.log('[Bot] Setting up event listeners');
       this.setupEventListeners();
+      
+      // Set up events for basic bot events that fire before spawn
+      this.bot.on('error', (err) => {
+        console.error(`[Bot] Error: ${err.message}`);
+      });
 
       let isResolved = false;
       let connectTimeout = null;
 
-      this.bot.once('spawn', () => {
-        // Set up WebSocket connection after bot spawns
-        this.setupWebSocket();
-        console.log('[Bot] Bot spawned');
-        this.isConnected = true;
-        // Load and attach mcData after bot is ready (pathfinder needs it)
+       this.bot.once('spawn', () => {
+         // Set up WebSocket connection after bot spawns
+         this.setupWebSocket();
+         console.log('[Bot] Bot spawned');
+         this.isConnected = true;
+         // Set wrapper reference on mineflayer bot for behaviors access
+         this.bot.__wrapper = this;
+         // Load and attach mcData after bot is ready (pathfinder needs it)
         const mcData = require('minecraft-data')(this.bot.version);
         console.log('[Bot] mcData loaded:', !!mcData);
         if (!mcData) {
@@ -83,9 +94,29 @@ async connect(username, accessToken) {
              this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
            }
               console.log(`[Bot] Bot ready with ID: ${this.botId}`);
-              isResolved = true;
-              clearTimeout(connectTimeout);
-              resolve();
+              
+              // Start automatic behavior if requested
+              if (this.startAutomatic) {
+                const automaticMode = 'survival';
+                console.log(`[Bot] Starting automatic behavior in ${automaticMode} mode`);
+                this.behaviors.automaticBehavior({ mode: automaticMode })
+                  .then(() => {
+                    console.log(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
+                    isResolved = true;
+                    clearTimeout(connectTimeout);
+                    resolve();
+                  })
+                  .catch((err) => {
+                    console.error(`[Bot] Error starting automatic behavior: ${err.message}`);
+                    isResolved = true;
+                    clearTimeout(connectTimeout);
+                    resolve();
+                  });
+              } else {
+                isResolved = true;
+                clearTimeout(connectTimeout);
+                resolve();
+              }
             } catch (initError) {
               console.error(`[Bot] Error initializing modules:`, initError);
               reject(initError);
@@ -105,14 +136,14 @@ async connect(username, accessToken) {
     // Add a timeout to prevent hanging
     connectTimeout = setTimeout(() => {
       if (!isResolved) {
-        console.log('[Bot] Connection timeout after 30 seconds');
+        console.log('[Bot] Connection timeout after 60 seconds');
         reject(new Error('Connection timeout - failed to spawn'));
         if (this.bot) {
           this.bot.end();
           this.bot = null;
         }
       }
-    }, 30000);
+    }, 60000);
   });
 }
 
@@ -136,6 +167,16 @@ async connect(username, accessToken) {
     // Handle death
     this.bot.on('death', () => {
       console.log('[Bot] Bot died');
+      this.deadReason = 'Bot died';
+      
+      // Update bot state to stopped
+      if (this.botId) {
+        const db = require('../config/models/BotState');
+        db.updateBotStatus(this.botId, 'stopped').catch(err => {
+          console.error(`[Bot] Failed to update state on death: ${err.message}`);
+        });
+      }
+      
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({
           type: 'status_update',
@@ -161,12 +202,22 @@ async connect(username, accessToken) {
     // Handle error
     this.bot.on('error', (err) => {
       console.error('Bot error:', err);
+      this.deadReason = `Error: ${err.message}`;
+      
+      // Update bot state to stopped on error
+      if (this.botId) {
+        const db = require('../config/models/BotState');
+        db.updateBotStatus(this.botId, 'stopped').catch(err => {
+          console.error(`[Bot] Failed to update state on error: ${err.message}`);
+        });
+      }
+      
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({
           type: 'status_update',
           data: {
             connected: this.isConnected,
-            message: `Bot error: ${err.message}`,
+            message: this.deadReason,
             position: null
           }
         }));
@@ -177,12 +228,24 @@ async connect(username, accessToken) {
     this.bot.on('end', () => {
       console.log('[Bot] End event triggered - connection closed');
       this.isConnected = false;
+      if (!this.deadReason) {
+        this.deadReason = 'Disconnected';
+      }
+      
+      // Update bot state to stopped on disconnect
+      if (this.botId) {
+        const db = require('../config/models/BotState');
+        db.updateBotStatus(this.botId, 'stopped').catch(err => {
+          console.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
+        });
+      }
+      
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify({
           type: 'status_update',
           data: {
             connected: this.isConnected,
-            message: 'Bot disconnected',
+            message: this.deadReason,
             position: null
           }
         }));
@@ -298,7 +361,7 @@ default:
       if (!this.isConnected || !this.bot || !this.ws) return;
       
       try {
-        const position = this.bot.entity.position.floored();
+        const position = this.bot.entity.position;
         const health = this.bot.health;
         const food = this.bot.food;
         const experience = this.bot.experience;
@@ -322,9 +385,26 @@ default:
               experience,
               exploration: exploration,
               inventory,
-              message: `Bot at (${position.x}, ${position.y}, ${position.z})`
+              message: `Bot at (${Math.floor(position.x)}, ${Math.floor(position.y)}, ${Math.floor(position.z)})`
             }
           }));
+        }
+        
+        // Save bot state to persistent store
+        if (this.botId && this.bot && this.bot.username) {
+          const db = require('../config/models/BotState');
+          db.saveBot(this.botId, {
+            username: this.bot.username,
+            mode: this.currentMode || 'survival',
+            position_x: position.x,
+            position_y: position.y,
+            position_z: position.z,
+            health: health,
+            food: food,
+            status: 'active'
+          }).catch(err => {
+            console.error(`[Bot] Failed to save state: ${err.message}`);
+          });
         }
       } catch (err) {
         console.error('Error sending status update:', err);
@@ -332,6 +412,14 @@ default:
     }
 
   async disconnect() {
+    // Update bot state to stopped
+    if (this.botId) {
+      const db = require('../config/models/BotState');
+      db.updateBotStatus(this.botId, 'stopped').catch(err => {
+        console.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
+      });
+    }
+    
     if (this.bot) {
       this.bot.end();
     }

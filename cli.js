@@ -132,6 +132,7 @@ function startMinecraftServer() {
 #!/bin/bash
 cd ${MINECRAFT_SERVER_DIR}
 nohup java -Xmx1G -jar ${jarPath} nogui > ${LOG_FILE} 2>&1 &
+echo \$! > /tmp/mc_server_pid.txt
 echo \$!
 `;
   const scriptFile = '/tmp/start_mc_server.sh';
@@ -166,13 +167,29 @@ function stopMinecraftServer() {
   }
 
   try {
+    process.kill(pid, 0);
+  } catch (e) {
+    console.log('Removing stale PID file');
+    try {
+      fs.unlinkSync(MINECRAFT_PID_FILE);
+    } catch (e2) {}
+    console.log('Minecraft server is not running');
+    return;
+  }
+
+  try {
     process.kill(pid, 'SIGTERM');
     console.log('Stopping Minecraft server...');
     setTimeout(() => {
       try {
-        fs.unlinkSync(MINECRAFT_PID_FILE);
-      } catch (e) {}
-      console.log('Minecraft server stopped');
+        process.kill(pid, 0);
+        console.log('Minecraft server failed to stop');
+      } catch (e) {
+        try {
+          fs.unlinkSync(MINECRAFT_PID_FILE);
+        } catch (e2) {}
+        console.log('Minecraft server stopped');
+      }
     }, 1000);
   } catch (e) {
     console.log('Minecraft server is not running');
@@ -239,12 +256,13 @@ function botControl(action, username, botId, mode) {
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 15000
+        timeout: 60000
       }, JSON.stringify({ username }))
       .then(data => {
         console.log(`Bot started successfully`);
         console.log(`  Bot ID: ${data.botId}`);
         console.log(`  Username: ${data.username}`);
+        console.log(`  Mode: ${data.mode || 'survival'}`);
       })
       .catch(err => {
         console.log(`Error: ${err.message}`);
@@ -311,11 +329,35 @@ function botControl(action, username, botId, mode) {
           if (bot.mode) {
             console.log(`    Mode: ${bot.mode}`);
           }
+          if (bot.deadReason) {
+            console.log(`    Reason: ${bot.deadReason}`);
+          }
           console.log(`    Connected: ${bot.connected}`);
           if (bot.position) {
             console.log(`    Position: ${bot.position.x}, ${bot.position.y}, ${bot.position.z}`);
           }
         });
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
+    case 'restart':
+      if (!botId) {
+        console.log('Error: botId is required');
+        return;
+      }
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: `/api/bot/${botId}/restart`,
+        method: 'POST'
+      })
+      .then(data => {
+        console.log(`Bot restart initiated`);
+        console.log(`  Bot ID: ${data.botId}`);
+        console.log(`  Username: ${data.username}`);
       })
       .catch(err => {
         console.log(`Error: ${err.message}`);
@@ -373,6 +415,25 @@ function botControl(action, username, botId, mode) {
       
       break;
       
+    case 'cleanup':
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: '/api/bot/cleanup',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      }, JSON.stringify({ daysOld: 30 }))
+      .then(data => {
+        console.log(`Cleanup completed: ${data.deleted} stale bot entries removed`);
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
     default:
       console.log(`Unknown action: ${action}`);
   }
@@ -396,12 +457,12 @@ Top-level commands:
 
 Examples:
   minebot bot start MyBot
-  minebot bot s MyBot
   minebot bot stop bot_123
-  minebot bot a MyBot survival
+  minebot bot automatic MyBot survival
   minebot bot list
+  minebot bot restart bot_123
   minebot mc start
-  minebot mc s
+  minebot mc stop
   minebot server start
   minebot server stop
   minebot status
@@ -422,31 +483,6 @@ const system = args[0];
 let action = args[1];
 const commandArgs = args.slice(2);
 
-// Define aliases
-const aliases = {
-  bot: {
-    s: 'start',
-    st: 'stop',
-    a: 'automatic',
-    ls: 'list'
-  },
-  mc: {
-    s: 'start',
-    st: 'stop',
-    r: 'restart'
-  },
-  server: {
-    s: 'start',
-    st: 'stop',
-    r: 'restart'
-  }
-};
-
-// Resolve aliases
-if (aliases[system] && aliases[system][action]) {
-  action = aliases[system][action];
-}
-
 switch(system) {
   case 'bot':
     switch(action) {
@@ -454,11 +490,9 @@ switch(system) {
         botControl('start', commandArgs[0]);
         break;
       case 'stop':
-      case 'st':
         botControl('stop', null, commandArgs[0]);
         break;
       case 'automatic':
-      case 'a':
         const autoMode = commandArgs[0] && ['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : (commandArgs[1] || 'survival');
         const autoUsername = commandArgs[0] && !['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : commandArgs[0];
         if (!autoUsername) {
@@ -468,8 +502,13 @@ switch(system) {
         botControl('automatic', autoUsername, null, autoMode);
         break;
       case 'list':
-      case 'ls':
         botControl('list');
+        break;
+      case 'restart':
+        botControl('restart', null, commandArgs[0]);
+        break;
+      case 'cleanup':
+        botControl('cleanup');
         break;
       case 'help':
       case '-h':
@@ -478,21 +517,20 @@ switch(system) {
 
 Bot Actions:
   start <user>     Start a bot with username
-  s <user>         Alias for start
   stop <id>        Stop a bot by ID
-  st <id>          Alias for stop
   automatic <user> [mode]
                     Start automatic behavior on existing bot (survival|creative|building|gathering)
-  a <user> [mode]  Alias for automatic
   list             List bots
-  ls               Alias for list
+  restart <id>     Restart a stopped bot by ID
+  cleanup          Remove stale bot entries (older than 30 days)
 
 Examples:
   minebot bot start MyBot
-  minebot bot s MyBot
   minebot bot stop bot_123
-  minebot bot a MyBot survival
+  minebot bot automatic MyBot survival
   minebot bot list
+  minebot bot restart bot_123
+  minebot bot cleanup
 `);
         break;
       default:
@@ -504,6 +542,15 @@ Examples:
     
   case 'mc':
     switch(action) {
+      case 'start':
+        startMinecraftServer();
+        break;
+      case 'stop':
+        stopMinecraftServer();
+        break;
+      case 'restart':
+        restartMinecraftServer();
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -511,30 +558,14 @@ Examples:
 
 MC Actions:
   start         Start Minecraft server
-  s             Alias for start
   stop          Stop Minecraft server
-  st            Alias for stop
   restart       Restart Minecraft server
-  r             Alias for restart
 
 Examples:
   minebot mc start
-  minebot mc s
   minebot mc stop
-  minebot mc r
+  minebot mc restart
 `);
-        break;
-      case 'start':
-      case 's':
-        startMinecraftServer();
-        break;
-      case 'stop':
-      case 'st':
-        stopMinecraftServer();
-        break;
-      case 'restart':
-      case 'r':
-        restartMinecraftServer();
         break;
       default:
         console.log(`Unknown MC action: ${action}`);
@@ -545,6 +576,15 @@ Examples:
     
   case 'server':
     switch(action) {
+      case 'start':
+        startBotServer();
+        break;
+      case 'stop':
+        stopBotServer();
+        break;
+      case 'restart':
+        restartBotServer();
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -552,30 +592,14 @@ Examples:
 
 Server Actions:
   start         Start bot server
-  s             Alias for start
   stop          Stop bot server
-  st            Alias for stop
   restart       Restart bot server
-  r             Alias for restart
 
 Examples:
   minebot server start
-  minebot server s
   minebot server stop
-  minebot server r
+  minebot server restart
 `);
-        break;
-      case 'start':
-      case 's':
-        startBotServer();
-        break;
-      case 'stop':
-      case 'st':
-        stopBotServer();
-        break;
-      case 'restart':
-      case 'r':
-        restartBotServer();
         break;
       default:
         console.log(`Unknown server action: ${action}`);
