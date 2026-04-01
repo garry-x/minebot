@@ -435,6 +435,109 @@ function botControl(action, username, botId, mode) {
       tryRemoveAll();
       break;
       
+    case 'monitor':
+      const http2 = require('http');
+      let interval = actionArgs && actionArgs.interval ? parseInt(actionArgs.interval, 10) : 5000;
+      let monitorCount = 0;
+      const maxCount = actionArgs && actionArgs.count ? parseInt(actionArgs.count, 10) : 0;
+      let running = true;
+      
+      function clearScreen() {
+        process.stdout.write('\x1B[2J\x1B[0f');
+      }
+      
+      function formatUptime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return `${h}h ${m}m ${s}s`;
+      }
+      
+      function formatPosition(pos) {
+        if (!pos) return 'N/A';
+        return `${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+      }
+      
+      function fetchAndDisplay() {
+        if (!running) return;
+        
+        const req = http2.request({
+          hostname: botHost,
+          port: botPort,
+          path: '/api/bots',
+          method: 'GET'
+        }, (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              const parsed = JSON.parse(data);
+              clearScreen();
+              monitorCount++;
+              
+              const now = new Date();
+              console.log(`\x1B[36m=== Bot Monitor ===\x1B[0m Time: ${now.toLocaleTimeString()}`);
+              console.log(`Interval: ${interval}ms | Count: ${monitorCount}${maxCount > 0 ? `/${maxCount}` : ''} | Press Ctrl+C to stop`);
+              console.log(`\x1B[36m${'='.repeat(60)}\x1B[0m`);
+              
+              if (parsed.count === 0) {
+                console.log('No active bots');
+              } else {
+                console.log(`\x1B[32mTotal Bots: ${parsed.count}\x1B[0m\n`);
+                
+                parsed.bots.forEach((bot, idx) => {
+                  const stateColor = bot.state === 'ALIVE' ? '\x1B[32m' : (bot.state === 'DEAD' ? '\x1B[31m' : '\x1B[33m');
+                  console.log(`\x1B[1m[${idx + 1}] ${bot.username}\x1B[0m (${bot.botId})`);
+                  console.log(`    State: ${stateColor}${bot.state}\x1B[0m | Connected: ${bot.connected ? '\x1B[32mYes\x1B[0m' : '\x1B[31mNo\x1B[0m'}`);
+                  console.log(`    Health: \x1B[31m${bot.health}\x1B[0m/\x1B[32m20\x1B[0m | Food: \x1B[33m${bot.food}\x1B[0m/\x1B[32m20\x1B[0m`);
+                  console.log(`    Position: ${formatPosition(bot.position)}`);
+                  console.log(`    Mode: ${bot.mode || 'N/A'} | Game: ${bot.gameMode || 'N/A'}`);
+                  if (bot.deadReason) {
+                    console.log(`    \x1B[31mDead: ${bot.deadReason}\x1B[0m`);
+                  }
+                  console.log('');
+                });
+              }
+              
+              if (maxCount > 0 && monitorCount >= maxCount) {
+                running = false;
+                console.log(`\x1B[36mMonitor stopped after ${maxCount} updates\x1B[0m`);
+                process.exit(0);
+              }
+            } catch (e) {
+              console.log(`\x1B[31mError parsing data: ${e.message}\x1B[0m`);
+            }
+          });
+        });
+        
+        req.on('error', (err) => {
+          console.log(`\x1B[31mConnection error: ${err.message}\x1B[0m`);
+          running = false;
+          process.exit(1);
+        });
+        
+        req.setTimeout(5000, () => {
+          req.destroy();
+          console.log(`\x1B[31mRequest timeout\x1B[0m`);
+        });
+        
+        req.end();
+      }
+      
+      process.on('SIGINT', () => {
+        console.log(`\n\x1B[36mMonitor stopped (Ctrl+C)\x1B[0m`);
+        running = false;
+        process.exit(0);
+      });
+      
+      fetchAndDisplay();
+      const monitorInterval = setInterval(() => {
+        if (running) {
+          fetchAndDisplay();
+        }
+      }, interval);
+      break;
+      
     case 'status':
       console.log('bot server:');
       const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
@@ -558,10 +661,22 @@ const nonFlagArgs = args.filter(arg => {
   return true;
 });
 
+// Parse additional options for certain commands
+let actionArgs = {};
+const remainingArgs = [];
+nonFlagArgs.forEach((arg, idx) => {
+  if (arg.startsWith('--')) {
+    const [key, value] = arg.slice(2).split('=');
+    actionArgs[key] = value || true;
+  } else {
+    remainingArgs.push(arg);
+  }
+});
+
 // Parse system and action (2-level subcommands)
-const system = nonFlagArgs[0];
-let action = nonFlagArgs[1];
-const commandArgs = nonFlagArgs.slice(2);
+const system = remainingArgs[0];
+let action = remainingArgs[1];
+const commandArgs = remainingArgs.slice(2);
 
 switch(system) {
   case 'bot':
@@ -597,6 +712,9 @@ switch(system) {
       case 'cleanup':
         botControl('cleanup');
         break;
+      case 'monitor':
+        botControl('monitor', null, null, null, commandArgs);
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -612,6 +730,7 @@ Bot Actions:
   remove <id>      Remove a bot by ID (from DB and server)
   remove all       Remove all bots
   cleanup          Remove stale bot entries (older than 30 days)
+  monitor          Monitor bot status in real-time
 
 Examples:
   minebot bot start MyBot
@@ -622,7 +741,8 @@ Examples:
    minebot bot remove bot_123
    minebot bot remove all
    minebot bot cleanup
- `);
+   minebot bot monitor
+  `);
         break;
       default:
         console.log(`Unknown bot action: ${action}`);
