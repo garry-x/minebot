@@ -374,6 +374,32 @@ app.post('/api/bot/cleanup', async (req, res) => {
   }
 });
 
+app.delete('/api/bot/:botId', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    
+    const bot = activeBots.get(botId);
+    
+    if (bot) {
+      await bot.disconnect();
+      activeBots.delete(botId);
+    }
+    
+    const deleted = await BotState.deleteBot(botId);
+    
+    console.log(`[API] Bot removed: ${botId}`);
+    
+    res.json({
+      success: true,
+      deleted,
+      message: `Bot ${botId} removed successfully`
+    });
+  } catch (error) {
+    console.error('Error removing bot:', error);
+    res.status(500).json({ error: `Failed to remove bot: ${error.message}` });
+  }
+});
+
 // WebSocket endpoint for bot status and control
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });

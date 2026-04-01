@@ -364,6 +364,26 @@ function botControl(action, username, botId, mode) {
       });
       break;
       
+    case 'remove':
+      if (!botId) {
+        console.log('Error: botId is required');
+        return;
+      }
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: `/api/bot/${botId}`,
+        method: 'DELETE'
+      })
+      .then(data => {
+        console.log(`Bot removed successfully`);
+        console.log(`  Bot ID: ${botId}`);
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
     case 'status':
       console.log('bot server:');
       const http = require('http');
@@ -507,6 +527,9 @@ switch(system) {
       case 'restart':
         botControl('restart', null, commandArgs[0]);
         break;
+      case 'remove':
+        botControl('remove', null, commandArgs[0]);
+        break;
       case 'cleanup':
         botControl('cleanup');
         break;
@@ -522,6 +545,7 @@ Bot Actions:
                     Start automatic behavior on existing bot (survival|creative|building|gathering)
   list             List bots
   restart <id>     Restart a stopped bot by ID
+  remove <id>      Remove a bot by ID (from DB and server)
   cleanup          Remove stale bot entries (older than 30 days)
 
 Examples:
@@ -529,9 +553,10 @@ Examples:
   minebot bot stop bot_123
   minebot bot automatic MyBot survival
   minebot bot list
-  minebot bot restart bot_123
-  minebot bot cleanup
-`);
+   minebot bot restart bot_123
+   minebot bot remove bot_123
+   minebot bot cleanup
+ `);
         break;
       default:
         console.log(`Unknown bot action: ${action}`);
