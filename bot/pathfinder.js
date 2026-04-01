@@ -9,16 +9,20 @@ class Pathfinder {
   async moveTo(target, options = {}) {
     const { 
       range = 1, 
-      timeout = 30000, 
+      timeout = 10000, // Reduced from 30s to 10s for faster failure recovery
       useSprint = true,
       useJump = true,
-      useParkour = true
+      useParkour = true,
+      maxRetries = 3 // Add retries for blocked paths
     } = options;
   
     console.log(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
     
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
+      let retryCount = 0;
+      let lastDist = Infinity;
+      let stuckCounter = 0;
       
       const checkArrival = () => {
         const pos = this.bot.entity.position;
@@ -29,13 +33,15 @@ class Pathfinder {
       // Try to move towards target using basic movement
       const tryMove = async () => {
         if (checkArrival()) {
+          this.stop();
           console.log('[Pathfinder] Reached target');
           resolve();
           return;
         }
         
         if (Date.now() - startTime > timeout) {
-          console.log('[Pathfinder] Timeout reached');
+          this.stop();
+          console.log(`[Pathfinder] Timeout reached after ${timeout}ms`);
           reject(new Error('Movement timeout'));
           return;
         }
@@ -64,24 +70,52 @@ class Pathfinder {
           // Jump if allowed and bot is on ground
           if (useJump && this.bot.onGround) {
             this.bot.setControlState('jump', true);
+            setTimeout(() => this.bot.setControlState('jump', false), 200);
           }
           
           // Check if we've moved closer
-          const oldDist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
+          const currentDist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
           await new Promise(resolve => setTimeout(resolve, 500));
           
           const newDist = this.bot.entity.position.distanceTo(new Vec3(target.x, target.y, target.z));
           
-          // If we haven't made progress, try jumping or adjusting
-          if (newDist >= oldDist && this.bot.onGround) {
-            this.bot.setControlState('jump', true);
-            setTimeout(() => this.bot.setControlState('jump', false), 200);
+          // Detect if we're stuck
+          if (Math.abs(newDist - currentDist) < 0.1 && this.bot.onGround) {
+            stuckCounter++;
+            if (stuckCounter >= 3) {
+              stuckCounter = 0;
+              retryCount++;
+              console.log(`[Pathfinder] Stuck, trying to adjust (retry ${retryCount}/${maxRetries})`);
+              
+              // Try jumping and moving sideways
+              this.bot.setControlState('forward', false);
+              this.bot.setControlState('jump', true);
+              await new Promise(resolve => setTimeout(resolve, 300));
+              this.bot.setControlState('jump', false);
+              
+              // Try moving left/right to get unstuck
+              const direction = Math.random() > 0.5 ? 'left' : 'right';
+              this.bot.setControlState(direction, true);
+              await new Promise(resolve => setTimeout(resolve, 500));
+              this.bot.setControlState(direction, false);
+              
+              if (retryCount >= maxRetries) {
+                this.stop();
+                reject(new Error(`Movement stuck after ${maxRetries} retries`));
+                return;
+              }
+            }
+          } else {
+            stuckCounter = 0;
           }
+          
+          lastDist = newDist;
           
           // Continue checking
           setTimeout(tryMove, 200);
           
         } catch (err) {
+          this.stop();
           console.error('[Pathfinder] Error during movement:', err);
           reject(err);
         }

@@ -4,7 +4,8 @@ module.exports = function(bot) {
     setupListeners: function() {
       // Listen for experience orb collection
       bot.on('experience', (orb) => {
-        console.log(`Collected experience orb: ${typeof orb === 'string' ? orb : (orb.experience || 'N/A')} XP`);
+        if (!orb) return;
+        console.log(`Collected experience orb: ${typeof orb === 'string' ? orb : (orb?.experience || 'N/A')} XP`);
       });
       
       // Listen for item pickup

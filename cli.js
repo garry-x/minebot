@@ -538,6 +538,91 @@ function botControl(action, username, botId, mode) {
       }, interval);
       break;
       
+    case 'debug':
+      const fs3 = require('fs');
+      const path3 = require('path');
+      const LOG_FILE = path3.join(__dirname, 'logs', 'bot_server.log');
+      
+      console.log('\x1B[36m=== Bot Debug Console ===\x1B[0m');
+      console.log(`Watching log file: ${LOG_FILE}`);
+      console.log('Press Ctrl+C to exit\n');
+      
+      let lastSize = 0;
+      let runningDebug = true;
+      
+      function tailLog() {
+        if (!runningDebug) return;
+        
+        try {
+          const stats = fs3.statSync(LOG_FILE);
+          if (stats.size > lastSize) {
+            const stream = fs3.createReadStream(LOG_FILE, { start: lastSize, encoding: 'utf8' });
+            stream.on('data', (data) => {
+              // Colorize log output
+              const lines = data.split('\n');
+              lines.forEach(line => {
+                if (line.trim() === '') return;
+                
+                let coloredLine = line;
+                if (line.includes('[ERROR]') || line.includes('Error:')) {
+                  coloredLine = `\x1B[31m${line}\x1B[0m`;
+                } else if (line.includes('[WARN]') || line.includes('Warning:')) {
+                  coloredLine = `\x1B[33m${line}\x1B[0m`;
+                } else if (line.includes('[INFO]')) {
+                  coloredLine = `\x1B[32m${line}\x1B[0m`;
+                } else if (line.includes('[Bot]')) {
+                  coloredLine = `\x1B[36m${line}\x1B[0m`;
+                } else if (line.includes('[Pathfinder]')) {
+                  coloredLine = `\x1B[35m${line}\x1B[0m`;
+                }
+                console.log(coloredLine);
+              });
+            });
+            stream.on('end', () => {
+              lastSize = stats.size;
+            });
+          }
+        } catch (err) {
+          console.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
+        }
+        
+        setTimeout(tailLog, 1000);
+      }
+      
+      process.on('SIGINT', () => {
+        console.log('\n\x1B[36mDebug console stopped\x1B[0m');
+        runningDebug = false;
+        process.exit(0);
+      });
+      
+      // Show last 20 lines initially
+      try {
+        const content = fs3.readFileSync(LOG_FILE, 'utf8');
+        const lines = content.split('\n').filter(line => line.trim() !== '');
+        const lastLines = lines.slice(-20);
+        lastLines.forEach(line => {
+          let coloredLine = line;
+          if (line.includes('[ERROR]') || line.includes('Error:')) {
+            coloredLine = `\x1B[31m${line}\x1B[0m`;
+          } else if (line.includes('[WARN]') || line.includes('Warning:')) {
+            coloredLine = `\x1B[33m${line}\x1B[0m`;
+          } else if (line.includes('[INFO]')) {
+            coloredLine = `\x1B[32m${line}\x1B[0m`;
+          } else if (line.includes('[Bot]')) {
+            coloredLine = `\x1B[36m${line}\x1B[0m`;
+          } else if (line.includes('[Pathfinder]')) {
+            coloredLine = `\x1B[35m${line}\x1B[0m`;
+          }
+          console.log(coloredLine);
+        });
+        lastSize = fs3.statSync(LOG_FILE).size;
+      } catch (err) {
+        console.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
+      }
+      
+      tailLog();
+      break;
+      
     case 'status':
       console.log('bot server:');
       const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
@@ -715,6 +800,9 @@ switch(system) {
       case 'monitor':
         botControl('monitor', null, null, null, commandArgs);
         break;
+      case 'debug':
+        botControl('debug');
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -731,6 +819,7 @@ Bot Actions:
   remove all       Remove all bots
   cleanup          Remove stale bot entries (older than 30 days)
   monitor          Monitor bot status in real-time
+  debug            Show real-time bot server logs with color coding
 
 Examples:
   minebot bot start MyBot
@@ -742,6 +831,7 @@ Examples:
    minebot bot remove all
    minebot bot cleanup
    minebot bot monitor
+   minebot bot debug
   `);
         break;
       default:
