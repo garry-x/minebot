@@ -99,19 +99,17 @@ async connect(username, accessToken, startAutomatic = false) {
               if (this.startAutomatic) {
                 const automaticMode = 'survival';
                 console.log(`[Bot] Starting automatic behavior in ${automaticMode} mode`);
+                // Start automatic behavior in the background without blocking
                 this.behaviors.automaticBehavior({ mode: automaticMode })
                   .then(() => {
                     console.log(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
-                    isResolved = true;
-                    clearTimeout(connectTimeout);
-                    resolve();
                   })
                   .catch((err) => {
-                    console.error(`[Bot] Error starting automatic behavior: ${err.message}`);
-                    isResolved = true;
-                    clearTimeout(connectTimeout);
-                    resolve();
+                    console.error(`[Bot] Error in automatic behavior: ${err.message}`);
                   });
+                isResolved = true;
+                clearTimeout(connectTimeout);
+                resolve();
               } else {
                 isResolved = true;
                 clearTimeout(connectTimeout);
@@ -121,7 +119,7 @@ async connect(username, accessToken, startAutomatic = false) {
               console.error(`[Bot] Error initializing modules:`, initError);
               reject(initError);
             }
-          }, 1500); // Increased timeout
+            }, 0);
         });
 
     this.bot.once('error', (err) => {
@@ -358,18 +356,18 @@ default:
   }
 
     sendStatusUpdate() {
-      if (!this.isConnected || !this.bot || !this.ws) return;
+      if (!this.isConnected || !this.bot || !this.bot.entity || !this.ws) return;
       
       try {
         const position = this.bot.entity.position;
         const health = this.bot.health;
         const food = this.bot.food;
         const experience = this.bot.experience;
-        const inventory = this.bot.inventory.items().map(item => ({
+        const inventory = this.bot.inventory ? this.bot.inventory.items().map(item => ({
           type: item.name,
           count: item.count,
           metadata: item.metadata
-        }));
+        })) : [];
         
         // Calculate exploration percentage (simplified)
         const exploration = Math.min((this.bot.entity.position.distanceTo(new Vec3(0, 64, 0)) / 1000) * 100, 100);

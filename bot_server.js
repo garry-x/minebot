@@ -183,24 +183,30 @@ app.post('/api/bot/start', async (req, res) => {
       message: 'Bot started successfully (offline mode) with automatic behavior enabled'
     });
     
-    // Save bot state to persistent store
-    try {
-      const position = bot.bot.entity.position;
-      await BotState.saveBot(botId, {
-        username: bot.bot.username,
-        mode: 'survival',
-        position_x: position.x,
-        position_y: position.y,
-        position_z: position.z,
-        health: bot.bot.health,
-        food: bot.bot.food,
-        status: 'active'
-      });
-    } catch (saveErr) {
-      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
-    }
+    // Save bot state to persistent store (after bot is ready)
+    setTimeout(async () => {
+      try {
+        if (bot.bot && bot.bot.entity && bot.bot.entity.position) {
+          const position = bot.bot.entity.position;
+          await BotState.saveBot(botId, {
+            username: bot.bot.username,
+            mode: 'survival',
+            position_x: position.x,
+            position_y: position.y,
+            position_z: position.z,
+            health: bot.bot.health,
+            food: bot.bot.food,
+            status: 'active'
+          });
+          console.log(`[API] Bot state saved successfully`);
+        }
+      } catch (saveErr) {
+        console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+      }
+    }, 2000);
   } catch (error) {
     console.error('Error starting bot:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ error: `Failed to start bot: ${error.message}` });
   }
 });
