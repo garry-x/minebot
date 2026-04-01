@@ -380,6 +380,43 @@ app.post('/api/bot/cleanup', async (req, res) => {
   }
 });
 
+app.delete('/api/bots', async (req, res) => {
+  try {
+    // Disconnect all active bots
+    for (const [botId, bot] of activeBots.entries()) {
+      try {
+        await bot.disconnect();
+      } catch (err) {
+        console.error(`[API] Failed to disconnect bot ${botId}: ${err.message}`);
+      }
+      activeBots.delete(botId);
+    }
+    
+    // Delete all bots from database
+    const bots = await BotState.getAllBots();
+    let deletedCount = 0;
+    for (const bot of bots) {
+      try {
+        await BotState.deleteBot(bot.bot_id);
+        deletedCount++;
+      } catch (err) {
+        console.error(`[API] Failed to delete bot ${bot.bot_id}: ${err.message}`);
+      }
+    }
+    
+    console.log(`[API] All bots removed: ${deletedCount} bots deleted`);
+    
+    res.json({
+      success: true,
+      deleted: deletedCount,
+      message: `Removed ${deletedCount} bots from database and server`
+    });
+  } catch (error) {
+    console.error('Error removing all bots:', error);
+    res.status(500).json({ error: `Failed to remove all bots: ${error.message}` });
+  }
+});
+
 app.delete('/api/bot/:botId', async (req, res) => {
   try {
     const { botId } = req.params;

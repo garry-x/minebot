@@ -362,8 +362,8 @@ function botControl(action, username, botId, mode) {
       .catch(err => {
         console.log(`Error: ${err.message}`);
       });
-      break;
-      
+       break;
+       
     case 'remove':
       if (!botId) {
         console.log('Error: botId is required');
@@ -378,6 +378,24 @@ function botControl(action, username, botId, mode) {
       .then(data => {
         console.log(`Bot removed successfully`);
         console.log(`  Bot ID: ${botId}`);
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
+    case 'removeAll':
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: '/api/bots',
+        method: 'DELETE'
+      })
+      .then(data => {
+        console.log(`All bots removed successfully`);
+        if (data.message) {
+          console.log(`  ${data.message}`);
+        }
       })
       .catch(err => {
         console.log(`Error: ${err.message}`);
@@ -528,7 +546,11 @@ switch(system) {
         botControl('restart', null, commandArgs[0]);
         break;
       case 'remove':
-        botControl('remove', null, commandArgs[0]);
+        if (commandArgs[0] === 'all') {
+          botControl('removeAll');
+        } else {
+          botControl('remove', null, commandArgs[0]);
+        }
         break;
       case 'cleanup':
         botControl('cleanup');
@@ -546,6 +568,7 @@ Bot Actions:
   list             List bots
   restart <id>     Restart a stopped bot by ID
   remove <id>      Remove a bot by ID (from DB and server)
+  remove all       Remove all bots
   cleanup          Remove stale bot entries (older than 30 days)
 
 Examples:
@@ -555,6 +578,7 @@ Examples:
   minebot bot list
    minebot bot restart bot_123
    minebot bot remove bot_123
+   minebot bot remove all
    minebot bot cleanup
  `);
         break;
