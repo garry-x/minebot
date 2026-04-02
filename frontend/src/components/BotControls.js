@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 
-const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, botStatus }) => {
+const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, onGather, onBuild, onRestartBot, onRemoveBot, onCleanupBots, botStatus }) => {
   const [buildingConfig, setBuildingConfig] = useState({
     width: 5,
     length: 5,
     height: 3,
     blockType: 'oak_planks'
+  });
+
+  const [gatherConfig, setGatherConfig] = useState({
+    blocks: 'oak_log,cobblestone',
+    radius: 30
   });
 
   const handleStartClick = async () => {
@@ -22,6 +27,36 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
 
   const handleAutomaticClick = async () => {
     await onStartAutomatic();
+  };
+
+  const handleGatherClick = async () => {
+    if (onGather) {
+      await onGather(gatherConfig);
+    }
+  };
+
+  const handleBuildClick = async () => {
+    if (onBuild) {
+      await onBuild(buildingConfig);
+    }
+  };
+
+  const handleRestartClick = async () => {
+    if (onRestartBot) {
+      await onRestartBot();
+    }
+  };
+
+  const handleRemoveClick = async () => {
+    if (onRemoveBot) {
+      await onRemoveBot();
+    }
+  };
+
+  const handleCleanupClick = async () => {
+    if (onCleanupBots) {
+      await onCleanupBots();
+    }
   };
 
   return (
@@ -74,6 +109,84 @@ const BotControls = ({ onStartBot, onStopBot, onGetLLMAdvice, onStartAutomatic, 
             <option value="brick">Brick</option>
             <option value="glass">Glass</option>
           </select>
+        </div>
+        <div className="config-row">
+          <label>Offset (x,y,z)</label>
+          <input
+            type="text"
+            value={buildingConfig.offset || '0,0,0'}
+            onChange={(e) => setBuildingConfig({...buildingConfig, offset: e.target.value})}
+          />
+        </div>
+        <div className="config-row">
+          <div style={{display: 'flex', gap: '8px', alignItems: 'center', width: '100%'}}>
+            <div style={{flex: 1}}>
+              <button 
+                onClick={handleBuildClick}
+                disabled={!botStatus.connected}
+                className="action-button success"
+                style={{width: '100%'}}
+              >
+                Build Structure
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="control-group">
+        <h3>Gathering Configuration</h3>
+        <div className="config-row">
+          <label>Blocks</label>
+          <input
+            type="text"
+            value={gatherConfig.blocks}
+            onChange={(e) => setGatherConfig({...gatherConfig, blocks: e.target.value})}
+            placeholder="oak_log,cobblestone"
+          />
+        </div>
+        <div className="config-row">
+          <label>Radius</label>
+          <input
+            type="number"
+            value={gatherConfig.radius}
+            onChange={(e) => setGatherConfig({...gatherConfig, radius: parseInt(e.target.value) || 30})}
+            min="1"
+          />
+        </div>
+        <button 
+          onClick={handleGatherClick}
+          disabled={!botStatus.connected}
+          className="action-button success"
+        >
+          Start Gathering
+        </button>
+      </div>
+
+      <div className="control-group">
+        <h3>Bot Management</h3>
+        <div className="config-row" style={{justifyContent: 'center', gap: '8px'}}>
+          <button 
+            onClick={handleRestartClick}
+            disabled={!botStatus.connected}
+            className="action-button warning"
+          >
+            Restart Bot
+          </button>
+          <button 
+            onClick={handleRemoveClick}
+            disabled={!botStatus.connected}
+            className="action-button danger"
+          >
+            Remove Bot
+          </button>
+          <button 
+            onClick={handleCleanupClick}
+            disabled={!botStatus.connected}
+            className="action-button error"
+          >
+            Cleanup Bots
+          </button>
         </div>
       </div>
       

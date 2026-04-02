@@ -117,7 +117,21 @@ app.get('/api/health', (req, res) => {
     serverMode: 'online',
     mcServer: process.env.MINECRAFT_SERVER_HOST || 'localhost',
     mcPort: process.env.MINECRAFT_SERVER_PORT || 25565,
+    frontendUrl: `http://localhost:${PORT}/`,
     uptimeSeconds: Math.floor((Date.now() - botServerStartTime) / 1000)
+  });
+});
+
+app.get('/api/frontend/status', (req, res) => {
+  const frontendPath = path.join(__dirname, 'frontend', 'build');
+  const indexHtmlPath = path.join(frontendPath, 'index.html');
+  
+  res.json({
+    frontend: {
+      buildDir: frontendPath,
+      indexHtmlExists: fs.existsSync(indexHtmlPath),
+      status: fs.existsSync(frontendPath) && fs.existsSync(indexHtmlPath) ? 'available' : 'unavailable'
+    }
   });
 });
 
@@ -457,6 +471,80 @@ app.delete('/api/bot/:botId', async (req, res) => {
   } catch (error) {
     console.error('Error removing bot:', error);
     res.status(500).json({ error: `Failed to remove bot: ${error.message}` });
+  }
+});
+
+// Gather resources for a specific bot
+app.post('/api/bot/:botId/gather', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { targetBlocks, radius = 20 } = req.body;
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!targetBlocks || !Array.isArray(targetBlocks) || targetBlocks.length === 0) {
+      return res.status(400).json({ error: 'targetBlocks array is required' });
+    }
+    
+    // Start gathering in background
+    (async () => {
+      try {
+        await bot.behaviors.gatherResources({ targetBlocks, radius });
+        console.log(`[API] Gathering completed for bot ${botId}`);
+      } catch (err) {
+        console.error(`[API] Gathering failed for bot ${botId}:`, err.message);
+      }
+    })();
+    
+    res.json({
+      success: true,
+      message: `Gathering started for bot ${botId}`,
+      targetBlocks,
+      radius
+    });
+  } catch (error) {
+    console.error('Error starting gathering:', error);
+    res.status(500).json({ error: `Failed to start gathering: ${error.message}` });
+  }
+});
+
+// Build structure for a specific bot
+app.post('/api/bot/:botId/build', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { width, length, height, blockType, offsetX = 0, offsetY = 0, offsetZ = 0 } = req.body;
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!width || !length || !height || !blockType) {
+      return res.status(400).json({ error: 'width, length, height, and blockType are required' });
+    }
+    
+    // Start building in background
+    (async () => {
+      try {
+        await bot.behaviors.buildStructure({ width, length, height, blockType, offsetX, offsetY, offsetZ });
+        console.log(`[API] Building completed for bot ${botId}`);
+      } catch (err) {
+        console.error(`[API] Building failed for bot ${botId}:`, err.message);
+      }
+    })();
+    
+    res.json({
+      success: true,
+      message: `Building started for bot ${botId}`,
+      structure: { width, length, height, blockType },
+      offset: { offsetX, offsetY, offsetZ }
+    });
+  } catch (error) {
+    console.error('Error starting building:', error);
+    res.status(500).json({ error: `Failed to start building: ${error.message}` });
   }
 });
 

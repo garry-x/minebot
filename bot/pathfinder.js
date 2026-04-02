@@ -9,11 +9,11 @@ class Pathfinder {
   async moveTo(target, options = {}) {
     const { 
       range = 1, 
-      timeout = 10000, // Reduced from 30s to 10s for faster failure recovery
+      timeout = 30000, // Increased from 10s to 30s to allow more time for movement
       useSprint = true,
       useJump = true,
       useParkour = true,
-      maxRetries = 3 // Add retries for blocked paths
+      maxRetries = 5 // Increased retries for better stuck recovery
     } = options;
   
     console.log(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);

@@ -1,0 +1,2 @@
+#!/bin/bash
+exec node /data/code/minebot/cli.js "$@"

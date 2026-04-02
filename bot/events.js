@@ -5,7 +5,8 @@ module.exports = function(bot) {
       // Listen for experience orb collection
       bot.on('experience', (orb) => {
         if (!orb) return;
-        console.log(`Collected experience orb: ${typeof orb === 'string' ? orb : (orb?.experience || 'N/A')} XP`);
+        const xp = (orb && typeof orb === 'object' && orb.experience !== undefined) ? orb.experience : (typeof orb === 'string' ? orb : 'N/A');
+        console.log(`Collected experience orb: ${xp} XP`);
       });
       
       // Listen for item pickup

@@ -309,6 +309,33 @@
   background: #fde68a;
 }
 
+.bot-controls .action-button.success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.bot-controls .action-button.success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.bot-controls .action-button.danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.bot-controls .action-button.danger:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.bot-controls .action-button.error {
+  background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+  color: white;
+}
+
+.bot-controls .action-button.error:hover {
+  background: linear-gradient(135deg, #7f1d1d 0%, #651616 100%);
+}
+
 /* Monitoring Dashboard Styles */
 .monitoring-dashboard {
   margin-top: 24px;

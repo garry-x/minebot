@@ -5,6 +5,7 @@ import './Dashboard.css';
 
 const Dashboard = ({ user, onLogout }) => {
   const [botStatus, setBotStatus] = useState({ connected: false, message: 'Not connected' });
+  const [currentBotId, setCurrentBotId] = useState(null);
   const [logs, setLogs] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
@@ -14,7 +15,6 @@ const Dashboard = ({ user, onLogout }) => {
   const [experience, setExperience] = useState(0);
   const [gamemode, setGamemode] = useState('survival');
   const [exploration, setExploration] = useState(0);
-  const [currentBotId, setCurrentBotId] = useState(null);
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -247,6 +247,221 @@ const Dashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleGather = async (config) => {
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot to gather resources', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+
+    try {
+      setLogs(prev => [...prev, { 
+        text: `Starting gather for bot...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+
+      const [blocks, radius] = [config.blocks, config.radius];
+      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/gather`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetBlocks: blocks.split(',').map(b => b.trim()),
+          radius: parseInt(radius) || 30
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to start gathering');
+
+      setLogs(prev => [...prev, { 
+        text: `Gathering started: ${data.message || 'Success'}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error starting gather: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
+  };
+
+  const handleBuild = async (config) => {
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot to build structure', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+
+    try {
+      setLogs(prev => [...prev, { 
+        text: `Starting build for bot...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+
+      const [width, length, height, blockType, offset] = [
+        config.width, config.length, config.height, config.blockType, config.offset || '0,0,0'
+      ];
+      const [ox, oy, oz] = offset.split(',').map(n => parseInt(n) || 0);
+
+      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/build`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          width: parseInt(width) || 5,
+          length: parseInt(length) || 5,
+          height: parseInt(height) || 3,
+          blockType: blockType,
+          offsetX: ox,
+          offsetY: oy,
+          offsetZ: oz
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to start building');
+
+      setLogs(prev => [...prev, { 
+        text: `Building started: ${data.message || 'Success'}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error starting build: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
+  };
+
+  const handleRestartBot = async () => {
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot to restart', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+
+    try {
+      setLogs(prev => [...prev, { 
+        text: `Restarting bot...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+
+      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/restart`, {
+        method: 'POST'
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to restart bot');
+
+      setCurrentBotId(data.botId || currentBotId);
+      setBotStatus({ connected: true, message: data.message || 'Bot restarted' });
+
+      setLogs(prev => [...prev, { 
+        text: `Bot restarted: ${data.message || 'Success'}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error restarting bot: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
+  };
+
+  const handleRemoveBot = async () => {
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot to remove', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+
+    try {
+      setLogs(prev => [...prev, { 
+        text: `Removing bot...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+
+      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}`, {
+        method: 'DELETE'
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to remove bot');
+
+      setCurrentBotId(null);
+      setBotStatus({ connected: false, message: 'Bot removed' });
+
+      setLogs(prev => [...prev, { 
+        text: `Bot removed: ${data.message || 'Success'}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error removing bot: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
+  };
+
+  const handleCleanupBots = async () => {
+    try {
+      setLogs(prev => [...prev, { 
+        text: `Cleaning up old bots...`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'info'
+      }]);
+
+      const response = await fetch('http://localhost:9500/api/bot/cleanup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ daysOld: 7 })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Failed to cleanup bots');
+
+      setLogs(prev => [...prev, { 
+        text: `Cleanup completed: ${data.message || 'Success'}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'success'
+      }]);
+    } catch (error) {
+      setLogs(prev => [...prev, { 
+        text: `Error cleaning up bots: ${error.message}`, 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'error'
+      }]);
+    }
+  };
+
   return (
     <div className="dashboard">
       <div className="header">
@@ -269,6 +484,11 @@ const Dashboard = ({ user, onLogout }) => {
             onStopBot={handleStopBot}
             onGetLLMAdvice={handleGetLLMAdvice}
             onStartAutomatic={handleStartAutomatic}
+            onGather={handleGather}
+            onBuild={handleBuild}
+            onRestartBot={handleRestartBot}
+            onRemoveBot={handleRemoveBot}
+            onCleanupBots={handleCleanupBots}
             botStatus={botStatus}
           />
         </div>

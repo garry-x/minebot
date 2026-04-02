@@ -683,9 +683,79 @@ function botControl(action, username, botId, mode) {
           'Content-Type': 'application/json'
         },
         timeout: 30000
-      }, JSON.stringify({ daysOld: 30 }))
+      }, '{}')
       .then(data => {
-        console.log(`Cleanup completed: ${data.deleted} stale bot entries removed`);
+        console.log(`Cleanup completed`);
+        if (data.message) {
+          console.log(`  ${data.message}`);
+        }
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
+    case 'gather':
+      if (!actionArgs?.botId || !actionArgs?.blocks) {
+        console.log('Usage: minebot bot gather --botId <bot-id> --blocks "oak_log,cobblestone" [--radius 30]');
+        console.log('Example: minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30');
+        return;
+      }
+      
+      const blocks = typeof actionArgs.blocks === 'string' ? actionArgs.blocks.split(',').map(b => b.trim()) : [];
+      const radius = typeof actionArgs.radius !== 'undefined' ? parseInt(actionArgs.radius, 10) : 20;
+      
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: `/api/bot/${actionArgs.botId}/gather`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      }, JSON.stringify({ targetBlocks: blocks, radius }))
+      .then(data => {
+        console.log(`Gathering started successfully`);
+        console.log(`  Bot ID: ${actionArgs.botId}`);
+        console.log(`  Target blocks: ${blocks.join(', ')}`);
+        console.log(`  Radius: ${radius} blocks`);
+      })
+      .catch(err => {
+        console.log(`Error: ${err.message}`);
+      });
+      break;
+      
+    case 'build':
+      if (!actionArgs?.botId || !actionArgs?.block || !actionArgs?.size) {
+        console.log('Usage: minebot bot build --botId <bot-id> --block oak_log --size 5x5x3 [--offset 0,0,0]');
+        console.log('Example: minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0');
+        return;
+      }
+      
+      const [width, length, height] = typeof actionArgs.size === 'string' ? actionArgs.size.split('x').map(v => parseInt(v.trim(), 10)) : [];
+      const [offsetX, offsetY, offsetZ] = typeof actionArgs.offset === 'string' ? actionArgs.offset.split(',').map(v => parseInt(v.trim(), 10)) : [0, 0, 0];
+      
+      makeRequest({
+        hostname: botHost,
+        port: botPort,
+        path: `/api/bot/${actionArgs.botId}/build`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 120000 // 2 minute timeout for building
+      }, JSON.stringify({ 
+        width, length, height, 
+        blockType: actionArgs.block,
+        offsetX, offsetY, offsetZ
+      }))
+      .then(data => {
+        console.log(`Building started successfully`);
+        console.log(`  Bot ID: ${actionArgs.botId}`);
+        console.log(`  Block type: ${actionArgs.block}`);
+        console.log(`  Structure size: ${width}x${length}x${height}`);
+        console.log(`  Offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
       })
       .catch(err => {
         console.log(`Error: ${err.message}`);
@@ -751,8 +821,24 @@ let actionArgs = {};
 const remainingArgs = [];
 nonFlagArgs.forEach((arg, idx) => {
   if (arg.startsWith('--')) {
-    const [key, value] = arg.slice(2).split('=');
-    actionArgs[key] = value || true;
+    const rest = arg.slice(2);
+    const eqIndex = rest.indexOf('=');
+    if (eqIndex !== -1) {
+      // Handle --key=value format
+      const key = rest.substring(0, eqIndex);
+      const value = rest.substring(eqIndex + 1);
+      actionArgs[key] = value;
+    } else {
+      // Handle --key value format
+      const key = rest;
+      // Get next non-flag argument as value
+      const nextIdx = idx + 1;
+      if (nextIdx < args.length && !args[nextIdx].startsWith('--')) {
+        actionArgs[key] = args[nextIdx];
+      } else {
+        actionArgs[key] = true;
+      }
+    }
   } else {
     remainingArgs.push(arg);
   }
@@ -803,6 +889,12 @@ switch(system) {
       case 'debug':
         botControl('debug');
         break;
+      case 'gather':
+        botControl('gather');
+        break;
+      case 'build':
+        botControl('build');
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -820,6 +912,15 @@ Bot Actions:
   cleanup          Remove stale bot entries (older than 30 days)
   monitor          Monitor bot status in real-time
   debug            Show real-time bot server logs with color coding
+  gather           Gather resources for a specific bot
+                     --botId <id>       Bot ID to control
+                     --blocks <list>    Comma-separated block types (e.g. oak_log,cobblestone)
+                     --radius <num>     Search radius (default: 20)
+  build            Build structures for a specific bot
+                     --botId <id>       Bot ID to control
+                     --block <type>     Block type to use (e.g. oak_log)
+                     --size <WxLxH>     Structure dimensions (e.g. 5x5x3)
+                     --offset <x,y,z>   Build offset from bot position (default: 0,0,0)
 
 Examples:
   minebot bot start MyBot
@@ -832,6 +933,8 @@ Examples:
    minebot bot cleanup
    minebot bot monitor
    minebot bot debug
+   minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30
+   minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0
   `);
         break;
       default:
@@ -998,6 +1101,34 @@ function showSystemStatus(jsonOutput) {
       req.end();
     });
   }
+
+  function getFrontendStatus() {
+    return new Promise((resolve, reject) => {
+      const req = http.request(`http://${botHost}:${botPort}/api/frontend/status`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ frontend: parsed });
+          } catch (e) {
+            resolve({ frontend: null });
+          }
+        });
+      });
+      
+      req.on('error', () => {
+        resolve({ frontend: null });
+      });
+      
+      req.on('timeout', () => {
+        req.destroy();
+        resolve({ frontend: null });
+      });
+      
+      req.end();
+    });
+  }
   
   function getMinecraftStatus() {
     return new Promise((resolve) => {
@@ -1024,19 +1155,23 @@ function showSystemStatus(jsonOutput) {
   }
   
   async function showStatus(showJson) {
-    const [botStatus, botsStatus, mcStatus] = await Promise.all([getStatus(), getBots(), getMinecraftStatus()]);
+    const [botStatus, botsStatus, frontendStatus, mcStatus] = await Promise.all([getStatus(), getBots(), getFrontendStatus(), getMinecraftStatus()]);
     
     if (showJson) {
       const status = {
         botServer: botStatus.botServer ? {
           status: botStatus.botServer.status,
           uptimeSeconds: botStatus.botServer.uptimeSeconds,
-          serverMode: botStatus.botServer.serverMode
+          serverMode: botStatus.botServer.serverMode,
+          frontendUrl: botStatus.botServer.frontendUrl
         } : { status: 'OFFLINE' },
         bots: botsStatus.bots ? {
           count: botsStatus.bots.count,
           bots: botsStatus.bots.bots
         } : { count: 0, bots: [] },
+        frontend: frontendStatus.frontend ? {
+          status: frontendStatus.frontend.status
+        } : { status: 'unavailable' },
         mcServer: mcStatus.mcServer ? { status: 'RUNNING' } : { status: 'OFFLINE' }
       };
       console.log(JSON.stringify(status, null, 2));
@@ -1048,6 +1183,9 @@ function showSystemStatus(jsonOutput) {
         console.log(`Bot Server: ${botStatus.botServer.status}`);
         console.log(`  Uptime: ${botStatus.botServer.uptimeSeconds || 0} seconds`);
         console.log(`  Mode: ${botStatus.botServer.serverMode}`);
+        if (botStatus.botServer.frontendUrl) {
+          console.log(`  Frontend: ${botStatus.botServer.frontendUrl}`);
+        }
       } else {
         console.log('Bot Server: OFFLINE');
       }
@@ -1060,6 +1198,16 @@ function showSystemStatus(jsonOutput) {
             console.log(`    Mode: ${bot.mode}`);
           }
         });
+      }
+      
+      if (frontendStatus.frontend) {
+        console.log('Frontend:');
+        console.log(`  Status: ${frontendStatus.frontend.status}`);
+        if (botStatus.botServer && botStatus.botServer.frontendUrl) {
+          console.log(`  URL: ${botStatus.botServer.frontendUrl}`);
+        }
+      } else {
+        console.log('Frontend: UNAVAILABLE');
       }
       
       console.log(`Minecraft Server: ${mcStatus.mcServer ? 'RUNNING' : 'OFFLINE'}`);
