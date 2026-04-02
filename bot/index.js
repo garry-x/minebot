@@ -86,6 +86,8 @@ async connect(username, accessToken, startAutomatic = false) {
             // Initialize modules after bot is ready
             this.pathfinder = new Pathfinder(this.bot);
             this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
+            this.autonomousRunning = false;
+            this.goalState = null;
             this.events = require('./events')(this.bot);
             this.events.setupListeners();
            

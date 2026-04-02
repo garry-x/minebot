@@ -1,5 +1,7 @@
 const Vec3 = require('vec3');
 
+const AutonomousEngine = require('./autonomous-engine');
+
 module.exports = function(bot, pathfinder) {
   // Helper function to wait for a condition with retry logic
   const waitForCondition = async (conditionFn, timeout = 10000, retryInterval = 500) => {
@@ -48,10 +50,82 @@ module.exports = function(bot, pathfinder) {
      return positions;
    };
    
-   // Helper to get the wrapper object (the this context)
-   const getWrapper = () => {
-     return bot.__wrapper || null;
-   };
+    // Helper to get the wrapper object (the this context)
+    const getWrapper = () => {
+      return bot.__wrapper || null;
+    };
+
+    const originalAutomaticBehavior = async function(options = {}) {
+      const { 
+        mode = 'survival',
+        targetBlockType = 'oak_log',
+        structureType = 'house',
+        structureSize = { width: 5, length: 5, height: 3 },
+        gatherRadius = 30
+      } = options;
+      
+      const wrapper = getWrapper();
+      if (wrapper) {
+        wrapper.currentMode = mode;
+        console.log(`[Behaviors] Setting currentMode to: ${mode}`);
+      }
+      
+      console.log(`Starting automatic behavior in ${mode} mode`);
+     
+      try {
+        switch (mode) {
+          case 'building':
+            console.log('Auto-gathering materials for building...');
+            await this.gatherResources({
+              targetBlocks: ['oak_log', 'cobblestone'],
+              radius: gatherRadius
+            });
+            
+            console.log('Auto-building structure...');
+            await this.buildStructure({
+              width: structureSize.width,
+              length: structureSize.length,
+              height: structureSize.height,
+              blockType: targetBlockType
+            });
+            break;
+            
+          case 'gathering':
+            console.log(`Auto-gathering ${targetBlockType}...`);
+            await this.gatherResources({
+              targetBlocks: [targetBlockType],
+              radius: gatherRadius
+            });
+            break;
+            
+          case 'survival':
+          default:
+            console.log('Auto-gathering survival resources...');
+            const gathered = await this.gatherResources({
+              targetBlocks: ['oak_log', 'cobblestone', 'wheat', 'carrot'],
+              radius: gatherRadius
+            });
+            
+            if (!gathered) {
+              console.log('No natural resources found nearby - bot can connect and move!');
+            }
+            
+            console.log('Testing basic movement...');
+            const pos = bot.entity.position;
+            await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5));
+            console.log(`Moved to new position: ${bot.entity.position}`);
+            
+            console.log('Automatic behavior completed');
+            return true;
+        }
+        
+        console.log('Automatic behavior completed');
+        return true;
+      } catch (error) {
+        console.error('Error in automatic behavior:', error);
+        throw new Error(`Automatic behavior failed: ${error.message}`);
+      }
+    };
 
   return {
     // Building behaviors
@@ -235,79 +309,45 @@ module.exports = function(bot, pathfinder) {
       bot.setControlState('sprint', state !== false);
     },
     
-    // New: Automatic behavior without LLM
-     automaticBehavior: async function(options = {}) {
-       const { 
-         mode = 'survival', // survival, building, gathering
-         targetBlockType = 'oak_log',
-         structureType = 'house',
-         structureSize = { width: 5, length: 5, height: 3 },
-         gatherRadius = 30
-       } = options;
-       
-       // Track current automatic mode on the wrapper object
-       const wrapper = getWrapper();
-       if (wrapper) {
-         wrapper.currentMode = mode;
-         console.log(`[Behaviors] Setting currentMode to: ${mode}`);
-       }
-       
-       console.log(`Starting automatic behavior in ${mode} mode`);
+    automaticBehavior: async function(options = {}) {
+      const { 
+        mode = 'autonomous',
+        initialGoal = 'basic_survival',
+        gatherRadius = 30
+      } = options;
+      
+      const wrapper = getWrapper();
+      if (wrapper) {
+        wrapper.currentMode = mode;
+        console.log(`[Behaviors] Setting currentMode to: ${mode}`);
+      }
+      
+      console.log(`Starting ${mode} behavior with goal: ${initialGoal}`);
       
       try {
-        switch (mode) {
-          case 'building':
-            // Auto-gather materials then build
-            console.log('Auto-gathering materials for building...');
-            await this.gatherResources({
-              targetBlocks: ['oak_log', 'cobblestone'],
-              radius: gatherRadius
-            });
-            
-            console.log('Auto-building structure...');
-            await this.buildStructure({
-              width: structureSize.width,
-              length: structureSize.length,
-              height: structureSize.height,
-              blockType: targetBlockType
-            });
-            break;
-            
-          case 'gathering':
-            // Auto-gather specific resources
-            console.log(`Auto-gathering ${targetBlockType}...`);
-            await this.gatherResources({
-              targetBlocks: [targetBlockType],
-              radius: gatherRadius
-            });
-            break;
-            
-          case 'survival':
-          default:
-            // Basic survival: gather food, wood, and cobblestone
-            console.log('Auto-gathering survival resources...');
-            const gathered = await this.gatherResources({
-              targetBlocks: ['oak_log', 'cobblestone', 'wheat', 'carrot'],
-              radius: gatherRadius
-            });
-            
-            if (!gathered) {
-              console.log('No natural resources found nearby - bot can connect and move!');
+        if (mode === 'autonomous') {
+          const engine = new AutonomousEngine(bot, pathfinder, this);
+          
+          let isRunning = true;
+          wrapper.autonomousRunning = true;
+          
+          while (isRunning && wrapper.autonomousRunning) {
+            try {
+              const cycleResult = await engine.runCycle(wrapper.goalState || {});
+              console.log(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}`);
+              
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            } catch (cycleError) {
+              console.error(`[Autonomous] Cycle error: ${cycleError.message}`);
+              await new Promise(resolve => setTimeout(resolve, 10000));
             }
-            
-            // Just verify bot can move around
-            console.log('Testing basic movement...');
-            const pos = bot.entity.position;
-            await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5));
-            console.log(`Moved to new position: ${bot.entity.position}`);
-            
-            console.log('Automatic behavior completed');
-            return true;
-            break;
+          }
+          
+          console.log('Autonomous behavior stopped');
+          return true;
+        } else {
+          return await originalAutomaticBehavior.call(this, options);
         }
-        
-        console.log('Automatic behavior completed');
-        return true;
       } catch (error) {
         console.error('Error in automatic behavior:', error);
         throw new Error(`Automatic behavior failed: ${error.message}`);
