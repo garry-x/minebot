@@ -1183,9 +1183,6 @@ function showSystemStatus(jsonOutput) {
         console.log(`Bot Server: ${botStatus.botServer.status}`);
         console.log(`  Uptime: ${botStatus.botServer.uptimeSeconds || 0} seconds`);
         console.log(`  Mode: ${botStatus.botServer.serverMode}`);
-        if (botStatus.botServer.frontendUrl) {
-          console.log(`  Frontend: ${botStatus.botServer.frontendUrl}`);
-        }
       } else {
         console.log('Bot Server: OFFLINE');
       }
