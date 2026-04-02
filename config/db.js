@@ -15,4 +15,7 @@ const db = new sqlite3.Database(path.resolve(__dirname, '../bot_config.db'), (er
   }
 });
 
+const BotGoal = require('./models/BotGoal');
+BotGoal.createTable();
+
 module.exports = db;
