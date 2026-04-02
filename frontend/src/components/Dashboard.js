@@ -470,6 +470,9 @@ const Dashboard = ({ user, onLogout }) => {
           <div className="user-info">
             <span className="username">{user.username}</span>
             <span className="role">{user.role || 'Player'}</span>
+            <button onClick={() => { window.location.hash = 'management'; }} className="back-to-mgmt-btn">
+              ← Management
+            </button>
             <button onClick={onLogout} className="logout-btn">
               Logout
             </button>

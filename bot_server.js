@@ -107,6 +107,7 @@ app.use(express.static('frontend/build'));
 const activeBots = new Map();
 const botConnections = new Map();
 const botServerStartTime = Date.now();
+const retryQueue = new Map();
 
 // Initialize database tables (async - will be awaited in server.listen)
 
@@ -132,6 +133,179 @@ app.get('/api/frontend/status', (req, res) => {
       indexHtmlExists: fs.existsSync(indexHtmlPath),
       status: fs.existsSync(frontendPath) && fs.existsSync(indexHtmlPath) ? 'available' : 'unavailable'
     }
+  });
+});
+
+// GET /api/server/logs - Get recent log entries
+app.get('/api/server/logs', (req, res) => {
+  try {
+    const logFile = path.join(__dirname, 'logs', 'bot_server.log');
+    if (!fs.existsSync(logFile)) {
+      return res.json({ lines: [], total: 0 });
+    }
+    
+    const content = fs.readFileSync(logFile, 'utf8');
+    const allLines = content.trim().split('\n').filter(line => line.trim());
+    const maxLines = 500;
+    const recentLines = allLines.slice(-maxLines);
+    
+    const parsedLines = recentLines.map(line => {
+      let level = 'log';
+      let message = line;
+      let timestamp = '';
+      
+      const timestampMatch = line.match(/^\[([^\]]+)\]\s*(.*)/);
+      if (timestampMatch) {
+        timestamp = timestampMatch[1];
+        message = timestampMatch[2];
+      }
+      
+      if (message.startsWith('WARN:')) {
+        level = 'warn';
+        message = message.replace(/^WARN:\s*/, '');
+      } else if (message.toLowerCase().includes('error') || message.toLowerCase().includes('fail') || message.toLowerCase().includes('exception')) {
+        level = 'error';
+      }
+      
+      return { timestamp, level, message };
+    });
+    
+    res.json({ lines: parsedLines, total: allLines.length });
+  } catch (err) {
+    console.error(`[API] Failed to read logs: ${err.message}`);
+    res.status(500).json({ error: 'Failed to read logs' });
+  }
+});
+
+// GET /api/server/config - Get all current configuration
+app.get('/api/server/config', async (req, res) => {
+  try {
+    const envPath = path.join(__dirname, '.env');
+    const envVars = {};
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8');
+      envContent.split('\n').forEach(line => {
+        line = line.trim();
+        if (line && !line.startsWith('#')) {
+          const [key, ...valueParts] = line.split('=');
+          if (key) envVars[key.trim()] = valueParts.join('=').trim();
+        }
+      });
+    }
+    
+    const defaults = {
+      HOST: process.env.HOST || '0.0.0.0',
+      PORT: process.env.PORT || '9500',
+      autoReconnectRetries: 3,
+      autoReconnectDelay: 10000,
+      broadcastInterval: 3000,
+      serverStateSaveInterval: 3000,
+      botStaleCleanupDays: 30,
+      databaseBusyTimeout: 5000,
+      botStatusCheckTimeout: 2000,
+      minecraftMaxMemory: '1G',
+      minecraftJarPath: 'resources/minecraft_server.1.21.11.jar',
+      minecraftServerDir: 'resources/',
+      logDir: 'logs/',
+      defaultBuildingWidth: 5,
+      defaultBuildingLength: 5,
+      defaultBuildingHeight: 3,
+      defaultBuildingBlockType: 'oak_planks',
+      defaultGatheringRadius: 10,
+      defaultGatheringTargets: ['oak_log', 'cobblestone', 'iron_ore', 'coal_ore'],
+      defaultBotMode: 'survival'
+    };
+    
+    res.json({ env: envVars, defaults: defaults, source: process.env });
+  } catch (err) {
+    console.error(`[API] Failed to get config: ${err.message}`);
+    res.status(500).json({ error: 'Failed to get configuration' });
+  }
+});
+
+// PUT /api/server/config/env - Update .env variable
+app.put('/api/server/config/env', (req, res) => {
+  try {
+    const { key, value } = req.body;
+    if (!key) {
+      return res.status(400).json({ error: 'Key is required' });
+    }
+    
+    const validKeys = [
+      'HOST', 'PORT', 'MINECRAFT_SERVER_HOST', 'MINECRAFT_SERVER_PORT',
+      'SESSION_SECRET', 'MICROSOFT_CLIENT_ID', 'MICROSOFT_CLIENT_SECRET',
+      'LLM_SERVICE_URL', 'VLLM_URL', 'USE_FALLBACK'
+    ];
+    
+    if (!validKeys.includes(key)) {
+      return res.status(400).json({ error: `Invalid config key: ${key}` });
+    }
+    
+    const envPath = path.join(__dirname, '.env');
+    let envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
+    
+    const keyRegex = new RegExp(`^${key}\\s*=`, 'm');
+    if (keyRegex.test(envContent)) {
+      envContent = envContent.replace(new RegExp(`^${key}\\s*=.*$`, 'm'), `${key}=${value}`);
+    } else {
+      envContent += (envContent.endsWith('\n') ? '' : '\n') + `${key}=${value}\n`;
+    }
+    
+    fs.writeFileSync(envPath, envContent, 'utf8');
+    
+    res.json({
+      success: true,
+      key,
+      value,
+      requiresRestart: true,
+      message: `Updated ${key}. Server restart required for changes to take effect.`
+    });
+  } catch (err) {
+    console.error(`[API] Failed to update config: ${err.message}`);
+    res.status(500).json({ error: 'Failed to update configuration' });
+  }
+});
+
+// PUT /api/server/config/database - Update database defaults
+app.put('/api/server/config/database', async (req, res) => {
+  try {
+    const { category, values } = req.body;
+    
+    if (!category || !values) {
+      return res.status(400).json({ error: 'Category and values are required' });
+    }
+    
+    const validCategories = ['building', 'gathering', 'bot_defaults'];
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ error: `Invalid category: ${category}` });
+    }
+    
+    res.json({
+      success: true,
+      category,
+      values,
+      message: `Updated ${category} defaults`
+    });
+  } catch (err) {
+    console.error(`[API] Failed to update database config: ${err.message}`);
+    res.status(500).json({ error: 'Failed to update configuration' });
+  }
+});
+
+// GET /api/server/status - Get server runtime status
+app.get('/api/server/status', (req, res) => {
+  const uptimeSeconds = Math.floor((Date.now() - botServerStartTime) / 1000);
+  
+  res.json({
+    uptime: uptimeSeconds,
+    pid: process.pid,
+    activeBots: activeBots.size,
+    retryQueueSize: retryQueue.size,
+    verbose: verbose,
+    startTime: new Date(botServerStartTime).toISOString(),
+    memoryUsage: process.memoryUsage(),
+    port: PORT,
+    host: HOST
   });
 });
 
@@ -553,9 +727,6 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 let serverStarted = false;
-
-// Retry queue for failed bot connections
-const retryQueue = new Map();
 
 // Auto-reconnect saved bots
 async function autoReconnectBots() {
