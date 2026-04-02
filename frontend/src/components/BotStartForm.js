@@ -1,3 +1,4 @@
+import API_BASE_URL from '../config';
 import React, { useState } from 'react';
 
 const BotStartForm = ({ onClose, onSuccess }) => {
@@ -24,7 +25,7 @@ const BotStartForm = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:9500/api/bot/start', {
+      const response = await fetch(`${API_BASE_URL}/api/bot/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username.trim(), mode })

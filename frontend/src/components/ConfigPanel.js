@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import API_BASE_URL from '../config';
 import ConfigEditModal from './ConfigEditModal';
 
 const CONFIG_CATEGORIES = {
@@ -51,7 +52,7 @@ const ConfigPanel = () => {
 
   const fetchConfig = async () => {
     try {
-      const response = await fetch('http://localhost:9500/api/server/config');
+      const response = await fetch(`${API_BASE_URL}/api/server/config`);
       const data = await response.json();
       setConfig(data);
     } catch (err) {
@@ -126,7 +127,7 @@ const ConfigPanel = () => {
       const isEnv = editSource === '.env' || editSource === '.env / default' || editSource === 'frontend/.env';
       
       if (isEnv) {
-        const response = await fetch('http://localhost:9500/api/server/config/env', {
+        const response = await fetch(`${API_BASE_URL}/api/server/config/env`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key: editingKey, value: editValue })
@@ -136,7 +137,7 @@ const ConfigPanel = () => {
         setSaveMessage(data.message);
       } else {
         const category = editingKey.includes('building') ? 'building' : 'gathering';
-        const response = await fetch('http://localhost:9500/api/server/config/database', {
+        const response = await fetch(`${API_BASE_URL}/api/server/config/database`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category, values: { [editingKey]: editValue } })

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import API_BASE_URL from '../config';
 import './LogViewer.css';
 
 const LogViewer = () => {
@@ -14,7 +15,7 @@ const LogViewer = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch('http://localhost:9500/api/server/logs');
+      const response = await fetch(`${API_BASE_URL}/api/server/logs`);
       const data = await response.json();
       setLogs(data.lines || []);
     } catch (err) {

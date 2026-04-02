@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../config';
 
 const BotDetail = ({ bot, onBotChange }) => {
   const [actionLoading, setActionLoading] = useState(null);
@@ -21,7 +22,7 @@ const BotDetail = ({ bot, onBotChange }) => {
       };
       if (body) options.body = JSON.stringify(body);
       
-      const response = await fetch(`http://localhost:9500${endpoint}`, options);
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || `Failed to ${action}`);
       if (onBotChange) onBotChange();

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BotStartForm from './BotStartForm';
+import API_BASE_URL from '../config';
 
 const BotList = ({ onSelectBot, selectedBotId }) => {
   const [bots, setBots] = useState([]);
@@ -13,7 +14,8 @@ const BotList = ({ onSelectBot, selectedBotId }) => {
   }, []);
 
   useEffect(() => {
-    const wsUrl = 'ws://localhost:9500';
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
     wsRef.current = new WebSocket(wsUrl);
 
     wsRef.current.onopen = () => {
@@ -60,7 +62,7 @@ const BotList = ({ onSelectBot, selectedBotId }) => {
 
   const fetchBots = async () => {
     try {
-      const response = await fetch('http://localhost:9500/api/bots');
+      const response = await fetch(`${API_BASE_URL}/api/bots`);
       const data = await response.json();
       setBots(data.bots || []);
     } catch (err) {

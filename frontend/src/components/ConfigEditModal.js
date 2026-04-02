@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import API_BASE_URL from '../config';
 
 const ConfigEditModal = ({ configKey, currentValue, source, onClose, onSave }) => {
   const [newValue, setNewValue] = useState(currentValue);
@@ -19,7 +20,7 @@ const ConfigEditModal = ({ configKey, currentValue, source, onClose, onSave }) =
 
     try {
       if (isEnv) {
-        const response = await fetch('http://localhost:9500/api/server/config/env', {
+        const response = await fetch(`${API_BASE_URL}/api/server/config/env`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key: configKey, value: newValue })
@@ -29,7 +30,7 @@ const ConfigEditModal = ({ configKey, currentValue, source, onClose, onSave }) =
         onSave(configKey, newValue, true);
       } else {
         const category = configKey.includes('building') ? 'building' : configKey.includes('gathering') ? 'gathering' : 'bot_defaults';
-        const response = await fetch('http://localhost:9500/api/server/config/database', {
+        const response = await fetch(`${API_BASE_URL}/api/server/config/database`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category, values: { [configKey]: newValue } })

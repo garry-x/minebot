@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import API_BASE_URL from '../config';
 import BotControls from './BotControls';
 import MonitoringDashboard from './MonitoringDashboard';
 import './Dashboard.css';
@@ -18,8 +19,9 @@ const Dashboard = () => {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    // Connect to the bot server on port 9500
-    const wsUrl = `ws://localhost:9500`;
+    // Connect to the bot server dynamically
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}`;
     
     const connectWebSocket = () => {
       wsRef.current = new WebSocket(wsUrl);
@@ -113,7 +115,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
       
-      const response = await fetch('http://localhost:9500/api/bot/start', {
+      const response = await fetch(`${API_BASE_URL}/api/bot/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: 'player' })
@@ -157,7 +159,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
       
-      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/stop`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/${currentBotId}/stop`, {
         method: 'POST'
       });
       
@@ -184,7 +186,7 @@ const Dashboard = () => {
 
   const handleGetLLMAdvice = async () => {
     try {
-      const response = await fetch('http://localhost:9500/api/llm/strategy', {
+      const response = await fetch(`${API_BASE_URL}/api/llm/strategy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -217,7 +219,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
       
-      const response = await fetch('http://localhost:9500/api/bot/automatic', {
+      const response = await fetch(`${API_BASE_URL}/api/bot/automatic`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -265,7 +267,7 @@ const Dashboard = () => {
       }]);
 
       const [blocks, radius] = [config.blocks, config.radius];
-      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/gather`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/${currentBotId}/gather`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -314,7 +316,7 @@ const Dashboard = () => {
       ];
       const [ox, oy, oz] = offset.split(',').map(n => parseInt(n) || 0);
 
-      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/build`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/${currentBotId}/build`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -363,7 +365,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
 
-      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}/restart`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/${currentBotId}/restart`, {
         method: 'POST'
       });
 
@@ -405,7 +407,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
 
-      const response = await fetch(`http://localhost:9500/api/bot/${currentBotId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/${currentBotId}`, {
         method: 'DELETE'
       });
 
@@ -438,7 +440,7 @@ const Dashboard = () => {
         type: 'info'
       }]);
 
-      const response = await fetch('http://localhost:9500/api/bot/cleanup', {
+      const response = await fetch(`${API_BASE_URL}/api/bot/cleanup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ daysOld: 7 })
