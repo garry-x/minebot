@@ -5,20 +5,13 @@ import ConfigPanel from './ConfigPanel';
 import LogViewer from './LogViewer';
 import './BotManagement.css';
 
-const BotManagement = ({ user, onLogout }) => {
+const BotManagement = () => {
   const [activeTab, setActiveTab] = useState('bots');
 
   return (
     <div className="management-page">
       <header className="management-header">
         <h1>Minecraft AI Robot Manager</h1>
-        <div className="header-right">
-          <div className="user-info">
-            <span className="username">{user.username}</span>
-            <span className="role">{user.role || 'Player'}</span>
-          </div>
-          <button onClick={onLogout} className="logout-btn">Logout</button>
-        </div>
       </header>
       
       <nav className="tab-nav">

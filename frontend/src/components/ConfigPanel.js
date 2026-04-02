@@ -46,6 +46,7 @@ const ConfigPanel = () => {
 
   useEffect(() => {
     fetchConfig();
+    fetchDefaultValues();
   }, []);
 
   const fetchConfig = async () => {
@@ -57,6 +58,50 @@ const ConfigPanel = () => {
       console.error('Failed to fetch config:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDefaultValues = () => {
+    const defaultConfig = {
+      'HOST': process.env.REACT_APP_DEFAULT_HOST || '0.0.0.0',
+      'PORT': process.env.REACT_APP_DEFAULT_PORT || '9500',
+      'autoReconnectRetries': '3',
+      'autoReconnectDelay': '5000',
+      'broadcastInterval': '5000',
+      'serverStateSaveInterval': '30000',
+      'botStaleCleanupDays': '7',
+      'MINECRAFT_SERVER_HOST': process.env.REACT_APP_DEFAULT_MC_HOST || 'localhost',
+      'MINECRAFT_SERVER_PORT': process.env.REACT_APP_DEFAULT_MC_PORT || '25565',
+      'minecraftJarPath': 'server.jar',
+      'minecraftServerDir': 'server',
+      'minecraftMaxMemory': '4G',
+      'LLM_SERVICE_URL': process.env.REACT_APP_DEFAULT_LLM_URL || 'http://localhost:8080',
+      'VLLM_URL': process.env.REACT_APP_DEFAULT_VLLM_URL || 'http://localhost:8080',
+      'USE_FALLBACK': 'true',
+      'FRONTEND_PORT': process.env.REACT_APP_DEFAULT_FRONTEND_PORT || '3000',
+      'defaultBuildingWidth': '10',
+      'defaultBuildingLength': '10',
+      'defaultBuildingHeight': '6',
+      'defaultBuildingBlockType': 'stone',
+      'defaultGatheringRadius': '30'
+    };
+    
+    const allConfig = { env: {}, defaults: {} };
+    Object.keys(CONFIG_CATEGORIES).forEach(category => {
+      CONFIG_CATEGORIES[category].forEach(item => {
+        const value = defaultConfig[item.key];
+        if (value !== undefined) {
+          if (item.source.includes('.env')) {
+            allConfig.env[item.key] = value;
+          } else {
+            allConfig.defaults[item.key] = value;
+          }
+        }
+      });
+    });
+    
+    if (!config) {
+      setConfig(allConfig);
     }
   };
 

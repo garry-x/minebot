@@ -3,7 +3,7 @@ import BotControls from './BotControls';
 import MonitoringDashboard from './MonitoringDashboard';
 import './Dashboard.css';
 
-const Dashboard = ({ user, onLogout }) => {
+const Dashboard = () => {
   const [botStatus, setBotStatus] = useState({ connected: false, message: 'Not connected' });
   const [currentBotId, setCurrentBotId] = useState(null);
   const [logs, setLogs] = useState([]);
@@ -108,7 +108,7 @@ const Dashboard = ({ user, onLogout }) => {
   const handleStartBot = async () => {
     try {
       setLogs(prev => [...prev, { 
-        text: `Starting bot: ${user.username}...`, 
+        text: `Starting bot...`, 
         timestamp: new Date().toLocaleTimeString(),
         type: 'info'
       }]);
@@ -116,7 +116,7 @@ const Dashboard = ({ user, onLogout }) => {
       const response = await fetch('http://localhost:9500/api/bot/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user.username })
+        body: JSON.stringify({ username: 'player' })
       });
       
       const data = await response.json();
@@ -212,7 +212,7 @@ const Dashboard = ({ user, onLogout }) => {
   const handleStartAutomatic = async () => {
     try {
       setLogs(prev => [...prev, { 
-        text: `Starting automatic behavior for ${user.username}...`, 
+        text: `Starting automatic behavior...`, 
         timestamp: new Date().toLocaleTimeString(),
         type: 'info'
       }]);
@@ -221,7 +221,7 @@ const Dashboard = ({ user, onLogout }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: user.username,
+          username: 'player',
           mode: 'survival'
         })
       });
@@ -466,17 +466,9 @@ const Dashboard = ({ user, onLogout }) => {
     <div className="dashboard">
       <div className="header">
         <div className="header-content">
-          <h1>Minecraft AI Robot Controller</h1>
-          <div className="user-info">
-            <span className="username">{user.username}</span>
-            <span className="role">{user.role || 'Player'}</span>
-            <button onClick={() => { window.location.hash = 'management'; }} className="back-to-mgmt-btn">
-              ← Management
-            </button>
-            <button onClick={onLogout} className="logout-btn">
-              Logout
-            </button>
-          </div>
+          <button onClick={() => { window.location.hash = 'management'; }} className="back-to-mgmt-btn">
+            ← Management
+          </button>
         </div>
       </div>
       

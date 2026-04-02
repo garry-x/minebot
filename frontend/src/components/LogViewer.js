@@ -25,19 +25,11 @@ const LogViewer = () => {
   };
 
   useEffect(() => {
-    fetchLogs();
+    const timer = setInterval(() => {
+      fetchLogs();
+    }, 3000);
+    return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    if (autoRefresh) {
-      intervalRef.current = setInterval(fetchLogs, refreshInterval);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [autoRefresh, refreshInterval]);
 
   useEffect(() => {
     if (autoScroll && logContainerRef.current) {
@@ -50,6 +42,19 @@ const LogViewer = () => {
     if (searchQuery && !log.message.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
+
+  const formatLogMessage = (message) => {
+    if (message.includes('Bot started successfully') || message.includes('Bot stopped successfully')) {
+      return <span style={{ color: '#22c55e', fontWeight: 'bold' }}>{message}</span>;
+    }
+    if (message.includes('Error') || message.includes('Failed')) {
+      return <span style={{ color: '#ef4444' }}>{message}</span>;
+    }
+    if (message.includes('WARN')) {
+      return <span style={{ color: '#f59e0b' }}>{message}</span>;
+    }
+    return message;
+  };
 
   return (
     <div className="log-viewer">
@@ -97,8 +102,8 @@ const LogViewer = () => {
             <div key={i} className="log-line">
               <span className="log-timestamp">{log.timestamp || ''}</span>
               <span className={`log-level ${log.level}`}>{log.level}</span>
-              <span className={`log-message ${searchQuery && log.message.toLowerCase().includes(searchQuery.toLowerCase()) ? 'highlight' : ''}`}>
-                {log.message}
+              <span className="log-message">
+                {formatLogMessage(log.message)}
               </span>
             </div>
           ))
