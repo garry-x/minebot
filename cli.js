@@ -1110,20 +1110,20 @@ function showSystemStatus(jsonOutput) {
         res.on('end', () => {
           try {
             const parsed = JSON.parse(data);
-            resolve({ frontend: parsed });
+            resolve(parsed);
           } catch (e) {
-            resolve({ frontend: null });
+            resolve(null);
           }
         });
       });
       
       req.on('error', () => {
-        resolve({ frontend: null });
+        resolve(null);
       });
       
       req.on('timeout', () => {
         req.destroy();
-        resolve({ frontend: null });
+        resolve(null);
       });
       
       req.end();
