@@ -26,3 +26,98 @@
 [12:01:33] [Server thread/INFO]: testuser2 joined the game
 [12:01:37] [Server thread/INFO]: testuser2 lost connection: Disconnected
 [12:01:37] [Server thread/INFO]: testuser2 left the game
+[12:18:05] [Server thread/INFO]: testuser lost connection: Disconnected
+[12:18:05] [Server thread/INFO]: testuser left the game
+[12:18:36] [Server thread/INFO]: TestBot[/127.0.0.1:57108] logged in with entity id 17997 at (-9.5, 107.0, -7.5)
+[12:18:36] [Server thread/INFO]: TestBot joined the game
+[12:18:38] [Server thread/INFO]: testuser[/127.0.0.1:41336] logged in with entity id 18088 at (-6.5, 102.0, -7.5)
+[12:18:38] [Server thread/INFO]: testuser joined the game
+[12:18:40] [Server thread/WARN]: TestBot moved too quickly! 6.8,-27.0,6.8
+[12:18:41] [Server thread/WARN]: testuser moved too quickly! 6.8,-26.0,6.8
+[12:21:44] [Server thread/INFO]: TestBot was slain by Zombie
+[12:21:48] [Server thread/INFO]: testuser was slain by Zombie
+[12:21:57] [Server thread/INFO]: TestBot was slain by Zombie
+[12:22:03] [Server thread/INFO]: testuser was slain by Zombie
+[12:22:15] [Server thread/INFO]: TestBot was slain by Zombie
+[12:22:17] [Server thread/INFO]: testuser was slain by Zombie
+[12:22:26] [Server thread/INFO]: testuser was slain by Zombie
+[12:22:44] [Server thread/INFO]: TestBot was slain by Zombie
+[12:24:08] [Server thread/INFO]: TestBot was slain by Zombie
+[12:25:00] [Server thread/INFO]: TestBot was slain by Zombie
+[12:25:12] [Server thread/INFO]: TestBot was slain by Zombie
+[12:43:02] [Server thread/INFO]: Villager dcx['Mason'/18061, l='ServerLevel[world]', x=55.13, y=74.00, z=82.58] died, message: 'Mason was slain by Zombie'
+[14:03:56] [Server thread/INFO]: testuser lost connection: You logged in from another location
+[14:03:56] [Server thread/INFO]: testuser left the game
+[14:03:56] [Server thread/INFO]: testuser[/127.0.0.1:34612] logged in with entity id 26925 at (-5.5, 87.0, -2.5)
+[14:03:56] [Server thread/INFO]: testuser joined the game
+[14:03:59] [Server thread/WARN]: testuser moved too quickly! 4.879019093738451,-12.0,5.8
+[14:05:43] [Server thread/INFO]: TestBot was slain by Phantom
+[14:06:39] [Server thread/INFO]: TestBot was slain by Phantom
+[14:06:59] [Server thread/INFO]: TestBot was slain by Zombie
+[14:07:07] [Server thread/INFO]: testuser was slain by Zombie
+[14:07:16] [Server thread/INFO]: TestBot was slain by Zombie
+[14:07:29] [Server thread/INFO]: testuser was slain by Zombie
+[14:07:48] [Server thread/INFO]: testuser was slain by Zombie
+[14:08:05] [Server thread/INFO]: TestBot was slain by Zombie
+[14:08:18] [Server thread/INFO]: testuser was slain by Zombie
+[14:08:30] [Server thread/INFO]: testuser was slain by Zombie
+[14:08:45] [Server thread/INFO]: testuser was slain by Zombie
+[14:08:53] [Server thread/INFO]: TestBot was slain by Zombie
+[14:09:09] [Server thread/INFO]: testuser was slain by Zombie
+[14:09:20] [Server thread/INFO]: TestBot was slain by Zombie
+[14:09:30] [Server thread/INFO]: testuser was shot by Skeleton
+[14:52:35] [Server thread/INFO]: Villager dcx['Nitwit'/18045, l='ServerLevel[world]', x=54.65, y=61.35, z=91.70] died, message: 'Nitwit was slain by Zombie'
+[15:45:08] [Server thread/INFO]: testuser was slain by Phantom
+[15:45:19] [Server thread/INFO]: TestBot was shot by Skeleton
+[15:46:29] [Server thread/INFO]: testuser was slain by Phantom
+[15:46:51] [Server thread/INFO]: TestBot was slain by Phantom
+[15:46:58] [Server thread/INFO]: testuser was slain by Zombie
+[15:47:31] [Server thread/INFO]: testuser was slain by Zombie
+[15:47:46] [Server thread/INFO]: testuser was shot by Skeleton
+[15:48:33] [Server thread/INFO]: TestBot was slain by Phantom
+[15:56:30] [Server thread/INFO]: testuser lost connection: You logged in from another location
+[15:56:30] [Server thread/INFO]: testuser left the game
+[15:56:30] [Server thread/INFO]: testuser[/127.0.0.1:33654] logged in with entity id 38028 at (-3.5, 94.0, -7.5)
+[15:56:30] [Server thread/INFO]: testuser joined the game
+[15:56:30] [Server thread/INFO]: TestBot lost connection: You logged in from another location
+[15:56:30] [Server thread/INFO]: TestBot left the game
+[15:56:30] [Server thread/INFO]: TestBot[/127.0.0.1:33662] logged in with entity id 38046 at (-9.5, 75.0, 9.5)
+[15:56:30] [Server thread/INFO]: TestBot joined the game
+[15:56:33] [Server thread/WARN]: testuser moved too quickly! 5.034925639900791,-19.0,5.8
+[16:03:46] [Server thread/INFO]: testuser was slain by Zombie
+[16:04:01] [Server thread/INFO]: TestBot was slain by Zombie
+[17:25:03] [Server thread/INFO]: testuser was slain by Phantom
+[17:26:38] [Server thread/INFO]: TestBot was slain by Phantom
+[17:27:45] [Server thread/INFO]: TestBot was slain by Phantom
+[17:28:36] [Server thread/INFO]: TestBot was slain by Phantom
+[17:42:23] [Server thread/INFO]: testuser was slain by Zombie
+[17:42:39] [Server thread/INFO]: testuser was slain by Zombie
+[17:42:49] [Server thread/INFO]: TestBot was slain by Zombie
+[17:46:24] [Server thread/INFO]: TestBot was slain by Zombie
+[17:46:57] [Server thread/INFO]: TestBot was slain by Zombie
+[17:47:10] [Server thread/INFO]: TestBot was slain by Zombie
+[17:47:31] [Server thread/INFO]: TestBot was slain by Zombie
+[17:47:56] [Server thread/INFO]: TestBot was slain by Zombie
+[17:48:08] [Server thread/INFO]: TestBot was slain by Zombie
+[19:08:39] [Server thread/INFO]: TestBot was slain by Phantom
+[19:09:00] [Server thread/INFO]: TestBot was slain by Zombie
+[19:09:18] [Server thread/INFO]: TestBot was slain by Zombie
+[19:09:30] [Server thread/INFO]: TestBot was slain by Zombie
+[19:09:37] [Server thread/INFO]: TestBot was blown up by Creeper
+[19:25:40] [Server thread/INFO]: TestBot was slain by Zombie
+[19:25:56] [Server thread/INFO]: TestBot was slain by Zombie
+[19:45:30] [Server thread/INFO]: TestBot was slain by Phantom
+[19:47:03] [Server thread/INFO]: testuser was slain by Phantom
+[19:48:50] [Server thread/INFO]: testuser was slain by Phantom
+[20:07:52] [Server thread/INFO]: TestBot was slain by Zombie
+[20:08:11] [Server thread/INFO]: TestBot was slain by Zombie
+[20:08:43] [Server thread/INFO]: TestBot was slain by Zombie
+[20:09:30] [Server thread/INFO]: TestBot was slain by Zombie
+[21:45:13] [Server thread/INFO]: testuser was slain by Phantom
+[22:02:37] [Server thread/INFO]: TestBot was slain by Phantom
+[22:04:10] [Server thread/INFO]: testuser was slain by Phantom
+[22:05:37] [Server thread/INFO]: TestBot was slain by Phantom
+[22:06:22] [Server thread/INFO]: TestBot was slain by Phantom
+[22:07:11] [Server thread/INFO]: TestBot was slain by Phantom
+[22:07:57] [Server thread/INFO]: TestBot was slain by Phantom
+[22:08:31] [Server thread/INFO]: testuser was slain by Phantom

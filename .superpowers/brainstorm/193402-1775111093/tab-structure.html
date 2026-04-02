@@ -1,0 +1,26 @@
+<h2>Bot Server Management — Tab Navigation</h2>
+<p class="subtitle">The management page now has 3 tabs. Does this structure work for you?</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="bots" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>🤖 Bots (existing)</h3>
+      <p>Split panel: bot list on left, selected bot details and quick actions on right. View and control all bots.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="server" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>⚙️ Server Config</h3>
+      <p>Display server parameters (port, host, MC server, LLM URL, retry settings, etc.). Show current values with edit capability where supported.</p>
+    </div>
+  </div>
+  <div class="option" data-choice="logs" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>📋 Logs</h3>
+      <p>Live log viewer reading from bot_server.log. Auto-refresh every 5 seconds. Filter by level (log/error/warn). Scrollable with timestamps.</p>
+    </div>
+  </div>
+</div>

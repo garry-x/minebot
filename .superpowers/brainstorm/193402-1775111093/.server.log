@@ -1,0 +1,9 @@
+{"type":"server-started","port":65011,"host":"0.0.0.0","url_host":"localhost","url":"http://localhost:65011","screen_dir":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093"}
+{"type":"screen-added","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/layout.html"}
+{"source":"user-event","type":"click","text":"C\n    \n      Split Panel\n      Left: bot list (compact). Right: selected bot's detailed controls and monitoring. Like a master-detail view.","choice":"c","id":null,"timestamp":1775111156976}
+{"type":"screen-added","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/split-panel-wireframe.html"}
+{"type":"screen-added","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/waiting.html"}
+{"type":"screen-updated","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/split-panel-wireframe.html"}
+{"type":"screen-added","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/waiting-2.html"}
+{"type":"screen-added","file":"/data/code/minebot/.superpowers/brainstorm/193402-1775111093/tab-structure.html"}
+{"type":"server-stopped","reason":"owner process exited"}
