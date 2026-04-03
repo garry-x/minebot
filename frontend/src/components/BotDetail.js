@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
+import GoalProgress from './GoalProgress';
+import AutonomousDashboard from './AutonomousDashboard';
+import EnhancedControls from './EnhancedControls';
 
 const BotDetail = ({ bot, onBotChange }) => {
   const [actionLoading, setActionLoading] = useState(null);
+  const [goalState, setGoalState] = useState(null);
+  const [progress, setProgress] = useState(0);
 
-  if (!bot) {
-    return (
-      <div className="empty-state">
-        <h3>No bot selected</h3>
-        <p>Select a bot from the list to view details and manage it</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fetchGoalStatus = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/bot/${bot.botId}/goal/status`);
+        if (response.ok) {
+          const data = await response.json();
+          setGoalState(data.goalState || data);
+          setProgress(data.progress || 0);
+        }
+      } catch (err) {
+        console.error('Failed to fetch goal status:', err);
+      }
+    };
+    fetchGoalStatus();
+  }, [bot.botId]);
 
   const handleAction = async (action, endpoint, method = 'POST', body = null) => {
     setActionLoading(action);
@@ -32,6 +44,15 @@ const BotDetail = ({ bot, onBotChange }) => {
       setActionLoading(null);
     }
   };
+
+  if (!bot) {
+    return (
+      <div className="empty-state">
+        <h3>No bot selected</h3>
+        <p>Select a bot from the list to view details and manage it</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -68,6 +89,12 @@ const BotDetail = ({ bot, onBotChange }) => {
           <div className="stat-value mode">{bot.gameMode || bot.mode || 'survival'}</div>
         </div>
       </div>
+
+      <GoalProgress botId={bot.botId} goalState={goalState} progress={progress} />
+
+      <AutonomousDashboard botId={bot.botId} botState={bot} />
+
+      <EnhancedControls botId={bot.botId} />
 
       <div className="quick-actions">
         <h3>Quick Actions</h3>
