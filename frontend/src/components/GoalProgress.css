@@ -1,0 +1,139 @@
+.goal-progress {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.goal-progress.empty {
+  text-align: center;
+  padding: 24px;
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.goal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.goal-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.goal-controls select {
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.change-goal-btn {
+  padding: 4px 12px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.change-goal-btn:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.progress-bar-container {
+  margin: 16px 0;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #ecf0f1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-top: 4px;
+}
+
+.sub-tasks {
+  margin: 16px 0;
+}
+
+.sub-task {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 4px 0;
+  background: white;
+  border-radius: 4px;
+  border-left: 4px solid #95a5a6;
+}
+
+.sub-task.completed {
+  border-left-color: #2ecc71;
+  opacity: 0.8;
+}
+
+.task-icon {
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.task-name {
+  flex: 1;
+  font-size: 14px;
+}
+
+.task-progress {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.materials-list {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+}
+
+.materials-list h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.material-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.material-name {
+  color: #34495e;
+}
+
+.material-count {
+  color: #7f8c8d;
+  font-weight: 500;
+}
