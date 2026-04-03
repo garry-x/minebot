@@ -198,3 +198,90 @@ Starting net.minecraft.server.Main
 [22:07:11] [Server thread/INFO]: TestBot was slain by Phantom
 [22:07:57] [Server thread/INFO]: TestBot was slain by Phantom
 [22:08:31] [Server thread/INFO]: testuser was slain by Phantom
+[22:25:55] [Server thread/INFO]: TestBot was shot by Skeleton
+[22:33:33] [Server thread/INFO]: testuser lost connection: Disconnected
+[22:33:33] [Server thread/INFO]: testuser left the game
+[22:33:40] [Server thread/INFO]: TestBot lost connection: Disconnected
+[22:33:40] [Server thread/INFO]: TestBot left the game
+[22:34:40] [Server thread/INFO]: Server empty for 60 seconds, pausing
+[08:11:10] [Server thread/INFO]: test_bot_123[/127.0.0.1:58794] logged in with entity id 71984 at (8.5, 74.0, -4.5)
+[08:11:10] [Server thread/INFO]: test_bot_123 joined the game
+[08:19:47] [Server thread/INFO]: test_bot_456[/127.0.0.1:34200] logged in with entity id 73138 at (-2.5, 98.0, -8.5)
+[08:19:47] [Server thread/INFO]: test_bot_456 joined the game
+[08:19:50] [Server thread/WARN]: test_bot_456 moved too quickly! 5.8,-23.0,4.936254119295577
+[08:20:13] [Server thread/INFO]: test_bot_456 was slain by Zombie
+[08:20:28] [Server thread/INFO]: test_bot_123 was slain by Zombie
+[08:20:46] [Server thread/INFO]: test_bot_456 was slain by Zombie
+[08:20:47] [Server thread/INFO]: test_bot_123 lost connection: Disconnected
+[08:20:47] [Server thread/INFO]: test_bot_123 left the game
+[08:20:47] [Server thread/INFO]: test_bot_456 lost connection: Disconnected
+[08:20:47] [Server thread/INFO]: test_bot_456 left the game
+[08:21:47] [Server thread/INFO]: Server empty for 60 seconds, pausing
+[08:31:51] [Server thread/INFO]: TestBot[/127.0.0.1:58600] logged in with entity id 73322 at (-4.5, 86.0, -2.5)
+[08:31:51] [Server thread/INFO]: TestBot joined the game
+[08:31:54] [Server thread/WARN]: TestBot moved too quickly! 4.879019093738451,-14.0,5.8
+[08:32:06] [Server thread/INFO]: TestBot was slain by Zombie
+[08:32:26] [Server thread/INFO]: TestBot was slain by Zombie
+[08:33:30] [Server thread/INFO]: TestBot was slain by Zombie
+[08:33:44] [Server thread/INFO]: TestBot was slain by Zombie
+[08:33:59] [Server thread/INFO]: TestBot was slain by Zombie
+[08:34:12] [Server thread/INFO]: TestBot was slain by Zombie
+[08:34:26] [Server thread/INFO]: TestBot was slain by Zombie
+[08:34:38] [Server thread/INFO]: TestBot was slain by Zombie
+[08:35:19] [Server thread/INFO]: TestBot was slain by Zombie
+[08:35:30] [Server thread/INFO]: TestBot was slain by Zombie
+[08:35:47] [Server thread/INFO]: TestBot was slain by Zombie
+[08:49:07] [Server thread/INFO]: TestBot was speared by Zombie
+[08:49:37] [Server thread/INFO]: TestBot was speared by Zombie
+[08:49:46] [Server thread/INFO]: TestBot was speared by Zombie
+[08:50:26] [Server thread/INFO]: TestBot was speared by Zombie
+[08:50:45] [Server thread/INFO]: TestBot was speared by Zombie
+[08:51:41] [Server thread/INFO]: TestBot was speared by Zombie
+[08:53:01] [Server thread/INFO]: TestBot was speared by Zombie
+[08:53:24] [Server thread/INFO]: TestBot was slain by Zombie
+[08:54:24] [Server thread/INFO]: TestBot was speared by Zombie
+[09:10:22] [Server thread/INFO]: TestBot was slain by Zombie
+[09:10:35] [Server thread/INFO]: TestBot was slain by Zombie
+[09:10:48] [Server thread/INFO]: TestBot was slain by Zombie
+[09:11:07] [Server thread/INFO]: TestBot was slain by Zombie
+[09:48:17] [Server thread/INFO]: TestBot lost connection: You logged in from another location
+[09:48:17] [Server thread/INFO]: TestBot left the game
+[09:48:17] [Server thread/INFO]: TestBot[/127.0.0.1:58878] logged in with entity id 80960 at (-0.5, 88.0, -7.5)
+[09:48:17] [Server thread/INFO]: TestBot joined the game
+[09:48:20] [Server thread/WARN]: TestBot moved too quickly! 4.831036564704812,-14.0,5.8
+[09:48:25] [Server thread/INFO]: testusr[/127.0.0.1:42904] logged in with entity id 81211 at (-6.5, 82.0, 1.5)
+[09:48:25] [Server thread/INFO]: testusr joined the game
+[09:48:28] [Server thread/WARN]: testusr moved too quickly! 4.878126698748222,-11.0,4.8
+[09:49:42] [Server thread/INFO]: TestBot was slain by Zombie
+[09:49:55] [Server thread/INFO]: TestBot was slain by Zombie
+[09:50:10] [Server thread/INFO]: TestBot was slain by Zombie
+[09:50:25] [Server thread/INFO]: TestBot was slain by Zombie
+[09:50:40] [Server thread/INFO]: testusr was slain by Zombie
+[09:50:55] [Server thread/INFO]: TestBot was slain by Zombie
+[09:51:09] [Server thread/INFO]: TestBot was slain by Zombie
+[09:51:10] [Server thread/INFO]: testusr was slain by Zombie
+[09:51:21] [Server thread/INFO]: testusr was slain by Zombie
+[09:51:31] [Server thread/INFO]: testusr was slain by Zombie
+[09:51:35] [Server thread/INFO]: TestBot was slain by Zombie
+[09:51:44] [Server thread/INFO]: TestBot was slain by Zombie
+[09:51:48] [Server thread/INFO]: testusr was doomed to fall
+[09:51:51] [Server thread/WARN]: testusr moved too quickly! -9.2,-4.0,9.413860999827715
+[09:51:55] [Server thread/INFO]: TestBot was slain by Zombie
+[09:52:02] [Server thread/INFO]: testusr was slain by Zombie
+[09:52:05] [Server thread/WARN]: testusr moved too quickly! -7.8,-1.0,8.570360488921436
+[09:52:12] [Server thread/INFO]: testusr was slain by Zombie
+[09:52:15] [Server thread/WARN]: testusr moved too quickly! 5.901384282049497,-21.59260459763506,12.170685324387323
+[09:52:21] [Server thread/INFO]: TestBot was slain by Zombie
+[09:52:34] [Server thread/INFO]: testusr was slain by Zombie
+[09:52:47] [Server thread/INFO]: testusr was slain by Zombie
+[09:52:58] [Server thread/INFO]: testusr was slain by Zombie
+[09:52:59] [Server thread/INFO]: TestBot was killed by Witch using magic
+[09:53:07] [Server thread/INFO]: testusr was killed by Witch using magic
+[09:53:20] [Server thread/INFO]: testusr was slain by Zombie
+[09:53:23] [Server thread/WARN]: testusr moved too quickly! 11.2,-9.0,6.643994924997818
+[09:53:30] [Server thread/INFO]: TestBot was slain by Zombie
+[09:53:35] [Server thread/INFO]: testusr was slain by Zombie
+[09:53:39] [Server thread/WARN]: testusr moved wrongly!
+[09:53:42] [Server thread/INFO]: TestBot was slain by Zombie
+[09:53:45] [Server thread/INFO]: testusr was slain by Zombie
+[09:53:55] [Server thread/INFO]: testusr was killed by Witch using magic

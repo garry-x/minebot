@@ -1,205 +1,734 @@
-[2026-04-02T07:56:29.642Z] PID file written: /data/code/minebot/logs/bot_server.pid (PID: 201642)
-[2026-04-02T07:56:29.657Z] WebSocket server listening on 0.0.0.0:9500
-[2026-04-02T07:56:29.658Z] Connected to SQLite database
-[2026-04-02T07:56:29.671Z] [Server] Loading saved bots for auto-reconnect...
-[2026-04-02T07:56:29.893Z] [Server] Attempting to reconnect bot: testuser (bot_1775109836020_a4giedd6x)
-[2026-04-02T07:56:29.894Z] [Bot] Creating bot with username: testuser
-[2026-04-02T07:56:29.894Z] [Bot] Target server: localhost:25565
-[2026-04-02T07:56:29.894Z] [Bot] Start automatic: true
-[2026-04-02T07:56:30.088Z] [Bot] Setting up event listeners
-[2026-04-02T07:56:30.235Z] [Bot] End event triggered - connection closed
-[2026-04-02T07:56:30.766Z] [Bot] Bot spawned
-[2026-04-02T07:56:30.766Z] [Bot] mcData loaded: true
-[2026-04-02T07:56:30.767Z] [Bot] mcData attached to _client: true
-[2026-04-02T07:56:30.768Z] [Bot] Bot version: 1.21.11
-[2026-04-02T07:56:30.768Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
-[2026-04-02T07:56:30.769Z] [Bot] Bot ready with ID: bot_1775109836020_a4giedd6x
-[2026-04-02T07:56:30.769Z] [Bot] Starting automatic behavior in survival mode
-[2026-04-02T07:56:30.769Z] [Behaviors] Setting currentMode to: survival
-[2026-04-02T07:56:30.769Z] Starting automatic behavior in survival mode
-[2026-04-02T07:56:30.769Z] Auto-gathering survival resources...
-[2026-04-02T07:56:30.769Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-02T07:56:30.770Z] No target blocks found nearby
-[2026-04-02T07:56:30.770Z] No natural resources found nearby - bot can connect and move!
-[2026-04-02T07:56:30.770Z] Testing basic movement...
-[2026-04-02T07:56:30.771Z] [Pathfinder] Moving to 1.5, 94, -2.5
-[2026-04-02T07:56:30.771Z] [Server] Bot reconnected successfully: bot_1775109836020_a4giedd6x
-[2026-04-02T07:56:30.771Z] [Server] Attempting to reconnect bot: TestBot (bot_1775057165404_xh9x4rtj3)
-[2026-04-02T07:56:30.771Z] [Bot] Creating bot with username: TestBot
-[2026-04-02T07:56:30.771Z] [Bot] Target server: localhost:25565
-[2026-04-02T07:56:30.772Z] [Bot] Start automatic: true
-[2026-04-02T07:56:30.774Z] [Bot] Setting up event listeners
-[2026-04-02T07:56:30.783Z] WebSocket client connected
-[2026-04-02T07:56:30.796Z] WebSocket connected to backend at localhost:9500/
-[2026-04-02T07:56:30.801Z] Registered WebSocket for bot bot_1775109836020_a4giedd6x
-[2026-04-02T07:56:30.802Z] Bot registration acknowledged
-[2026-04-02T07:56:30.831Z] [Bot] End event triggered - connection closed
-[2026-04-02T07:56:30.997Z] [Bot] Bot spawned
-[2026-04-02T07:56:30.998Z] [Bot] mcData loaded: true
-[2026-04-02T07:56:30.998Z] [Bot] mcData attached to _client: true
-[2026-04-02T07:56:31.000Z] [Bot] Bot version: 1.21.11
-[2026-04-02T07:56:31.000Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
-[2026-04-02T07:56:31.000Z] [Bot] Bot ready with ID: bot_1775057165404_xh9x4rtj3
-[2026-04-02T07:56:31.000Z] [Bot] Starting automatic behavior in survival mode
-[2026-04-02T07:56:31.000Z] [Behaviors] Setting currentMode to: survival
-[2026-04-02T07:56:31.000Z] Starting automatic behavior in survival mode
-[2026-04-02T07:56:31.000Z] Auto-gathering survival resources...
-[2026-04-02T07:56:31.000Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-02T07:56:31.001Z] No target blocks found nearby
-[2026-04-02T07:56:31.001Z] No natural resources found nearby - bot can connect and move!
-[2026-04-02T07:56:31.001Z] Testing basic movement...
-[2026-04-02T07:56:31.001Z] [Pathfinder] Moving to -4.5, 75, 14.5
-[2026-04-02T07:56:31.001Z] [Server] Bot reconnected successfully: bot_1775057165404_xh9x4rtj3
-[2026-04-02T07:56:31.002Z] WebSocket client connected
-[2026-04-02T07:56:31.002Z] WebSocket connected to backend at localhost:9500/
-[2026-04-02T07:56:31.004Z] Registered WebSocket for bot bot_1775057165404_xh9x4rtj3
-[2026-04-02T07:56:31.005Z] Bot registration acknowledged
-[2026-04-02T07:57:00.884Z] [Pathfinder] Movement stopped
-[2026-04-02T07:57:00.884Z] [Pathfinder] Timeout reached after 30000ms
-[2026-04-02T07:57:00.885Z] Error in automatic behavior: Error: Movement timeout
+[2026-04-03T01:48:14.431Z] PID file written: /data/code/minebot/logs/bot_server.pid (PID: 294134)
+[2026-04-03T01:48:14.526Z] WebSocket server listening on 0.0.0.0:9500
+[2026-04-03T01:48:14.529Z] Connected to SQLite database
+[2026-04-03T01:48:14.570Z] [Server] Loading saved bots for auto-reconnect...
+[2026-04-03T01:48:15.995Z] [Server] Attempting to reconnect bot: TestBot (bot_1775057165404_xh9x4rtj3)
+[2026-04-03T01:48:15.997Z] [Bot] Creating bot with username: TestBot
+[2026-04-03T01:48:15.997Z] [Bot] Target server: localhost:25565
+[2026-04-03T01:48:15.997Z] [Bot] Start automatic: true
+[2026-04-03T01:48:16.855Z] [Bot] Setting up event listeners
+[2026-04-03T01:48:17.453Z] [Bot] End event triggered - connection closed
+[2026-04-03T01:48:17.880Z] [Bot] Bot spawned
+[2026-04-03T01:48:17.881Z] [Bot] mcData loaded: true
+[2026-04-03T01:48:17.881Z] [Bot] mcData attached to _client: true
+[2026-04-03T01:48:17.883Z] [Bot] Bot version: 1.21.11
+[2026-04-03T01:48:17.883Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
+[2026-04-03T01:48:17.885Z] [Bot] Bot ready with ID: bot_1775057165404_xh9x4rtj3
+[2026-04-03T01:48:17.885Z] [Bot] Starting automatic behavior in survival mode
+[2026-04-03T01:48:17.885Z] [Behaviors] Setting currentMode to: survival
+[2026-04-03T01:48:17.885Z] Starting survival behavior with goal: basic_survival
+[2026-04-03T01:48:17.885Z] [Behaviors] Setting currentMode to: survival
+[2026-04-03T01:48:17.885Z] Starting automatic behavior in survival mode
+[2026-04-03T01:48:17.885Z] Auto-gathering survival resources...
+[2026-04-03T01:48:17.885Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-03T01:48:17.887Z] No target blocks found nearby
+[2026-04-03T01:48:17.887Z] No natural resources found nearby - bot can connect and move!
+[2026-04-03T01:48:17.887Z] Testing basic movement...
+[2026-04-03T01:48:17.887Z] [Pathfinder] Moving to 4.5, 88, -2.5
+[2026-04-03T01:48:17.889Z] [Server] Bot reconnected successfully: bot_1775057165404_xh9x4rtj3
+[2026-04-03T01:48:17.892Z] WebSocket client connected
+[2026-04-03T01:48:17.914Z] WebSocket connected to backend at localhost:9500/
+[2026-04-03T01:48:17.921Z] Registered WebSocket for bot bot_1775057165404_xh9x4rtj3
+[2026-04-03T01:48:17.921Z] Bot registration acknowledged
+[2026-04-03T01:48:25.225Z] [API] Received request to start bot with username: testusr
+[2026-04-03T01:48:25.226Z] [API] Creating bot instance for host: localhost:25565
+[2026-04-03T01:48:25.226Z] [API] Attempting to connect bot...
+[2026-04-03T01:48:25.226Z] [Bot] Creating bot with username: testusr
+[2026-04-03T01:48:25.226Z] [Bot] Target server: localhost:25565
+[2026-04-03T01:48:25.226Z] [Bot] Start automatic: true
+[2026-04-03T01:48:25.241Z] [Bot] Bot ID set to: bot_1775180905241_i7fcpb727
+[2026-04-03T01:48:25.242Z] [Bot] Setting up event listeners
+[2026-04-03T01:48:25.467Z] [Bot] Bot spawned
+[2026-04-03T01:48:25.468Z] [Bot] mcData loaded: true
+[2026-04-03T01:48:25.468Z] [Bot] mcData attached to _client: true
+[2026-04-03T01:48:25.470Z] [Bot] Bot version: 1.21.11
+[2026-04-03T01:48:25.470Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
+[2026-04-03T01:48:25.470Z] [Bot] Bot ready with ID: bot_1775180905241_i7fcpb727
+[2026-04-03T01:48:25.470Z] [Bot] Starting automatic behavior in survival mode
+[2026-04-03T01:48:25.470Z] [Behaviors] Setting currentMode to: survival
+[2026-04-03T01:48:25.470Z] Starting survival behavior with goal: basic_survival
+[2026-04-03T01:48:25.470Z] [Behaviors] Setting currentMode to: survival
+[2026-04-03T01:48:25.470Z] Starting automatic behavior in survival mode
+[2026-04-03T01:48:25.470Z] Auto-gathering survival resources...
+[2026-04-03T01:48:25.470Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-03T01:48:25.473Z] No target blocks found nearby
+[2026-04-03T01:48:25.474Z] No natural resources found nearby - bot can connect and move!
+[2026-04-03T01:48:25.474Z] Testing basic movement...
+[2026-04-03T01:48:25.474Z] [Pathfinder] Moving to -1.5, 82, 6.5
+[2026-04-03T01:48:25.475Z] [API] Bot started successfully with ID: bot_1775180905475_31afnite7
+[2026-04-03T01:48:25.496Z] WebSocket client connected
+[2026-04-03T01:48:25.498Z] WebSocket connected to backend at localhost:9500/
+[2026-04-03T01:48:25.507Z] Registered WebSocket for bot bot_1775180905241_i7fcpb727
+[2026-04-03T01:48:25.512Z] Bot registration acknowledged
+[2026-04-03T01:48:27.506Z] [API] Bot state saved successfully
+[2026-04-03T01:48:39.733Z] [Behaviors] Setting currentMode to: autonomous
+[2026-04-03T01:48:39.733Z] Starting autonomous behavior with goal: basic_survival
+[2026-04-03T01:48:39.735Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:48:40.137Z] No target blocks found nearby
+[2026-04-03T01:48:40.139Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:48:45.140Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:48:45.216Z] No target blocks found nearby
+[2026-04-03T01:48:45.217Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:48:48.094Z] [Pathfinder] Movement stopped
+[2026-04-03T01:48:48.094Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:48:48.096Z] Error in automatic behavior: Error: Movement timeout
     at Timeout.tryMove [as _onTimeout] (/data/code/minebot/bot/pathfinder.js:45:18)
     at listOnTimeout (node:internal/timers:605:17)
     at process.processTimers (node:internal/timers:541:7)
-[2026-04-02T07:57:00.885Z] [Bot] Error in automatic behavior: Automatic behavior failed: Movement timeout
-[2026-04-02T07:57:01.127Z] [Pathfinder] Movement stopped
-[2026-04-02T07:57:01.127Z] [Pathfinder] Timeout reached after 30000ms
-[2026-04-02T07:57:01.128Z] Error in automatic behavior: Error: Movement timeout
+[2026-04-03T01:48:48.097Z] Error in automatic behavior: Error: Automatic behavior failed: Movement timeout
+    at Object.originalAutomaticBehavior (/data/code/minebot/bot/behaviors.js:126:15)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runNextTicks (node:internal/process/task_queues:69:3)
+    at process.processTimers (node:internal/timers:538:9)
+    at async Object.automaticBehavior (/data/code/minebot/bot/behaviors.js:349:18)
+[2026-04-03T01:48:48.097Z] [Bot] Error in automatic behavior: Automatic behavior failed: Automatic behavior failed: Movement timeout
+[2026-04-03T01:48:50.217Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:48:50.487Z] No target blocks found nearby
+[2026-04-03T01:48:50.487Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:48:55.489Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:48:55.552Z] No target blocks found nearby
+[2026-04-03T01:48:55.552Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:48:55.776Z] [Pathfinder] Movement stopped
+[2026-04-03T01:48:55.776Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:48:55.776Z] Error in automatic behavior: Error: Movement timeout
     at Timeout.tryMove [as _onTimeout] (/data/code/minebot/bot/pathfinder.js:45:18)
     at listOnTimeout (node:internal/timers:605:17)
     at process.processTimers (node:internal/timers:541:7)
-[2026-04-02T07:57:01.128Z] [Bot] Error in automatic behavior: Automatic behavior failed: Movement timeout
-[2026-04-02T08:03:46.734Z] [Bot] Bot died
-[2026-04-02T08:03:46.778Z] [Bot] Bot respawned
-[2026-04-02T08:03:46.778Z] Bot respawned
-[2026-04-02T08:04:01.333Z] [Bot] Bot died
-[2026-04-02T08:04:01.379Z] [Bot] Bot respawned
-[2026-04-02T08:04:01.379Z] Bot respawned
-[2026-04-02T08:53:59.196Z] WebSocket client disconnected
-[2026-04-02T08:53:59.253Z] WebSocket client connected
-[2026-04-02T08:53:59.254Z] Registered WebSocket for bot management
-[2026-04-02T08:55:40.127Z] WebSocket client disconnected
-[2026-04-02T08:55:43.135Z] WebSocket client connected
-[2026-04-02T08:56:32.671Z] WebSocket client disconnected
-[2026-04-02T08:56:32.726Z] WebSocket client connected
-[2026-04-02T08:56:32.727Z] Registered WebSocket for bot management
-[2026-04-02T09:25:03.034Z] [Bot] Bot died
-[2026-04-02T09:25:03.079Z] [Bot] Bot respawned
-[2026-04-02T09:25:03.079Z] Bot respawned
-[2026-04-02T09:26:38.035Z] [Bot] Bot died
-[2026-04-02T09:26:38.078Z] [Bot] Bot respawned
-[2026-04-02T09:26:38.078Z] Bot respawned
-[2026-04-02T09:27:45.335Z] [Bot] Bot died
-[2026-04-02T09:27:45.378Z] [Bot] Bot respawned
-[2026-04-02T09:27:45.378Z] Bot respawned
-[2026-04-02T09:28:36.985Z] [Bot] Bot died
-[2026-04-02T09:28:37.028Z] [Bot] Bot respawned
-[2026-04-02T09:28:37.028Z] Bot respawned
-[2026-04-02T09:42:23.284Z] [Bot] Bot died
-[2026-04-02T09:42:23.328Z] [Bot] Bot respawned
-[2026-04-02T09:42:23.328Z] Bot respawned
-[2026-04-02T09:42:39.684Z] [Bot] Bot died
-[2026-04-02T09:42:39.729Z] [Bot] Bot respawned
-[2026-04-02T09:42:39.729Z] Bot respawned
-[2026-04-02T09:42:49.183Z] [Bot] Bot died
-[2026-04-02T09:42:49.229Z] [Bot] Bot respawned
-[2026-04-02T09:42:49.229Z] Bot respawned
-[2026-04-02T09:46:24.032Z] [Bot] Bot died
-[2026-04-02T09:46:24.078Z] [Bot] Bot respawned
-[2026-04-02T09:46:24.078Z] Bot respawned
-[2026-04-02T09:46:57.282Z] [Bot] Bot died
-[2026-04-02T09:46:57.329Z] [Bot] Bot respawned
-[2026-04-02T09:46:57.329Z] Bot respawned
-[2026-04-02T09:47:10.284Z] [Bot] Bot died
-[2026-04-02T09:47:10.328Z] [Bot] Bot respawned
-[2026-04-02T09:47:10.328Z] Bot respawned
-[2026-04-02T09:47:31.983Z] [Bot] Bot died
-[2026-04-02T09:47:32.029Z] [Bot] Bot respawned
-[2026-04-02T09:47:32.029Z] Bot respawned
-[2026-04-02T09:47:56.382Z] [Bot] Bot died
-[2026-04-02T09:47:56.428Z] [Bot] Bot respawned
-[2026-04-02T09:47:56.428Z] Bot respawned
-[2026-04-02T09:48:08.836Z] [Bot] Bot died
-[2026-04-02T09:48:08.878Z] [Bot] Bot respawned
-[2026-04-02T09:48:08.878Z] Bot respawned
-[2026-04-02T11:08:39.435Z] [Bot] Bot died
-[2026-04-02T11:08:39.478Z] [Bot] Bot respawned
-[2026-04-02T11:08:39.478Z] Bot respawned
-[2026-04-02T11:09:00.685Z] [Bot] Bot died
-[2026-04-02T11:09:00.728Z] [Bot] Bot respawned
-[2026-04-02T11:09:00.728Z] Bot respawned
-[2026-04-02T11:09:18.034Z] [Bot] Bot died
-[2026-04-02T11:09:18.078Z] [Bot] Bot respawned
-[2026-04-02T11:09:18.078Z] Bot respawned
-[2026-04-02T11:09:30.234Z] [Bot] Bot died
-[2026-04-02T11:09:30.278Z] [Bot] Bot respawned
-[2026-04-02T11:09:30.278Z] Bot respawned
-[2026-04-02T11:09:37.189Z] [Bot] Bot died
-[2026-04-02T11:09:37.228Z] [Bot] Bot respawned
-[2026-04-02T11:09:37.228Z] Bot respawned
-[2026-04-02T11:25:40.335Z] [Bot] Bot died
-[2026-04-02T11:25:40.378Z] [Bot] Bot respawned
-[2026-04-02T11:25:40.378Z] Bot respawned
-[2026-04-02T11:25:56.734Z] [Bot] Bot died
-[2026-04-02T11:25:56.778Z] [Bot] Bot respawned
-[2026-04-02T11:25:56.778Z] Bot respawned
-[2026-04-02T11:45:30.135Z] [Bot] Bot died
-[2026-04-02T11:45:30.178Z] [Bot] Bot respawned
-[2026-04-02T11:45:30.178Z] Bot respawned
-[2026-04-02T11:47:03.735Z] [Bot] Bot died
-[2026-04-02T11:47:03.778Z] [Bot] Bot respawned
-[2026-04-02T11:47:03.778Z] Bot respawned
-[2026-04-02T11:48:50.583Z] [Bot] Bot died
-[2026-04-02T11:48:50.628Z] [Bot] Bot respawned
-[2026-04-02T11:48:50.628Z] Bot respawned
-[2026-04-02T12:07:52.483Z] [Bot] Bot died
-[2026-04-02T12:07:52.528Z] [Bot] Bot respawned
-[2026-04-02T12:07:52.528Z] Bot respawned
-[2026-04-02T12:08:11.282Z] [Bot] Bot died
-[2026-04-02T12:08:11.328Z] [Bot] Bot respawned
-[2026-04-02T12:08:11.328Z] Bot respawned
-[2026-04-02T12:08:43.783Z] [Bot] Bot died
-[2026-04-02T12:08:43.828Z] [Bot] Bot respawned
-[2026-04-02T12:08:43.828Z] Bot respawned
-[2026-04-02T12:09:30.783Z] [Bot] Bot died
-[2026-04-02T12:09:30.828Z] [Bot] Bot respawned
-[2026-04-02T12:09:30.828Z] Bot respawned
-[2026-04-02T12:57:23.950Z] WebSocket client disconnected
-[2026-04-02T12:57:23.990Z] WebSocket client connected
-[2026-04-02T12:57:23.991Z] Registered WebSocket for bot management
-[2026-04-02T12:58:24.228Z] WebSocket client disconnected
-[2026-04-02T12:58:27.260Z] WebSocket client connected
-[2026-04-02T13:43:03.956Z] WebSocket client connected
-[2026-04-02T13:43:03.961Z] Registered WebSocket for bot management
-[2026-04-02T13:45:13.736Z] [Bot] Bot died
-[2026-04-02T13:45:13.779Z] [Bot] Bot respawned
-[2026-04-02T13:45:13.779Z] Bot respawned
-[2026-04-02T14:02:37.983Z] [Bot] Bot died
-[2026-04-02T14:02:38.028Z] [Bot] Bot respawned
-[2026-04-02T14:02:38.028Z] Bot respawned
-[2026-04-02T14:04:10.784Z] [Bot] Bot died
-[2026-04-02T14:04:10.828Z] [Bot] Bot respawned
-[2026-04-02T14:04:10.828Z] Bot respawned
-[2026-04-02T14:05:37.235Z] [Bot] Bot died
-[2026-04-02T14:05:37.279Z] [Bot] Bot respawned
-[2026-04-02T14:05:37.279Z] Bot respawned
-[2026-04-02T14:06:22.084Z] [Bot] Bot died
-[2026-04-02T14:06:22.129Z] [Bot] Bot respawned
-[2026-04-02T14:06:22.129Z] Bot respawned
-[2026-04-02T14:07:11.832Z] [Bot] Bot died
-[2026-04-02T14:07:11.879Z] [Bot] Bot respawned
-[2026-04-02T14:07:11.879Z] Bot respawned
-[2026-04-02T14:07:57.832Z] [Bot] Bot died
-[2026-04-02T14:07:57.879Z] [Bot] Bot respawned
-[2026-04-02T14:07:57.879Z] Bot respawned
-[2026-04-02T14:08:31.134Z] [Bot] Bot died
-[2026-04-02T14:08:31.178Z] [Bot] Bot respawned
-[2026-04-02T14:08:31.179Z] Bot respawned
-[2026-04-02T14:15:16.958Z] WebSocket client disconnected
-[2026-04-02T14:15:16.958Z] WebSocket client disconnected
-[2026-04-02T14:15:17.173Z] WebSocket client connected
-[2026-04-02T14:15:17.174Z] Registered WebSocket for bot management
-[2026-04-02T14:23:16.920Z] WebSocket client connected
-[2026-04-02T14:23:16.932Z] Registered WebSocket for bot management
-[2026-04-02T14:24:24.710Z] WebSocket client connected
-[2026-04-02T14:24:24.725Z] Registered WebSocket for bot management
-[2026-04-02T14:24:26.548Z] WebSocket client disconnected
+[2026-04-03T01:48:55.776Z] Error in automatic behavior: Error: Automatic behavior failed: Movement timeout
+    at Object.originalAutomaticBehavior (/data/code/minebot/bot/behaviors.js:126:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.automaticBehavior (/data/code/minebot/bot/behaviors.js:349:18)
+[2026-04-03T01:48:55.776Z] [Bot] Error in automatic behavior: Automatic behavior failed: Automatic behavior failed: Movement timeout
+[2026-04-03T01:49:00.552Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:00.825Z] No target blocks found nearby
+[2026-04-03T01:49:00.825Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:05.826Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:05.878Z] No target blocks found nearby
+[2026-04-03T01:49:05.879Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:10.879Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:11.133Z] No target blocks found nearby
+[2026-04-03T01:49:11.133Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:16.134Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:16.196Z] No target blocks found nearby
+[2026-04-03T01:49:16.196Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:21.197Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:21.463Z] No target blocks found nearby
+[2026-04-03T01:49:21.463Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:26.463Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:26.706Z] No target blocks found nearby
+[2026-04-03T01:49:26.707Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:31.707Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:31.976Z] No target blocks found nearby
+[2026-04-03T01:49:31.976Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:36.977Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:37.031Z] No target blocks found nearby
+[2026-04-03T01:49:37.031Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:42.033Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:42.303Z] No target blocks found nearby
+[2026-04-03T01:49:42.303Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:42.336Z] [Bot] Bot died
+[2026-04-03T01:49:42.379Z] [Bot] Bot respawned
+[2026-04-03T01:49:42.380Z] Bot respawned
+[2026-04-03T01:49:47.304Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:47.362Z] No target blocks found nearby
+[2026-04-03T01:49:47.362Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:52.364Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:52.430Z] No target blocks found nearby
+[2026-04-03T01:49:52.430Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:49:55.147Z] [Bot] Bot died
+[2026-04-03T01:49:55.186Z] [Bot] Bot respawned
+[2026-04-03T01:49:55.186Z] Bot respawned
+[2026-04-03T01:49:57.430Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:49:57.488Z] No target blocks found nearby
+[2026-04-03T01:49:57.488Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:02.488Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:02.756Z] No target blocks found nearby
+[2026-04-03T01:50:02.756Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:07.757Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:08.053Z] No target blocks found nearby
+[2026-04-03T01:50:08.053Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:10.073Z] [Bot] Bot died
+[2026-04-03T01:50:10.136Z] [Bot] Bot respawned
+[2026-04-03T01:50:10.137Z] Bot respawned
+[2026-04-03T01:50:13.053Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:13.297Z] No target blocks found nearby
+[2026-04-03T01:50:13.297Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:18.298Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:18.599Z] No target blocks found nearby
+[2026-04-03T01:50:18.599Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:23.599Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:23.659Z] No target blocks found nearby
+[2026-04-03T01:50:23.659Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:25.664Z] [Bot] Bot died
+[2026-04-03T01:50:25.680Z] [Bot] Bot respawned
+[2026-04-03T01:50:25.681Z] Bot respawned
+[2026-04-03T01:50:28.659Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:28.876Z] No target blocks found nearby
+[2026-04-03T01:50:28.876Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:33.877Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:34.162Z] No target blocks found nearby
+[2026-04-03T01:50:34.163Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:39.163Z] [Autonomous] Cycle: heal_immediate, Priority: emergency
+[2026-04-03T01:50:40.213Z] [Bot] Bot died
+[2026-04-03T01:50:40.235Z] [Bot] Bot respawned
+[2026-04-03T01:50:40.235Z] Bot respawned
+[2026-04-03T01:50:44.167Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:44.942Z] No target blocks found nearby
+[2026-04-03T01:50:44.942Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:49.945Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:50.705Z] No target blocks found nearby
+[2026-04-03T01:50:50.705Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:50:55.637Z] [Bot] Bot died
+[2026-04-03T01:50:55.679Z] [Bot] Bot respawned
+[2026-04-03T01:50:55.679Z] Bot respawned
+[2026-04-03T01:50:55.706Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:50:55.878Z] No target blocks found nearby
+[2026-04-03T01:50:55.878Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:51:00.878Z] [Pathfinder] Moving to 3.5, 81, 12.5
+[2026-04-03T01:51:09.591Z] [Bot] Bot died
+[2026-04-03T01:51:09.636Z] [Bot] Bot respawned
+[2026-04-03T01:51:09.636Z] Bot respawned
+[2026-04-03T01:51:10.788Z] [Bot] Bot died
+[2026-04-03T01:51:10.837Z] [Bot] Bot respawned
+[2026-04-03T01:51:10.837Z] Bot respawned
+[2026-04-03T01:51:21.587Z] [Bot] Bot died
+[2026-04-03T01:51:21.635Z] [Bot] Bot respawned
+[2026-04-03T01:51:21.636Z] Bot respawned
+[2026-04-03T01:51:31.062Z] [Pathfinder] Movement stopped
+[2026-04-03T01:51:31.062Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:51:31.063Z] [Autonomous] Cycle error: Movement timeout
+[2026-04-03T01:51:31.895Z] [Bot] Bot died
+[2026-04-03T01:51:31.931Z] [Bot] Bot respawned
+[2026-04-03T01:51:31.931Z] Bot respawned
+[2026-04-03T01:51:35.169Z] [Bot] Bot died
+[2026-04-03T01:51:35.183Z] [Bot] Bot respawned
+[2026-04-03T01:51:35.184Z] Bot respawned
+[2026-04-03T01:51:41.063Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:51:41.557Z] No target blocks found nearby
+[2026-04-03T01:51:41.557Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:51:44.287Z] [Bot] Bot died
+[2026-04-03T01:51:44.329Z] [Bot] Bot respawned
+[2026-04-03T01:51:44.329Z] Bot respawned
+[2026-04-03T01:51:46.559Z] [Pathfinder] Moving to 0.5, 94, 8.5
+[2026-04-03T01:51:48.269Z] [Bot] Bot died
+[2026-04-03T01:51:48.288Z] [Bot] Bot respawned
+[2026-04-03T01:51:48.288Z] Bot respawned
+[2026-04-03T01:51:55.300Z] [Bot] Bot died
+[2026-04-03T01:51:55.334Z] [Bot] Bot respawned
+[2026-04-03T01:51:55.334Z] Bot respawned
+[2026-04-03T01:52:02.769Z] [Bot] Bot died
+[2026-04-03T01:52:02.785Z] [Bot] Bot respawned
+[2026-04-03T01:52:02.785Z] Bot respawned
+[2026-04-03T01:52:12.913Z] [Bot] Bot died
+[2026-04-03T01:52:12.986Z] [Bot] Bot respawned
+[2026-04-03T01:52:12.986Z] Bot respawned
+[2026-04-03T01:52:16.764Z] [Pathfinder] Movement stopped
+[2026-04-03T01:52:16.764Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:52:16.765Z] [Autonomous] Cycle error: Movement timeout
+[2026-04-03T01:52:21.349Z] [Bot] Bot died
+[2026-04-03T01:52:21.385Z] [Bot] Bot respawned
+[2026-04-03T01:52:21.386Z] Bot respawned
+[2026-04-03T01:52:26.765Z] [Pathfinder] Moving to 5.1910409896835485, 86, 8.324913325289899
+[2026-04-03T01:52:34.920Z] [Bot] Bot died
+[2026-04-03T01:52:34.940Z] [Bot] Bot respawned
+[2026-04-03T01:52:34.940Z] Bot respawned
+[2026-04-03T01:52:47.640Z] [Bot] Bot died
+[2026-04-03T01:52:47.680Z] [Bot] Bot respawned
+[2026-04-03T01:52:47.680Z] Bot respawned
+[2026-04-03T01:52:56.923Z] [Pathfinder] Movement stopped
+[2026-04-03T01:52:56.923Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:52:56.923Z] [Autonomous] Cycle error: Movement timeout
+[2026-04-03T01:52:58.170Z] [Bot] Bot died
+[2026-04-03T01:52:58.187Z] [Bot] Bot respawned
+[2026-04-03T01:52:58.188Z] Bot respawned
+[2026-04-03T01:52:59.070Z] [Bot] Bot died
+[2026-04-03T01:52:59.086Z] [Bot] Bot respawned
+[2026-04-03T01:52:59.087Z] Bot respawned
+[2026-04-03T01:53:06.924Z] [Autonomous] Cycle: heal_immediate, Priority: emergency
+[2026-04-03T01:53:07.062Z] [Bot] Bot died
+[2026-04-03T01:53:07.086Z] [Bot] Bot respawned
+[2026-04-03T01:53:07.086Z] Bot respawned
+[2026-04-03T01:53:11.925Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:53:12.151Z] No target blocks found nearby
+[2026-04-03T01:53:12.151Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:53:17.152Z] [Pathfinder] Moving to 19.5, 74, 2.5
+[2026-04-03T01:53:20.271Z] [Bot] Bot died
+[2026-04-03T01:53:20.295Z] [Bot] Bot respawned
+[2026-04-03T01:53:20.296Z] Bot respawned
+[2026-04-03T01:53:30.866Z] [Bot] Bot died
+[2026-04-03T01:53:30.886Z] [Bot] Bot respawned
+[2026-04-03T01:53:30.886Z] Bot respawned
+[2026-04-03T01:53:35.114Z] [Bot] Bot died
+[2026-04-03T01:53:35.139Z] [Bot] Bot respawned
+[2026-04-03T01:53:35.140Z] Bot respawned
+[2026-04-03T01:53:42.638Z] [Bot] Bot died
+[2026-04-03T01:53:42.679Z] [Bot] Bot respawned
+[2026-04-03T01:53:42.679Z] Bot respawned
+[2026-04-03T01:53:45.390Z] [Bot] Bot died
+[2026-04-03T01:53:45.434Z] [Bot] Bot respawned
+[2026-04-03T01:53:45.434Z] Bot respawned
+[2026-04-03T01:53:47.308Z] [Pathfinder] Movement stopped
+[2026-04-03T01:53:47.308Z] [Pathfinder] Timeout reached after 30000ms
+[2026-04-03T01:53:47.308Z] [Autonomous] Cycle error: Movement timeout
+[2026-04-03T01:53:55.286Z] [Bot] Bot died
+[2026-04-03T01:53:55.331Z] [Bot] Bot respawned
+[2026-04-03T01:53:55.331Z] Bot respawned
+[2026-04-03T01:53:57.309Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:53:58.189Z] No target blocks found nearby
+[2026-04-03T01:53:58.190Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:03.190Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:04.031Z] No target blocks found nearby
+[2026-04-03T01:54:04.031Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:09.031Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:09.228Z] No target blocks found nearby
+[2026-04-03T01:54:09.228Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:14.228Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:15.084Z] No target blocks found nearby
+[2026-04-03T01:54:15.084Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:20.084Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:20.610Z] No target blocks found nearby
+[2026-04-03T01:54:20.611Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:25.611Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:26.420Z] No target blocks found nearby
+[2026-04-03T01:54:26.420Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:31.421Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:32.252Z] No target blocks found nearby
+[2026-04-03T01:54:32.253Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:37.253Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:38.076Z] No target blocks found nearby
+[2026-04-03T01:54:38.076Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:43.077Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:43.625Z] No target blocks found nearby
+[2026-04-03T01:54:43.625Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:48.625Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:49.465Z] No target blocks found nearby
+[2026-04-03T01:54:49.465Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:54:54.465Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:54:55.261Z] No target blocks found nearby
+[2026-04-03T01:54:55.261Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:00.262Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:00.815Z] No target blocks found nearby
+[2026-04-03T01:55:00.815Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:05.815Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:05.998Z] No target blocks found nearby
+[2026-04-03T01:55:05.998Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:10.998Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:11.806Z] No target blocks found nearby
+[2026-04-03T01:55:11.806Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:16.808Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:16.987Z] No target blocks found nearby
+[2026-04-03T01:55:16.987Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:21.987Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:22.520Z] No target blocks found nearby
+[2026-04-03T01:55:22.520Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:27.521Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:27.685Z] No target blocks found nearby
+[2026-04-03T01:55:27.685Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:32.685Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:32.856Z] No target blocks found nearby
+[2026-04-03T01:55:32.856Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:37.856Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:38.027Z] No target blocks found nearby
+[2026-04-03T01:55:38.027Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:43.027Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:43.808Z] No target blocks found nearby
+[2026-04-03T01:55:43.808Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:48.809Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:49.357Z] No target blocks found nearby
+[2026-04-03T01:55:49.357Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:54.358Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:54.535Z] No target blocks found nearby
+[2026-04-03T01:55:54.535Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:55:59.535Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:55:59.710Z] No target blocks found nearby
+[2026-04-03T01:55:59.710Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:04.858Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:05.626Z] No target blocks found nearby
+[2026-04-03T01:56:05.626Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:10.626Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:10.803Z] No target blocks found nearby
+[2026-04-03T01:56:10.803Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:15.803Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:15.954Z] No target blocks found nearby
+[2026-04-03T01:56:15.954Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:20.954Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:21.135Z] No target blocks found nearby
+[2026-04-03T01:56:21.135Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:26.135Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:26.318Z] No target blocks found nearby
+[2026-04-03T01:56:26.318Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:31.318Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:31.873Z] No target blocks found nearby
+[2026-04-03T01:56:31.873Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:36.874Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:37.438Z] No target blocks found nearby
+[2026-04-03T01:56:37.438Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:42.439Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:42.618Z] No target blocks found nearby
+[2026-04-03T01:56:42.618Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:47.618Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:47.793Z] No target blocks found nearby
+[2026-04-03T01:56:47.793Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:52.793Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:52.967Z] No target blocks found nearby
+[2026-04-03T01:56:52.967Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:56:57.967Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:56:58.121Z] No target blocks found nearby
+[2026-04-03T01:56:58.121Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:03.122Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:03.287Z] No target blocks found nearby
+[2026-04-03T01:57:03.287Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:08.288Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:08.853Z] No target blocks found nearby
+[2026-04-03T01:57:08.853Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:13.853Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:14.025Z] No target blocks found nearby
+[2026-04-03T01:57:14.025Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:19.025Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:19.202Z] No target blocks found nearby
+[2026-04-03T01:57:19.202Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:24.203Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:24.382Z] No target blocks found nearby
+[2026-04-03T01:57:24.382Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:29.383Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:29.555Z] No target blocks found nearby
+[2026-04-03T01:57:29.555Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:34.555Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:34.716Z] No target blocks found nearby
+[2026-04-03T01:57:34.716Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:39.716Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:40.289Z] No target blocks found nearby
+[2026-04-03T01:57:40.289Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:45.289Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:45.472Z] No target blocks found nearby
+[2026-04-03T01:57:45.472Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:50.472Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:51.047Z] No target blocks found nearby
+[2026-04-03T01:57:51.047Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:57:56.047Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:57:56.768Z] No target blocks found nearby
+[2026-04-03T01:57:56.768Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:01.768Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:01.944Z] No target blocks found nearby
+[2026-04-03T01:58:01.944Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:06.945Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:07.110Z] No target blocks found nearby
+[2026-04-03T01:58:07.110Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:12.110Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:12.294Z] No target blocks found nearby
+[2026-04-03T01:58:12.294Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:17.295Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:18.148Z] No target blocks found nearby
+[2026-04-03T01:58:18.148Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:23.148Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:23.326Z] No target blocks found nearby
+[2026-04-03T01:58:23.326Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:28.328Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:28.892Z] No target blocks found nearby
+[2026-04-03T01:58:28.893Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:33.894Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:34.456Z] No target blocks found nearby
+[2026-04-03T01:58:34.456Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:39.456Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:39.926Z] No target blocks found nearby
+[2026-04-03T01:58:39.927Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:44.927Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:45.111Z] No target blocks found nearby
+[2026-04-03T01:58:45.112Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:50.113Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:50.294Z] No target blocks found nearby
+[2026-04-03T01:58:50.294Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:58:55.295Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:58:55.474Z] No target blocks found nearby
+[2026-04-03T01:58:55.474Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:00.475Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:01.047Z] No target blocks found nearby
+[2026-04-03T01:59:01.047Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:06.048Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:06.627Z] No target blocks found nearby
+[2026-04-03T01:59:06.627Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:11.628Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:12.193Z] No target blocks found nearby
+[2026-04-03T01:59:12.193Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:17.193Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:17.368Z] No target blocks found nearby
+[2026-04-03T01:59:17.368Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:22.369Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:22.855Z] No target blocks found nearby
+[2026-04-03T01:59:22.855Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:27.855Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:28.009Z] No target blocks found nearby
+[2026-04-03T01:59:28.009Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:33.009Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:33.571Z] No target blocks found nearby
+[2026-04-03T01:59:33.571Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:38.571Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:39.143Z] No target blocks found nearby
+[2026-04-03T01:59:39.143Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:44.144Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:44.315Z] No target blocks found nearby
+[2026-04-03T01:59:44.315Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:49.315Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:49.507Z] No target blocks found nearby
+[2026-04-03T01:59:49.507Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:54.507Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:54.676Z] No target blocks found nearby
+[2026-04-03T01:59:54.676Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T01:59:59.676Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T01:59:59.842Z] No target blocks found nearby
+[2026-04-03T01:59:59.842Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:04.842Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:05.410Z] No target blocks found nearby
+[2026-04-03T02:00:05.410Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:10.411Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:10.984Z] No target blocks found nearby
+[2026-04-03T02:00:10.984Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:15.985Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:16.152Z] No target blocks found nearby
+[2026-04-03T02:00:16.152Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:21.153Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:21.674Z] No target blocks found nearby
+[2026-04-03T02:00:21.674Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:26.674Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:26.848Z] No target blocks found nearby
+[2026-04-03T02:00:26.848Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:31.847Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:32.029Z] No target blocks found nearby
+[2026-04-03T02:00:32.029Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:37.029Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:37.511Z] No target blocks found nearby
+[2026-04-03T02:00:37.511Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:42.512Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:43.079Z] No target blocks found nearby
+[2026-04-03T02:00:43.079Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:48.079Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:48.659Z] No target blocks found nearby
+[2026-04-03T02:00:48.659Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:53.659Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:53.822Z] No target blocks found nearby
+[2026-04-03T02:00:53.822Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:00:58.822Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:00:59.318Z] No target blocks found nearby
+[2026-04-03T02:00:59.318Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:04.318Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:04.503Z] No target blocks found nearby
+[2026-04-03T02:01:04.503Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:09.503Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:09.657Z] No target blocks found nearby
+[2026-04-03T02:01:09.657Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:14.657Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:14.819Z] No target blocks found nearby
+[2026-04-03T02:01:14.819Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:19.820Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:19.998Z] No target blocks found nearby
+[2026-04-03T02:01:19.998Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:24.999Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:25.559Z] No target blocks found nearby
+[2026-04-03T02:01:25.559Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:30.559Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:30.728Z] No target blocks found nearby
+[2026-04-03T02:01:30.728Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:35.729Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:36.627Z] No target blocks found nearby
+[2026-04-03T02:01:36.627Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:41.628Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:42.231Z] No target blocks found nearby
+[2026-04-03T02:01:42.231Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:47.232Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:47.395Z] No target blocks found nearby
+[2026-04-03T02:01:47.395Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:52.395Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:52.997Z] No target blocks found nearby
+[2026-04-03T02:01:52.997Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:01:57.997Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:01:58.571Z] No target blocks found nearby
+[2026-04-03T02:01:58.571Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:03.571Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:03.746Z] No target blocks found nearby
+[2026-04-03T02:02:03.746Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:08.746Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:08.933Z] No target blocks found nearby
+[2026-04-03T02:02:08.933Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:13.933Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:14.125Z] No target blocks found nearby
+[2026-04-03T02:02:14.125Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:19.125Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:19.301Z] No target blocks found nearby
+[2026-04-03T02:02:19.301Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:24.302Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:24.477Z] No target blocks found nearby
+[2026-04-03T02:02:24.477Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:29.477Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:30.104Z] No target blocks found nearby
+[2026-04-03T02:02:30.104Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:35.105Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:35.261Z] No target blocks found nearby
+[2026-04-03T02:02:35.261Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:40.261Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:40.427Z] No target blocks found nearby
+[2026-04-03T02:02:40.427Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:45.428Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:46.022Z] No target blocks found nearby
+[2026-04-03T02:02:46.022Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:51.022Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:51.192Z] No target blocks found nearby
+[2026-04-03T02:02:51.192Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:02:56.193Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:02:56.799Z] No target blocks found nearby
+[2026-04-03T02:02:56.799Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:01.799Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:02.370Z] No target blocks found nearby
+[2026-04-03T02:03:02.370Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:07.371Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:07.558Z] No target blocks found nearby
+[2026-04-03T02:03:07.558Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:12.558Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:13.125Z] No target blocks found nearby
+[2026-04-03T02:03:13.125Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:18.127Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:18.731Z] No target blocks found nearby
+[2026-04-03T02:03:18.731Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:23.731Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:23.908Z] No target blocks found nearby
+[2026-04-03T02:03:23.908Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:28.908Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:29.092Z] No target blocks found nearby
+[2026-04-03T02:03:29.092Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:34.092Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:34.645Z] No target blocks found nearby
+[2026-04-03T02:03:34.646Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:39.646Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:40.235Z] No target blocks found nearby
+[2026-04-03T02:03:40.235Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:45.235Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:45.835Z] No target blocks found nearby
+[2026-04-03T02:03:45.835Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:50.836Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:51.023Z] No target blocks found nearby
+[2026-04-03T02:03:51.023Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:03:56.024Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:03:56.212Z] No target blocks found nearby
+[2026-04-03T02:03:56.212Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:01.213Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:01.388Z] No target blocks found nearby
+[2026-04-03T02:04:01.388Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:06.388Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:06.995Z] No target blocks found nearby
+[2026-04-03T02:04:06.995Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:11.996Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:12.609Z] No target blocks found nearby
+[2026-04-03T02:04:12.609Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:17.608Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:17.763Z] No target blocks found nearby
+[2026-04-03T02:04:17.763Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:22.764Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:23.368Z] No target blocks found nearby
+[2026-04-03T02:04:23.368Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:28.368Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:28.940Z] No target blocks found nearby
+[2026-04-03T02:04:28.940Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:33.939Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:34.118Z] No target blocks found nearby
+[2026-04-03T02:04:34.118Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:39.118Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:39.287Z] No target blocks found nearby
+[2026-04-03T02:04:39.287Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:44.289Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:44.893Z] No target blocks found nearby
+[2026-04-03T02:04:44.893Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:49.893Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:50.064Z] No target blocks found nearby
+[2026-04-03T02:04:50.064Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:04:55.064Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:04:55.248Z] No target blocks found nearby
+[2026-04-03T02:04:55.248Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:00.248Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:00.832Z] No target blocks found nearby
+[2026-04-03T02:05:00.832Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:05.832Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:05.996Z] No target blocks found nearby
+[2026-04-03T02:05:05.996Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:10.996Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:11.178Z] No target blocks found nearby
+[2026-04-03T02:05:11.178Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:16.178Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:16.359Z] No target blocks found nearby
+[2026-04-03T02:05:16.359Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:21.359Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:21.948Z] No target blocks found nearby
+[2026-04-03T02:05:21.948Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:26.950Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:27.486Z] No target blocks found nearby
+[2026-04-03T02:05:27.486Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:32.486Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:32.656Z] No target blocks found nearby
+[2026-04-03T02:05:32.657Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:37.657Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:38.184Z] No target blocks found nearby
+[2026-04-03T02:05:38.184Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:43.184Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:43.776Z] No target blocks found nearby
+[2026-04-03T02:05:43.776Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:48.778Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:49.392Z] No target blocks found nearby
+[2026-04-03T02:05:49.392Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:54.393Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:54.574Z] No target blocks found nearby
+[2026-04-03T02:05:54.574Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:05:59.575Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:05:59.757Z] No target blocks found nearby
+[2026-04-03T02:05:59.757Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:04.757Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:05.250Z] No target blocks found nearby
+[2026-04-03T02:06:05.250Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:10.251Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:10.430Z] No target blocks found nearby
+[2026-04-03T02:06:10.430Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:15.431Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:16.042Z] No target blocks found nearby
+[2026-04-03T02:06:16.042Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:21.043Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:21.641Z] No target blocks found nearby
+[2026-04-03T02:06:21.641Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:26.642Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:27.251Z] No target blocks found nearby
+[2026-04-03T02:06:27.251Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:32.253Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:32.843Z] No target blocks found nearby
+[2026-04-03T02:06:32.843Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:37.844Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:38.404Z] No target blocks found nearby
+[2026-04-03T02:06:38.404Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:43.404Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:43.924Z] No target blocks found nearby
+[2026-04-03T02:06:43.924Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:48.925Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:49.508Z] No target blocks found nearby
+[2026-04-03T02:06:49.508Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:54.509Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:54.686Z] No target blocks found nearby
+[2026-04-03T02:06:54.686Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:06:59.686Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:06:59.859Z] No target blocks found nearby
+[2026-04-03T02:06:59.859Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:04.859Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:05.051Z] No target blocks found nearby
+[2026-04-03T02:07:05.051Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:10.052Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:10.228Z] No target blocks found nearby
+[2026-04-03T02:07:10.228Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:15.228Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:15.396Z] No target blocks found nearby
+[2026-04-03T02:07:15.396Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:20.398Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:20.571Z] No target blocks found nearby
+[2026-04-03T02:07:20.571Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:25.572Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:26.260Z] No target blocks found nearby
+[2026-04-03T02:07:26.260Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:31.261Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:31.844Z] No target blocks found nearby
+[2026-04-03T02:07:31.844Z] [Autonomous] Cycle: gather, Priority: goal_progress
+[2026-04-03T02:07:36.844Z] Gathering resources: ["oak_log","cobblestone"] within radius 30
+[2026-04-03T02:07:37.457Z] No target blocks found nearby
+[2026-04-03T02:07:37.457Z] [Autonomous] Cycle: gather, Priority: goal_progress
