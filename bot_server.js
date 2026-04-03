@@ -91,6 +91,8 @@ try {
 require('./config/db');
 const BotConfig = require('./config/models/BotConfig');
 const BotState = require('./config/models/BotState');
+const GoalSystem = require('./bot/goal-system');
+const BotGoal = require('./config/models/BotGoal');
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -410,7 +412,7 @@ app.post('/api/bot/start', async (req, res) => {
 
 app.post('/api/bot/automatic', async (req, res) => {
   try {
-    const { username, mode } = req.body;
+    const { username, mode, initialGoal } = req.body;
     
     if (!username) {
       return res.status(400).json({ error: 'Username is required' });
@@ -425,10 +427,19 @@ app.post('/api/bot/automatic', async (req, res) => {
     const bot = botEntry[1];
     const botId = botEntry[0];
     
-    // Track current automatic mode
+    // Set initial goal if provided
+    if (initialGoal) {
+      const goalState = GoalSystem.createGoalState(initialGoal, botId);
+      bot.goalState = goalState;
+      
+      // Save to database
+      await BotGoal.saveGoal(botId, initialGoal, goalState);
+    }
+    
+    // Track current mode
     bot.currentMode = mode || 'survival';
     
-    // Save bot state to persistent store
+    // Save bot state
     try {
       const position = bot.bot.entity.position;
       await BotState.saveBot(botId, {
@@ -445,13 +456,10 @@ app.post('/api/bot/automatic', async (req, res) => {
       console.error(`[API] Failed to save bot state: ${saveErr.message}`);
     }
     
-    // Start automatic behavior in background (don't block response)
+    // Start automatic behavior
     bot.behaviors.automaticBehavior({ 
       mode: mode || 'survival',
-      targetBlockType: 'oak_log',
-      structureType: 'house',
-      structureSize: { width: 4, length: 4, height: 3 },
-      gatherRadius: 100
+      initialGoal: initialGoal || 'basic_survival'
     }).catch(err => {
       console.error('Error in automatic behavior:', err);
     });
@@ -460,11 +468,79 @@ app.post('/api/bot/automatic', async (req, res) => {
       success: true,
       botId: botId,
       username,
-      message: `Automatic behavior started in ${mode || 'survival'} mode`
+      goal: initialGoal || 'basic_survival',
+      message: `Automatic behavior started in ${mode || 'survival'} mode with goal: ${initialGoal || 'basic_survival'}`
     });
   } catch (error) {
     console.error('Error starting automatic behavior:', error);
     res.status(500).json({ error: `Failed to start automatic behavior: ${error.message}` });
+  }
+});
+
+app.post('/api/bot/:botId/goal/select', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { goalId } = req.body;
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    const goalState = GoalSystem.createGoalState(goalId, botId);
+    bot.goalState = goalState;
+    
+    // Save to database
+    await BotGoal.saveGoal(botId, goalId, goalState);
+    
+    // Update autonomous behavior if running
+    if (bot.autonomousRunning) {
+      bot.goalChanged = true;
+    }
+    
+    res.json({
+      success: true,
+      goalId,
+      goalName: GoalSystem.getGoal(goalId).name,
+      message: `Goal changed to: ${GoalSystem.getGoal(goalId).name}`
+    });
+  } catch (error) {
+    console.error('Error changing goal:', error);
+    res.status(500).json({ error: `Failed to change goal: ${error.message}` });
+  }
+});
+
+app.get('/api/bot/:botId/goal/status', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    
+    const bot = activeBots.get(botId);
+    const goalState = bot?.goalState;
+    
+    if (!goalState) {
+      const dbGoal = await BotGoal.getGoal(botId);
+      if (dbGoal) {
+        return res.json({
+          success: true,
+          goalState: dbGoal.goal_state,
+          progress: dbGoal.progress
+        });
+      }
+      return res.status(404).json({ error: 'No goal set for this bot' });
+    }
+    
+    const inventory = bot.bot?.inventory?.items() || [];
+    const progress = GoalSystem.calculateProgress(goalState, inventory);
+    
+    res.json({
+      success: true,
+      goalState,
+      progress: progress.progress,
+      details: progress
+    });
+  } catch (error) {
+    console.error('Error getting goal status:', error);
+    res.status(500).json({ error: `Failed to get goal status: ${error.message}` });
   }
 });
 
