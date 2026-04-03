@@ -1,0 +1,161 @@
+.enhanced-controls {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.controls-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2c3e50;
+}
+
+.control-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8f9fa;
+  color: #34495e;
+}
+
+.tab-btn.active {
+  background: #3498db;
+  color: white;
+}
+
+.gather-controls,
+.build-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.preset-section,
+.custom-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preset-section h4,
+.custom-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.preset-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.preset-btn,
+.build-btn {
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.preset-btn:hover,
+.build-btn:hover {
+  border-color: #3498db;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+}
+
+.preset-btn:disabled,
+.build-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #34495e;
+}
+
+.form-group input {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.unit {
+  font-size: 12px;
+  color: #7f8c8d;
+}
+
+.action-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #2ecc71;
+  color: white;
+}
+
+.action-btn:hover {
+  background: #27ae60;
+  transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+  transform: none;
+}
