@@ -4,7 +4,7 @@ import './GoalProgress.css';
 
 const GoalProgress = ({ botId, goalState, progress }) => {
   const [goals, setGoals] = useState([]);
-  const [selectedGoal, setSelectedGoal] = useState(goalState?.goalId || 'basic_survival');
+  const [selectedGoal, setSelectedGoal] = useState(goalState?.goalId || (botId ? 'basic_survival' : null));
   const [changingGoal, setChangingGoal] = useState(false);
 
   useEffect(() => {
@@ -55,28 +55,32 @@ const GoalProgress = ({ botId, goalState, progress }) => {
     }
   };
 
-  if (!goalState) {
+  if (!goalState || !botId) {
     return (
       <div className="goal-progress empty">
         <h3>🎯 目标进度</h3>
         <p>未设置目标</p>
-        <select 
-          value={selectedGoal} 
-          onChange={(e) => handleGoalChange(e.target.value)}
-          disabled={changingGoal}
-        >
-          {goals.map(goal => (
-            <option key={goal.id} value={goal.id}>
-              {goal.name} - {goal.description}
-            </option>
-          ))}
-        </select>
-        <button 
-          onClick={() => handleGoalChange(selectedGoal)}
-          disabled={changingGoal}
-        >
-          {changingGoal ? '更换中...' : '设置目标'}
-        </button>
+        {botId && (
+          <select 
+            value={selectedGoal} 
+            onChange={(e) => handleGoalChange(e.target.value)}
+            disabled={changingGoal}
+          >
+            {goals.map(goal => (
+              <option key={goal.id} value={goal.id}>
+                {goal.name} - {goal.description}
+              </option>
+            ))}
+          </select>
+        )}
+        {botId && (
+          <button 
+            onClick={() => handleGoalChange(selectedGoal)}
+            disabled={changingGoal}
+          >
+            {changingGoal ? '更换中...' : '设置目标'}
+          </button>
+        )}
       </div>
     );
   }

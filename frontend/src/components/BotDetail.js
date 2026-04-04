@@ -11,6 +11,7 @@ const BotDetail = ({ bot, onBotChange }) => {
 
   useEffect(() => {
     const fetchGoalStatus = async () => {
+      if (!bot || !bot.botId) return;
       try {
         const response = await fetch(`${API_BASE_URL}/api/bot/${bot.botId}/goal/status`);
         if (response.ok) {
@@ -23,7 +24,7 @@ const BotDetail = ({ bot, onBotChange }) => {
       }
     };
     fetchGoalStatus();
-  }, [bot.botId]);
+  }, [bot?.botId]);
 
   const handleAction = async (action, endpoint, method = 'POST', body = null) => {
     setActionLoading(action);

@@ -1197,7 +1197,7 @@ function showSystemStatus(jsonOutput) {
         });
       }
       
-      if (frontendStatus.frontend) {
+      if (frontendStatus && frontendStatus.frontend) {
         console.log('Frontend:');
         console.log(`  Status: ${frontendStatus.frontend.status}`);
         if (botStatus.botServer && botStatus.botServer.frontendUrl) {

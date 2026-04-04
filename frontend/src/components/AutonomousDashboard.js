@@ -1,6 +1,5 @@
 // /data/code/minebot/frontend/src/components/AutonomousDashboard.js
 import React, { useState, useEffect, useRef } from 'react';
-import API_BASE_URL from '../config';
 import './AutonomousDashboard.css';
 
 const AutonomousDashboard = ({ botId, botState }) => {
