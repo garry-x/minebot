@@ -88,6 +88,76 @@ try {
   }
 }
 
+function checkAndBuildFrontend() {
+  const frontendDir = path.join(__dirname, 'frontend');
+  const buildDir = path.join(frontendDir, 'build');
+  const indexHtml = path.join(buildDir, 'index.html');
+  
+  const { exec } = require('child_process');
+  
+  function runBuild(callback) {
+    console.log('[Auto-Build] Running npm run build...');
+    
+    exec('npm run build', { 
+      cwd: frontendDir,
+      maxBuffer: 1024 * 1024 * 1024
+    }, (error, stdout, stderr) => {
+      if (error) {
+        console.error('[Auto-Build] Build failed:', error.message);
+        console.error('[Auto-Build] Build output:', stdout);
+        console.error('[Auto-Build] Build error output:', stderr);
+        process.exit(1);
+      }
+      
+      console.log('[Auto-Build] Build completed successfully');
+      console.log('[Auto-Build] Standard output:', stdout);
+      if (stderr) {
+        console.log('[Auto-Build] Standard error:', stderr);
+      }
+      callback();
+    });
+  }
+  
+  function runGitStatus(callback) {
+    exec('git status --porcelain', { 
+      cwd: frontendDir,
+      maxBuffer: 1024 * 1024 * 1024
+    }, (error, stdout, stderr) => {
+      if (error) {
+        console.warn('[Auto-Build] Failed to run git status:', error.message);
+        callback(true);
+        return;
+      }
+      
+      const isDirty = stdout.trim().length > 0;
+      callback(isDirty);
+    });
+  }
+  
+  if (!fs.existsSync(buildDir)) {
+    console.log('[Auto-Build] Build directory does not exist, running build...');
+    runBuild(() => {});
+    return;
+  }
+  
+  if (!fs.existsSync(indexHtml)) {
+    console.log('[Auto-Build] index.html does not exist, running build...');
+    runBuild(() => {});
+    return;
+  }
+  
+  runGitStatus((needsBuild) => {
+    if (needsBuild) {
+      console.log('[Auto-Build] Build is outdated (git changes detected), running build...');
+      runBuild(() => {});
+    } else {
+      console.log('[Auto-Build] Build is up to date, skipping');
+    }
+  });
+}
+
+checkAndBuildFrontend();
+
 require('./config/db');
 const BotConfig = require('./config/models/BotConfig');
 const BotState = require('./config/models/BotState');
