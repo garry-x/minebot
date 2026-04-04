@@ -63,30 +63,39 @@ class AutonomousEngine {
   async executeAction(action) {
     this.state.currentAction = action.action;
     
-    switch (action.action) {
-      case 'gather':
-        await this.behaviors.gatherResources({
-          targetBlocks: action.target,
-          radius: 30
-        });
-        break;
-      case 'heal_immediate':
-        const foodItems = this.bot.inventory.items().filter(i => 
-          ['apple', 'bread', 'cooked_beef'].includes(i.name)
-        );
-        if (foodItems.length > 0) {
-          await this.bot.equip(foodItems[0], 'hand');
-          await this.bot.consume();
-        }
-        break;
-      case 'find_shelter':
-        const safePos = new Vec3(
-          this.bot.entity.position.x + 10,
-          this.bot.entity.position.y,
-          this.bot.entity.position.z + 10
-        );
-        await this.pathfinder.moveTo(safePos);
-        break;
+    try {
+      switch (action.action) {
+        case 'gather':
+          await this.behaviors.gatherResources({
+            targetBlocks: action.target,
+            radius: 30
+          });
+          break;
+        case 'heal_immediate':
+          const foodItems = this.bot.inventory.items().filter(i => 
+            ['apple', 'bread', 'cooked_beef'].includes(i.name)
+          );
+          if (foodItems.length > 0) {
+            await this.bot.equip(foodItems[0], 'hand');
+            await this.bot.consume();
+          }
+          break;
+        case 'find_shelter':
+          const safePos = new Vec3(
+            this.bot.entity.position.x + 10,
+            this.bot.entity.position.y,
+            this.bot.entity.position.z + 10
+          );
+          try {
+            await this.pathfinder.moveTo(safePos, { timeout: 15000 });
+          } catch (moveError) {
+            console.log(`[AutonomousEngine] Could not find shelter: ${moveError.message}`);
+          }
+          break;
+      }
+    } catch (error) {
+      console.log(`[AutonomousEngine] Action '${action.action}' failed: ${error.message}`);
+      // Don't throw - let the autonomous loop continue with the next cycle
     }
   }
 

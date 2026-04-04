@@ -112,8 +112,12 @@ module.exports = function(bot, pathfinder) {
             
             console.log('Testing basic movement...');
             const pos = bot.entity.position;
-            await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5));
-            console.log(`Moved to new position: ${bot.entity.position}`);
+            try {
+              await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5), { timeout: 15000 });
+              console.log(`Moved to new position: ${bot.entity.position}`);
+            } catch (moveError) {
+              console.log(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
+            }
             
             console.log('Automatic behavior completed');
             return true;
@@ -199,39 +203,72 @@ module.exports = function(bot, pathfinder) {
         }
         
         // Go to each block and break it
+        let successCount = 0;
+        let failCount = 0;
+        const maxFailures = 3; // Stop after 3 consecutive failures
+        
         for (const position of blockPositions) {
+          // Stop if we've had too many consecutive failures
+          if (failCount >= maxFailures) {
+            console.log(`[Behaviors] Stopping resource gathering after ${failCount} consecutive failures`);
+            break;
+          }
+          
           console.log(`Moving to block at ${position.x}, ${position.y}, ${position.z}`);
           
-          // Move to the block with retry logic
-          await retryOperation(async () => {
-            await pathfinder.moveTo(position);
-            
-            // Wait until we reach the block
-            await waitForCondition(() => 
-              bot.entity.position.distanceTo(position) < 1.5, 15000);
-          });
+          // Move to the block with individual error handling
+          let reachedBlock = false;
+          try {
+            await retryOperation(async () => {
+              await pathfinder.moveTo(position, { timeout: 20000 });
+              
+              // Wait until we reach the block
+              await waitForCondition(() => 
+                bot.entity.position.distanceTo(position) < 1.5, 10000);
+            });
+            reachedBlock = true;
+          } catch (moveError) {
+            console.log(`[Behaviors] Cannot reach block at ${position.x}, ${position.y}, ${position.z}: ${moveError.message}`);
+            failCount++;
+            continue; // Skip to next block
+          }
+          
+          if (!reachedBlock) {
+            failCount++;
+            continue;
+          }
           
           // Find the block at our position
           const block = bot.blockAt(position);
           if (!block || !block.name) {
             console.log('Block not found at position');
+            failCount++;
             continue;
           }
           
-          // Dig the block with retry logic
-          await retryOperation(async () => {
-            await bot.dig(block);
+          // Dig the block with error handling
+          try {
+            await retryOperation(async () => {
+              await bot.dig(block);
+              
+              // Wait for the block to break
+              await waitForCondition(() => 
+                !bot.blockAt(position) || bot.blockAt(position).name === 'air', 10000);
+            });
             
-            // Wait for the block to break
-            await waitForCondition(() => 
-              !bot.blockAt(position) || bot.blockAt(position).name === 'air', 10000);
-          });
-            
-          console.log(`Collected ${block.name}`);
+            console.log(`Collected ${block.name}`);
+            successCount++;
+            failCount = 0; // Reset failure counter on success
+          } catch (digError) {
+            console.log(`[Behaviors] Failed to dig block: ${digError.message}`);
+            failCount++;
+          }
           
           // Small delay between blocks
           await new Promise(resolve => setTimeout(resolve, 500));
         }
+        
+        console.log(`[Behaviors] Resource gathering completed. Success: ${successCount}, Failures: ${failCount}`);
         
         console.log('Resource gathering completed');
         return true;
