@@ -8,9 +8,10 @@ import './Dashboard.css';
 const Dashboard = () => {
   const [botStatus, setBotStatus] = useState({ connected: false, message: 'Not connected' });
   const [currentBotId, setCurrentBotId] = useState(null);
+  const [bots, setBots] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [inventory, setInventory] = useState([]);
   const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
+  const [inventory, setInventory] = useState([]);
   const [llmAdvice, setLlmAdvice] = useState('');
   const [health, setHealth] = useState(20);
   const [food, setFood] = useState(20);
@@ -36,16 +37,18 @@ const Dashboard = () => {
       wsRef.current.onmessage = (event) => {
         try {
           const message = JSON.parse(event.data);
-          if (message.type === 'status_update' || message.type === 'status_list') {
+          if (message.type === 'bots_list') {
+            setBots(message.data.bots || []);
+            if (message.data.bots && message.data.bots.length > 0 && !currentBotId) {
+              setCurrentBotId(message.data.bots[0].botId);
+            }
+          } else if (message.type === 'status_update' || message.type === 'status_list') {
             const bots = message.data.bots || [];
             if (bots.length > 0) {
               const botData = bots[0];
               setBotStatus({ connected: botData.connected, message: botData.message || 'Connected' });
               if (botData.position) {
                 setPosition(botData.position);
-              }
-              if (botData.inventory) {
-                setInventory(botData.inventory);
               }
               if (botData.health !== undefined) {
                 setHealth(botData.health);
@@ -472,6 +475,20 @@ const Dashboard = () => {
           <button onClick={() => { window.location.hash = 'management'; }} className="back-to-mgmt-btn">
             ← Management
           </button>
+          {bots.length > 0 && (
+            <select 
+              value={currentBotId || ''} 
+              onChange={(e) => setCurrentBotId(e.target.value)}
+              className="bot-selector"
+            >
+              <option value="">Select a bot...</option>
+              {bots.map(bot => (
+                <option key={bot.botId} value={bot.botId}>
+                  {bot.username} ({bot.state})
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
       

@@ -157,10 +157,11 @@ const VideoPlayer = ({ botId, autoConnect = true, showStats = true, showControls
     }
 
     try {
-      wsRef.current.send(JSON.stringify({
-        type: 'stream_command',
+      const message = JSON.stringify({
+        type: 'stream',
         data: { botId, action, ...data }
-      }));
+      });
+      wsRef.current.send(message);
       return true;
     } catch (err) {
       console.error('Error sending WebSocket command:', err);

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../config';
 import GoalProgress from './GoalProgress';
 import AutonomousDashboard from './AutonomousDashboard';
 import EnhancedControls from './EnhancedControls';
 
 const BotDetail = ({ bot, onBotChange }) => {
+  const navigate = useNavigate();
   const [actionLoading, setActionLoading] = useState(null);
   const [goalState, setGoalState] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -63,7 +65,7 @@ const BotDetail = ({ bot, onBotChange }) => {
           <div style={{ color: '#64748b', fontSize: 12, marginTop: 4 }}>{bot.botId}</div>
         </div>
         <a
-          href={`#dashboard/${bot.botId}`}
+          onClick={() => navigate(`/dashboard/${bot.botId}`)}
           className="open-dashboard-link"
         >
           Open Dashboard →

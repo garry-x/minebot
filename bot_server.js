@@ -106,6 +106,11 @@ app.use((req, res, next) => {
 });
 app.use(express.static('frontend/build'));
 
+// Catch-all route for React Router (handles all non-API routes)
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
+});
+
 const activeBots = new Map();
 const botConnections = new Map();
 const botServerStartTime = Date.now();
@@ -1013,6 +1018,27 @@ function handleWebSocketMessage(ws, message) {
         ws.send(JSON.stringify({
           type: 'registration_ack',
           data: { message: 'Bot WebSocket registered' }
+        }));
+        // Send current bots list
+        const botStatuses = [];
+        for (const [botId, bot] of activeBots.entries()) {
+          botStatuses.push({
+            botId,
+            username: bot.isConnected && bot.bot ? bot.bot.username : undefined,
+            connected: bot.isConnected,
+            // Include real data if available
+            ...(bot.isConnected && bot.bot ? {
+              position: bot.bot.entity.position.floored(),
+              health: bot.bot.health,
+              food: bot.bot.food,
+              experience: bot.bot.experience,
+              gamemode: bot.bot.gameMode === 0 ? 'survival' : 'creative'
+            } : {})
+          });
+        }
+        ws.send(JSON.stringify({
+          type: 'bots_list',
+          data: { bots: botStatuses }
         }));
       }
       break;
