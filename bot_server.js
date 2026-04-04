@@ -491,28 +491,35 @@ app.post('/api/bot/start', async (req, res) => {
 
 app.post('/api/bot/automatic', async (req, res) => {
   try {
-    const { username, mode, initialGoal } = req.body;
+    const { username, mode, initialGoal, botId } = req.body;
     
-    if (!username) {
-      return res.status(400).json({ error: 'Username is required' });
+    if (!username && !botId) {
+      return res.status(400).json({ error: 'Username or botId is required' });
     }
     
-    const botEntry = Array.from(activeBots.entries()).find(([bid, b]) => b.bot && b.bot.username === username);
+    let botEntry;
+    if (botId) {
+      botEntry = Array.from(activeBots.entries()).find(([bid, b]) => bid === botId);
+    } else {
+      botEntry = Array.from(activeBots.entries()).find(([bid, b]) => b.bot && b.bot.username === username);
+    }
     
     if (!botEntry) {
-      return res.status(404).json({ error: `Bot with username "${username}" not found. Use "bot start" to create a bot first.` });
+      return res.status(404).json({ error: 'Bot not found. Use "bot start" to create a bot first.' });
     }
     
     const bot = botEntry[1];
-    const botId = botEntry[0];
+    const foundBotId = botEntry[0];
+    
+    const targetBotId = botId || foundBotId;
     
     // Set initial goal if provided
     if (initialGoal) {
-      const goalState = GoalSystem.createGoalState(initialGoal, botId);
+      const goalState = GoalSystem.createGoalState(initialGoal, targetBotId);
       bot.goalState = goalState;
       
       // Save to database
-      await BotGoal.saveGoal(botId, initialGoal, goalState);
+      await BotGoal.saveGoal(targetBotId, initialGoal, goalState);
     }
     
     // Track current mode
@@ -521,7 +528,7 @@ app.post('/api/bot/automatic', async (req, res) => {
     // Save bot state
     try {
       const position = bot.bot.entity.position;
-      await BotState.saveBot(botId, {
+      await BotState.saveBot(targetBotId, {
         username: bot.bot.username,
         mode: mode || 'survival',
         position_x: position.x,
@@ -545,8 +552,8 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     res.json({ 
       success: true,
-      botId: botId,
-      username,
+      botId: targetBotId,
+      username: bot.bot.username,
       goal: initialGoal || 'basic_survival',
       message: `Automatic behavior started in ${mode || 'survival'} mode with goal: ${initialGoal || 'basic_survival'}`
     });

@@ -216,6 +216,15 @@ const Dashboard = () => {
   };
 
   const handleStartAutomatic = async () => {
+    if (!currentBotId) {
+      setLogs(prev => [...prev, { 
+        text: 'No bot selected. Please select a bot first.', 
+        timestamp: new Date().toLocaleTimeString(),
+        type: 'warning'
+      }]);
+      return;
+    }
+    
     try {
       setLogs(prev => [...prev, { 
         text: `Starting automatic behavior...`, 
@@ -227,7 +236,7 @@ const Dashboard = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: 'player',
+          botId: currentBotId,
           mode: 'survival'
         })
       });
@@ -236,7 +245,6 @@ const Dashboard = () => {
       
       if (!response.ok) throw new Error(data.error || 'Failed to start automatic behavior');
       
-      setCurrentBotId(data.botId);
       setBotStatus({ connected: true, message: data.message });
       
       setLogs(prev => [...prev, { 
