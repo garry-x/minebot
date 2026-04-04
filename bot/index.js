@@ -2,6 +2,7 @@ const mineflayer = require('mineflayer');
 const WebSocket = require('ws');
 const Pathfinder = require('./pathfinder');
 const { Vec3 } = require('vec3');
+const ScreenshotModule = require('./ScreenshotModule');
 
 class MinecraftBot {
   constructor(options) {
@@ -18,6 +19,9 @@ class MinecraftBot {
     this.botServerPort = options.botServerPort || 9500;
     this.deadReason = null;
     this.currentMode = null;
+    this.screenshotModule = null;
+    this.screenshotCaptureFn = null;
+    this._streamCaptureInterval = null;
   }
 
 async connect(username, accessToken, startAutomatic = false) {
@@ -90,6 +94,21 @@ async connect(username, accessToken, startAutomatic = false) {
             this.goalState = null;
             this.events = require('./events')(this.bot);
             this.events.setupListeners();
+           
+            // Initialize screenshot module and start streaming (non-blocking)
+            this.initializeScreenshot()
+              .then((success) => {
+                if (success) {
+                  console.log('[Bot] Screenshot module initialized, starting stream');
+                  const captureFn = this.startScreenshotStream({ fps: 20, quality: 0.8 });
+                  console.log('[Bot] Screenshot stream started', captureFn ? 'success' : 'failed');
+                } else {
+                  console.error('[Bot] Screenshot module initialization failed');
+                }
+              })
+              .catch(err => {
+                console.error(`[Bot] Screenshot init failed: ${err.message}`);
+              });
            
            // Generate bot ID if not already set
            if (!this.botId) {
@@ -411,7 +430,63 @@ default:
       }
     }
 
+  async initializeScreenshot() {
+    if (this.screenshotModule) {
+      this.screenshotModule.destroy();
+    }
+    
+    try {
+      this.screenshotModule = new ScreenshotModule(this.bot);
+      await this.screenshotModule.initialize(854, 480);
+      return true;
+    } catch (err) {
+      console.error(`[Screenshot] Failed to initialize: ${err.message}`);
+      return false;
+    }
+  }
+
+  startScreenshotStream(options = {}) {
+    const { fps = 20, quality = 0.8 } = options;
+    
+    if (!this.screenshotModule || !this.screenshotModule.isReady()) {
+      console.error('[Screenshot] Module not ready');
+      return null;
+    }
+
+    this.screenshotCaptureFn = async (captureOptions) => {
+      try {
+        const buffer = await this.screenshotModule.captureWithOptions(captureOptions);
+        return buffer;
+      } catch (err) {
+        console.error(`[Screenshot] Capture error: ${err.message}`);
+        return null;
+      }
+    };
+    
+    return this.screenshotCaptureFn;
+  }
+
+  stopScreenshotStream() {
+    this.screenshotCaptureFn = null;
+  }
+
+  getScreenshotFn() {
+    return this.screenshotCaptureFn;
+  }
+
   async disconnect() {
+    this.stopScreenshotStream();
+    
+    if (this._streamCaptureInterval) {
+      clearInterval(this._streamCaptureInterval);
+      this._streamCaptureInterval = null;
+    }
+    
+    if (this.screenshotModule) {
+      this.screenshotModule.destroy();
+      this.screenshotModule = null;
+    }
+    
     // Update bot state to stopped
     if (this.botId) {
       const db = require('../config/models/BotState');

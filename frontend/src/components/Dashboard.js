@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import API_BASE_URL from '../config';
 import BotControls from './BotControls';
 import MonitoringDashboard from './MonitoringDashboard';
+import VideoPlayer from './VideoPlayer/VideoPlayer';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -492,6 +493,19 @@ const Dashboard = () => {
         
         <div className="monitoring-section">
           <h2 className="section-title">Bot Monitoring Dashboard</h2>
+          
+          {currentBotId && botStatus.connected && (
+            <div className="video-stream-section">
+              <h3 className="video-stream-title">Live Bot View</h3>
+              <VideoPlayer 
+                botId={currentBotId}
+                autoConnect={true}
+                showStats={true}
+                showControls={true}
+              />
+            </div>
+          )}
+          
           <MonitoringDashboard 
             botStatus={botStatus}
             position={position}

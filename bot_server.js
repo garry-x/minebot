@@ -111,6 +111,10 @@ const botConnections = new Map();
 const botServerStartTime = Date.now();
 const retryQueue = new Map();
 
+// Initialize streaming routes (needs access to activeBots)
+const streamRoutes = require('./routes/stream')(activeBots);
+app.use('/api', streamRoutes);
+
 // Initialize database tables (async - will be awaited in server.listen)
 
 app.get('/api/health', (req, res) => {
@@ -966,6 +970,17 @@ function handleWebSocketMessage(ws, message) {
         }
       }
       break;
+    case 'stream':
+      // Handle stream commands
+      if (message.data) {
+        handleStreamCommand(ws, message.data);
+      } else {
+        ws.send(JSON.stringify({
+          type: 'stream_error',
+          data: { message: 'Stream data is required' }
+        }));
+      }
+      break;
     case 'get_status':
       // Send status of all bots
       const botStatuses = [];
@@ -1022,6 +1037,160 @@ function handleWebSocketMessage(ws, message) {
         type: 'error',
         data: { message: 'Unknown message type' }
       }));
+  }
+}
+
+// Handle stream commands via WebSocket
+function handleStreamCommand(ws, data) {
+  try {
+    const { botId, action, config = {} } = data;
+    
+    if (!botId) {
+      ws.send(JSON.stringify({
+        type: 'stream_error',
+        data: { message: 'botId is required' }
+      }));
+      return;
+    }
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      ws.send(JSON.stringify({
+        type: 'stream_error',
+        data: { message: `Bot not found: ${botId}` }
+      }));
+      return;
+    }
+    
+    switch (action) {
+      case 'start':
+        if (!bot.getScreenshotFn || !bot.getScreenshotFn()) {
+          ws.send(JSON.stringify({
+            type: 'stream_error',
+            data: { 
+              message: 'Screenshot not available',
+              hint: 'Ensure canvas/prismarine-viewer are installed'
+            }
+          }));
+          return;
+        }
+        
+        try {
+          const screenshotFn = bot.getScreenshotFn();
+          
+          const stream = require('./routes/stream.js').streamManager.getOrCreateStream(
+            botId, 
+            { 
+              fps: config.fps || 20, 
+              quality: config.quality || 0.7, 
+              width: config.width || 854, 
+              height: config.height || 480 
+            }, 
+            screenshotFn
+          );
+          
+          ws.send(JSON.stringify({
+            type: 'stream_status',
+            data: {
+              botId,
+              isStreaming: true,
+              viewerCount: 0,
+              fps: stream.options.fps,
+              quality: stream.options.quality,
+              url: `/api/stream/${botId}/mjpeg`,
+              message: 'Stream started'
+            }
+          }));
+        } catch (err) {
+          ws.send(JSON.stringify({
+            type: 'stream_error',
+            data: { message: `Failed to start stream: ${err.message}` }
+          }));
+        }
+        break;
+        
+      case 'stop':
+        try {
+          const stopped = require('./routes/stream.js').streamManager.stopStream(botId);
+          ws.send(JSON.stringify({
+            type: 'stream_status',
+            data: {
+              botId,
+              isStreaming: false,
+              message: stopped ? 'Stream stopped' : 'Stream not found'
+            }
+          }));
+        } catch (err) {
+          ws.send(JSON.stringify({
+            type: 'stream_error',
+            data: { message: `Failed to stop stream: ${err.message}` }
+          }));
+        }
+        break;
+        
+      case 'getStats':
+        try {
+          const stats = require('./routes/stream.js').streamManager.getStreamStats(botId);
+          ws.send(JSON.stringify({
+            type: 'stream_stats',
+            data: {
+              botId,
+              stats: stats || { isStreaming: false, message: 'Stream not found' }
+            }
+          }));
+        } catch (err) {
+          ws.send(JSON.stringify({
+            type: 'stream_error',
+            data: { message: `Failed to get stream stats: ${err.message}` }
+          }));
+        }
+        break;
+        
+      case 'configure':
+        try {
+          const stream = require('./routes/stream.js').streamManager.getStream(botId);
+          if (stream) {
+            stream.updateOptions({
+              fps: config.fps,
+              quality: config.quality,
+              width: config.width,
+              height: config.height
+            });
+            ws.send(JSON.stringify({
+              type: 'stream_status',
+              data: {
+                botId,
+                isStreaming: stream.isRunning,
+                settings: stream.options,
+                message: 'Stream configuration updated'
+              }
+            }));
+          } else {
+            ws.send(JSON.stringify({
+              type: 'stream_error',
+              data: { message: 'Stream not found' }
+            }));
+          }
+        } catch (err) {
+          ws.send(JSON.stringify({
+            type: 'stream_error',
+            data: { message: `Failed to configure stream: ${err.message}` }
+          }));
+        }
+        break;
+        
+      default:
+        ws.send(JSON.stringify({
+          type: 'stream_error',
+          data: { message: `Unknown stream action: ${action}` }
+        }));
+    }
+  } catch (err) {
+    console.error('Error handling stream command:', err);
+    ws.send(JSON.stringify({
+      type: 'stream_error',
+      data: { message: `Internal server error: ${err.message}` }
+    }));
   }
 }
 

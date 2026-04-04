@@ -118,9 +118,6 @@ module.exports = function(bot, pathfinder) {
             } catch (moveError) {
               console.log(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
             }
-            } catch (moveError) {
-              console.log(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
-            }
             
             console.log('Automatic behavior completed');
             return true;

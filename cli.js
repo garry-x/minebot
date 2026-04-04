@@ -54,6 +54,9 @@ function startBotServer() {
   
   const startScript = `
 #!/bin/bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm use 24.14.1 > /dev/null 2>&1
 VERBOSE_FLAG=${verbose ? '"--verbose"' : '""'}; nohup node ${BOT_SERVER_SCRIPT} $VERBOSE_FLAG > ${LOG_FILE} 2>&1 &
 `;
   const scriptFile = '/tmp/start_bot_server.sh';

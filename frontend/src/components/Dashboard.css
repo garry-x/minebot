@@ -353,18 +353,18 @@
   background: linear-gradient(135deg, #7f1d1d 0%, #651616 100%);
 }
 
-/* Monitoring Dashboard Styles */
-.monitoring-dashboard {
-  margin-top: 24px;
+.video-stream-section {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.monitoring-dashboard h2 {
+.video-stream-section h3 {
   margin-top: 0;
-  margin-bottom: 20px;
-  color: #1a202c;
-  font-size: 1.5rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  margin-bottom: 16px;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
