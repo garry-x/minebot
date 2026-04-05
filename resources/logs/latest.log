@@ -132,3 +132,6 @@
 [23:49:30] [Server thread/INFO]: LogTest2 joined the game
 [23:49:33] [Server thread/WARN]: LogTest2 moved too quickly! 9.2,-15.0,8.595485528630318
 [23:50:03] [Server thread/INFO]: AutoBot was shot by Skeleton
+[23:50:19] [Server thread/INFO]: FinalTestBot[/127.0.0.1:54270] logged in with entity id 8150 at (-8.5, 103.0, -6.5)
+[23:50:19] [Server thread/INFO]: FinalTestBot joined the game
+[23:50:22] [Server thread/WARN]: FinalTestBot moved too quickly! 9.196425697497931,-27.233632006042484,9.196425697498919
