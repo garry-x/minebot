@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
-const db = new sqlite3.Database(path.resolve(__dirname, '../bot_config.db'), (err) => {
+const dbPath = path.resolve(__dirname, '..', 'bot_config.db');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('Could not connect to database', err);
   } else {
@@ -17,6 +18,9 @@ const db = new sqlite3.Database(path.resolve(__dirname, '../bot_config.db'), (er
 
 const BotGoal = require('./models/BotGoal');
 BotGoal.createTable();
+
+const BotState = require('./models/BotState');
+BotState.createTable();
 
 // Initialize evolution tables
 const EvolutionStorage = require('../bot/evolution/evolution-storage');

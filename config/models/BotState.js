@@ -1,6 +1,7 @@
-const db = require('../db');
-const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+const dbPath = path.resolve(__dirname, '../../bot_config.db');
+const db = new sqlite3.Database(dbPath);
 
 class BotState {
   static createTable() {

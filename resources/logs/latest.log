@@ -113,3 +113,6 @@
 [23:25:04] [Server thread/WARN]: TestBot2 moved too quickly! 5.8,-29.0,5.8
 [23:25:05] [Server thread/INFO]: TestBot2 fell from a high place
 [23:25:20] [Server thread/INFO]: TestBot2 was slain by Zombie
+[23:35:05] [Server thread/INFO]: TestBot2 lost connection: Disconnected
+[23:35:05] [Server thread/INFO]: TestBot2 left the game
+[23:36:05] [Server thread/INFO]: Server empty for 60 seconds, pausing
