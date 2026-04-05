@@ -117,3 +117,8 @@ Starting net.minecraft.server.Main
 [23:35:05] [Server thread/INFO]: TestBot2 lost connection: Disconnected
 [23:35:05] [Server thread/INFO]: TestBot2 left the game
 [23:36:05] [Server thread/INFO]: Server empty for 60 seconds, pausing
+[23:39:49] [Server thread/INFO]: ResourceBot[/127.0.0.1:55638] logged in with entity id 6623 at (-6.5, 75.0, 10.5)
+[23:39:49] [Server thread/INFO]: ResourceBot joined the game
+[23:41:27] [Server thread/INFO]: ResourceBot was slain by Zombie
+[23:41:40] [Server thread/INFO]: ResourceBot was slain by Zombie
+[23:41:50] [Server thread/INFO]: ResourceBot was slain by Zombie
