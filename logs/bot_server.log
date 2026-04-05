@@ -1,14 +1,14 @@
-[2026-04-05T15:47:06.131Z] PID file written: /data/code/minebot/logs/bot_server.pid (PID: 425360)
-[2026-04-05T15:47:06.141Z] WebSocket server listening on 0.0.0.0:9500
-[2026-04-05T15:47:06.141Z] Connected to SQLite database
-[2026-04-05T15:47:06.142Z] [Auto-Build] Build is outdated (git changes detected), running build...
-[2026-04-05T15:47:06.142Z] [Auto-Build] Running npm run build...
-[2026-04-05T15:47:06.144Z] [Evolution] Connecting to evolution database...
-[2026-04-05T15:47:06.146Z] [Evolution] Evolution tables initialized successfully
-[2026-04-05T15:47:06.177Z] [Server] Loading saved bots for auto-reconnect...
-[2026-04-05T15:47:06.177Z] [Server] No active bots to reconnect
-[2026-04-05T15:47:10.369Z] [Auto-Build] Build completed successfully
-[2026-04-05T15:47:10.370Z] [Auto-Build] Standard output: 
+[2026-04-05T15:49:23.809Z] PID file written: /data/code/minebot/logs/bot_server.pid (PID: 428986)
+[2026-04-05T15:49:23.820Z] WebSocket server listening on 0.0.0.0:9500
+[2026-04-05T15:49:23.820Z] Connected to SQLite database
+[2026-04-05T15:49:23.821Z] [Auto-Build] Build is outdated (git changes detected), running build...
+[2026-04-05T15:49:23.821Z] [Auto-Build] Running npm run build...
+[2026-04-05T15:49:23.823Z] [Evolution] Connecting to evolution database...
+[2026-04-05T15:49:23.824Z] [Evolution] Evolution tables initialized successfully
+[2026-04-05T15:49:23.857Z] [Server] Loading saved bots for auto-reconnect...
+[2026-04-05T15:49:23.857Z] [Server] No active bots to reconnect
+[2026-04-05T15:49:28.053Z] [Auto-Build] Build completed successfully
+[2026-04-05T15:49:28.053Z] [Auto-Build] Standard output: 
 > minecraft-robot-frontend@1.0.0 build
 > react-scripts build
 
@@ -56,76 +56,73 @@ Find out more about deployment here:
   https://cra.link/deployment
 
 
-[2026-04-05T15:47:10.370Z] [Auto-Build] Standard error: (node:425410) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+[2026-04-05T15:49:28.053Z] [Auto-Build] Standard error: (node:429030) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
 (Use `node --trace-deprecation ...` to show where the warning was created)
 
-[2026-04-05T15:47:12.262Z] [API] Received request to start bot with username: AutoBot
-[2026-04-05T15:47:12.262Z] [API] Creating bot instance for host: localhost:25565
-[2026-04-05T15:47:12.262Z] [API] Loading bot/index.js from: /data/code/minebot/bot/index.js
-[2026-04-05T15:47:12.262Z] [Bot] Loading bot/index.js module
-[2026-04-05T15:47:12.359Z] [API] Bot instance created, botId from constructor: null
-[2026-04-05T15:47:12.359Z] [API] After setting botId: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.359Z] [API] Attempting to connect bot...
-[2026-04-05T15:47:12.359Z] [Bot] connect() called, this.botId is: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.359Z] [Bot] Creating bot with username: AutoBot
-[2026-04-05T15:47:12.359Z] [Bot] Target server: localhost:25565
-[2026-04-05T15:47:12.359Z] [Bot] Start automatic: true
-[2026-04-05T15:47:12.359Z] [Bot] Inside Promise, this.botId is: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.433Z] [Bot] After createBot, this.botId is: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.433Z] [Bot] Before ID check, this.botId is: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.433Z] [Bot] Using existing botId: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.433Z] [Bot] Setting up event listeners
-[2026-04-05T15:47:12.607Z] [Bot] Bot spawned
-[2026-04-05T15:47:12.607Z] [Bot] mcData loaded: true
-[2026-04-05T15:47:12.607Z] [Bot] mcData attached to _client: true
-[2026-04-05T15:47:12.608Z] [Bot] Bot version: 1.21.11
-[2026-04-05T15:47:12.608Z] [Bot] Initializing evolution manager with botId: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.609Z] WebSocket client connected
-[2026-04-05T15:47:12.609Z] WebSocket connected to backend at localhost:9500/
-[2026-04-05T15:47:12.610Z] Registered WebSocket for bot bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.610Z] Bot registration acknowledged
-WARN: [2026-04-05T15:47:12.610Z] Unknown WebSocket message type: bots_list
-[2026-04-05T15:47:12.611Z] [Bot] Evolution manager initialized successfully
-[2026-04-05T15:47:12.611Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
-[2026-04-05T15:47:12.632Z] [Screenshot] prismarine-viewer detected, will attempt 3D rendering
-[2026-04-05T15:47:12.632Z] [Screenshot] Module initialized: 854 x 480 (prismarine: true)
-[2026-04-05T15:47:12.632Z] [Bot] Bot ready with ID: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.632Z] [Bot] Starting automatic behavior in survival mode
-[2026-04-05T15:47:12.632Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:47:12.632Z] Starting survival behavior with goal: basic_survival
-[2026-04-05T15:47:12.632Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:47:12.632Z] Starting automatic behavior in survival mode
-[2026-04-05T15:47:12.632Z] Auto-gathering survival resources...
-[2026-04-05T15:47:12.632Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-05T15:47:12.633Z] No target blocks found nearby
-[2026-04-05T15:47:12.633Z] [Bot] Screenshot module initialized, starting stream
-[2026-04-05T15:47:12.633Z] [Bot] Screenshot stream started success
-[2026-04-05T15:47:12.633Z] [API] Bot started successfully with ID: bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:12.633Z] [API] Failed to record evolution: Invalid domain: system
-[2026-04-05T15:47:12.684Z] No natural resources found nearby - bot can connect and move!
-[2026-04-05T15:47:12.684Z] Testing basic movement...
-[2026-04-05T15:47:12.684Z] [Pathfinder] Moving to 4.5, 71, 12.5
-[2026-04-05T15:47:14.655Z] [API] Bot state saved successfully
-[2026-04-05T15:47:14.655Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:47:14.655Z] Starting survival behavior with goal: basic_survival
-[2026-04-05T15:47:14.655Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:47:14.655Z] Starting automatic behavior in survival mode
-[2026-04-05T15:47:14.655Z] Auto-gathering survival resources...
-[2026-04-05T15:47:14.655Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-05T15:47:14.774Z] No target blocks found nearby
-[2026-04-05T15:47:14.774Z] [API] Automatic behavior started for bot bot_1775404032359_t0bb73w9f
-[2026-04-05T15:47:14.838Z] No natural resources found nearby - bot can connect and move!
-[2026-04-05T15:47:14.839Z] Testing basic movement...
-[2026-04-05T15:47:14.839Z] [Pathfinder] Moving to 7.7, 70, 16.7
-[2026-04-05T15:47:28.098Z] [Pathfinder] Movement stopped
-[2026-04-05T15:47:28.098Z] [Pathfinder] Timeout reached after 15000ms
-[2026-04-05T15:47:28.099Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
-[2026-04-05T15:47:28.099Z] Automatic behavior completed
-[2026-04-05T15:47:28.099Z] [Bot] Automatic behavior started with mode: survival
-[2026-04-05T15:47:30.203Z] Gathering resources: ["oak_log","cobblestone"] within radius 20
-[2026-04-05T15:47:30.225Z] No target blocks found nearby
-[2026-04-05T15:47:30.249Z] [Pathfinder] Movement stopped
-[2026-04-05T15:47:30.249Z] [Pathfinder] Timeout reached after 15000ms
-[2026-04-05T15:47:30.250Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
-[2026-04-05T15:47:30.250Z] Automatic behavior completed
-[2026-04-05T15:47:30.278Z] [API] Gathering completed for bot bot_1775404032359_t0bb73w9f
+[2026-04-05T15:49:29.819Z] [API] Received request to start bot with username: LogTest2
+[2026-04-05T15:49:29.819Z] [API] Creating bot instance for host: localhost:25565
+[2026-04-05T15:49:29.819Z] [API] Loading bot/index.js from: /data/code/minebot/bot/index.js
+[2026-04-05T15:49:29.819Z] [Bot] Loading bot/index.js module
+[2026-04-05T15:49:29.913Z] [API] Bot instance created, botId from constructor: null
+[2026-04-05T15:49:29.913Z] [API] After setting botId: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.913Z] [API] Attempting to connect bot...
+[2026-04-05T15:49:29.913Z] [Bot] connect() called, this.botId is: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.913Z] [Bot] Creating bot with username: LogTest2
+[2026-04-05T15:49:29.913Z] [Bot] Target server: localhost:25565
+[2026-04-05T15:49:29.913Z] [Bot] Start automatic: true
+[2026-04-05T15:49:29.913Z] [Bot] Inside Promise, this.botId is: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.986Z] [Bot] After createBot, this.botId is: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.986Z] [Bot] Before ID check, this.botId is: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.986Z] [Bot] Using existing botId: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:29.986Z] [Bot] Setting up event listeners
+[2026-04-05T15:49:30.162Z] [Bot] Bot spawned
+[2026-04-05T15:49:30.162Z] [Bot] mcData loaded: true
+[2026-04-05T15:49:30.162Z] [Bot] mcData attached to _client: true
+[2026-04-05T15:49:30.173Z] [Bot] Bot version: 1.21.11
+[2026-04-05T15:49:30.173Z] [Bot] Initializing evolution manager with botId: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:30.174Z] WebSocket client connected
+[2026-04-05T15:49:30.175Z] WebSocket connected to backend at localhost:9500/
+[2026-04-05T15:49:30.175Z] Registered WebSocket for bot bot_1775404169913_ex60roeor
+[2026-04-05T15:49:30.176Z] Bot registration acknowledged
+WARN: [2026-04-05T15:49:30.176Z] Unknown WebSocket message type: bots_list
+[2026-04-05T15:49:30.177Z] [Bot] Evolution manager initialized successfully
+[2026-04-05T15:49:30.177Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
+[2026-04-05T15:49:30.198Z] [Screenshot] prismarine-viewer detected, will attempt 3D rendering
+[2026-04-05T15:49:30.198Z] [Screenshot] Module initialized: 854 x 480 (prismarine: true)
+[2026-04-05T15:49:30.198Z] [Bot] Bot ready with ID: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:30.198Z] [Bot] Starting automatic behavior in survival mode
+[2026-04-05T15:49:30.198Z] [Behaviors] Setting currentMode to: survival
+[2026-04-05T15:49:30.198Z] Starting survival behavior with goal: basic_survival
+[2026-04-05T15:49:30.198Z] [Behaviors] Setting currentMode to: survival
+[2026-04-05T15:49:30.198Z] Starting automatic behavior in survival mode
+[2026-04-05T15:49:30.198Z] Auto-gathering survival resources...
+[2026-04-05T15:49:30.198Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-05T15:49:30.269Z] No target blocks found nearby
+[2026-04-05T15:49:30.269Z] [Bot] Screenshot module initialized, starting stream
+[2026-04-05T15:49:30.269Z] [Bot] Screenshot stream started success
+[2026-04-05T15:49:30.269Z] [API] Bot started successfully with ID: bot_1775404169913_ex60roeor
+[2026-04-05T15:49:30.281Z] [API] Failed to record evolution: Failed to save experiences: SQLITE_CONSTRAINT: NOT NULL constraint failed: experience_log.bot_id
+[2026-04-05T15:49:30.322Z] No natural resources found nearby - bot can connect and move!
+[2026-04-05T15:49:30.322Z] Testing basic movement...
+[2026-04-05T15:49:30.322Z] [Pathfinder] Moving to -2.5, 85, 5.5
+[2026-04-05T15:49:32.304Z] [API] Bot state saved successfully
+[2026-04-05T15:49:32.304Z] [Behaviors] Setting currentMode to: survival
+[2026-04-05T15:49:32.304Z] Starting survival behavior with goal: basic_survival
+[2026-04-05T15:49:32.304Z] [Behaviors] Setting currentMode to: survival
+[2026-04-05T15:49:32.304Z] Starting automatic behavior in survival mode
+[2026-04-05T15:49:32.304Z] Auto-gathering survival resources...
+[2026-04-05T15:49:32.304Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-05T15:49:32.410Z] No target blocks found nearby
+[2026-04-05T15:49:32.410Z] [API] Automatic behavior started for bot bot_1775404169913_ex60roeor
+[2026-04-05T15:49:32.478Z] No natural resources found nearby - bot can connect and move!
+[2026-04-05T15:49:32.478Z] Testing basic movement...
+[2026-04-05T15:49:32.478Z] [Pathfinder] Moving to 4.752919629439989, 71.76636799395752, 12.7529196294407
+[2026-04-05T15:49:45.756Z] [Pathfinder] Movement stopped
+[2026-04-05T15:49:45.756Z] [Pathfinder] Timeout reached after 15000ms
+[2026-04-05T15:49:45.756Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
+[2026-04-05T15:49:45.756Z] Automatic behavior completed
+[2026-04-05T15:49:45.756Z] [Bot] Automatic behavior started with mode: survival
+[2026-04-05T15:49:47.885Z] [Pathfinder] Movement stopped
+[2026-04-05T15:49:47.885Z] [Pathfinder] Timeout reached after 15000ms
+[2026-04-05T15:49:47.885Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
+[2026-04-05T15:49:47.885Z] Automatic behavior completed
