@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const logger = require("../bot/logger");
 const path = require('path');
 
-const dbPath = path.resolve(__dirname, '..', 'bot_config.db');
+const dbPath = path.resolve(__dirname, '..', 'bot', 'bot_config.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     logger.error('Could not connect to database', err);
