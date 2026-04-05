@@ -1,4 +1,8 @@
 module.exports = function(bot) {
+  let lastHealth = bot.health;
+  let lastFood = bot.food;
+  let lastPosition = { x: bot.entity?.position?.x, y: bot.entity?.position?.y, z: bot.entity?.position?.z };
+  
   return {
     // Event listeners for game events
     setupListeners: function() {
@@ -47,6 +51,39 @@ module.exports = function(bot) {
       // Listen for respawn (after death)
       bot.on('respawn', () => {
         console.log(`Bot respawned`);
+      });
+      
+      // Monitor health changes
+      bot.on('update', () => {
+        if (bot.health !== lastHealth) {
+          console.log(`[State] Health changed: ${lastHealth.toFixed(1)} → ${bot.health.toFixed(1)} (${((bot.health - lastHealth) > 0 ? '+' : '')}${(bot.health - lastHealth).toFixed(1)})`);
+          lastHealth = bot.health;
+        }
+      });
+      
+      // Monitor food changes
+      bot.on('update', () => {
+        if (bot.food !== lastFood) {
+          console.log(`[State] Food changed: ${lastFood} → ${bot.food} (${bot.food - lastFood > 0 ? '+' : ''}${bot.food - lastFood})`);
+          lastFood = bot.food;
+        }
+      });
+      
+      // Monitor position changes
+      bot.on('move', () => {
+        const newPos = bot.entity?.position;
+        if (newPos) {
+          const dist = Math.sqrt(
+            Math.pow(newPos.x - lastPosition.x, 2) +
+            Math.pow(newPos.y - lastPosition.y, 2) +
+            Math.pow(newPos.z - lastPosition.z, 2)
+          );
+          
+          if (dist > 1) {
+            console.log(`[State] Position changed: (${lastPosition.x.toFixed(1)}, ${lastPosition.y.toFixed(1)}, ${lastPosition.z.toFixed(1)}) → (${newPos.x.toFixed(1)}, ${newPos.y.toFixed(1)}, ${newPos.z.toFixed(1)}) [dist: ${dist.toFixed(1)}]`);
+            lastPosition = { x: newPos.x, y: newPos.y, z: newPos.z };
+          }
+        }
       });
     }
   };

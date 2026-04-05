@@ -136,3 +136,5 @@ Starting net.minecraft.server.Main
 [23:50:19] [Server thread/INFO]: FinalTestBot[/127.0.0.1:54270] logged in with entity id 8150 at (-8.5, 103.0, -6.5)
 [23:50:19] [Server thread/INFO]: FinalTestBot joined the game
 [23:50:22] [Server thread/WARN]: FinalTestBot moved too quickly! 9.196425697497931,-27.233632006042484,9.196425697498919
+[23:51:13] [Server thread/INFO]: AutoBot was shot by Skeleton
+[23:52:06] [Server thread/INFO]: LogTest2 was blown up by Creeper
