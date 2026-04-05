@@ -463,7 +463,7 @@ app.post('/api/bot/start', async (req, res) => {
     if (bot.evolutionManager) {
       try {
         await bot.evolutionManager.recordExperience({
-          type: 'system',
+          type: 'resource',
           context: 'bot_creation',
           action: 'bot_initialized',
           outcome: 1.0,
