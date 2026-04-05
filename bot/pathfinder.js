@@ -210,6 +210,11 @@ class Pathfinder {
       console.warn('Cannot set velocity: bot is not in creative mode');
     }
   }
+
+  setEvolutionWeights(weights) {
+    console.log('[Pathfinder] Evolution weights updated:', weights);
+    this.evolutionWeights = weights;
+  }
 }
 
 module.exports = Pathfinder;

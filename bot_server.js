@@ -163,6 +163,7 @@ const BotConfig = require('./config/models/BotConfig');
 const BotState = require('./config/models/BotState');
 const GoalSystem = require('./bot/goal-system');
 const BotGoal = require('./config/models/BotGoal');
+const StrategyEvolutionManager = require('./bot/evolution/strategy-manager');
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -437,6 +438,7 @@ app.post('/api/bot/start', async (req, res) => {
     const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
     console.log(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
+    console.log('[API] Loading bot/index.js from:', require.resolve('./bot/index'));
     const MinecraftBot = require('./bot/index');
     const bot = new MinecraftBot({ 
       host: mcHost, 
@@ -445,10 +447,14 @@ app.post('/api/bot/start', async (req, res) => {
       botServerPort: process.env.PORT || 9500
     });
     
+    console.log('[API] Bot instance created, botId from constructor:', bot.botId);
+    const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    bot.botId = botId;
+    console.log('[API] After setting botId:', bot.botId);
+    
     console.log(`[API] Attempting to connect bot...`);
     await bot.connect(username, null, true);
     
-    const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     activeBots.set(botId, bot);
     
     console.log(`[API] Bot started successfully with ID: ${botId}`);
@@ -807,6 +813,145 @@ app.delete('/api/bot/:botId', async (req, res) => {
   } catch (error) {
     console.error('Error removing bot:', error);
     res.status(500).json({ error: `Failed to remove bot: ${error.message}` });
+  }
+});
+
+// ===================== EVOLUTION API ENDPOINTS =====================
+
+// GET /api/bot/:botId/evolution/stats - Get evolution statistics
+app.get('/api/bot/:botId/evolution/stats', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.evolutionManager) {
+      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
+    }
+    
+    const stats = await bot.evolutionManager.getEvolutionStats();
+    res.json({ success: true, stats });
+  } catch (error) {
+    console.error('Error getting evolution stats:', error);
+    res.status(500).json({ error: `Failed to get evolution stats: ${error.message}` });
+  }
+});
+
+// POST /api/bot/:botId/evolution/record - Record a new experience
+app.post('/api/bot/:botId/evolution/record', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { type, context, action, outcome } = req.body;
+    
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.evolutionManager) {
+      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
+    }
+    
+    if (!type || !context || !action || outcome === undefined) {
+      return res.status(400).json({ error: 'type, context, action, and outcome are required' });
+    }
+    
+    const experience = {
+      bot_id: botId,
+      type,
+      context,
+      action,
+      outcome
+    };
+    
+    const result = await bot.evolutionManager.recordExperience(experience);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Error recording experience:', error);
+    res.status(500).json({ error: `Failed to record experience: ${error.message}` });
+  }
+});
+
+// POST /api/bot/:botId/evolution/rollback - Rollback to a specific snapshot
+app.post('/api/bot/:botId/evolution/rollback', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { snapshotId } = req.body;
+    
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.evolutionManager) {
+      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
+    }
+    
+    if (!snapshotId) {
+      return res.status(400).json({ error: 'snapshotId is required' });
+    }
+    
+    const result = await bot.evolutionManager.rollbackToSnapshot(snapshotId);
+    res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Error rolling back:', error);
+    res.status(500).json({ error: `Failed to rollback: ${error.message}` });
+  }
+});
+
+// GET /api/bot/:botId/evolution/history - Get weight history
+app.get('/api/bot/:botId/evolution/history', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const { domain, limit = 10 } = req.query;
+    
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.evolutionManager) {
+      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
+    }
+    
+    if (!domain) {
+      return res.status(400).json({ error: 'domain is required' });
+    }
+    
+    const history = await bot.evolutionManager.storage.getWeightHistory(botId, domain, parseInt(limit));
+    res.json({ success: true, history });
+  } catch (error) {
+    console.error('Error getting weight history:', error);
+    res.status(500).json({ error: `Failed to get weight history: ${error.message}` });
+  }
+});
+
+// POST /api/bot/:botId/evolution/reset - Reset evolution data
+app.post('/api/bot/:botId/evolution/reset', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.evolutionManager) {
+      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
+    }
+    
+    await bot.evolutionManager.reset();
+    res.json({ success: true, message: 'Evolution data reset successfully' });
+  } catch (error) {
+    console.error('Error resetting evolution:', error);
+    res.status(500).json({ error: `Failed to reset evolution: ${error.message}` });
   }
 });
 

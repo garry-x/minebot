@@ -152,10 +152,50 @@ const WEIGHT_SCHEMA = {
 ```javascript
 class WeightEngine {
   constructor(domain)
-  getWeights()
-  update(weights, experience)
-  reset()
-  isValid()
+  
+  getWeights()                    // 返回当前权重向量 { dim1: 0.3, dim2: 0.3, ... }
+  update(experience, fitnessScore) // 基于经验更新权重（内部追踪experienceCount）
+  reset()                         // 重置为初始值
+  isValid()                       // 检查权重是否有效（归一化、边界内）
+  getExperienceCount()            // 返回累计经验数
+}
+```
+
+权重更新算法（修复 experienceCount 作用域问题）:
+
+```javascript
+class WeightEngine {
+  constructor(domain) {
+    this.domain = domain;
+    this.weights = { ...WEIGHT_SCHEMA[domain] };
+    this.experienceCount = 0;
+  }
+
+  getLearningRate() {
+    const base = 0.05;
+    const minRate = 0.005;
+    const decay = 0.9995;
+    return Math.max(minRate, base * Math.pow(decay, this.experienceCount));
+  }
+
+  update(experience, fitnessScore) {
+    const lr = this.getLearningRate();
+    const baseline = 0.5;
+    const delta = fitnessScore - baseline;
+    
+    const updated = {};
+    const activeWeights = experience.context.active_weights || this.weights;
+    const totalWeight = Object.values(activeWeights).reduce((a, b) => a + b, 0);
+    
+    for (const [dim, weight] of Object.entries(this.weights)) {
+      const contributionRatio = (activeWeights[dim] || weight) / totalWeight;
+      const credit = delta * contributionRatio;
+      updated[dim] = clamp(weight + lr * credit, 0.05, 0.95);
+    }
+    
+    this.weights = normalizeWeights(updated);
+    this.experienceCount++;
+  }
 }
 ```
 
@@ -233,6 +273,39 @@ calcBehaviorFitness(outcome) {
 - 快照管理
 - WAL失败回退
 
+核心接口:
+
+```javascript
+class EvolutionStorage {
+  async saveWeights(botId, domain, weights)  // 使用 INSERT OR REPLACE (UNIQUE约束)
+  async loadWeights(botId, domain)           // 返回 { weight_vector, version, updated_at }
+  async saveExperience(batch)                // 批量写入
+  async saveSnapshot(botId, type, data)      // 创建快照
+  async getSnapshots(botId, limit)           // 查询快照历史
+  async loadSnapshot(snapshotId)             // 加载快照数据
+  async restoreFromWal()                     // 从WAL文件恢复
+  async queryExperience(botId, type, limit)  // 查询经验
+}
+```
+
+### 3.8 getEvolutionStats() 返回类型
+
+```javascript
+{
+  totalExperiences: number,
+  experiencesByDomain: { path: number, resource: number, behavior: number },
+  successRates: { path: number, resource: number, behavior: number },
+  averageFitness: { path: number, resource: number, behavior: number },
+  recentFitness: number[],      // 最近100次适应度评分
+  baselineFitness: number,      // 历史基线（首次达到稳定后的平均值）
+  currentWeights: {
+    path: object, resource: object, behavior: object
+  },
+  lastSnapshot: { id: number, type: string, created_at: string } | null,
+  experienceCount: number       // WeightEngine累计经验数
+}
+```
+
 ## 4. 数据流
 
 ```
@@ -276,6 +349,7 @@ CREATE TABLE evolution_weights (
   domain TEXT NOT NULL,
   weight_vector TEXT NOT NULL CHECK(json_valid(weight_vector)),
   version INTEGER DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE(bot_id, domain),
   FOREIGN KEY (bot_id) REFERENCES bot_states(bot_id)
@@ -289,9 +363,9 @@ CREATE TABLE experience_log (
   id INTEGER PRIMARY KEY,
   bot_id TEXT NOT NULL,
   type TEXT NOT NULL,
-  context TEXT NOT NULL,
+  context TEXT NOT NULL CHECK(json_valid(context)),
   action TEXT NOT NULL,
-  outcome TEXT NOT NULL,
+  outcome TEXT NOT NULL CHECK(json_valid(outcome)),
   success INTEGER NOT NULL,
   fitness_score REAL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -389,14 +463,192 @@ function normalizeWeights(weights) {
 // - 决策时降低进化建议的置信度
 ```
 
-## 7. 持久化策略
+### 6.4 getOptimalAction 算法
+
+```javascript
+getOptimalAction(domain, context) {
+  const weights = this.getWeights(domain);
+  const history = this.experienceLogger.query(this.botId, domain, 100);
+  
+  // 基于权重过滤历史经验，找出相似上下文的经验
+  const similarExperiences = history.filter(exp => {
+    return this.contextSimilarity(exp.context, context) > 0.7;
+  });
+  
+  if (similarExperiences.length === 0) {
+    return null; // 无历史经验，调用者使用硬编码兜底
+  }
+  
+  // 按适应度排序
+  const sorted = similarExperiences.sort((a, b) => b.fitness_score - a.fitness_score);
+  const best = sorted[0];
+  
+  // 置信度 = 历史成功率
+  const successRate = similarExperiences.filter(e => e.outcome.success).length / similarExperiences.length;
+  
+  return {
+    action: best.action.split('_')[0],  // 'gather_oak_log' → 'gather'
+    target: this.parseActionTarget(best.action),
+    confidence: successRate,
+    reason: `${domain} ${best.action} had ${Math.round(successRate * 100)}% success rate (${similarExperiences.length} experiences)`
+  };
+}
+```
+
+### 6.5 性能退化检测与回滚
+
+```javascript
+class PerformanceMonitor {
+  constructor(storage, botId) {
+    this.storage = storage;
+    this.botId = botId;
+    this.baselineFitness = null;
+  }
+
+  // 调用时机: 每记录10条经验时调用
+  async checkRegression(domain) {
+    const recent = await this.storage.queryExperience(this.botId, domain, 50);
+    if (recent.length < 20) return false; // 样本不足
+    
+    const recentAvg = recent.reduce((sum, e) => sum + (e.fitness_score || 0), 0) / recent.length;
+    
+    // 初始化基线: 前50条经验的平均适应度
+    if (!this.baselineFitness) {
+      const initial = await this.storage.queryExperience(this.botId, domain, 100);
+      this.baselineFitness = initial.length > 0
+        ? initial.reduce((sum, e) => sum + (e.fitness_score || 0), 0) / initial.length
+        : 0.5;
+    }
+    
+    return recentAvg < this.baselineFitness * 0.7; // 退化 >30%
+  }
+
+  // 触发退化时执行回滚
+  async rollbackOnRegression() {
+    // 1. 创建回滚前快照
+    await this.storage.saveSnapshot(this.botId, 'pre_rollback', {
+      weights: this.weightEngine.getWeights(),
+      reason: 'performance_degradation',
+      currentFitness: this.baselineFitness * 0.7
+    });
+    
+    // 2. 回滚到上一个里程碑快照
+    const snapshots = await this.storage.getSnapshots(this.botId, 10);
+    const milestone = snapshots.find(s => s.snapshot_type === 'milestone');
+    if (milestone) {
+      const data = JSON.parse(milestone.data);
+      await this.weightEngine.setWeights(data.weights);
+      await this.storage.saveWeights(this.botId, this.domain, data.weights);
+    } else {
+      // 无快照则重置
+      await this.weightEngine.reset();
+    }
+    
+    // 3. 记录回滚事件
+    console.log(`[Evolution] Rolled back due to performance regression`);
+  }
+}
+```
+
+### 6.6 经验记录清理
+
+- 触发时机: 每次 `flush()` 后检查
+- 规则: 每域保留最近1000条，删除最旧记录
+- 删除前计算该域统计摘要并存储到快照
+
+### 6.7 快照数据格式
+
+```javascript
+// snapshot data 列 JSON 结构
+{
+  version: number,
+  weights: { [domain: string]: { [dim: string]: number } },
+  experienceCount: number,
+  successRates: { [domain: string]: number },
+  timestamp: string
+}
+```
+
+## 7. 回滚机制
+
+### 7.1 rollbackToSnapshot 行为
+
+- 恢复权重到快照状态
+- **不删除**快照之后的经验记录（保留学习历史）
+- 更新 `evolution_weights.version`（+1）
+- 创建 `pre_rollback` 类型快照记录回滚事件
+- 防止回滚循环: 同一版本不连续回滚2次
+
+### 7.2 触发方式
+
+- 手动: `POST /api/bot/:botId/evolution/rollback`
+- 自动: `PerformanceMonitor.checkRegression()` 检测到退化
+
+## 8. 数据库迁移策略
+
+### 8.1 迁移版本表
+
+```sql
+CREATE TABLE IF NOT EXISTS evolution_migrations (
+  id INTEGER PRIMARY KEY,
+  version INTEGER NOT NULL UNIQUE,
+  description TEXT NOT NULL,
+  applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### 8.2 迁移脚本
+
+```javascript
+const MIGRATIONS = [
+  {
+    version: 1,
+    description: 'Initial evolution tables',
+    up: async (db) => {
+      await db.run(`CREATE TABLE evolution_weights ...`);
+      await db.run(`CREATE TABLE experience_log ...`);
+      await db.run(`CREATE TABLE evolution_snapshots ...`);
+    }
+  },
+  {
+    version: 2,
+    description: 'Add created_at to evolution_weights',
+    up: async (db) => {
+      await db.run(`ALTER TABLE evolution_weights ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`);
+    }
+  }
+];
+
+async function runMigrations(db) {
+  await db.run(`CREATE TABLE IF NOT EXISTS evolution_migrations (...)`);
+  const applied = await db.all(`SELECT version FROM evolution_migrations`);
+  const appliedVersions = new Set(applied.map(r => r.version));
+  
+  for (const migration of MIGRATIONS) {
+    if (!appliedVersions.has(migration.version)) {
+      console.log(`[Evolution] Running migration v${migration.version}: ${migration.description}`);
+      await migration.up(db);
+      await db.run(`INSERT INTO evolution_migrations (version, description) VALUES (?, ?)`,
+        [migration.version, migration.description]);
+    }
+  }
+}
+```
+
+### 8.3 回滚迁移
+
+- 每个迁移脚本可选定义 `down` 函数
+- 迁移失败时自动执行 `down` 回滚
+- 日志记录所有迁移操作
+
+## 11. 持久化策略
 
 - **权重**: 每次更新后立即写入SQLite
 - **经验记录**: 批量写入，每10条或每30秒刷新
 - **失败回退**: 批量写入失败时写入WAL文件，下次启动时恢复
 - **快照**: 目标完成/每100次经验/权重重大变化/性能退化时
 
-## 8. 错误处理
+## 12. 错误处理
 
 | 场景 | 处理方式 | 恢复策略 |
 |------|---------|---------|

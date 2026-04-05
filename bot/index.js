@@ -1,3 +1,4 @@
+console.log('[Bot] Loading bot/index.js module');
 const mineflayer = require('mineflayer');
 const WebSocket = require('ws');
 const Pathfinder = require('./pathfinder');
@@ -22,13 +23,16 @@ class MinecraftBot {
     this.screenshotModule = null;
     this.screenshotCaptureFn = null;
     this._streamCaptureInterval = null;
+    this.evolutionManager = null;
   }
 
 async connect(username, accessToken, startAutomatic = false) {
+  console.log('[Bot] connect() called, this.botId is:', this.botId);
   return new Promise((resolve, reject) => {
     console.log(`[Bot] Creating bot with username: ${username}`);
     console.log(`[Bot] Target server: ${this.options.host || 'localhost'}:${this.options.port || 25565}`);
     console.log(`[Bot] Start automatic: ${startAutomatic}`);
+    console.log('[Bot] Inside Promise, this.botId is:', this.botId);
     
     // For offline mode, we need to provide a dummy access token
     // This prevents connection errors in some server configurations
@@ -46,25 +50,30 @@ async connect(username, accessToken, startAutomatic = false) {
     
     this.bot = mineflayer.createBot(botOptions);
     this.startAutomatic = startAutomatic;
+    
+    console.log('[Bot] After createBot, this.botId is:', this.botId);
 
-      // Set botId if not already set
-      if (!this.botId) {
-        this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        console.log(`[Bot] Bot ID set to: ${this.botId}`);
-      }
+    // Set botId if not already set
+    console.log('[Bot] Before ID check, this.botId is:', this.botId);
+    if (!this.botId) {
+      this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      console.log(`[Bot] Bot ID set to: ${this.botId}`);
+    } else {
+      console.log('[Bot] Using existing botId:', this.botId);
+    }
 
-      console.log('[Bot] Setting up event listeners');
-      this.setupEventListeners();
-      
-      // Set up events for basic bot events that fire before spawn
-      this.bot.on('error', (err) => {
-        console.error(`[Bot] Error: ${err.message}`);
-      });
+    console.log('[Bot] Setting up event listeners');
+    this.setupEventListeners();
+    
+    // Set up events for basic bot events that fire before spawn
+    this.bot.on('error', (err) => {
+      console.error(`[Bot] Error: ${err.message}`);
+    });
 
-      let isResolved = false;
-      let connectTimeout = null;
+    let isResolved = false;
+    let connectTimeout = null;
 
-       this.bot.once('spawn', () => {
+    this.bot.once('spawn', () => {
          // Set up WebSocket connection after bot spawns
          this.setupWebSocket();
          console.log('[Bot] Bot spawned');
@@ -83,13 +92,25 @@ async connect(username, accessToken, startAutomatic = false) {
         console.log('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
         
         // Wait a bit for bot to fully initialize
-        setTimeout(() => {
+        setTimeout(async () => {
           try {
             console.log('[Bot] Bot version:', this.bot.version);
             
+            // Initialize evolution manager
+            try {
+              console.log('[Bot] Initializing evolution manager with botId:', this.botId);
+              const StrategyEvolutionManager = require('./evolution/strategy-manager');
+              this.evolutionManager = new StrategyEvolutionManager(this.botId);
+              await this.evolutionManager.connect();
+              console.log('[Bot] Evolution manager initialized successfully');
+            } catch (evoErr) {
+              console.error('[Bot] Evolution manager initialization failed:', evoErr.message);
+              console.error('[Bot] Evolution manager error stack:', evoErr.stack);
+            }
+            
             // Initialize modules after bot is ready
             this.pathfinder = new Pathfinder(this.bot);
-            this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
+            this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
             this.autonomousRunning = false;
             this.goalState = null;
             this.events = require('./events')(this.bot);

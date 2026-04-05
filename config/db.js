@@ -18,4 +18,19 @@ const db = new sqlite3.Database(path.resolve(__dirname, '../bot_config.db'), (er
 const BotGoal = require('./models/BotGoal');
 BotGoal.createTable();
 
+// Initialize evolution tables
+const EvolutionStorage = require('../bot/evolution/evolution-storage');
+const evolutionStorage = new EvolutionStorage();
+evolutionStorage.connect()
+  .then(() => {
+    console.log('[Evolution] Connecting to evolution database...');
+    return evolutionStorage.initialize();
+  })
+  .then(() => {
+    console.log('[Evolution] Evolution tables initialized successfully');
+  })
+  .catch((err) => {
+    console.error('[Evolution] Failed to initialize evolution tables:', err.message);
+  });
+
 module.exports = db;

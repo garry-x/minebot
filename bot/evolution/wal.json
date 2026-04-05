@@ -1,0 +1,72 @@
+[
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-05T01:11:13.830Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-05T01:11:13.832Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-05T01:11:28.216Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-05T01:11:28.218Z"
+  }
+]
