@@ -1,9 +1,10 @@
 const Vec3 = require('vec3');
+const logger = require('./logger');
 
 class Pathfinder {
   constructor(bot) {
     this.bot = bot;
-    console.log('[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)');
+    logger.debug('[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)');
   }
   
   async moveTo(target, options = {}) {
@@ -16,7 +17,7 @@ class Pathfinder {
       maxRetries = 5 // Increased retries for better stuck recovery
     } = options;
   
-    console.log(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
+    logger.debug(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
     
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -34,14 +35,14 @@ class Pathfinder {
       const tryMove = async () => {
         if (checkArrival()) {
           this.stop();
-          console.log('[Pathfinder] Reached target');
+          logger.debug('[Pathfinder] Reached target');
           resolve();
           return;
         }
         
         if (Date.now() - startTime > timeout) {
           this.stop();
-          console.log(`[Pathfinder] Timeout reached after ${timeout}ms`);
+          logger.debug(`[Pathfinder] Timeout reached after ${timeout}ms`);
           reject(new Error('Movement timeout'));
           return;
         }
@@ -85,7 +86,7 @@ class Pathfinder {
             if (stuckCounter >= 3) {
               stuckCounter = 0;
               retryCount++;
-              console.log(`[Pathfinder] Stuck, trying to adjust (retry ${retryCount}/${maxRetries})`);
+              logger.debug(`[Pathfinder] Stuck, trying to adjust (retry ${retryCount}/${maxRetries})`);
               
               // Try jumping and moving sideways
               this.bot.setControlState('forward', false);
@@ -116,7 +117,7 @@ class Pathfinder {
           
         } catch (err) {
           this.stop();
-          console.error('[Pathfinder] Error during movement:', err);
+          logger.error('[Pathfinder] Error during movement:', err);
           reject(err);
         }
       };
@@ -135,7 +136,7 @@ class Pathfinder {
       timeout = 30000 
     } = options;
     
-    console.log(`[Pathfinder] Following entity: ${entity.name}`);
+    logger.debug(`[Pathfinder] Following entity: ${entity.name}`);
     
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -152,7 +153,7 @@ class Pathfinder {
           const dist = pos.distanceTo(entityPos);
           
           if (dist <= distance) {
-            console.log('[Pathfinder] Caught up to entity');
+            logger.debug('[Pathfinder] Caught up to entity');
             resolve();
             return;
           }
@@ -181,7 +182,7 @@ class Pathfinder {
     this.bot.setControlState('forward', false);
     this.bot.setControlState('sprint', false);
     this.bot.setControlState('jump', false);
-    console.log('[Pathfinder] Movement stopped');
+    logger.debug('[Pathfinder] Movement stopped');
   }
 
   isMoving() {
@@ -192,7 +193,7 @@ class Pathfinder {
 
   setMovementPermissions(allowSprint, allowJump, allowParkour) {
     // Not applicable for simple pathfinder
-    console.log('[Pathfinder] setMovementPermissions not applicable');
+    logger.debug('[Pathfinder] setMovementPermissions not applicable');
   }
 
   async flyTo(target, speed = 1) {
@@ -207,12 +208,12 @@ class Pathfinder {
     if (this.bot.creative) {
       this.bot.entity.setVelocity(velocity);
     } else {
-      console.warn('Cannot set velocity: bot is not in creative mode');
+      logger.warn('Cannot set velocity: bot is not in creative mode');
     }
   }
 
   setEvolutionWeights(weights) {
-    console.log('[Pathfinder] Evolution weights updated:', weights);
+    logger.debug('[Pathfinder] Evolution weights updated:', weights);
     this.evolutionWeights = weights;
   }
 }

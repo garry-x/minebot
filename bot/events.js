@@ -1,7 +1,42 @@
-module.exports = function(bot) {
+const logger = require('./logger');
+
+module.exports = function(bot, evolutionManager = null) {
   let lastHealth = bot.health;
   let lastFood = bot.food;
   let lastPosition = { x: bot.entity?.position?.x, y: bot.entity?.position?.y, z: bot.entity?.position?.z };
+  
+  const getBotId = () => {
+    const wrapper = bot.__wrapper;
+    return wrapper?.botId || 'unknown';
+  };
+  
+  const recordStateChange = async (stateType, oldValue, newValue, context = {}) => {
+    if (!evolutionManager) {
+      return;
+    }
+    
+    try {
+      await evolutionManager.recordExperience({
+        bot_id: getBotId(),
+        type: 'state',
+        context: {
+          ...context,
+          state_type: stateType,
+          old_value: oldValue,
+          new_value: newValue,
+          timestamp: new Date().toISOString()
+        },
+        action: 'state_change',
+        outcome: {
+          success: true,
+          state_changed: stateType,
+          value_changed: newValue !== oldValue
+        }
+      });
+    } catch (err) {
+      logger.error(`[Events] Failed to record state change: ${err.message}`);
+    }
+  };
   
   return {
     // Event listeners for game events
@@ -10,64 +45,81 @@ module.exports = function(bot) {
       bot.on('experience', (orb) => {
         if (!orb) return;
         const xp = (orb && typeof orb === 'object' && orb.experience !== undefined) ? orb.experience : (typeof orb === 'string' ? orb : 'N/A');
-        console.log(`Collected experience orb: ${xp} XP`);
+        logger.trace(`Collected experience orb: ${xp} XP`);
       });
       
       // Listen for item pickup
       bot.on('itemPickup', (item) => {
-        console.log(`Picked up item: ${item.name} x${item.count}`);
+        logger.trace(`Picked up item: ${item.name} x${item.count}`);
       });
       
       // Listen for block break
       bot.on('blockBreak', (block) => {
-        console.log(`Block broken: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
+        logger.trace(`Block broken: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
       });
       
       // Listen for block place
       bot.on('blockPlace', (block) => {
-        console.log(`Block placed: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
+        logger.trace(`Block placed: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
       });
       
       // Listen for entity hurt (when bot takes damage)
       bot.on('hurt', () => {
-        console.log(`Bot took damage! Health: ${bot.health}`);
+        logger.trace(`Bot took damage! Health: ${bot.health}`);
       });
       
       // Listen for entity heal
       bot.on('heal', () => {
-        console.log(`Bot healed! Health: ${bot.health}`);
+        logger.trace(`Bot healed! Health: ${bot.health}`);
       });
       
       // Listen for sleeping
       bot.on('sleep', () => {
-        console.log(`Bot went to sleep`);
+        logger.trace(`Bot went to sleep`);
       });
       
       // Listen for waking up
       bot.on('wake', () => {
-        console.log(`Bot woke up`);
+        logger.trace(`Bot woke up`);
       });
       
       // Listen for respawn (after death)
       bot.on('respawn', () => {
-        console.log(`Bot respawned`);
+        logger.trace(`Bot respawned`);
       });
       
-      // Monitor health changes
-      bot.on('update', () => {
+      // Monitor health changes using 'health' event
+      bot.on('health', async () => {
         if (bot.health !== lastHealth) {
-          console.log(`[State] Health changed: ${lastHealth.toFixed(1)} → ${bot.health.toFixed(1)} (${((bot.health - lastHealth) > 0 ? '+' : '')}${(bot.health - lastHealth).toFixed(1)})`);
+          const change = bot.health - lastHealth;
+          logger.trace(`[State] Health changed: ${lastHealth.toFixed(1)} → ${bot.health.toFixed(1)} (${change > 0 ? '+' : ''}${change.toFixed(1)})`);
+          
+          await recordStateChange('health', lastHealth, bot.health, {
+            cause: change < 0 ? 'damage' : 'heal',
+            is_critical: bot.health < 5
+          });
+          
           lastHealth = bot.health;
         }
       });
       
-      // Monitor food changes
-      bot.on('update', () => {
-        if (bot.food !== lastFood) {
-          console.log(`[State] Food changed: ${lastFood} → ${bot.food} (${bot.food - lastFood > 0 ? '+' : ''}${bot.food - lastFood})`);
-          lastFood = bot.food;
+      // Monitor food changes using foodChange event
+      bot.on('foodChange', async (food) => {
+        logger.trace(`[Food] foodChange event: ${food}, lastFood: ${lastFood}`);
+        if (food !== lastFood) {
+          const change = food - lastFood;
+          logger.trace(`[State] Food changed: ${lastFood} → ${food} (${change > 0 ? '+' : ''}${change})`);
+          
+          await recordStateChange('food', lastFood, food, {
+            cause: change < 0 ? 'consumption' : 'eating',
+            is_low: food < 5
+          });
+          
+          lastFood = food;
         }
       });
+      
+
       
       // Monitor position changes
       bot.on('move', () => {
@@ -80,7 +132,7 @@ module.exports = function(bot) {
           );
           
           if (dist > 1) {
-            console.log(`[State] Position changed: (${lastPosition.x.toFixed(1)}, ${lastPosition.y.toFixed(1)}, ${lastPosition.z.toFixed(1)}) → (${newPos.x.toFixed(1)}, ${newPos.y.toFixed(1)}, ${newPos.z.toFixed(1)}) [dist: ${dist.toFixed(1)}]`);
+            logger.trace(`[State] Position changed: (${lastPosition.x.toFixed(1)}, ${lastPosition.y.toFixed(1)}, ${lastPosition.z.toFixed(1)}) → (${newPos.x.toFixed(1)}, ${newPos.y.toFixed(1)}, ${newPos.z.toFixed(1)}) [dist: ${dist.toFixed(1)}]`);
             lastPosition = { x: newPos.x, y: newPos.y, z: newPos.z };
           }
         }

@@ -1,3 +1,5 @@
+const logger = require('../logger');
+
 class WeightEngine {
   constructor(domain) {
     this.domains = {

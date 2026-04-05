@@ -2,6 +2,7 @@ const WeightEngine = require('./weight-engine');
 const ExperienceLogger = require('./experience-logger');
 const EvolutionStorage = require('./evolution-storage');
 const FitnessCalculator = require('./fitness-calculator');
+const logger = require('../logger');
 
 class StrategyEvolutionManager {
   constructor(botId, options = {}) {
@@ -51,10 +52,11 @@ class StrategyEvolutionManager {
   }
 
   async recordExperience(experience) {
-    const domain = experience.type;
+    let domain = experience.type;
     
     if (!this.weightEngines[domain]) {
-      throw new Error(`Invalid domain: ${domain}`);
+      logger.debug(`[Evolution] Unknown domain: ${domain}. Using 'behavior' as fallback.`);
+      domain = 'behavior';
     }
     
     const fitnessScore = this._calculateFitness(domain, experience.outcome);
@@ -100,6 +102,8 @@ class StrategyEvolutionManager {
         return FitnessCalculator.calcResourceFitness(outcome);
       case 'behavior':
         return FitnessCalculator.calcBehaviorFitness(outcome);
+      case 'state':
+        return outcome.success ? 0.5 : 0.1;
       default:
         return outcome.success ? 0.5 : 0.1;
     }

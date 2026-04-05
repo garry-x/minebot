@@ -4,43 +4,18 @@ const http = require('http');
 const { WebSocketServer } = require('ws');
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
 const app = express();
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 9500;
 
+const logger = require('./bot/logger');
+
 // Parse verbose flag
 const verbose = process.argv.includes('--verbose');
 
-// Setup log file and PID file paths
+// Setup PID file paths
 const LOG_DIR = path.join(__dirname, 'logs');
-if (!fs.existsSync(LOG_DIR)) {
-  fs.mkdirSync(LOG_DIR, { recursive: true });
-}
-const LOG_FILE = path.join(LOG_DIR, 'bot_server.log');
 const pidFile = path.join(LOG_DIR, 'bot_server.pid');
-
-// Redirect console output to log file only (no terminal output)
-const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
-
-function formatLogMessage(...args) {
-  const message = util.format(...args);
-  const timestamp = new Date().toISOString();
-  return `[${timestamp}] ${message}\n`;
-}
-
-console.log = function(...args) {
-  logStream.write(formatLogMessage(...args));
-};
-console.error = function(...args) {
-  logStream.write(formatLogMessage(...args));
-};
-console.warn = function(...args) {
-  logStream.write('WARN: ' + formatLogMessage(...args));
-};
-console.info = function(...args) {
-  logStream.write(formatLogMessage(...args));
-};
 
 // Atomically create and write PID file
 let fd;
@@ -48,7 +23,7 @@ try {
   fd = fs.openSync(pidFile, 'wx');
   fs.writeSync(fd, process.pid.toString());
   fs.closeSync(fd);
-  console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+  logger.trace(`PID file written: ${pidFile} (PID: ${process.pid})`);
 } catch (e) {
   // PID file exists, read it to check if it's stale
   try {
@@ -57,33 +32,33 @@ try {
     
     if (!Number.isInteger(existingPid) || existingPid <= 0) {
       // Invalid PID, remove stale file and retry
-      console.log('Removing invalid PID file');
+      logger.trace('Removing invalid PID file');
       fs.unlinkSync(pidFile);
       fd = fs.openSync(pidFile, 'wx');
       fs.writeSync(fd, process.pid.toString());
       fs.closeSync(fd);
-      console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+      logger.trace(`PID file written: ${pidFile} (PID: ${process.pid})`);
     } else if (existingPid === process.pid) {
       // Same process, just continue
-      console.log(`PID file already owned by this process: ${process.pid}`);
+      logger.trace(`PID file already owned by this process: ${process.pid}`);
     } else {
       try {
         process.kill(existingPid, 0);
         // Process exists, another instance is running
-        console.error(`Another instance is already running (PID: ${existingPid})`);
+        logger.error(`Another instance is already running (PID: ${existingPid})`);
         process.exit(1);
       } catch (e) {
         // Process doesn't exist, stale PID file, remove it and retry
-        console.log('Removing stale PID file');
+        logger.info('Removing stale PID file');
         fs.unlinkSync(pidFile);
         fd = fs.openSync(pidFile, 'wx');
         fs.writeSync(fd, process.pid.toString());
         fs.closeSync(fd);
-        console.log(`PID file written: ${pidFile} (PID: ${process.pid})`);
+        logger.info(`PID file written: ${pidFile} (PID: ${process.pid})`);
       }
     }
   } catch (readErr) {
-    console.error(`Failed to read PID file: ${readErr.message}`);
+    logger.error(`Failed to read PID file: ${readErr.message}`);
     process.exit(1);
   }
 }
@@ -96,23 +71,23 @@ function checkAndBuildFrontend() {
   const { exec } = require('child_process');
   
   function runBuild(callback) {
-    console.log('[Auto-Build] Running npm run build...');
+    logger.info('[Auto-Build] Running npm run build...');
     
     exec('npm run build', { 
       cwd: frontendDir,
       maxBuffer: 1024 * 1024 * 1024
     }, (error, stdout, stderr) => {
       if (error) {
-        console.error('[Auto-Build] Build failed:', error.message);
-        console.error('[Auto-Build] Build output:', stdout);
-        console.error('[Auto-Build] Build error output:', stderr);
+        logger.error('[Auto-Build] Build failed:', error.message);
+        logger.error('[Auto-Build] Build output:', stdout);
+        logger.error('[Auto-Build] Build error output:', stderr);
         process.exit(1);
       }
       
-      console.log('[Auto-Build] Build completed successfully');
-      console.log('[Auto-Build] Standard output:', stdout);
+      logger.info('[Auto-Build] Build completed successfully');
+      logger.trace('[Auto-Build] Standard output:', stdout);
       if (stderr) {
-        console.log('[Auto-Build] Standard error:', stderr);
+        logger.trace('[Auto-Build] Standard error:', stderr);
       }
       callback();
     });
@@ -124,7 +99,7 @@ function checkAndBuildFrontend() {
       maxBuffer: 1024 * 1024 * 1024
     }, (error, stdout, stderr) => {
       if (error) {
-        console.warn('[Auto-Build] Failed to run git status:', error.message);
+        logger.warn('[Auto-Build] Failed to run git status:', error.message);
         callback(true);
         return;
       }
@@ -135,23 +110,23 @@ function checkAndBuildFrontend() {
   }
   
   if (!fs.existsSync(buildDir)) {
-    console.log('[Auto-Build] Build directory does not exist, running build...');
+    logger.info('[Auto-Build] Build directory does not exist, running build...');
     runBuild(() => {});
     return;
   }
   
   if (!fs.existsSync(indexHtml)) {
-    console.log('[Auto-Build] index.html does not exist, running build...');
+    logger.info('[Auto-Build] index.html does not exist, running build...');
     runBuild(() => {});
     return;
   }
   
   runGitStatus((needsBuild) => {
     if (needsBuild) {
-      console.log('[Auto-Build] Build is outdated (git changes detected), running build...');
+      logger.info('[Auto-Build] Build is outdated (git changes detected), running build...');
       runBuild(() => {});
     } else {
-      console.log('[Auto-Build] Build is up to date, skipping');
+      logger.info('[Auto-Build] Build is up to date, skipping');
     }
   });
 }
@@ -254,7 +229,7 @@ app.get('/api/server/logs', (req, res) => {
     
     res.json({ lines: parsedLines, total: allLines.length });
   } catch (err) {
-    console.error(`[API] Failed to read logs: ${err.message}`);
+    logger.error(`[API] Failed to read logs: ${err.message}`);
     res.status(500).json({ error: 'Failed to read logs' });
   }
 });
@@ -300,7 +275,7 @@ app.get('/api/server/config', async (req, res) => {
     
     res.json({ env: envVars, defaults: defaults, source: process.env });
   } catch (err) {
-    console.error(`[API] Failed to get config: ${err.message}`);
+    logger.error(`[API] Failed to get config: ${err.message}`);
     res.status(500).json({ error: 'Failed to get configuration' });
   }
 });
@@ -343,7 +318,7 @@ app.put('/api/server/config/env', (req, res) => {
       message: `Updated ${key}. Server restart required for changes to take effect.`
     });
   } catch (err) {
-    console.error(`[API] Failed to update config: ${err.message}`);
+    logger.error(`[API] Failed to update config: ${err.message}`);
     res.status(500).json({ error: 'Failed to update configuration' });
   }
 });
@@ -369,7 +344,7 @@ app.put('/api/server/config/database', async (req, res) => {
       message: `Updated ${category} defaults`
     });
   } catch (err) {
-    console.error(`[API] Failed to update database config: ${err.message}`);
+    logger.error(`[API] Failed to update database config: ${err.message}`);
     res.status(500).json({ error: 'Failed to update configuration' });
   }
 });
@@ -422,23 +397,23 @@ app.post('/api/bot/start', async (req, res) => {
   try {
     const { username } = req.body;
     
-    console.log(`[API] Received request to start bot with username: ${username}`);
+    logger.info(`[API] Received request to start bot with username: ${username}`);
     
     if (!username) {
-      console.log('[API] Error: Username is required');
+      logger.error('[API] Error: Username is required');
       return res.status(400).json({ error: 'Username is required' });
     }
     
     const validUsername = /^[a-zA-Z0-9_]{3,16}$/.test(username);
     if (!validUsername) {
-      console.log(`[API] Error: Invalid username format: ${username}`);
+      logger.error(`[API] Error: Invalid username format: ${username}`);
       return res.status(400).json({ error: 'Invalid username format (3-16 characters, letters, numbers, underscores)' });
     }
     
     const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
-    console.log(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
-    console.log('[API] Loading bot/index.js from:', require.resolve('./bot/index'));
+      logger.info(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
+      logger.trace('[API] Loading bot/index.js from:', require.resolve('./bot/index'));
     const MinecraftBot = require('./bot/index');
     const bot = new MinecraftBot({ 
       host: mcHost, 
@@ -447,17 +422,17 @@ app.post('/api/bot/start', async (req, res) => {
       botServerPort: process.env.PORT || 9500
     });
     
-    console.log('[API] Bot instance created, botId from constructor:', bot.botId);
-    const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    bot.botId = botId;
-    console.log('[API] After setting botId:', bot.botId);
-    
-    console.log(`[API] Attempting to connect bot...`);
+      logger.trace('[API] Bot instance created, botId from constructor:', bot.botId);
+      const botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      bot.botId = botId;
+      logger.trace('[API] After setting botId:', bot.botId);
+      
+      logger.info(`[API] Attempting to connect bot...`);
     await bot.connect(username, null, true);
     
     activeBots.set(botId, bot);
     
-    console.log(`[API] Bot started successfully with ID: ${botId}`);
+      logger.info(`[API] Bot started successfully with ID: ${botId}`);
     
     // Record evolution state on bot creation
     if (bot.evolutionManager) {
@@ -470,9 +445,9 @@ app.post('/api/bot/start', async (req, res) => {
           outcome: 1.0,
           metrics: { evolutions_initialized: 3 }
         });
-        console.log(`[API] Evolution initialized and recorded: ${bot.evolutionManager.experienceCount} experiences`);
+          logger.info(`[API] Evolution initialized and recorded: ${bot.evolutionManager.experienceCount} experiences`);
       } catch (evoErr) {
-        console.error(`[API] Failed to record evolution: ${evoErr.message}`);
+          logger.error(`[API] Failed to record evolution: ${evoErr.message}`);
       }
     }
     
@@ -499,7 +474,7 @@ app.post('/api/bot/start', async (req, res) => {
             food: bot.bot.food,
             status: 'active'
           });
-          console.log(`[API] Bot state saved successfully`);
+            logger.info(`[API] Bot state saved successfully`);
           
           // Start automatic behavior automatically
           bot.currentMode = 'survival';
@@ -507,17 +482,17 @@ app.post('/api/bot/start', async (req, res) => {
             mode: 'survival',
             initialGoal: 'basic_survival'
           }).catch(err => {
-            console.error(`[API] Error in automatic behavior: ${err.message}`);
+            logger.error(`[API] Error in automatic behavior: ${err.message}`);
           });
-          console.log(`[API] Automatic behavior started for bot ${botId}`);
+            logger.info(`[API] Automatic behavior started for bot ${botId}`);
         }
       } catch (saveErr) {
-        console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+        logger.error(`[API] Failed to save bot state: ${saveErr.message}`);
       }
     }, 2000);
   } catch (error) {
-    console.error('Error starting bot:', error);
-    console.error('Error stack:', error.stack);
+      logger.error('Error starting bot:', error);
+      logger.error('Error stack:', error.stack);
     res.status(500).json({ error: `Failed to start bot: ${error.message}` });
   }
 });
@@ -572,7 +547,7 @@ app.post('/api/bot/automatic', async (req, res) => {
         status: 'active'
       });
     } catch (saveErr) {
-      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+      logger.error(`[API] Failed to save bot state: ${saveErr.message}`);
     }
     
     // Start automatic behavior
@@ -580,7 +555,7 @@ app.post('/api/bot/automatic', async (req, res) => {
       mode: mode || 'survival',
       initialGoal: initialGoal || 'basic_survival'
     }).catch(err => {
-      console.error('Error in automatic behavior:', err);
+      logger.error('Error in automatic behavior:', err);
     });
     
     res.json({ 
@@ -591,7 +566,7 @@ app.post('/api/bot/automatic', async (req, res) => {
       message: `Automatic behavior started in ${mode || 'survival'} mode with goal: ${initialGoal || 'basic_survival'}`
     });
   } catch (error) {
-    console.error('Error starting automatic behavior:', error);
+    logger.error('Error starting automatic behavior:', error);
     res.status(500).json({ error: `Failed to start automatic behavior: ${error.message}` });
   }
 });
@@ -624,7 +599,7 @@ app.post('/api/bot/:botId/goal/select', async (req, res) => {
       message: `Goal changed to: ${GoalSystem.getGoal(goalId).name}`
     });
   } catch (error) {
-    console.error('Error changing goal:', error);
+    logger.error('Error changing goal:', error);
     res.status(500).json({ error: `Failed to change goal: ${error.message}` });
   }
 });
@@ -658,7 +633,7 @@ app.get('/api/bot/:botId/goal/status', async (req, res) => {
       details: progress
     });
   } catch (error) {
-    console.error('Error getting goal status:', error);
+    logger.error('Error getting goal status:', error);
     res.status(500).json({ error: `Failed to get goal status: ${error.message}` });
   }
 });
@@ -679,7 +654,7 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
     try {
       await BotState.updateBotStatus(botId, 'stopped');
     } catch (saveErr) {
-      console.error(`[API] Failed to update bot state: ${saveErr.message}`);
+        logger.error(`[API] Failed to update bot state: ${saveErr.message}`);
     }
     
     res.json({
@@ -687,7 +662,7 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
       message: 'Bot stopped successfully'
     });
   } catch (error) {
-    console.error('Error stopping bot:', error);
+      logger.error('Error stopping bot:', error);
     res.status(500).json({ error: `Failed to stop bot: ${error.message}` });
   }
 });
@@ -716,7 +691,7 @@ app.post('/api/bot/:botId/restart', async (req, res) => {
       botServerPort: process.env.PORT || 9500
     });
     
-    console.log(`[API] Attempting to restart bot: ${savedBot.username} (${botId})`);
+      logger.info(`[API] Attempting to restart bot: ${savedBot.username} (${botId})`);
     
     await bot.connect(savedBot.username, null, savedBot.mode === 'survival');
     
@@ -736,10 +711,10 @@ app.post('/api/bot/:botId/restart', async (req, res) => {
         status: 'active'
       });
     } catch (saveErr) {
-      console.error(`[API] Failed to save bot state: ${saveErr.message}`);
+        logger.error(`[API] Failed to save bot state: ${saveErr.message}`);
     }
     
-    console.log(`[API] Bot restarted successfully: ${botId}`);
+      logger.info(`[API] Bot restarted successfully: ${botId}`);
     
     res.json({
       success: true,
@@ -748,7 +723,7 @@ app.post('/api/bot/:botId/restart', async (req, res) => {
       message: 'Bot restarted successfully'
     });
   } catch (error) {
-    console.error('Error restarting bot:', error);
+      logger.error('Error restarting bot:', error);
     res.status(500).json({ error: `Failed to restart bot: ${error.message}` });
   }
 });
@@ -759,7 +734,7 @@ app.post('/api/bot/cleanup', async (req, res) => {
     
     const deleted = await BotState.cleanupOldBots(daysOld);
     
-    console.log(`[API] Cleanup completed: ${deleted} stale bot entries removed`);
+      logger.info(`[API] Cleanup completed: ${deleted} stale bot entries removed`);
     
     res.json({
       success: true,
@@ -767,7 +742,7 @@ app.post('/api/bot/cleanup', async (req, res) => {
       message: `Removed ${deleted} stale bot entries older than ${daysOld} days`
     });
   } catch (error) {
-    console.error('Error cleaning up bots:', error);
+    logger.error('Error cleaning up bots:', error);
     res.status(500).json({ error: `Failed to cleanup bots: ${error.message}` });
   }
 });
@@ -779,7 +754,7 @@ app.delete('/api/bots', async (req, res) => {
       try {
         await bot.disconnect();
       } catch (err) {
-        console.error(`[API] Failed to disconnect bot ${botId}: ${err.message}`);
+        logger.error(`[API] Failed to disconnect bot ${botId}: ${err.message}`);
       }
       activeBots.delete(botId);
     }
@@ -789,21 +764,21 @@ app.delete('/api/bots', async (req, res) => {
     
     // Delete all bots from database in a single transaction
     const bots = await BotState.getAllBots();
-    console.log(`[API] Found ${bots.length} bots to remove`);
+      logger.info(`[API] Found ${bots.length} bots to remove`);
     
     // First, stop all bots to prevent auto-reconnect
     for (const bot of bots) {
       try {
         await BotState.updateBotStatus(bot.bot_id, 'stopped');
       } catch (err) {
-        console.error(`[API] Failed to stop bot ${bot.bot_id}: ${err.message}`);
+        logger.error(`[API] Failed to stop bot ${bot.bot_id}: ${err.message}`);
       }
     }
     
     // Then delete all bots
     const removedCount = await BotState.deleteAllBots();
     
-    console.log(`[API] All bots removed: ${removedCount} bots removed`);
+      logger.info(`[API] All bots removed: ${removedCount} bots removed`);
     
     res.json({
       success: true,
@@ -811,7 +786,7 @@ app.delete('/api/bots', async (req, res) => {
       message: `Removed ${removedCount} bots from database and server`
     });
   } catch (error) {
-    console.error('Error removing all bots:', error);
+      logger.error('Error removing all bots:', error);
     res.status(500).json({ error: `Failed to remove all bots: ${error.message}` });
   }
 });
@@ -830,7 +805,7 @@ app.delete('/api/bot/:botId', async (req, res) => {
     await BotState.updateBotStatus(botId, 'stopped');
     const deleted = await BotState.deleteBot(botId);
     
-    console.log(`[API] Bot removed: ${botId}`);
+      logger.info(`[API] Bot removed: ${botId}`);
     
     res.json({
       success: true,
@@ -838,7 +813,7 @@ app.delete('/api/bot/:botId', async (req, res) => {
       message: `Bot ${botId} removed successfully`
     });
   } catch (error) {
-    console.error('Error removing bot:', error);
+      logger.error('Error removing bot:', error);
     res.status(500).json({ error: `Failed to remove bot: ${error.message}` });
   }
 });
@@ -862,7 +837,7 @@ app.get('/api/bot/:botId/evolution/stats', async (req, res) => {
     const stats = await bot.evolutionManager.getEvolutionStats();
     res.json({ success: true, stats });
   } catch (error) {
-    console.error('Error getting evolution stats:', error);
+    logger.error('Error getting evolution stats:', error);
     res.status(500).json({ error: `Failed to get evolution stats: ${error.message}` });
   }
 });
@@ -898,7 +873,7 @@ app.post('/api/bot/:botId/evolution/record', async (req, res) => {
     const result = await bot.evolutionManager.recordExperience(experience);
     res.json({ success: true, ...result });
   } catch (error) {
-    console.error('Error recording experience:', error);
+    logger.error('Error recording experience:', error);
     res.status(500).json({ error: `Failed to record experience: ${error.message}` });
   }
 });
@@ -926,7 +901,7 @@ app.post('/api/bot/:botId/evolution/rollback', async (req, res) => {
     const result = await bot.evolutionManager.rollbackToSnapshot(snapshotId);
     res.json({ success: true, ...result });
   } catch (error) {
-    console.error('Error rolling back:', error);
+    logger.error('Error rolling back:', error);
     res.status(500).json({ error: `Failed to rollback: ${error.message}` });
   }
 });
@@ -954,7 +929,7 @@ app.get('/api/bot/:botId/evolution/history', async (req, res) => {
     const history = await bot.evolutionManager.storage.getWeightHistory(botId, domain, parseInt(limit));
     res.json({ success: true, history });
   } catch (error) {
-    console.error('Error getting weight history:', error);
+    logger.error('Error getting weight history:', error);
     res.status(500).json({ error: `Failed to get weight history: ${error.message}` });
   }
 });
@@ -977,7 +952,7 @@ app.post('/api/bot/:botId/evolution/reset', async (req, res) => {
     await bot.evolutionManager.reset();
     res.json({ success: true, message: 'Evolution data reset successfully' });
   } catch (error) {
-    console.error('Error resetting evolution:', error);
+    logger.error('Error resetting evolution:', error);
     res.status(500).json({ error: `Failed to reset evolution: ${error.message}` });
   }
 });
@@ -1001,9 +976,9 @@ app.post('/api/bot/:botId/gather', async (req, res) => {
     (async () => {
       try {
         await bot.behaviors.gatherResources({ targetBlocks, radius });
-        console.log(`[API] Gathering completed for bot ${botId}`);
+        logger.trace(`[API] Gathering completed for bot ${botId}`);
       } catch (err) {
-        console.error(`[API] Gathering failed for bot ${botId}:`, err.message);
+        logger.error(`[API] Gathering failed for bot ${botId}:`, err.message);
       }
     })();
     
@@ -1014,7 +989,7 @@ app.post('/api/bot/:botId/gather', async (req, res) => {
       radius
     });
   } catch (error) {
-    console.error('Error starting gathering:', error);
+    logger.error('Error starting gathering:', error);
     res.status(500).json({ error: `Failed to start gathering: ${error.message}` });
   }
 });
@@ -1038,9 +1013,9 @@ app.post('/api/bot/:botId/build', async (req, res) => {
     (async () => {
       try {
         await bot.behaviors.buildStructure({ width, length, height, blockType, offsetX, offsetY, offsetZ });
-        console.log(`[API] Building completed for bot ${botId}`);
+        logger.trace(`[API] Building completed for bot ${botId}`);
       } catch (err) {
-        console.error(`[API] Building failed for bot ${botId}:`, err.message);
+        logger.error(`[API] Building failed for bot ${botId}:`, err.message);
       }
     })();
     
@@ -1051,7 +1026,7 @@ app.post('/api/bot/:botId/build', async (req, res) => {
       offset: { offsetX, offsetY, offsetZ }
     });
   } catch (error) {
-    console.error('Error starting building:', error);
+    logger.error('Error starting building:', error);
     res.status(500).json({ error: `Failed to start building: ${error.message}` });
   }
 });
@@ -1064,11 +1039,11 @@ let serverStarted = false;
 
 // Auto-reconnect saved bots
 async function autoReconnectBots() {
-  console.log('[Server] Loading saved bots for auto-reconnect...');
+  logger.trace('[Server] Loading saved bots for auto-reconnect...');
   const savedBots = await BotState.getActiveBots();
   
   if (savedBots.length === 0) {
-    console.log('[Server] No active bots to reconnect');
+    logger.trace('[Server] No active bots to reconnect');
     return;
   }
   
@@ -1091,26 +1066,26 @@ async function attemptBotReconnect(savedBot) {
       botId: savedBot.bot_id
     });
     
-    console.log(`[Server] Attempting to reconnect bot: ${savedBot.username} (${savedBot.bot_id})`);
+    logger.trace(`[Server] Attempting to reconnect bot: ${savedBot.username} (${savedBot.bot_id})`);
     
     await bot.connect(savedBot.username, null, savedBot.mode === 'survival');
     
     const botId = savedBot.bot_id;
     activeBots.set(botId, bot);
     
-    console.log(`[Server] Bot reconnected successfully: ${botId}`);
+    logger.trace(`[Server] Bot reconnected successfully: ${botId}`);
   } catch (err) {
-    console.error(`[Server] Failed to reconnect bot ${savedBot.bot_id}: ${err.message}`);
+    logger.error(`[Server] Failed to reconnect bot ${savedBot.bot_id}: ${err.message}`);
     
     // Check if we should retry
     const retryInfo = retryQueue.get(savedBot.bot_id);
     if (retryInfo && retryInfo.retries >= 3) {
-      console.log(`[Server] Max retries reached for bot ${savedBot.bot_id}. Marking as stopped for manual review.`);
+      logger.trace(`[Server] Max retries reached for bot ${savedBot.bot_id}. Marking as stopped for manual review.`);
       try {
         await BotState.updateBotStatus(savedBot.bot_id, 'stopped');
         retryQueue.delete(savedBot.bot_id);
       } catch (saveErr) {
-        console.error(`[Server] Failed to update bot status: ${saveErr.message}`);
+        logger.error(`[Server] Failed to update bot status: ${saveErr.message}`);
       }
       return;
     }
@@ -1124,12 +1099,12 @@ async function attemptBotReconnect(savedBot) {
       retries: nextRetry 
     });
     
-    console.log(`[Server] Scheduling retry for bot ${savedBot.bot_id} in ${retryDelay/1000} seconds (attempt ${nextRetry}/3)`);
+    logger.trace(`[Server] Scheduling retry for bot ${savedBot.bot_id} in ${retryDelay/1000} seconds (attempt ${nextRetry}/3)`);
     
     setTimeout(async () => {
       const currentRetryInfo = retryQueue.get(savedBot.bot_id);
       if (currentRetryInfo) {
-        console.log(`[Server] Retrying bot: ${savedBot.bot_id} (attempt ${currentRetryInfo.retries}/3)`);
+        logger.trace(`[Server] Retrying bot: ${savedBot.bot_id} (attempt ${currentRetryInfo.retries}/3)`);
         await attemptBotReconnect(savedBot);
         if (!activeBots.has(savedBot.bot_id)) {
           retryQueue.set(savedBot.bot_id, { 
@@ -1147,14 +1122,14 @@ async function attemptBotReconnect(savedBot) {
 
 // Start server and auto-reconnect bots
 server.listen(PORT, HOST, async () => {
-  console.log(`WebSocket server listening on ${HOST}:${PORT}`);
+  logger.trace(`WebSocket server listening on ${HOST}:${PORT}`);
   serverStarted = true;
   
   // Initialize database tables first to avoid race condition
   try {
     await BotState.createTable();
   } catch (err) {
-    console.error(`[Server] Failed to create database tables: ${err.message}`);
+    logger.error(`[Server] Failed to create database tables: ${err.message}`);
   }
   
   // Save bot server state
@@ -1167,7 +1142,7 @@ server.listen(PORT, HOST, async () => {
       last_started_at: new Date().toISOString()
     });
   } catch (err) {
-    console.error(`[Server] Failed to save bot server state: ${err.message}`);
+    logger.error(`[Server] Failed to save bot server state: ${err.message}`);
   }
   
   // Auto-reconnect saved bots
@@ -1175,7 +1150,7 @@ server.listen(PORT, HOST, async () => {
 });
 
 wss.on('connection', (ws, req) => {
-  console.log('WebSocket client connected');
+  logger.trace('WebSocket client connected');
   
   // Handle incoming messages from frontend
   ws.on('message', (data) => {
@@ -1183,7 +1158,7 @@ wss.on('connection', (ws, req) => {
       const message = JSON.parse(data);
       handleWebSocketMessage(ws, message);
     } catch (err) {
-      console.error('Error parsing WebSocket message:', err);
+      logger.error('Error parsing WebSocket message:', err);
       ws.send(JSON.stringify({
         type: 'error',
         data: { message: 'Invalid message format' }
@@ -1192,7 +1167,7 @@ wss.on('connection', (ws, req) => {
   });
   
   ws.on('close', () => {
-    console.log('WebSocket client disconnected');
+    logger.trace('WebSocket client disconnected');
     // Clean up any bot connections associated with this ws
     botConnections.forEach((botId, connectionWs) => {
       if (connectionWs === ws) {
@@ -1202,7 +1177,7 @@ wss.on('connection', (ws, req) => {
   });
   
   ws.on('error', (err) => {
-    console.error('WebSocket error:', err);
+    logger.error('WebSocket error:', err);
   });
 });
 
@@ -1263,7 +1238,7 @@ function handleWebSocketMessage(ws, message) {
       // Register a bot's WebSocket connection for real-time updates
       if (message.data && message.data.botId) {
         botConnections.set(message.data.botId, ws);
-        console.log(`Registered WebSocket for bot ${message.data.botId}`);
+        logger.trace(`Registered WebSocket for bot ${message.data.botId}`);
         ws.send(JSON.stringify({
           type: 'registration_ack',
           data: { message: 'Bot WebSocket registered' }
@@ -1294,7 +1269,7 @@ function handleWebSocketMessage(ws, message) {
     case 'status_update':
       // Forward status updates from bots to all frontend clients
       if (verbose) {
-        console.log('Forwarding status update from bot:', message.data);
+        logger.trace('Forwarding status update from bot:', message.data);
       }
       ws.send(JSON.stringify({
         type: 'status_update',
@@ -1304,7 +1279,7 @@ function handleWebSocketMessage(ws, message) {
     case 'error':
       // Error messages from bots are logged but don't require special handling
       if (verbose) {
-        console.log('Received error message from bot:', message.data.message);
+        logger.trace('Received error message from bot:', message.data.message);
       }
       break;
     default:
@@ -1461,7 +1436,7 @@ function handleStreamCommand(ws, data) {
         }));
     }
   } catch (err) {
-    console.error('Error handling stream command:', err);
+    logger.error('Error handling stream command:', err);
     ws.send(JSON.stringify({
       type: 'stream_error',
       data: { message: `Internal server error: ${err.message}` }
@@ -1537,7 +1512,7 @@ async function executeBotCommand(bot, commandData, ws) {
         }));
     }
   } catch (error) {
-    console.error('Error executing bot command:', error);
+    logger.error('Error executing bot command:', error);
     ws.send(JSON.stringify({
       type: 'error',
       data: { message: `Command failed: ${error.message}` }
@@ -1585,7 +1560,7 @@ function broadcastStatusUpdate() {
               inventory
             };
           } catch (err) {
-            console.error('Error getting bot data for broadcast:', err);
+            logger.error('Error getting bot data for broadcast:', err);
             return baseData;
           }
         }
@@ -1616,13 +1591,13 @@ setInterval(async () => {
       last_updated_at: new Date().toISOString()
     });
   } catch (err) {
-    console.error(`[Server] Failed to save periodic server state: ${err.message}`);
+    logger.error(`[Server] Failed to save periodic server state: ${err.message}`);
   }
 }, 3000); // Save server state every 3 seconds
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).json({ 
     error: 'Something went wrong!',
     message: err.message 
@@ -1649,7 +1624,7 @@ app.post('/api/llm/strategy', async (req, res) => {
     
     res.json({ advice });
   } catch (error) {
-    console.error('Error in LLM endpoint:', error);
+    logger.error('Error in LLM endpoint:', error);
     res.status(500).json({ error: 'Failed to generate LLM advice' });
   }
 });
@@ -1664,7 +1639,7 @@ app.use((req, res) => {
 
 // Graceful shutdown
 const shutdown = async () => {
-  console.log('Received shutdown signal, shutting down gracefully');
+  logger.trace('Received shutdown signal, shutting down gracefully');
   
   // Update bot server state
   try {
@@ -1676,7 +1651,7 @@ const shutdown = async () => {
       last_stopped_at: new Date().toISOString()
     });
   } catch (err) {
-    console.error(`[Server] Failed to save bot server state: ${err.message}`);
+    logger.error(`[Server] Failed to save bot server state: ${err.message}`);
   }
   
   // Mark all active bots as stopped
@@ -1684,19 +1659,19 @@ const shutdown = async () => {
     try {
       await BotState.updateBotStatus(botId, 'stopped');
     } catch (err) {
-      console.error(`[Server] Failed to update bot ${botId} status: ${err.message}`);
+      logger.error(`[Server] Failed to update bot ${botId} status: ${err.message}`);
     }
   }
   
   server.close(async (err) => {
     if (err) {
-      console.error('Error closing server:', err);
+      logger.error('Error closing server:', err);
       logStream.end();
       process.exit(1);
     }
     // Close WebSocket server
     wss.close(() => {
-      console.log('WebSocket server closed');
+      logger.trace('WebSocket server closed');
       logStream.end();
       // Clean up PID file on graceful shutdown
       try {
@@ -1704,7 +1679,7 @@ const shutdown = async () => {
       } catch (e) {
         // PID file might not exist, ignore
       }
-      console.log('Server closed');
+      logger.trace('Server closed');
       process.exit(0);
     });
   });
@@ -1720,7 +1695,7 @@ process.on('exit', (code) => {
   }
 });
 process.on('uncaughtException', (err) => {
-  console.error(`Uncaught exception: ${err.message}`);
+  logger.error(`Uncaught exception: ${err.message}`);
   try {
     fs.unlinkSync(pidFile);
   } catch (e) {

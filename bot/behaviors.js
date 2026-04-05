@@ -1,6 +1,7 @@
 const Vec3 = require('vec3');
 
 const AutonomousEngine = require('./autonomous-engine');
+const logger = require('./logger');
 
 module.exports = function(bot, pathfinder, evolutionManager = null) {
   // Helper function to wait for a condition with retry logic
@@ -25,7 +26,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         lastError = error;
         if (attempt < maxRetries - 1) {
           const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
-          console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+           logger.debug(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
@@ -67,21 +68,21 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       const wrapper = getWrapper();
       if (wrapper) {
         wrapper.currentMode = mode;
-        console.log(`[Behaviors] Setting currentMode to: ${mode}`);
+        logger.debug(`[Behaviors] Setting currentMode to: ${mode}`);
       }
       
-      console.log(`Starting automatic behavior in ${mode} mode`);
+      logger.debug(`Starting automatic behavior in ${mode} mode`);
      
       try {
         switch (mode) {
           case 'building':
-            console.log('Auto-gathering materials for building...');
+            logger.debug('Auto-gathering materials for building...');
             await this.gatherResources({
               targetBlocks: ['oak_log', 'cobblestone'],
               radius: gatherRadius
             });
             
-            console.log('Auto-building structure...');
+            logger.debug('Auto-building structure...');
             await this.buildStructure({
               width: structureSize.width,
               length: structureSize.length,
@@ -91,7 +92,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             break;
             
           case 'gathering':
-            console.log(`Auto-gathering ${targetBlockType}...`);
+            logger.debug(`Auto-gathering ${targetBlockType}...`);
             await this.gatherResources({
               targetBlocks: [targetBlockType],
               radius: gatherRadius
@@ -100,33 +101,33 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             
           case 'survival':
           default:
-            console.log('Auto-gathering survival resources...');
+            logger.debug('Auto-gathering survival resources...');
             const gathered = await this.gatherResources({
               targetBlocks: ['oak_log', 'cobblestone', 'wheat', 'carrot'],
               radius: gatherRadius
             });
             
             if (!gathered) {
-              console.log('No natural resources found nearby - bot can connect and move!');
+              logger.debug('No natural resources found nearby - bot can connect and move!');
             }
             
-            console.log('Testing basic movement...');
+            logger.debug('Testing basic movement...');
             const pos = bot.entity.position;
             try {
               await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5), { timeout: 15000 });
-              console.log(`Moved to new position: ${bot.entity.position}`);
+              logger.debug(`Moved to new position: ${bot.entity.position}`);
             } catch (moveError) {
-              console.log(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
+              logger.debug(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
             }
             
-            console.log('Automatic behavior completed');
+            logger.debug('Automatic behavior completed');
             return true;
         }
         
-        console.log('Automatic behavior completed');
+        logger.debug('Automatic behavior completed');
         return true;
       } catch (error) {
-        console.error('Error in automatic behavior:', error);
+        logger.error('Error in automatic behavior:', error);
         throw new Error(`Automatic behavior failed: ${error.message}`);
       }
     };
@@ -136,8 +137,8 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     buildStructure: async function(options) {
       const { width, length, height, blockType, offsetX = 0, offsetY = 0, offsetZ = 0 } = options;
       
-      console.log(`Building structure: ${width}x${length}x${height} with ${blockType}`);
-      console.log(`At offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
+      logger.debug(`Building structure: ${width}x${length}x${height} with ${blockType}`);
+      logger.debug(`At offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
       
       try {
         // Build a simple prism structure
@@ -179,10 +180,10 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           }
         }
         
-        console.log('Structure building completed');
+        logger.debug('Structure building completed');
         return true;
       } catch (error) {
-        console.error('Error building structure:', error);
+        logger.error('Error building structure:', error);
         throw new Error(`Building failed: ${error.message}`);
       }
     },
@@ -191,14 +192,14 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     gatherResources: async function(options) {
       const { targetBlocks, radius = 20 } = options;
       
-      console.log(`Gathering resources: ${JSON.stringify(targetBlocks)} within radius ${radius}`);
+      logger.debug(`Gathering resources: ${JSON.stringify(targetBlocks)} within radius ${radius}`);
       
       try {
         // Find target blocks nearby
         const blockPositions = findBlocks(targetBlocks, radius);
         
         if (blockPositions.length === 0) {
-          console.log('No target blocks found nearby');
+          logger.debug('No target blocks found nearby');
           if (evolutionManager) {
             await evolutionManager.recordExperience({
               bot_id: bot.__wrapper?.botId || 'unknown',
@@ -211,14 +212,14 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           return false;
         }
         
-        console.log(`Found ${blockPositions.length} blocks to gather`);
+        logger.debug(`Found ${blockPositions.length} blocks to gather`);
         
         // Use evolution to determine optimal gathering strategy
         let optimalStrategy = { action: 'linear', order: blockPositions };
         if (evolutionManager) {
           try {
             const weights = evolutionManager.getWeights('resource');
-            console.log(`[Evolution] Resource weights: ${JSON.stringify(weights)}`);
+            logger.debug(`[Evolution] Resource weights: ${JSON.stringify(weights)}`);
             
             const context = {
               targetBlocks,
@@ -227,7 +228,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             };
             optimalStrategy = evolutionManager.getOptimalAction('resource', context);
           } catch (e) {
-            console.log(`[Evolution] Could not get optimal action: ${e.message}`);
+            logger.debug(`[Evolution] Could not get optimal action: ${e.message}`);
           }
         }
         
@@ -241,11 +242,11 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         for (const position of positionsToVisit) {
           // Stop if we've had too many consecutive failures
           if (failCount >= maxFailures) {
-            console.log(`[Behaviors] Stopping resource gathering after ${failCount} consecutive failures`);
+            logger.debug(`[Behaviors] Stopping resource gathering after ${failCount} consecutive failures`);
             break;
           }
           
-          console.log(`Moving to block at ${position.x}, ${position.y}, ${position.z}`);
+          logger.debug(`Moving to block at ${position.x}, ${position.y}, ${position.z}`);
           
           // Move to the block with individual error handling
           let reachedBlock = false;
@@ -259,7 +260,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             });
             reachedBlock = true;
           } catch (moveError) {
-            console.log(`[Behaviors] Cannot reach block at ${position.x}, ${position.y}, ${position.z}: ${moveError.message}`);
+            logger.debug(`[Behaviors] Cannot reach block at ${position.x}, ${position.y}, ${position.z}: ${moveError.message}`);
             failCount++;
             if (evolutionManager) {
               await evolutionManager.recordExperience({
@@ -281,7 +282,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           // Find the block at our position
           const block = bot.blockAt(position);
           if (!block || !block.name) {
-            console.log('Block not found at position');
+            logger.debug('Block not found at position');
             failCount++;
             continue;
           }
@@ -296,7 +297,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
                 !bot.blockAt(position) || bot.blockAt(position).name === 'air', 10000);
             });
             
-            console.log(`Collected ${block.name}`);
+            logger.debug(`Collected ${block.name}`);
             successCount++;
             failCount = 0; // Reset failure counter on success
             
@@ -310,7 +311,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
               });
             }
           } catch (digError) {
-            console.log(`[Behaviors] Failed to dig block: ${digError.message}`);
+            logger.debug(`[Behaviors] Failed to dig block: ${digError.message}`);
             failCount++;
             if (evolutionManager) {
               await evolutionManager.recordExperience({
@@ -328,7 +329,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         }
         
         const successRate = successCount / (successCount + failCount) || 0;
-        console.log(`[Behaviors] Resource gathering completed. Success: ${successCount}, Failures: ${failCount}, Success Rate: ${successRate.toFixed(2)}`);
+        logger.debug(`[Behaviors] Resource gathering completed. Success: ${successCount}, Failures: ${failCount}, Success Rate: ${successRate.toFixed(2)}`);
         
         if (evolutionManager) {
           await evolutionManager.recordExperience({
@@ -340,10 +341,10 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           });
         }
         
-        console.log('Resource gathering completed');
+        logger.debug('Resource gathering completed');
         return true;
       } catch (error) {
-        console.error('Error gathering resources:', error);
+        logger.error('Error gathering resources:', error);
         throw new Error(`Gathering failed: ${error.message}`);
       }
     },
@@ -352,7 +353,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     flyTo: async function(options) {
       const { x, y, z, speed = 1 } = options;
       
-      console.log(`Flying to: ${x}, ${y}, ${z} at speed ${speed}`);
+      logger.debug(`Flying to: ${x}, ${y}, ${z} at speed ${speed}`);
       
       try {
         // Check if we can fly (creative mode or elytra)
@@ -361,7 +362,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
            bot.inventory.armor.chest.name === 'elytra');
            
         if (!canFly) {
-          console.log('Cannot fly: not in creative mode and no elytra');
+          logger.debug('Cannot fly: not in creative mode and no elytra');
           // Fall back to regular movement
           await pathfinder.moveTo({ x, y, z });
           return true;
@@ -387,10 +388,10 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           bot.settings.physics.speed = originalSpeed;
         }
         
-        console.log('Flying completed');
+        logger.debug('Flying completed');
         return true;
       } catch (error) {
-        console.error('Error flying:', error);
+        logger.error('Error flying:', error);
         throw new Error(`Flying failed: ${error.message}`);
       }
     },
@@ -401,7 +402,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       if (typeof position === 'object' && position.x !== undefined) {
         bot.lookAt(position);
       } else {
-        console.warn('Invalid position for lookAt:', position);
+        logger.warn('Invalid position for lookAt:', position);
       }
     },
     
@@ -426,10 +427,10 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       const wrapper = getWrapper();
       if (wrapper) {
         wrapper.currentMode = mode;
-        console.log(`[Behaviors] Setting currentMode to: ${mode}`);
+        logger.debug(`[Behaviors] Setting currentMode to: ${mode}`);
       }
       
-      console.log(`Starting ${mode} behavior with goal: ${initialGoal}`);
+      logger.debug(`Starting ${mode} behavior with goal: ${initialGoal}`);
       
       try {
         if (mode === 'autonomous') {
@@ -441,22 +442,22 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           while (isRunning && wrapper.autonomousRunning) {
             try {
               const cycleResult = await engine.runCycle(wrapper.goalState || {});
-              console.log(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}`);
+              logger.debug(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}`);
               
               await new Promise(resolve => setTimeout(resolve, 5000));
             } catch (cycleError) {
-              console.error(`[Autonomous] Cycle error: ${cycleError.message}`);
+              logger.error(`[Autonomous] Cycle error: ${cycleError.message}`);
               await new Promise(resolve => setTimeout(resolve, 10000));
             }
           }
           
-          console.log('Autonomous behavior stopped');
+          logger.debug('Autonomous behavior stopped');
           return true;
         } else {
           return await originalAutomaticBehavior.call(this, options);
         }
       } catch (error) {
-        console.error('Error in automatic behavior:', error);
+        logger.error('Error in automatic behavior:', error);
         throw new Error(`Automatic behavior failed: ${error.message}`);
       }
     }

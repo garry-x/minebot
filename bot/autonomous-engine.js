@@ -1,4 +1,5 @@
 const Vec3 = require('vec3');
+const logger = require('./logger');
 
 class AutonomousEngine {
   constructor(bot, pathfinder, behaviors) {
@@ -89,12 +90,12 @@ class AutonomousEngine {
           try {
             await this.pathfinder.moveTo(safePos, { timeout: 15000 });
           } catch (moveError) {
-            console.log(`[AutonomousEngine] Could not find shelter: ${moveError.message}`);
+            logger.debug(`[AutonomousEngine] Could not find shelter: ${moveError.message}`);
           }
           break;
       }
     } catch (error) {
-      console.log(`[AutonomousEngine] Action '${action.action}' failed: ${error.message}`);
+      logger.debug(`[AutonomousEngine] Action '${action.action}' failed: ${error.message}`);
       // Don't throw - let the autonomous loop continue with the next cycle
     }
   }

@@ -1,4 +1,6 @@
-console.log('[Bot] Loading bot/index.js module');
+const logger = require('./logger');
+
+logger.info('[Bot] Loading bot/index.js module');
 const mineflayer = require('mineflayer');
 const WebSocket = require('ws');
 const Pathfinder = require('./pathfinder');
@@ -27,12 +29,12 @@ class MinecraftBot {
   }
 
 async connect(username, accessToken, startAutomatic = false) {
-  console.log('[Bot] connect() called, this.botId is:', this.botId);
+  logger.info('[Bot] connect() called, this.botId is:', this.botId);
   return new Promise((resolve, reject) => {
-    console.log(`[Bot] Creating bot with username: ${username}`);
-    console.log(`[Bot] Target server: ${this.options.host || 'localhost'}:${this.options.port || 25565}`);
-    console.log(`[Bot] Start automatic: ${startAutomatic}`);
-    console.log('[Bot] Inside Promise, this.botId is:', this.botId);
+    logger.info(`[Bot] Creating bot with username: ${username}`);
+    logger.info(`[Bot] Target server: ${this.options.host || 'localhost'}:${this.options.port || 25565}`);
+    logger.info(`[Bot] Start automatic: ${startAutomatic}`);
+    logger.trace('[Bot] Inside Promise, this.botId is:', this.botId);
     
     // For offline mode, we need to provide a dummy access token
     // This prevents connection errors in some server configurations
@@ -51,23 +53,23 @@ async connect(username, accessToken, startAutomatic = false) {
     this.bot = mineflayer.createBot(botOptions);
     this.startAutomatic = startAutomatic;
     
-    console.log('[Bot] After createBot, this.botId is:', this.botId);
+    logger.trace('[Bot] After createBot, this.botId is:', this.botId);
 
     // Set botId if not already set
-    console.log('[Bot] Before ID check, this.botId is:', this.botId);
+    logger.trace('[Bot] Before ID check, this.botId is:', this.botId);
     if (!this.botId) {
       this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      console.log(`[Bot] Bot ID set to: ${this.botId}`);
+      logger.info(`[Bot] Bot ID set to: ${this.botId}`);
     } else {
-      console.log('[Bot] Using existing botId:', this.botId);
+      logger.trace('[Bot] Using existing botId:', this.botId);
     }
 
-    console.log('[Bot] Setting up event listeners');
+    logger.info('[Bot] Setting up event listeners');
     this.setupEventListeners();
     
     // Set up events for basic bot events that fire before spawn
     this.bot.on('error', (err) => {
-      console.error(`[Bot] Error: ${err.message}`);
+      logger.error(`[Bot] Error: ${err.message}`);
     });
 
     let isResolved = false;
@@ -75,80 +77,80 @@ async connect(username, accessToken, startAutomatic = false) {
 
     this.bot.once('spawn', () => {
          // Set up WebSocket connection after bot spawns
-         this.setupWebSocket();
-         console.log('[Bot] Bot spawned');
-         this.isConnected = true;
-         // Set wrapper reference on mineflayer bot for behaviors access
-         this.bot.__wrapper = this;
-         // Load and attach mcData after bot is ready (pathfinder needs it)
-        const mcData = require('minecraft-data')(this.bot.version);
-        console.log('[Bot] mcData loaded:', !!mcData);
-        if (!mcData) {
-          console.error('[Bot] mcData is null or undefined!');
-          throw new Error('Failed to load mcData');
-        }
-        // Attach mcData to bot's _client for pathfinder access
-        this.bot._client.mcData = mcData;
-        console.log('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
-        
-        // Wait a bit for bot to fully initialize
-        setTimeout(async () => {
+      this.setupWebSocket();
+      logger.info('[Bot] Bot spawned');
+      this.isConnected = true;
+      // Set wrapper reference on mineflayer bot for behaviors access
+      this.bot.__wrapper = this;
+      // Load and attach mcData after bot is ready (pathfinder needs it)
+      const mcData = require('minecraft-data')(this.bot.version);
+      logger.trace('[Bot] mcData loaded:', !!mcData);
+      if (!mcData) {
+        logger.error('[Bot] mcData is null or undefined!');
+        throw new Error('Failed to load mcData');
+      }
+      // Attach mcData to bot's _client for pathfinder access
+      this.bot._client.mcData = mcData;
+      logger.trace('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
+      
+      // Wait a bit for bot to fully initialize
+      setTimeout(async () => {
+        try {
+          logger.trace('[Bot] Bot version:', this.bot.version);
+          
+          // Initialize evolution manager
           try {
-            console.log('[Bot] Bot version:', this.bot.version);
+            logger.info('[Bot] Initializing evolution manager with botId:', this.botId);
+            const StrategyEvolutionManager = require('./evolution/strategy-manager');
+            this.evolutionManager = new StrategyEvolutionManager(this.botId);
+            await this.evolutionManager.connect();
+            logger.info('[Bot] Evolution manager initialized successfully');
+          } catch (evoErr) {
+            logger.error('[Bot] Evolution manager initialization failed:', evoErr.message);
+            logger.trace('[Bot] Evolution manager error stack:', evoErr.stack);
+          }
             
-            // Initialize evolution manager
-            try {
-              console.log('[Bot] Initializing evolution manager with botId:', this.botId);
-              const StrategyEvolutionManager = require('./evolution/strategy-manager');
-              this.evolutionManager = new StrategyEvolutionManager(this.botId);
-              await this.evolutionManager.connect();
-              console.log('[Bot] Evolution manager initialized successfully');
-            } catch (evoErr) {
-              console.error('[Bot] Evolution manager initialization failed:', evoErr.message);
-              console.error('[Bot] Evolution manager error stack:', evoErr.stack);
-            }
-            
-            // Initialize modules after bot is ready
-            this.pathfinder = new Pathfinder(this.bot);
-            this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
-            this.autonomousRunning = false;
-            this.goalState = null;
-            this.events = require('./events')(this.bot);
-            this.events.setupListeners();
+             // Initialize modules after bot is ready
+             this.pathfinder = new Pathfinder(this.bot);
+             this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
+             this.autonomousRunning = false;
+             this.goalState = null;
+             this.events = require('./events')(this.bot, this.evolutionManager);
+             this.events.setupListeners();
            
-            // Initialize screenshot module and start streaming (non-blocking)
-            this.initializeScreenshot()
-              .then((success) => {
-                if (success) {
-                  console.log('[Bot] Screenshot module initialized, starting stream');
-                  const captureFn = this.startScreenshotStream({ fps: 20, quality: 0.8 });
-                  console.log('[Bot] Screenshot stream started', captureFn ? 'success' : 'failed');
-                } else {
-                  console.error('[Bot] Screenshot module initialization failed');
-                }
-              })
-              .catch(err => {
-                console.error(`[Bot] Screenshot init failed: ${err.message}`);
-              });
+              // Initialize screenshot module and start streaming (non-blocking)
+              this.initializeScreenshot()
+                .then((success) => {
+                  if (success) {
+                    logger.info('[Bot] Screenshot module initialized, starting stream');
+                    const captureFn = this.startScreenshotStream({ fps: 20, quality: 0.8 });
+                    logger.trace('[Bot] Screenshot stream started', captureFn ? 'success' : 'failed');
+                  } else {
+                    logger.error('[Bot] Screenshot module initialization failed');
+                  }
+                })
+                .catch(err => {
+                  logger.error(`[Bot] Screenshot init failed: ${err.message}`);
+                });
            
            // Generate bot ID if not already set
            if (!this.botId) {
              this.botId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
            }
-              console.log(`[Bot] Bot ready with ID: ${this.botId}`);
-              
-              // Start automatic behavior if requested
-              if (this.startAutomatic) {
-                const automaticMode = 'survival';
-                console.log(`[Bot] Starting automatic behavior in ${automaticMode} mode`);
-                // Start automatic behavior in the background without blocking
-                this.behaviors.automaticBehavior({ mode: automaticMode })
-                  .then(() => {
-                    console.log(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
-                  })
-                  .catch((err) => {
-                    console.error(`[Bot] Error in automatic behavior: ${err.message}`);
-                  });
+               logger.info(`[Bot] Bot ready with ID: ${this.botId}`);
+               
+               // Start automatic behavior if requested
+               if (this.startAutomatic) {
+                 const automaticMode = 'survival';
+                 logger.info(`[Bot] Starting automatic behavior in ${automaticMode} mode`);
+                 // Start automatic behavior in the background without blocking
+                 this.behaviors.automaticBehavior({ mode: automaticMode })
+                   .then(() => {
+                     logger.info(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
+                   })
+                   .catch((err) => {
+                     logger.error(`[Bot] Error in automatic behavior: ${err.message}`);
+                   });
                 isResolved = true;
                 clearTimeout(connectTimeout);
                 resolve();
@@ -158,14 +160,14 @@ async connect(username, accessToken, startAutomatic = false) {
                 resolve();
               }
             } catch (initError) {
-              console.error(`[Bot] Error initializing modules:`, initError);
+              logger.error(`[Bot] Error initializing modules:`, initError);
               reject(initError);
             }
             }, 0);
         });
 
     this.bot.once('error', (err) => {
-      console.log(`[Bot] Error: ${err.message}`);
+      logger.info(`[Bot] Error: ${err.message}`);
       isResolved = true;
       clearTimeout(connectTimeout);
       reject(err);
@@ -176,7 +178,7 @@ async connect(username, accessToken, startAutomatic = false) {
     // Add a timeout to prevent hanging
     connectTimeout = setTimeout(() => {
       if (!isResolved) {
-        console.log('[Bot] Connection timeout after 60 seconds');
+        logger.info('[Bot] Connection timeout after 60 seconds');
         reject(new Error('Connection timeout - failed to spawn'));
         if (this.bot) {
           this.bot.end();
@@ -206,14 +208,14 @@ async connect(username, accessToken, startAutomatic = false) {
 
     // Handle death
     this.bot.on('death', () => {
-      console.log('[Bot] Bot died');
+      logger.info('[Bot] Bot died');
       this.deadReason = 'Bot died';
       
       // Update bot state to stopped
       if (this.botId) {
         const db = require('../config/models/BotState');
         db.updateBotStatus(this.botId, 'stopped').catch(err => {
-          console.error(`[Bot] Failed to update state on death: ${err.message}`);
+          logger.error(`[Bot] Failed to update state on death: ${err.message}`);
         });
       }
       
@@ -231,7 +233,7 @@ async connect(username, accessToken, startAutomatic = false) {
 
     // Handle respawn - bot comes back to life after death
     this.bot.on('respawn', () => {
-      console.log('[Bot] Bot respawned');
+      logger.info('[Bot] Bot respawned');
       this.isConnected = true;
       // Send status update to update position after respawn
       setTimeout(() => {
@@ -241,14 +243,14 @@ async connect(username, accessToken, startAutomatic = false) {
 
     // Handle error
     this.bot.on('error', (err) => {
-      console.error('Bot error:', err);
+      logger.error('Bot error:', err);
       this.deadReason = `Error: ${err.message}`;
       
       // Update bot state to stopped on error
       if (this.botId) {
         const db = require('../config/models/BotState');
         db.updateBotStatus(this.botId, 'stopped').catch(err => {
-          console.error(`[Bot] Failed to update state on error: ${err.message}`);
+          logger.error(`[Bot] Failed to update state on error: ${err.message}`);
         });
       }
       
@@ -266,7 +268,7 @@ async connect(username, accessToken, startAutomatic = false) {
 
     // Handle end/disconnect
     this.bot.on('end', () => {
-      console.log('[Bot] End event triggered - connection closed');
+      logger.info('[Bot] End event triggered - connection closed');
       this.isConnected = false;
       if (!this.deadReason) {
         this.deadReason = 'Disconnected';
@@ -276,7 +278,7 @@ async connect(username, accessToken, startAutomatic = false) {
       if (this.botId) {
         const db = require('../config/models/BotState');
         db.updateBotStatus(this.botId, 'stopped').catch(err => {
-          console.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
+          logger.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
         });
       }
       
@@ -306,7 +308,7 @@ async connect(username, accessToken, startAutomatic = false) {
       this.ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
       
       this.ws.on('open', () => {
-        console.log(`WebSocket connected to backend at ${wsHost}:${wsPort}/`);
+        logger.trace(`WebSocket connected to backend at ${wsHost}:${wsPort}/`);
         
         // Register this bot's WebSocket connection with the backend
         if (this.ws.readyState === WebSocket.OPEN) {
@@ -329,12 +331,12 @@ async connect(username, accessToken, startAutomatic = false) {
         const message = JSON.parse(data);
         this.handleWebSocketMessage(message);
       } catch (err) {
-        console.error('Error parsing WebSocket message:', err);
+        logger.error('Error parsing WebSocket message:', err);
       }
     });
     
     this.ws.on('close', () => {
-      console.log('WebSocket disconnected from backend');
+      logger.trace('WebSocket disconnected from backend');
       if (this.statusInterval) {
         clearInterval(this.statusInterval);
         this.statusInterval = null;
@@ -342,7 +344,7 @@ async connect(username, accessToken, startAutomatic = false) {
     });
     
     this.ws.on('error', (err) => {
-      console.error('WebSocket error:', err);
+      logger.error('WebSocket error:', err);
     });
   }
 
@@ -365,11 +367,11 @@ async connect(username, accessToken, startAutomatic = false) {
       break;
       case 'registration_ack':
       // Acknowledgment that bot is registered - log it
-      console.log('Bot registration acknowledged');
+      logger.trace('Bot registration acknowledged');
       break;
 
 default:
-        console.warn('Unknown WebSocket message type:', message.type);
+        logger.warn('Unknown WebSocket message type:', message.type);
     }
   }
 
@@ -393,7 +395,7 @@ default:
       break;
 
 default:
-        console.warn('Unknown command action:', commandData.action);
+        logger.warn('Unknown command action:', commandData.action);
     }
   }
 
@@ -443,11 +445,11 @@ default:
             food: food,
             status: 'active'
           }).catch(err => {
-            console.error(`[Bot] Failed to save state: ${err.message}`);
+            logger.error(`[Bot] Failed to save state: ${err.message}`);
           });
         }
       } catch (err) {
-        console.error('Error sending status update:', err);
+        logger.error('Error sending status update:', err);
       }
     }
 
@@ -461,7 +463,7 @@ default:
       await this.screenshotModule.initialize(854, 480);
       return true;
     } catch (err) {
-      console.error(`[Screenshot] Failed to initialize: ${err.message}`);
+      logger.error(`[Screenshot] Failed to initialize: ${err.message}`);
       return false;
     }
   }
@@ -470,7 +472,7 @@ default:
     const { fps = 20, quality = 0.8 } = options;
     
     if (!this.screenshotModule || !this.screenshotModule.isReady()) {
-      console.error('[Screenshot] Module not ready');
+      logger.error('[Screenshot] Module not ready');
       return null;
     }
 
@@ -479,7 +481,7 @@ default:
         const buffer = await this.screenshotModule.captureWithOptions(captureOptions);
         return buffer;
       } catch (err) {
-        console.error(`[Screenshot] Capture error: ${err.message}`);
+        logger.error(`[Screenshot] Capture error: ${err.message}`);
         return null;
       }
     };
@@ -512,7 +514,7 @@ default:
     if (this.botId) {
       const db = require('../config/models/BotState');
       db.updateBotStatus(this.botId, 'stopped').catch(err => {
-        console.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
+        logger.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
       });
     }
     

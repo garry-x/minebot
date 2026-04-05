@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const logger = require("./bot/logger");
 
 const { spawn } = require('child_process');
 const path = require('path');
@@ -50,7 +51,7 @@ function startBotServer() {
     fs.mkdirSync(LOG_DIR, { recursive: true });
   }
 
-  console.log(`Starting bot server on ${botHost}:${botPort}...`);
+  logger.debug(`Starting bot server on ${botHost}:${botPort}...`);
   
   const startScript = `
 #!/bin/bash
@@ -69,27 +70,27 @@ VERBOSE_FLAG=${verbose ? '"--verbose"' : '""'}; nohup node ${BOT_SERVER_SCRIPT} 
     env: process.env
   });
   
-  console.log('Bot server started');
+  logger.debug('Bot server started');
 }
 
 function stopBotServer() {
   const pid = loadPid('bot');
   if (!pid) {
-    console.log('Bot server is not running');
+    logger.debug('Bot server is not running');
     return;
   }
 
   try {
     process.kill(pid, 'SIGTERM');
-    console.log('Stopping bot server...');
+    logger.debug('Stopping bot server...');
     setTimeout(() => {
       try {
         fs.unlinkSync(BOT_PID_FILE);
       } catch (e) {}
-      console.log('Bot server stopped');
+      logger.debug('Bot server stopped');
     }, 1000);
   } catch (e) {
-    console.log('Bot server is not running');
+    logger.debug('Bot server is not running');
     try {
       fs.unlinkSync(BOT_PID_FILE);
     } catch (e2) {}
@@ -104,7 +105,7 @@ function restartBotServer() {
 function startMinecraftServer() {
   const jarPath = minecraftJarPath || MINECRAFT_SERVER_JAR;
   if (!fs.existsSync(jarPath)) {
-    console.log(`Minecraft server jar not found at ${jarPath}`);
+    logger.debug(`Minecraft server jar not found at ${jarPath}`);
     return;
   }
 
@@ -119,17 +120,17 @@ function startMinecraftServer() {
   if (existingPid) {
     try {
       process.kill(existingPid, 0);
-      console.log(`Minecraft server is already running with PID ${existingPid}`);
+      logger.debug(`Minecraft server is already running with PID ${existingPid}`);
       return;
     } catch (e) {
-      console.log('Removing stale PID file');
+      logger.debug('Removing stale PID file');
       try {
         fs.unlinkSync(MINECRAFT_PID_FILE);
       } catch (e2) {}
     }
   }
 
-  console.log('Starting Minecraft server...');
+  logger.debug('Starting Minecraft server...');
   
   const startScript = `
 #!/bin/bash
@@ -157,7 +158,7 @@ echo \$!
     const pid = parseInt(output.trim(), 10);
     if (!isNaN(pid)) {
       savePid(pid, 'minecraft');
-      console.log(`Minecraft server started with PID ${pid}`);
+      logger.debug(`Minecraft server started with PID ${pid}`);
     }
   });
 }
@@ -165,37 +166,37 @@ echo \$!
 function stopMinecraftServer() {
   const pid = loadPid('minecraft');
   if (!pid) {
-    console.log('Minecraft server is not running');
+    logger.debug('Minecraft server is not running');
     return;
   }
 
   try {
     process.kill(pid, 0);
   } catch (e) {
-    console.log('Removing stale PID file');
+    logger.debug('Removing stale PID file');
     try {
       fs.unlinkSync(MINECRAFT_PID_FILE);
     } catch (e2) {}
-    console.log('Minecraft server is not running');
+    logger.debug('Minecraft server is not running');
     return;
   }
 
   try {
     process.kill(pid, 'SIGTERM');
-    console.log('Stopping Minecraft server...');
+    logger.debug('Stopping Minecraft server...');
     setTimeout(() => {
       try {
         process.kill(pid, 0);
-        console.log('Minecraft server failed to stop');
+        logger.debug('Minecraft server failed to stop');
       } catch (e) {
         try {
           fs.unlinkSync(MINECRAFT_PID_FILE);
         } catch (e2) {}
-        console.log('Minecraft server stopped');
+        logger.debug('Minecraft server stopped');
       }
     }, 1000);
   } catch (e) {
-    console.log('Minecraft server is not running');
+    logger.debug('Minecraft server is not running');
     try {
       fs.unlinkSync(MINECRAFT_PID_FILE);
     } catch (e2) {}
@@ -248,7 +249,7 @@ function botControl(action, username, botId, mode) {
   switch(action) {
     case 'start':
       if (!username) {
-        console.log('Error: username is required');
+        logger.debug('Error: username is required');
         return;
       }
       makeRequest({
@@ -262,19 +263,19 @@ function botControl(action, username, botId, mode) {
         timeout: 60000
       }, JSON.stringify({ username }))
       .then(data => {
-        console.log(`Bot started successfully`);
-        console.log(`  Bot ID: ${data.botId}`);
-        console.log(`  Username: ${data.username}`);
-        console.log(`  Mode: ${data.mode || 'survival'}`);
+        logger.debug(`Bot started successfully`);
+        logger.debug(`  Bot ID: ${data.botId}`);
+        logger.debug(`  Username: ${data.username}`);
+        logger.debug(`  Mode: ${data.mode || 'survival'}`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     case 'stop':
       if (!botId) {
-        console.log('Error: botId is required');
+        logger.debug('Error: botId is required');
         return;
       }
       makeRequest({
@@ -284,16 +285,16 @@ function botControl(action, username, botId, mode) {
         method: 'POST'
       })
       .then(data => {
-        console.log(`Bot stopped successfully`);
+        logger.debug(`Bot stopped successfully`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     case 'automatic':
       if (!username) {
-        console.log('Error: username is required');
+        logger.debug('Error: username is required');
         return;
       }
       makeRequest({
@@ -307,13 +308,13 @@ function botControl(action, username, botId, mode) {
         timeout: 30000
       }, JSON.stringify({ username, mode: mode || 'survival' }))
       .then(data => {
-        console.log(`Automatic behavior started`);
-        console.log(`  Bot ID: ${data.botId}`);
-        console.log(`  Username: ${data.username}`);
-        console.log(`  Mode: ${mode || 'survival'}`);
+        logger.debug(`Automatic behavior started`);
+        logger.debug(`  Bot ID: ${data.botId}`);
+        logger.debug(`  Username: ${data.username}`);
+        logger.debug(`  Mode: ${mode || 'survival'}`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
@@ -325,30 +326,30 @@ function botControl(action, username, botId, mode) {
         method: 'GET'
       })
       .then(data => {
-        console.log(`Bots (${data.count}):`);
+        logger.debug(`Bots (${data.count}):`);
         data.bots.forEach(bot => {
-          console.log(`  ${bot.username} (${bot.botId})`);
-          console.log(`    State: ${bot.state}`);
+          logger.debug(`  ${bot.username} (${bot.botId})`);
+          logger.debug(`    State: ${bot.state}`);
           if (bot.mode) {
-            console.log(`    Mode: ${bot.mode}`);
+            logger.debug(`    Mode: ${bot.mode}`);
           }
           if (bot.deadReason) {
-            console.log(`    Reason: ${bot.deadReason}`);
+            logger.debug(`    Reason: ${bot.deadReason}`);
           }
-          console.log(`    Connected: ${bot.connected}`);
+          logger.debug(`    Connected: ${bot.connected}`);
           if (bot.position) {
-            console.log(`    Position: ${bot.position.x}, ${bot.position.y}, ${bot.position.z}`);
+            logger.debug(`    Position: ${bot.position.x}, ${bot.position.y}, ${bot.position.z}`);
           }
         });
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     case 'restart':
       if (!botId) {
-        console.log('Error: botId is required');
+        logger.debug('Error: botId is required');
         return;
       }
       makeRequest({
@@ -358,18 +359,18 @@ function botControl(action, username, botId, mode) {
         method: 'POST'
       })
       .then(data => {
-        console.log(`Bot restart initiated`);
-        console.log(`  Bot ID: ${data.botId}`);
-        console.log(`  Username: ${data.username}`);
+        logger.debug(`Bot restart initiated`);
+        logger.debug(`  Bot ID: ${data.botId}`);
+        logger.debug(`  Username: ${data.username}`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
        break;
        
     case 'remove':
       if (!botId) {
-        console.log('Error: botId is required');
+        logger.debug('Error: botId is required');
         return;
       }
       makeRequest({
@@ -379,11 +380,11 @@ function botControl(action, username, botId, mode) {
         method: 'DELETE'
       })
       .then(data => {
-        console.log(`Bot removed successfully`);
-        console.log(`  Bot ID: ${botId}`);
+        logger.debug(`Bot removed successfully`);
+        logger.debug(`  Bot ID: ${botId}`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
@@ -403,32 +404,32 @@ function botControl(action, username, botId, mode) {
             try {
               const parsed = JSON.parse(data);
               if (res.statusCode >= 200 && res.statusCode < 300) {
-                console.log(`All bots removed successfully`);
+                logger.debug(`All bots removed successfully`);
                 if (parsed.message) {
-                  console.log(`  ${parsed.message}`);
+                  logger.debug(`  ${parsed.message}`);
                 }
               } else {
                 throw new Error(parsed.error || `HTTP ${res.statusCode}`);
               }
             } catch (e) {
-              console.log(`Request failed: ${e.message}`);
+              logger.debug(`Request failed: ${e.message}`);
               if (retryCount < 3) {
-                console.log(`Retrying... (attempt ${retryCount + 1})`);
+                logger.debug(`Retrying... (attempt ${retryCount + 1})`);
                 setTimeout(() => tryRemoveAll(retryCount + 1), 1000);
               } else {
-                console.log(`Error: Failed to remove all bots after 3 attempts`);
+                logger.debug(`Error: Failed to remove all bots after 3 attempts`);
               }
             }
           });
         });
         
         req.on('error', (err) => {
-          console.log(`Connection error: ${err.message}`);
+          logger.debug(`Connection error: ${err.message}`);
           if (retryCount < 3) {
-            console.log(`Retrying... (attempt ${retryCount + 1})`);
+            logger.debug(`Retrying... (attempt ${retryCount + 1})`);
             setTimeout(() => tryRemoveAll(retryCount + 1), 1000);
           } else {
-            console.log(`Error: Failed to remove all bots after 3 attempts`);
+            logger.debug(`Error: Failed to remove all bots after 3 attempts`);
           }
         });
         
@@ -479,56 +480,56 @@ function botControl(action, username, botId, mode) {
               monitorCount++;
               
               const now = new Date();
-              console.log(`\x1B[36m=== Bot Monitor ===\x1B[0m Time: ${now.toLocaleTimeString()}`);
-              console.log(`Interval: ${interval}ms | Count: ${monitorCount}${maxCount > 0 ? `/${maxCount}` : ''} | Press Ctrl+C to stop`);
-              console.log(`\x1B[36m${'='.repeat(60)}\x1B[0m`);
+              logger.debug(`\x1B[36m=== Bot Monitor ===\x1B[0m Time: ${now.toLocaleTimeString()}`);
+              logger.debug(`Interval: ${interval}ms | Count: ${monitorCount}${maxCount > 0 ? `/${maxCount}` : ''} | Press Ctrl+C to stop`);
+              logger.debug(`\x1B[36m${'='.repeat(60)}\x1B[0m`);
               
               if (parsed.count === 0) {
-                console.log('No active bots');
+                logger.debug('No active bots');
               } else {
-                console.log(`\x1B[32mTotal Bots: ${parsed.count}\x1B[0m\n`);
+                logger.debug(`\x1B[32mTotal Bots: ${parsed.count}\x1B[0m\n`);
                 
                 parsed.bots.forEach((bot, idx) => {
                   const stateColor = bot.state === 'ALIVE' ? '\x1B[32m' : (bot.state === 'DEAD' ? '\x1B[31m' : '\x1B[33m');
-                  console.log(`\x1B[1m[${idx + 1}] ${bot.username}\x1B[0m (${bot.botId})`);
-                  console.log(`    State: ${stateColor}${bot.state}\x1B[0m | Connected: ${bot.connected ? '\x1B[32mYes\x1B[0m' : '\x1B[31mNo\x1B[0m'}`);
-                  console.log(`    Health: \x1B[31m${bot.health}\x1B[0m/\x1B[32m20\x1B[0m | Food: \x1B[33m${bot.food}\x1B[0m/\x1B[32m20\x1B[0m`);
-                  console.log(`    Position: ${formatPosition(bot.position)}`);
-                  console.log(`    Mode: ${bot.mode || 'N/A'} | Game: ${bot.gameMode || 'N/A'}`);
+                  logger.debug(`\x1B[1m[${idx + 1}] ${bot.username}\x1B[0m (${bot.botId})`);
+                  logger.debug(`    State: ${stateColor}${bot.state}\x1B[0m | Connected: ${bot.connected ? '\x1B[32mYes\x1B[0m' : '\x1B[31mNo\x1B[0m'}`);
+                  logger.debug(`    Health: \x1B[31m${bot.health}\x1B[0m/\x1B[32m20\x1B[0m | Food: \x1B[33m${bot.food}\x1B[0m/\x1B[32m20\x1B[0m`);
+                  logger.debug(`    Position: ${formatPosition(bot.position)}`);
+                  logger.debug(`    Mode: ${bot.mode || 'N/A'} | Game: ${bot.gameMode || 'N/A'}`);
                   if (bot.deadReason) {
-                    console.log(`    \x1B[31mDead: ${bot.deadReason}\x1B[0m`);
+                    logger.debug(`    \x1B[31mDead: ${bot.deadReason}\x1B[0m`);
                   }
-                  console.log('');
+                  logger.debug('');
                 });
               }
               
               if (maxCount > 0 && monitorCount >= maxCount) {
                 running = false;
-                console.log(`\x1B[36mMonitor stopped after ${maxCount} updates\x1B[0m`);
+                logger.debug(`\x1B[36mMonitor stopped after ${maxCount} updates\x1B[0m`);
                 process.exit(0);
               }
             } catch (e) {
-              console.log(`\x1B[31mError parsing data: ${e.message}\x1B[0m`);
+              logger.debug(`\x1B[31mError parsing data: ${e.message}\x1B[0m`);
             }
           });
         });
         
         req.on('error', (err) => {
-          console.log(`\x1B[31mConnection error: ${err.message}\x1B[0m`);
+          logger.debug(`\x1B[31mConnection error: ${err.message}\x1B[0m`);
           running = false;
           process.exit(1);
         });
         
         req.setTimeout(5000, () => {
           req.destroy();
-          console.log(`\x1B[31mRequest timeout\x1B[0m`);
+          logger.debug(`\x1B[31mRequest timeout\x1B[0m`);
         });
         
         req.end();
       }
       
       process.on('SIGINT', () => {
-        console.log(`\n\x1B[36mMonitor stopped (Ctrl+C)\x1B[0m`);
+        logger.debug(`\n\x1B[36mMonitor stopped (Ctrl+C)\x1B[0m`);
         running = false;
         process.exit(0);
       });
@@ -546,9 +547,9 @@ function botControl(action, username, botId, mode) {
       const path3 = require('path');
       const LOG_FILE = path3.join(__dirname, 'logs', 'bot_server.log');
       
-      console.log('\x1B[36m=== Bot Debug Console ===\x1B[0m');
-      console.log(`Watching log file: ${LOG_FILE}`);
-      console.log('Press Ctrl+C to exit\n');
+      logger.debug('\x1B[36m=== Bot Debug Console ===\x1B[0m');
+      logger.debug(`Watching log file: ${LOG_FILE}`);
+      logger.debug('Press Ctrl+C to exit\n');
       
       let lastSize = 0;
       let runningDebug = true;
@@ -578,7 +579,7 @@ function botControl(action, username, botId, mode) {
                 } else if (line.includes('[Pathfinder]')) {
                   coloredLine = `\x1B[35m${line}\x1B[0m`;
                 }
-                console.log(coloredLine);
+                logger.debug(coloredLine);
               });
             });
             stream.on('end', () => {
@@ -586,14 +587,14 @@ function botControl(action, username, botId, mode) {
             });
           }
         } catch (err) {
-          console.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
+          logger.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
         }
         
         setTimeout(tailLog, 1000);
       }
       
       process.on('SIGINT', () => {
-        console.log('\n\x1B[36mDebug console stopped\x1B[0m');
+        logger.debug('\n\x1B[36mDebug console stopped\x1B[0m');
         runningDebug = false;
         process.exit(0);
       });
@@ -616,18 +617,18 @@ function botControl(action, username, botId, mode) {
           } else if (line.includes('[Pathfinder]')) {
             coloredLine = `\x1B[35m${line}\x1B[0m`;
           }
-          console.log(coloredLine);
+          logger.debug(coloredLine);
         });
         lastSize = fs3.statSync(LOG_FILE).size;
       } catch (err) {
-        console.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
+        logger.error(`\x1B[31mError reading log file: ${err.message}\x1B[0m`);
       }
       
       tailLog();
       break;
       
     case 'status':
-      console.log('bot server:');
+      logger.debug('bot server:');
       const req = http.request(`http://${botHost}:${botPort}/api/health`, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
@@ -635,23 +636,23 @@ function botControl(action, username, botId, mode) {
           try {
             const parsed = JSON.parse(data);
             if (res.statusCode === 200) {
-              console.log(`  RUNNING`);
+              logger.debug(`  RUNNING`);
             } else {
-              console.log(`  ERROR`);
+              logger.debug(`  ERROR`);
             }
           } catch (e) {
-            console.log(`  NOT RUNNING`);
+            logger.debug(`  NOT RUNNING`);
           }
         });
       });
       
       req.on('error', () => {
-        console.log(`  NOT RUNNING`);
+        logger.debug(`  NOT RUNNING`);
       });
       
       req.on('timeout', () => {
         req.destroy();
-        console.log(`  TIMEOUT`);
+        logger.debug(`  TIMEOUT`);
       });
       
       req.end();
@@ -662,16 +663,16 @@ function botControl(action, username, botId, mode) {
       socket.setTimeout(2000);
       socket.connect({ host: 'localhost', port: 25565 }, () => {
         socket.destroy();
-        console.log('minecraft server: RUNNING');
+        logger.debug('minecraft server: RUNNING');
       });
       
       socket.on('error', () => {
-        console.log('minecraft server: NOT RUNNING');
+        logger.debug('minecraft server: NOT RUNNING');
       });
       
       socket.on('timeout', () => {
         socket.destroy();
-        console.log('minecraft server: NOT RUNNING');
+        logger.debug('minecraft server: NOT RUNNING');
       });
       
       break;
@@ -688,20 +689,20 @@ function botControl(action, username, botId, mode) {
         timeout: 30000
       }, '{}')
       .then(data => {
-        console.log(`Cleanup completed`);
+        logger.debug(`Cleanup completed`);
         if (data.message) {
-          console.log(`  ${data.message}`);
+          logger.debug(`  ${data.message}`);
         }
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     case 'gather':
       if (!actionArgs?.botId || !actionArgs?.blocks) {
-        console.log('Usage: minebot bot gather --botId <bot-id> --blocks "oak_log,cobblestone" [--radius 30]');
-        console.log('Example: minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30');
+        logger.debug('Usage: minebot bot gather --botId <bot-id> --blocks "oak_log,cobblestone" [--radius 30]');
+        logger.debug('Example: minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30');
         return;
       }
       
@@ -719,20 +720,20 @@ function botControl(action, username, botId, mode) {
         timeout: 30000
       }, JSON.stringify({ targetBlocks: blocks, radius }))
       .then(data => {
-        console.log(`Gathering started successfully`);
-        console.log(`  Bot ID: ${actionArgs.botId}`);
-        console.log(`  Target blocks: ${blocks.join(', ')}`);
-        console.log(`  Radius: ${radius} blocks`);
+        logger.debug(`Gathering started successfully`);
+        logger.debug(`  Bot ID: ${actionArgs.botId}`);
+        logger.debug(`  Target blocks: ${blocks.join(', ')}`);
+        logger.debug(`  Radius: ${radius} blocks`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     case 'build':
       if (!actionArgs?.botId || !actionArgs?.block || !actionArgs?.size) {
-        console.log('Usage: minebot bot build --botId <bot-id> --block oak_log --size 5x5x3 [--offset 0,0,0]');
-        console.log('Example: minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0');
+        logger.debug('Usage: minebot bot build --botId <bot-id> --block oak_log --size 5x5x3 [--offset 0,0,0]');
+        logger.debug('Example: minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0');
         return;
       }
       
@@ -754,24 +755,24 @@ function botControl(action, username, botId, mode) {
         offsetX, offsetY, offsetZ
       }))
       .then(data => {
-        console.log(`Building started successfully`);
-        console.log(`  Bot ID: ${actionArgs.botId}`);
-        console.log(`  Block type: ${actionArgs.block}`);
-        console.log(`  Structure size: ${width}x${length}x${height}`);
-        console.log(`  Offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
+        logger.debug(`Building started successfully`);
+        logger.debug(`  Bot ID: ${actionArgs.botId}`);
+        logger.debug(`  Block type: ${actionArgs.block}`);
+        logger.debug(`  Structure size: ${width}x${length}x${height}`);
+        logger.debug(`  Offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
       })
       .catch(err => {
-        console.log(`Error: ${err.message}`);
+        logger.debug(`Error: ${err.message}`);
       });
       break;
       
     default:
-      console.log(`Unknown action: ${action}`);
+      logger.debug(`Unknown action: ${action}`);
   }
 }
 
 function showHelp() {
-  console.log(`Usage: minebot <system> <action> [args...]
+  logger.debug(`Usage: minebot <system> <action> [args...]
 
 minebot - Minecraft AI Robot System
 
@@ -865,7 +866,7 @@ switch(system) {
         const autoMode = commandArgs[0] && ['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : (commandArgs[1] || 'survival');
         const autoUsername = commandArgs[0] && !['survival', 'creative', 'building', 'gathering'].includes(commandArgs[0]) ? commandArgs[0] : commandArgs[0];
         if (!autoUsername) {
-          console.log('Error: username is required for automatic behavior. Use "minebot bot start <user>" first.');
+          logger.debug('Error: username is required for automatic behavior. Use "minebot bot start <user>" first.');
           process.exit(1);
         }
         botControl('automatic', autoUsername, null, autoMode);
@@ -901,7 +902,7 @@ switch(system) {
       case 'help':
       case '-h':
       case '--help':
-        console.log(`minebot bot <action> - Bot control
+        logger.debug(`minebot bot <action> - Bot control
 
 Bot Actions:
   start <user>     Start a bot with username
@@ -941,8 +942,8 @@ Examples:
   `);
         break;
       default:
-        console.log(`Unknown bot action: ${action}`);
-        console.log('Run "minebot bot help" for available commands');
+        logger.debug(`Unknown bot action: ${action}`);
+        logger.debug('Run "minebot bot help" for available commands');
         process.exit(1);
     }
     break;
@@ -961,7 +962,7 @@ Examples:
       case 'help':
       case '-h':
       case '--help':
-        console.log(`minebot mc <action> - Minecraft server control
+        logger.debug(`minebot mc <action> - Minecraft server control
 
 MC Actions:
   start         Start Minecraft server
@@ -975,8 +976,8 @@ Examples:
 `);
         break;
       default:
-        console.log(`Unknown MC action: ${action}`);
-        console.log('Run "minebot mc help" for available commands');
+        logger.debug(`Unknown MC action: ${action}`);
+        logger.debug('Run "minebot mc help" for available commands');
         process.exit(1);
     }
     break;
@@ -995,7 +996,7 @@ Examples:
       case 'help':
       case '-h':
       case '--help':
-        console.log(`minebot server <action> - Bot server management
+        logger.debug(`minebot server <action> - Bot server management
 
 Server Actions:
   start         Start bot server
@@ -1009,19 +1010,19 @@ Examples:
 `);
         break;
       default:
-        console.log(`Unknown server action: ${action}`);
-        console.log('Run "minebot server help" for available commands');
+        logger.debug(`Unknown server action: ${action}`);
+        logger.debug('Run "minebot server help" for available commands');
         process.exit(1);
     }
     break;
     
   case 'dev':
-    console.log('Starting development environment...');
+    logger.debug('Starting development environment...');
     startBotServer();
     break;
     
   case 'prod':
-    console.log('Starting bot server...');
+    logger.debug('Starting bot server...');
     startBotServer();
     break;
     
@@ -1040,8 +1041,8 @@ Examples:
     if (!system) {
       showHelp();
     } else {
-      console.log(`Unknown system: ${system}`);
-      console.log('Run "minebot help" for available commands');
+      logger.debug(`Unknown system: ${system}`);
+      logger.debug('Run "minebot help" for available commands');
     }
     process.exit(1);
 }
@@ -1177,40 +1178,40 @@ function showSystemStatus(jsonOutput) {
         } : { status: 'unavailable' },
         mcServer: mcStatus.mcServer ? { status: 'RUNNING' } : { status: 'OFFLINE' }
       };
-      console.log(JSON.stringify(status, null, 2));
+      logger.debug(JSON.stringify(status, null, 2));
     } else {
-      console.log('System Status:');
-      console.log('==============');
+      logger.debug('System Status:');
+      logger.debug('==============');
       
       if (botStatus.botServer) {
-        console.log(`Bot Server: ${botStatus.botServer.status}`);
-        console.log(`  Uptime: ${botStatus.botServer.uptimeSeconds || 0} seconds`);
-        console.log(`  Mode: ${botStatus.botServer.serverMode}`);
+        logger.debug(`Bot Server: ${botStatus.botServer.status}`);
+        logger.debug(`  Uptime: ${botStatus.botServer.uptimeSeconds || 0} seconds`);
+        logger.debug(`  Mode: ${botStatus.botServer.serverMode}`);
       } else {
-        console.log('Bot Server: OFFLINE');
+        logger.debug('Bot Server: OFFLINE');
       }
       
       if (botsStatus.bots && botsStatus.bots.count > 0) {
-        console.log(`Bots (${botsStatus.bots.count}):`);
+        logger.debug(`Bots (${botsStatus.bots.count}):`);
         botsStatus.bots.bots.forEach(bot => {
-          console.log(`  ${bot.username}: ${bot.state} (${bot.connected ? 'connected' : 'disconnected'})`);
+          logger.debug(`  ${bot.username}: ${bot.state} (${bot.connected ? 'connected' : 'disconnected'})`);
           if (bot.mode) {
-            console.log(`    Mode: ${bot.mode}`);
+            logger.debug(`    Mode: ${bot.mode}`);
           }
         });
       }
       
       if (frontendStatus && frontendStatus.frontend) {
-        console.log('Frontend:');
-        console.log(`  Status: ${frontendStatus.frontend.status}`);
+        logger.debug('Frontend:');
+        logger.debug(`  Status: ${frontendStatus.frontend.status}`);
         if (botStatus.botServer && botStatus.botServer.frontendUrl) {
-          console.log(`  URL: ${botStatus.botServer.frontendUrl}`);
+          logger.debug(`  URL: ${botStatus.botServer.frontendUrl}`);
         }
       } else {
-        console.log('Frontend: UNAVAILABLE');
+        logger.debug('Frontend: UNAVAILABLE');
       }
       
-      console.log(`Minecraft Server: ${mcStatus.mcServer ? 'RUNNING' : 'OFFLINE'}`);
+      logger.debug(`Minecraft Server: ${mcStatus.mcServer ? 'RUNNING' : 'OFFLINE'}`);
     }
   }
   

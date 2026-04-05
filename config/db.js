@@ -1,16 +1,17 @@
 const sqlite3 = require('sqlite3').verbose();
+const logger = require("../bot/logger");
 const path = require('path');
 
 const dbPath = path.resolve(__dirname, '..', 'bot_config.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('Could not connect to database', err);
+    logger.error('Could not connect to database', err);
   } else {
-    console.log('Connected to SQLite database');
+    logger.trace('Connected to SQLite database');
     // Set busy timeout
     db.run('PRAGMA busy_timeout = 5000', (err) => {
       if (err) {
-        console.error('Could not set busy timeout', err);
+        logger.error('Could not set busy timeout', err);
       }
     });
   }
@@ -27,14 +28,14 @@ const EvolutionStorage = require('../bot/evolution/evolution-storage');
 const evolutionStorage = new EvolutionStorage();
 evolutionStorage.connect()
   .then(() => {
-    console.log('[Evolution] Connecting to evolution database...');
+    logger.trace('[Evolution] Connecting to evolution database...');
     return evolutionStorage.initialize();
   })
   .then(() => {
-    console.log('[Evolution] Evolution tables initialized successfully');
+    logger.trace('[Evolution] Evolution tables initialized successfully');
   })
   .catch((err) => {
-    console.error('[Evolution] Failed to initialize evolution tables:', err.message);
+    logger.error('[Evolution] Failed to initialize evolution tables:', err.message);
   });
 
 module.exports = db;

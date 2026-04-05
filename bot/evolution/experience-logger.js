@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require('../logger');
 
 class ExperienceLogger {
   constructor(storage) {
@@ -46,7 +47,7 @@ class ExperienceLogger {
       this.buffer = [];
       this.bufferSize = 0;
     } catch (err) {
-      console.error(`[ExperienceLogger] Failed to flush to database: ${err.message}`);
+      logger.error(`[ExperienceLogger] Failed to flush to database: ${err.message}`);
       await this._persistToWAL();
     } finally {
       this.isFlushing = false;
@@ -92,12 +93,12 @@ class ExperienceLogger {
       });
 
       fs.writeFileSync(this.walPath, JSON.stringify(walData, null, 2));
-      console.log(`[ExperienceLogger] Persisted ${this.buffer.length} records to WAL file`);
+      logger.debug(`[ExperienceLogger] Persisted ${this.buffer.length} records to WAL file`);
       
       this.buffer = [];
       this.bufferSize = 0;
     } catch (err) {
-      console.error(`[ExperienceLogger] Failed to persist to WAL: ${err.message}`);
+      logger.error(`[ExperienceLogger] Failed to persist to WAL: ${err.message}`);
     }
   }
 
@@ -105,7 +106,7 @@ class ExperienceLogger {
     try {
       return await this.storage.queryExperience(botId, type, limit);
     } catch (err) {
-      console.error(`[ExperienceLogger] Query failed: ${err.message}`);
+      logger.error(`[ExperienceLogger] Query failed: ${err.message}`);
       return [];
     }
   }
@@ -129,10 +130,10 @@ class ExperienceLogger {
       }
 
       fs.unlinkSync(this.walPath);
-      console.log(`[ExperienceLogger] Loaded ${experiences.length} records from WAL`);
+      logger.debug(`[ExperienceLogger] Loaded ${experiences.length} records from WAL`);
       return experiences;
     } catch (err) {
-      console.error(`[ExperienceLogger] Failed to load from WAL: ${err.message}`);
+      logger.error(`[ExperienceLogger] Failed to load from WAL: ${err.message}`);
       return [];
     }
   }
@@ -147,7 +148,7 @@ class ExperienceLogger {
       const result = await this.storage.saveExperienceBatch(experiences);
       return result;
     } catch (err) {
-      console.error(`[ExperienceLogger] Failed to flush WAL to DB: ${err.message}`);
+      logger.error(`[ExperienceLogger] Failed to flush WAL to DB: ${err.message}`);
       await this._persistToWAL();
       return { success: false, count: 0, error: err.message };
     }

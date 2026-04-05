@@ -1,5 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const logger = require('../logger');
 
 class EvolutionStorage {
   constructor(dbPath) {
@@ -115,7 +116,7 @@ class EvolutionStorage {
 
     for (const migration of migrations) {
       if (!appliedVersions.has(migration.version)) {
-        console.log(`[Evolution] Running migration v${migration.version}: ${migration.description}`);
+        logger.trace(`[Evolution] Running migration v${migration.version}: ${migration.description}`);
         await migration.up();
         await this._runQuery(
           `INSERT INTO evolution_migrations (version, description) VALUES (?, ?)`,

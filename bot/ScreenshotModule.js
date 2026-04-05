@@ -1,4 +1,5 @@
 const { createCanvas } = require('canvas');
+const logger = require('./logger');
 
 class ScreenshotModule {
   constructor(bot) {
@@ -17,14 +18,14 @@ class ScreenshotModule {
       // Try to load without WebGL dependencies
       const { WorldView, Viewer } = require('prismarine-viewer/viewer');
       this.usePrismarine = true;
-      console.log('[Screenshot] prismarine-viewer detected, will attempt 3D rendering');
+      logger.debug('[Screenshot] prismarine-viewer detected, will attempt 3D rendering');
     } catch (err) {
       this.usePrismarine = false;
-      console.log('[Screenshot] prismarine-viewer not available, using text-only mode');
+      logger.debug('[Screenshot] prismarine-viewer not available, using text-only mode');
     }
     
     this.isInitialized = true;
-    console.log('[Screenshot] Module initialized:', width, 'x', height, '(prismarine:', this.usePrismarine + ')');
+    logger.debug(`[Screenshot] Module initialized: ${width} x ${height} (prismarine: ${this.usePrismarine})`);
     return true;
   }
 
@@ -85,7 +86,7 @@ class ScreenshotModule {
           return buffer;
         }
       } catch (err) {
-        console.log('[Screenshot] 3D rendering failed, falling back to text:', err.message);
+        logger.debug('[Screenshot] 3D rendering failed, falling back to text: ' + err.message);
       }
     }
 
