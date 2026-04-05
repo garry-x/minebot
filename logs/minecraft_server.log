@@ -124,3 +124,8 @@ Starting net.minecraft.server.Main
 [23:41:50] [Server thread/INFO]: ResourceBot was slain by Zombie
 [23:44:31] [Server thread/INFO]: DefaultTestBot[/127.0.0.1:39722] logged in with entity id 7396 at (9.5, 74.0, -7.5)
 [23:44:31] [Server thread/INFO]: DefaultTestBot joined the game
+[23:45:43] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[23:45:58] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[23:46:15] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[23:47:12] [Server thread/INFO]: AutoBot[/127.0.0.1:51684] logged in with entity id 7734 at (-0.5, 71.0, 7.5)
+[23:47:12] [Server thread/INFO]: AutoBot joined the game

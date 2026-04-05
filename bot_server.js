@@ -459,6 +459,22 @@ app.post('/api/bot/start', async (req, res) => {
     
     console.log(`[API] Bot started successfully with ID: ${botId}`);
     
+    // Record evolution state on bot creation
+    if (bot.evolutionManager) {
+      try {
+        await bot.evolutionManager.recordExperience({
+          type: 'system',
+          context: 'bot_creation',
+          action: 'bot_initialized',
+          outcome: 1.0,
+          metrics: { evolutions_initialized: 3 }
+        });
+        console.log(`[API] Evolution initialized and recorded: ${bot.evolutionManager.experienceCount} experiences`);
+      } catch (evoErr) {
+        console.error(`[API] Failed to record evolution: ${evoErr.message}`);
+      }
+    }
+    
     res.json({ 
       success: true, 
       botId,
@@ -483,6 +499,16 @@ app.post('/api/bot/start', async (req, res) => {
             status: 'active'
           });
           console.log(`[API] Bot state saved successfully`);
+          
+          // Start automatic behavior automatically
+          bot.currentMode = 'survival';
+          bot.behaviors.automaticBehavior({ 
+            mode: 'survival',
+            initialGoal: 'basic_survival'
+          }).catch(err => {
+            console.error(`[API] Error in automatic behavior: ${err.message}`);
+          });
+          console.log(`[API] Automatic behavior started for bot ${botId}`);
         }
       } catch (saveErr) {
         console.error(`[API] Failed to save bot state: ${saveErr.message}`);
