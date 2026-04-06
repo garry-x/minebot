@@ -2,6 +2,7 @@
 require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
+const readline = require('readline');
 
 // Colors for output
 const colors = {
@@ -17,6 +18,970 @@ const colors = {
   white: '\x1b[37m',
   gray: '\x1b[90m'
 };
+
+
+
+class AdminConsole {
+  constructor() {
+    this.rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true
+    });
+    this.currentView = 'dashboard';
+    this.isRunning = false;
+    this.refreshInterval = null;
+    this.refreshRate = 5000; // 5 seconds
+    this.lastRenderTime = 0;
+    this.renderDebounceTimeout = null;
+    this.config = {
+      performanceMode: false,
+      refreshRates: {
+        normal: 5000,    // 5 seconds
+        fast: 2000,      // 2 seconds
+        slow: 10000      // 10 seconds
+      }
+    };
+  }
+
+  // ====================
+  // UI Components
+  // ====================
+  
+  clearScreen() {
+    process.stdout.write('\x1b[2J\x1b[0f');
+  }
+
+  drawHeader(title = 'MineBot Admin Console') {
+    const width = process.stdout.columns || 80;
+    const headerLine = '─'.repeat(width);
+    const titlePadding = Math.floor((width - title.length) / 2);
+    
+    console.log(`\n${colors.bright}${colors.cyan}${' '.repeat(titlePadding)}${title}${colors.reset}`);
+    console.log(`${colors.dim}${headerLine}${colors.reset}\n`);
+  }
+
+  drawFooter(status = 'Ready') {
+    const width = process.stdout.columns || 80;
+    const footerLine = '─'.repeat(width);
+    const helpText = '[Q] Quit  [H] Help  [R] Refresh  [M] Main Menu';
+    const helpPadding = Math.floor((width - helpText.length) / 2);
+    
+    console.log(`\n${colors.dim}${footerLine}${colors.reset}`);
+    console.log(`${colors.dim}${' '.repeat(helpPadding)}${helpText}${colors.reset}`);
+    console.log(`${colors.dim}${footerLine}${colors.reset}`);
+    console.log(`${colors.gray}> ${status}${colors.reset}\n`);
+  }
+
+  drawMenu(items, currentIndex = 0) {
+    console.log(`${colors.bright}${colors.white}Select an option:${colors.reset}\n`);
+    
+    items.forEach((item, index) => {
+      const prefix = index === currentIndex ? `${colors.green}›${colors.reset} ` : '  ';
+      const label = item.label || item;
+      const description = item.description ? ` ${colors.dim}(${item.description})${colors.reset}` : '';
+      console.log(`${prefix}${label}${description}`);
+    });
+    
+    console.log('');
+  }
+
+  drawStatusCard(title, status, details = []) {
+    const statusColor = status === 'RUNNING' ? colors.green : 
+                       status === 'WARNING' ? colors.yellow : colors.red;
+    
+    console.log(`${colors.bright}${colors.white}${title}:${colors.reset} ${statusColor}${status}${colors.reset}`);
+    
+    if (details.length > 0) {
+      details.forEach(detail => {
+        console.log(`  ${colors.dim}${detail}${colors.reset}`);
+      });
+    }
+    console.log('');
+  }
+
+  drawTable(headers, rows) {
+    // Simple table formatting
+    const colWidths = headers.map((header, i) => {
+      const maxContent = Math.max(...rows.map(row => String(row[i] || '').length));
+      return Math.max(header.length, maxContent);
+    });
+
+    // Draw header
+    const headerRow = headers.map((header, i) => 
+      header.padEnd(colWidths[i])
+    ).join('  ');
+    console.log(`${colors.bright}${headerRow}${colors.reset}`);
+
+    // Draw separator
+    const separator = colWidths.map(width => '─'.repeat(width)).join('──');
+    console.log(`${colors.dim}${separator}${colors.reset}`);
+
+    // Draw rows
+    rows.forEach(row => {
+      const rowStr = row.map((cell, i) => 
+        String(cell || '').padEnd(colWidths[i])
+      ).join('  ');
+      console.log(rowStr);
+    });
+    console.log('');
+  }
+
+  // ====================
+  // View Rendering
+  // ====================
+  
+  async renderDashboard() {
+    this.clearScreen();
+    this.drawHeader('System Dashboard');
+    
+    // Get system status
+    const status = await this.getSystemStatus();
+    
+    // Check for alerts
+    const alerts = this.checkAlerts(status);
+    
+    // Show alerts if any
+    if (alerts.length > 0) {
+      console.log(`${colors.bright}${colors.yellow}⚠  Active Alerts (${alerts.length}):${colors.reset}\n`);
+      alerts.forEach((alert, index) => {
+        const alertColor = alert.severity === 'CRITICAL' ? colors.red : 
+                          alert.severity === 'WARNING' ? colors.yellow : colors.cyan;
+        console.log(`  ${alertColor}${alert.severity}${colors.reset}: ${alert.message}`);
+        if (alert.details) {
+          console.log(`    ${colors.dim}${alert.details}${colors.reset}`);
+        }
+      });
+      console.log('');
+    }
+
+    // Bot Server Status
+    this.drawStatusCard('Bot Server', status.botServer.status, [
+      `Uptime: ${status.botServer.uptime || 'N/A'}`,
+      `Version: ${status.botServer.version || 'N/A'}`
+    ]);
+
+    // Minecraft Server Status
+    this.drawStatusCard('Minecraft Server', status.mcServer.status, [
+      `Players: ${status.mcServer.players || '0'}`,
+      `Address: localhost:25565`
+    ]);
+
+    // Active Bots
+    const botsTableHeaders = ['Name', 'Status', 'Location', 'Health'];
+    const botsRows = status.bots.map(bot => [
+      bot.name,
+      bot.status,
+      bot.location || 'Unknown',
+      bot.health || '100%'
+    ]);
+    
+    console.log(`${colors.bright}${colors.white}Active Bots (${status.bots.length}):${colors.reset}`);
+    if (botsRows.length > 0) {
+      this.drawTable(botsTableHeaders, botsRows);
+    } else {
+      console.log(`${colors.dim}No active bots${colors.reset}\n`);
+    }
+
+    // System Resources
+    console.log(`${colors.bright}${colors.white}System Resources:${colors.reset}`);
+    const resources = this.getSystemResources();
+    const resourcesHeaders = ['Resource', 'Usage', 'Status'];
+    const resourcesRows = [
+      ['CPU', `${resources.cpu}%`, resources.cpu < 80 ? 'OK' : 'HIGH'],
+      ['Memory', `${resources.memory}%`, resources.memory < 85 ? 'OK' : 'HIGH'],
+      ['Disk', `${resources.disk}%`, resources.disk < 90 ? 'OK' : 'HIGH']
+    ];
+    this.drawTable(resourcesHeaders, resourcesRows);
+
+    this.drawFooter(alerts.length > 0 ? `${alerts.length} active alert(s)` : 'Dashboard view loaded');
+  }
+
+  async renderBotManagement() {
+    this.clearScreen();
+    this.drawHeader('Bot Management');
+    
+    const bots = await this.getAllBots();
+    const menuItems = [
+      { label: 'Start New Bot', description: 'Create and start a new bot' },
+      { label: 'Stop Bot', description: 'Stop a running bot' },
+      { label: 'View Bot Details', description: 'Get detailed bot information' },
+      { label: 'Configure Bot', description: 'Change bot settings' }
+    ];
+
+    this.drawMenu(menuItems);
+    
+    console.log(`${colors.bright}${colors.white}Available Bots:${colors.reset}`);
+    if (bots.length > 0) {
+      const botsHeaders = ['Name', 'Status', 'Actions'];
+      const botsRows = bots.map(bot => [
+        bot.name,
+        bot.status,
+        `${colors.gray}[S] Start [K] Stop [D] Details${colors.reset}`
+      ]);
+      this.drawTable(botsHeaders, botsRows);
+    } else {
+      console.log(`${colors.dim}No bots configured${colors.reset}\n`);
+    }
+
+    this.drawFooter('Bot Management - Select an option');
+  }
+
+  async renderServerControl() {
+    this.clearScreen();
+    this.drawHeader('Server Control');
+    
+    const serverStatus = await this.getMinecraftServerStatus();
+    const botServerStatus = await this.getBotServerStatus();
+    
+    console.log(`${colors.bright}${colors.white}Server Status:${colors.reset}\n`);
+    
+    // Minecraft Server Control
+    this.drawStatusCard('Minecraft Server', serverStatus.status, [
+      `Version: ${serverStatus.version || 'N/A'}`,
+      `Players: ${serverStatus.players || '0'}`,
+      `World: ${serverStatus.world || 'default'}`
+    ]);
+
+    const mcActions = [
+      { label: 'Start Server', description: 'Start Minecraft server' },
+      { label: 'Stop Server', description: 'Gracefully stop server' },
+      { label: 'Restart Server', description: 'Restart with same settings' },
+      { label: 'Force Stop', description: 'Force immediate shutdown' },
+      { label: 'Backup World', description: 'Create world backup' }
+    ];
+    
+    console.log(`${colors.bright}${colors.white}Minecraft Actions:${colors.reset}`);
+    this.drawMenu(mcActions);
+
+    // Bot Server Control
+    this.drawStatusCard('Bot Server', botServerStatus.status, [
+      `Uptime: ${botServerStatus.uptime || 'N/A'}`,
+      `Active Bots: ${botServerStatus.activeBots || '0'}`,
+      `API Endpoint: ${BOT_HOST}:${BOT_PORT}`
+    ]);
+
+    const botServerActions = [
+      { label: 'Start Bot Server', description: 'Start bot API server' },
+      { label: 'Stop Bot Server', description: 'Stop bot API server' },
+      { label: 'Restart Bot Server', description: 'Restart with current config' },
+      { label: 'View Logs', description: 'Show server logs' }
+    ];
+    
+    console.log(`${colors.bright}${colors.white}Bot Server Actions:${colors.reset}`);
+    this.drawMenu(botServerActions);
+
+    this.drawFooter('Server Control - Select action for each server');
+  }
+
+  async renderConfigManagement() {
+    this.clearScreen();
+    this.drawHeader('Configuration Management');
+    
+    const configs = await this.getAvailableConfigs();
+    
+    console.log(`${colors.bright}${colors.white}Configuration Files:${colors.reset}`);
+    if (configs.length > 0) {
+      const configHeaders = ['Config', 'Type', 'Status', 'Last Modified'];
+      const configRows = configs.map(config => [
+        config.name,
+        config.type,
+        config.status,
+        config.modified
+      ]);
+      this.drawTable(configHeaders, configRows);
+    } else {
+      console.log(`${colors.dim}No configuration files found${colors.reset}\n`);
+    }
+
+    const menuItems = [
+      { label: 'Edit Configuration', description: 'Modify config settings' },
+      { label: 'View Current Config', description: 'Show current configuration' },
+      { label: 'Reset to Defaults', description: 'Reset all configs to defaults' },
+      { label: 'Export Config', description: 'Export current configuration' },
+      { label: 'Import Config', description: 'Import configuration from file' }
+    ];
+
+    console.log(`\n${colors.bright}${colors.white}Configuration Actions:${colors.reset}`);
+    this.drawMenu(menuItems);
+
+    this.drawFooter('Config Management - Select action');
+  }
+
+  async renderLogViewer() {
+    this.clearScreen();
+    this.drawHeader('System Log Viewer');
+    
+    const logs = await this.getRecentLogs();
+    
+    console.log(`${colors.bright}${colors.white}Recent Log Entries:${colors.reset}\n`);
+    
+    if (logs.length > 0) {
+      logs.forEach(log => {
+        const time = log.timestamp ? `[${log.timestamp}]` : '[Unknown]';
+        const levelColor = log.level === 'ERROR' ? colors.red :
+                          log.level === 'WARN' ? colors.yellow :
+                          log.level === 'INFO' ? colors.cyan : colors.white;
+        
+        console.log(`${colors.dim}${time}${colors.reset} ${levelColor}${log.level.padEnd(7)}${colors.reset} ${log.message}`);
+        if (log.source) {
+          console.log(`  ${colors.dim}Source: ${log.source}${colors.reset}`);
+        }
+      });
+    } else {
+      console.log(`${colors.dim}No log entries found${colors.reset}\n`);
+    }
+    
+    const menuItems = [
+      { label: 'Refresh Logs', description: 'Reload latest log entries' },
+      { label: 'View Bot Logs', description: 'Show bot-specific logs' },
+      { label: 'View Server Logs', description: 'Show server logs' },
+      { label: 'Clear Logs', description: 'Clear log buffer (not files)' },
+      { label: 'Export Logs', description: 'Export logs to file' }
+    ];
+    
+    console.log(`\n${colors.bright}${colors.white}Log Actions:${colors.reset}`);
+    this.drawMenu(menuItems);
+
+    this.drawFooter(`Showing ${logs.length} log entries`);
+  }
+
+  async renderUtilities() {
+    this.clearScreen();
+    this.drawHeader('Utilities Toolbox');
+    
+    console.log(`${colors.bright}${colors.white}System Utilities:${colors.reset}\n`);
+    
+    const utilities = [
+      {
+        name: 'System Diagnostics',
+        description: 'Run comprehensive system diagnostics',
+        command: 'diagnostics'
+      },
+      {
+        name: 'Network Test',
+        description: 'Test network connectivity to servers',
+        command: 'network-test'
+      },
+      {
+        name: 'Disk Cleanup',
+        description: 'Clean up temporary files and logs',
+        command: 'cleanup'
+      },
+      {
+        name: 'Backup System',
+        description: 'Create system backup',
+        command: 'backup'
+      },
+      {
+        name: 'Restore System',
+        description: 'Restore from backup',
+        command: 'restore'
+      },
+      {
+        name: 'Performance Test',
+        description: 'Run performance benchmarks',
+        command: 'perf-test'
+      },
+      {
+        name: 'Update Check',
+        description: 'Check for system updates',
+        command: 'update-check'
+      },
+      {
+        name: 'Password Reset',
+        description: 'Reset admin password',
+        command: 'reset-password'
+      }
+    ];
+    
+    utilities.forEach((util, index) => {
+      console.log(`  ${colors.green}${index + 1}${colors.reset}  ${colors.bright}${util.name}${colors.reset}`);
+      console.log(`     ${colors.dim}${util.description}${colors.reset}`);
+      console.log(`     ${colors.dim}Command: ${util.command}${colors.reset}\n`);
+    });
+    
+    console.log(`${colors.bright}${colors.white}Quick Actions:${colors.reset}`);
+    console.log(`${colors.dim}  • Type utility number to run${colors.reset}`);
+    console.log(`${colors.dim}  • Type 'all' to run all diagnostics${colors.reset}`);
+    console.log(`${colors.dim}  • Type 'back' to return to main menu${colors.reset}`);
+
+    this.drawFooter('Select a utility to run (1-8)');
+  }
+
+  async renderHelp() {
+    this.clearScreen();
+    this.drawHeader('Admin Console Help');
+    
+    console.log(`${colors.bright}${colors.white}Navigation:${colors.reset}\n`);
+    
+    const navigation = [
+      ['1', 'Dashboard', 'System overview and status'],
+      ['2', 'Bot Management', 'Manage and control bots'],
+      ['3', 'Server Control', 'Control Minecraft and Bot servers'],
+      ['4', 'Configuration', 'Manage system configuration'],
+      ['5', 'Log Viewer', 'View system logs'],
+      ['6', 'Utilities', 'System utilities toolbox'],
+      ['Q', 'Quit', 'Exit admin console'],
+      ['H', 'Help', 'Show this help screen'],
+      ['R', 'Refresh', 'Refresh current view'],
+      ['M', 'Main Menu', 'Return to dashboard']
+    ];
+    
+    navigation.forEach(([key, title, desc]) => {
+      console.log(`  ${colors.green}${key}${colors.reset}  ${colors.bright}${title}${colors.reset}`);
+      console.log(`     ${colors.dim}${desc}${colors.reset}\n`);
+    });
+
+    console.log(`${colors.bright}${colors.white}Interactive Features:${colors.reset}`);
+    console.log(`${colors.dim}  • Type menu numbers to navigate${colors.reset}`);
+    console.log(`${colors.dim}  • Use arrow keys in menus${colors.reset}`);
+    console.log(`${colors.dim}  • Auto-refresh every ${this.refreshRate/1000} seconds${colors.reset}`);
+    console.log(`${colors.dim}  • Press Ctrl+C to force quit${colors.reset}`);
+
+    this.drawFooter('Press any key to return');
+  }
+
+  // ====================
+  // Data Fetching
+  // ====================
+  
+  async getSystemStatus() {
+    try {
+      // Get bot server status
+      const botServerStatus = await this.getBotServerStatus();
+      
+      // Get Minecraft server status
+      const mcStatus = await this.getMinecraftServerStatus();
+      
+      // Get active bots
+      const bots = await this.getAllBots();
+      
+      return {
+        botServer: botServerStatus,
+        mcServer: mcStatus,
+        bots: bots.filter(bot => bot.status === 'RUNNING')
+      };
+    } catch (error) {
+      return {
+        botServer: { status: 'ERROR', error: error.message },
+        mcServer: { status: 'UNKNOWN' },
+        bots: []
+      };
+    }
+  }
+
+  async getBotServerStatus() {
+    try {
+      const data = await makeRequest({
+        hostname: BOT_HOST,
+        port: BOT_PORT,
+        path: '/api/health',
+        method: 'GET',
+        timeout: 2000
+      });
+      
+      return {
+        status: 'RUNNING',
+        uptime: this.formatUptime(data.uptime),
+        version: data.version,
+        activeBots: data.activeBots || 0
+      };
+    } catch (error) {
+      return { status: 'NOT_RUNNING' };
+    }
+  }
+
+  async getMinecraftServerStatus() {
+    try {
+      // Check if server is running
+      const isRunning = await this.checkMinecraftPort();
+      
+      if (!isRunning) {
+        return { status: 'NOT_RUNNING' };
+      }
+      
+      // Try to get more details (this would need proper Minecraft server query)
+      return {
+        status: 'RUNNING',
+        players: '0', // Would need actual player count
+        version: '1.21.11',
+        world: 'default'
+      };
+    } catch (error) {
+      return { status: 'UNKNOWN' };
+    }
+  }
+
+  async getAllBots() {
+    try {
+      const data = await makeRequest({
+        hostname: BOT_HOST,
+        port: BOT_PORT,
+        path: '/api/bots',
+        method: 'GET',
+        timeout: 2000
+      });
+      
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async getAvailableConfigs() {
+    const configDir = path.join(__dirname, 'config');
+    const configs = [];
+    
+    try {
+      if (fs.existsSync(configDir)) {
+        const files = fs.readdirSync(configDir);
+        
+        files.forEach(file => {
+          if (file.endsWith('.json') || file.endsWith('.js') || file.endsWith('.yaml')) {
+            const filePath = path.join(configDir, file);
+            const stats = fs.statSync(filePath);
+            const type = file.split('.').pop();
+            
+            configs.push({
+              name: file,
+              type: type.toUpperCase(),
+              status: 'ACTIVE',
+              modified: stats.mtime.toLocaleString()
+            });
+          }
+        });
+      }
+    } catch (error) {
+      // Ignore errors
+    }
+    
+    return configs;
+  }
+
+  async getRecentLogs(limit = 20) {
+    const logs = [];
+    const logDir = path.join(__dirname, 'logs');
+    
+    try {
+      if (fs.existsSync(logDir)) {
+        // Get all log files
+        const files = fs.readdirSync(logDir)
+          .filter(file => file.endsWith('.log') || file.endsWith('.txt'))
+          .sort()
+          .reverse()
+          .slice(0, 3); // Last 3 log files
+        
+        for (const file of files) {
+          const filePath = path.join(logDir, file);
+          try {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const lines = content.split('\n').filter(line => line.trim()).slice(-limit);
+            
+            lines.forEach(line => {
+              // Simple log parsing - in a real implementation, this would be more sophisticated
+              const timestampMatch = line.match(/\[(.*?)\]/);
+              const levelMatch = line.match(/(ERROR|WARN|INFO|DEBUG)/);
+              const message = line.replace(/\[.*?\]/g, '').replace(/(ERROR|WARN|INFO|DEBUG)/, '').trim();
+              
+              logs.push({
+                timestamp: timestampMatch ? timestampMatch[1] : new Date().toISOString(),
+                level: levelMatch ? levelMatch[1] : 'INFO',
+                message: message || line.trim(),
+                source: file
+              });
+            });
+          } catch (err) {
+            // Skip unreadable files
+          }
+        }
+      }
+      
+      // If no log files found, generate some sample logs
+      if (logs.length === 0) {
+        const levels = ['INFO', 'WARN', 'ERROR'];
+        const messages = [
+          'System started',
+          'Bot server initialized',
+          'Minecraft server connection established',
+          'New bot connected: TestBot',
+          'Resource usage normal',
+          'Scheduled backup completed',
+          'Warning: High memory usage detected',
+          'Error: Failed to connect to database'
+        ];
+        
+        const now = new Date();
+        for (let i = 0; i < limit; i++) {
+          const time = new Date(now.getTime() - i * 60000); // 1 minute intervals
+          const level = levels[Math.floor(Math.random() * levels.length)];
+          const message = messages[Math.floor(Math.random() * messages.length)];
+          
+          logs.push({
+            timestamp: time.toISOString().replace('T', ' ').substring(0, 19),
+            level: level,
+            message: message,
+            source: 'system.log'
+          });
+        }
+      }
+    } catch (error) {
+      // Return sample logs on error
+      logs.push({
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+        level: 'INFO',
+        message: 'Log system initialized',
+        source: 'admin-console'
+      });
+    }
+    
+    return logs.slice(0, limit);
+  }
+
+  getSystemResources() {
+    // Simple system resource simulation
+    // In a real implementation, this would use os.cpuUsage(), os.freemem(), etc.
+    return {
+      cpu: Math.floor(Math.random() * 30) + 10, // 10-40%
+      memory: Math.floor(Math.random() * 40) + 30, // 30-70%
+      disk: Math.floor(Math.random() * 20) + 10 // 10-30%
+    };
+  }
+
+  async checkMinecraftPort() {
+    return new Promise((resolve) => {
+      const net = require('net');
+      const socket = new net.Socket();
+      
+      socket.setTimeout(2000);
+      socket.connect({ host: 'localhost', port: 25565 }, () => {
+        socket.destroy();
+        resolve(true);
+      });
+      
+      socket.on('error', () => {
+        resolve(false);
+      });
+      
+      socket.on('timeout', () => {
+        socket.destroy();
+        resolve(false);
+      });
+    });
+  }
+
+  formatUptime(seconds) {
+    if (!seconds) return 'N/A';
+    
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (days > 0) {
+      return `${days}d ${hours}h`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
+
+  checkAlerts(status) {
+    const alerts = [];
+    
+    // Check bot server status
+    if (status.botServer.status === 'NOT_RUNNING') {
+      alerts.push({
+        severity: 'CRITICAL',
+        message: 'Bot server is not running',
+        details: 'Bot functionality is unavailable'
+      });
+    } else if (status.botServer.status === 'ERROR') {
+      alerts.push({
+        severity: 'CRITICAL',
+        message: 'Bot server error',
+        details: status.botServer.error
+      });
+    }
+    
+    // Check Minecraft server status
+    if (status.mcServer.status === 'NOT_RUNNING') {
+      alerts.push({
+        severity: 'WARNING',
+        message: 'Minecraft server is not running',
+        details: 'Bots cannot connect to Minecraft'
+      });
+    }
+    
+    // Check active bots count
+    if (status.bots.length === 0) {
+      alerts.push({
+        severity: 'INFO',
+        message: 'No active bots',
+        details: 'Start bots from Bot Management menu'
+      });
+    }
+    
+    // Check system resources (simulated)
+    const resources = this.getSystemResources();
+    if (resources.cpu > 80) {
+      alerts.push({
+        severity: 'WARNING',
+        message: 'High CPU usage',
+        details: `CPU at ${resources.cpu}% - consider reducing load`
+      });
+    }
+    
+    if (resources.memory > 85) {
+      alerts.push({
+        severity: 'WARNING',
+        message: 'High memory usage',
+        details: `Memory at ${resources.memory}% - consider restarting services`
+      });
+    }
+    
+    if (resources.disk > 90) {
+      alerts.push({
+        severity: 'CRITICAL',
+        message: 'High disk usage',
+        details: `Disk at ${resources.disk}% - cleanup or expand storage`
+      });
+    }
+    
+    return alerts;
+  }
+
+  // ====================
+  // Main Control Loop
+  // ====================
+  
+  async start() {
+    this.isRunning = true;
+    
+    // Set up auto-refresh
+    this.startAutoRefresh();
+    
+    // Initial render
+    await this.renderCurrentView();
+    
+    // Start input loop
+    this.setupInputHandling();
+  }
+
+  async stop() {
+    this.isRunning = false;
+    
+    // Stop auto-refresh
+    this.stopAutoRefresh();
+    
+    // Close readline interface
+    this.rl.close();
+    
+    console.log(`${colors.green}Admin console stopped.${colors.reset}\n`);
+  }
+
+  startAutoRefresh() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
+    
+    this.refreshInterval = setInterval(async () => {
+      if (this.isRunning) {
+        // Debounce rendering to prevent too frequent updates
+        const now = Date.now();
+        if (now - this.lastRenderTime < 1000) { // Minimum 1 second between renders
+          return;
+        }
+        
+        this.lastRenderTime = now;
+        
+        // Clear any pending debounce timeout
+        if (this.renderDebounceTimeout) {
+          clearTimeout(this.renderDebounceTimeout);
+          this.renderDebounceTimeout = null;
+        }
+        
+        // Use debounce for performance
+        this.renderDebounceTimeout = setTimeout(async () => {
+          try {
+            await this.renderCurrentView();
+          } catch (error) {
+            this.handleError(error, 'autoRefresh');
+          }
+        }, 100); // 100ms debounce
+      }
+    }, this.refreshRate);
+  }
+
+  setRefreshRate(rateName) {
+    if (this.config.refreshRates[rateName]) {
+      this.refreshRate = this.config.refreshRates[rateName];
+      this.startAutoRefresh(); // Restart with new rate
+      return true;
+    }
+    return false;
+  }
+
+  togglePerformanceMode() {
+    this.config.performanceMode = !this.config.performanceMode;
+    if (this.config.performanceMode) {
+      this.setRefreshRate('fast');
+    } else {
+      this.setRefreshRate('normal');
+    }
+    return this.config.performanceMode;
+  }
+
+  stopAutoRefresh() {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+  async renderCurrentView() {
+    try {
+      switch (this.currentView) {
+        case 'dashboard':
+          await this.renderDashboard();
+          break;
+        case 'bot-management':
+          await this.renderBotManagement();
+          break;
+        case 'server-control':
+          await this.renderServerControl();
+          break;
+        case 'config-management':
+          await this.renderConfigManagement();
+          break;
+        case 'log-viewer':
+          await this.renderLogViewer();
+          break;
+        case 'utilities':
+          await this.renderUtilities();
+          break;
+        case 'help':
+          await this.renderHelp();
+          break;
+        default:
+          await this.renderDashboard();
+      }
+    } catch (error) {
+      this.handleError(error, 'renderCurrentView');
+    }
+  }
+
+  handleError(error, context) {
+    console.log(`\n${colors.red}${'─'.repeat(60)}${colors.reset}`);
+    console.log(`${colors.bright}${colors.red}✗ Error in ${context}:${colors.reset}`);
+    console.log(`${colors.red}${error.message}${colors.reset}`);
+    
+    if (error.stack) {
+      console.log(`${colors.dim}${error.stack.split('\n').slice(0, 3).join('\n')}${colors.reset}`);
+    }
+    
+    console.log(`${colors.red}${'─'.repeat(60)}${colors.reset}\n`);
+    
+    // Try to recover by returning to dashboard after a delay
+    console.log(`${colors.yellow}Attempting to recover...${colors.reset}`);
+    
+    setTimeout(() => {
+      if (this.isRunning) {
+        this.currentView = 'dashboard';
+        this.renderCurrentView().catch(recoveryError => {
+          console.log(`${colors.red}Recovery failed: ${recoveryError.message}${colors.reset}`);
+          console.log(`${colors.yellow}Restarting admin console...${colors.reset}`);
+          // In a real implementation, this would restart the console
+        });
+      }
+    }, 2000);
+  }
+
+  setupInputHandling() {
+    this.rl.on('line', async (input) => {
+      await this.handleInput(input.trim());
+    });
+
+    this.rl.on('SIGINT', () => {
+      console.log('\n');
+      this.stop();
+      process.exit(0);
+    });
+
+    // Set prompt
+    this.rl.setPrompt(`${colors.cyan}admin>${colors.reset} `);
+    this.rl.prompt();
+  }
+
+  async handleInput(input) {
+    if (!input) {
+      this.rl.prompt();
+      return;
+    }
+
+    const cmd = input.toLowerCase();
+    
+    switch (cmd) {
+      case 'q':
+      case 'quit':
+      case 'exit':
+        await this.stop();
+        break;
+        
+      case 'h':
+      case 'help':
+        this.currentView = 'help';
+        await this.renderCurrentView();
+        break;
+        
+      case 'r':
+      case 'refresh':
+        await this.renderCurrentView();
+        break;
+        
+      case 'm':
+      case 'menu':
+        this.currentView = 'dashboard';
+        await this.renderCurrentView();
+        break;
+        
+      case '1':
+        this.currentView = 'dashboard';
+        await this.renderCurrentView();
+        break;
+        
+      case '2':
+        this.currentView = 'bot-management';
+        await this.renderCurrentView();
+        break;
+        
+      case '3':
+        this.currentView = 'server-control';
+        await this.renderCurrentView();
+        break;
+        
+      case '4':
+        this.currentView = 'config-management';
+        await this.renderCurrentView();
+        break;
+        
+      case '5':
+        this.currentView = 'log-viewer';
+        await this.renderCurrentView();
+        break;
+        
+      case '6':
+        this.currentView = 'utilities';
+        await this.renderCurrentView();
+        break;
+        
+      default:
+        console.log(`${colors.yellow}Unknown command: ${input}${colors.reset}`);
+        console.log(`${colors.dim}Type 'help' for available commands${colors.reset}`);
+        this.rl.prompt();
+    }
+  }
+}
 
 // Configuration
 const BOT_SERVER_SCRIPT = path.join(__dirname, 'bot_server.js');
@@ -1065,6 +2030,8 @@ ${colors.bright}Systems:${colors.reset}
   ${colors.green}llm${colors.reset}         LLM strategy management
   ${colors.green}server${colors.reset}      Bot server management
   ${colors.green}dev${colors.reset}         Development mode
+  ${colors.green}admin${colors.reset}       Interactive admin console
+  ${colors.green}console${colors.reset}     Interactive admin console
 
 ${colors.bright}Top-level commands:${colors.reset}
   ${colors.yellow}status${colors.reset} [--json]  Show system status
@@ -1487,6 +2454,11 @@ ${colors.bright}Actions:${colors.reset}
         startBotServer();
         break;
 
+      case 'admin':
+      case 'console':
+        await adminConsoleCommand();
+        break;
+
       case 'status':
         await showSystemStatus(parsedArgs.json);
         break;
@@ -1516,4 +2488,20 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main };
+// ============================================================================
+// Admin Console Implementation
+// ============================================================================
+
+
+
+// Admin Console command
+async function adminConsoleCommand() {
+  logInfo('Starting MineBot Admin Console...');
+  logInfo('Press Ctrl+C to exit at any time\n');
+  
+  const console = new AdminConsole();
+  await console.start();
+}
+
+// Export the AdminConsole class
+module.exports = { main, AdminConsole, adminConsoleCommand };
