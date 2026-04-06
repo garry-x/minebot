@@ -55,7 +55,8 @@ const AutonomousDashboard = ({ botId, botState }) => {
       
       wsRef.current.onclose = () => {
         console.log('AutonomousDashboard WebSocket disconnected');
-        setTimeout(connectWebSocket, 3000);
+        const reconnectDelay = parseInt(process.env.REACT_APP_WEBSOCKET_RECONNECT_DELAY || '3000', 10);
+        setTimeout(connectWebSocket, reconnectDelay);
       };
     };
     

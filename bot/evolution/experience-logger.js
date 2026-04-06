@@ -11,7 +11,7 @@ class ExperienceLogger {
     this.lastFlushTime = Date.now();
     this.config = {
       maxBufferSize: 10,
-      flushInterval: 30000
+      flushInterval: parseInt(process.env.EXPERIENCE_FLUSH_INTERVAL || '30000')
     };
     this.walPath = path.resolve(__dirname, 'wal.json');
     this.isFlushing = false;

@@ -1,16 +1,336 @@
-[16:17:55] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
-[16:17:55] [ServerMain/INFO]: Loaded 1470 recipes
-[16:17:55] [ServerMain/INFO]: Loaded 1584 advancements
-[16:17:55] [Server thread/INFO]: Starting minecraft server version 1.21.11
-[16:17:55] [Server thread/INFO]: Loading properties
-[16:17:55] [Server thread/INFO]: Default game type: SURVIVAL
-[16:17:55] [Server thread/INFO]: Generating keypair
-[16:17:55] [Server thread/INFO]: Starting Minecraft server on *:25565
-[16:17:55] [Server thread/INFO]: Preparing level "world"
-[16:17:56] [Server thread/INFO]: Loading 0 persistent chunks...
-[16:17:56] [Server thread/INFO]: Preparing spawn area: 100%
-[16:17:56] [Server thread/INFO]: Time elapsed: 13 ms
-[16:17:56] [Server thread/INFO]: Done (0.161s)! For help, type "help"
-[16:18:01] [User Authenticator #1/INFO]: Disconnecting TestBotUser (/127.0.0.1:38948): Failed to verify username!
-[16:18:01] [User Authenticator #1/ERROR]: Username 'TestBotUser' tried to join with an invalid session
-[16:18:01] [Server thread/INFO]: TestBotUser (/127.0.0.1:38948) lost connection: Failed to verify username!
+[00:01:56] [Server thread/INFO]: TestBot2 lost connection: You logged in from another location
+[00:01:56] [Server thread/INFO]: TestBot2 left the game
+[00:01:57] [Server thread/INFO]: TestBot2[/127.0.0.1:36096] logged in with entity id 9527 at (11.7, 69.0, 10.7)
+[00:01:57] [Server thread/INFO]: TestBot2 joined the game
+[00:01:57] [Server thread/INFO]: UpdateTest lost connection: You logged in from another location
+[00:01:57] [Server thread/INFO]: UpdateTest left the game
+[00:01:57] [Server thread/INFO]: UpdateTest[/127.0.0.1:36100] logged in with entity id 9531 at (-1.4345211152985837, 78.0, 0.6795478168970728)
+[00:01:57] [Server thread/INFO]: UpdateTest joined the game
+[00:01:57] [Server thread/INFO]: DebugTest lost connection: You logged in from another location
+[00:01:57] [Server thread/INFO]: DebugTest left the game
+[00:01:57] [Server thread/INFO]: DebugTest[/127.0.0.1:36108] logged in with entity id 9533 at (2.7, 70.0, 11.7)
+[00:01:57] [Server thread/INFO]: DebugTest joined the game
+[00:01:57] [Server thread/INFO]: StateTestBot lost connection: You logged in from another location
+[00:01:57] [Server thread/INFO]: StateTestBot left the game
+[00:01:57] [Server thread/INFO]: StateTestBot[/127.0.0.1:36116] logged in with entity id 9534 at (0.7, 71.0, 3.7)
+[00:01:57] [Server thread/INFO]: StateTestBot joined the game
+[00:01:57] [Server thread/INFO]: FinalTestBot lost connection: You logged in from another location
+[00:01:57] [Server thread/INFO]: FinalTestBot left the game
+[00:01:57] [Server thread/INFO]: FinalTestBot[/127.0.0.1:36128] logged in with entity id 9538 at (2.7, 70.0, 11.7)
+[00:01:57] [Server thread/INFO]: FinalTestBot joined the game
+[00:01:58] [Server thread/INFO]: ResourceTest[/127.0.0.1:36132] logged in with entity id 9539 at (-1.5, 90.0, -7.5)
+[00:01:58] [Server thread/INFO]: ResourceTest joined the game
+[00:02:00] [Server thread/WARN]: UpdateTest moved too quickly! 4.801196669753041,-8.0,5.620452183102927
+[00:02:01] [Server thread/WARN]: ResourceTest moved too quickly! 6.281730524073084,-18.233632006042484,9.176258952030054
+[00:03:29] [Server thread/INFO]: TestBot2 lost connection: You logged in from another location
+[00:03:29] [Server thread/INFO]: TestBot2 left the game
+[00:03:29] [Server thread/INFO]: TestBot2[/127.0.0.1:36380] logged in with entity id 9693 at (11.7, 69.0, 10.7)
+[00:03:29] [Server thread/INFO]: TestBot2 joined the game
+[00:03:29] [Server thread/INFO]: PollTest lost connection: You logged in from another location
+[00:03:29] [Server thread/INFO]: PollTest left the game
+[00:03:29] [Server thread/INFO]: PollTest[/127.0.0.1:36382] logged in with entity id 9694 at (4.7, 71.0, 14.7)
+[00:03:29] [Server thread/INFO]: PollTest joined the game
+[00:03:29] [Server thread/INFO]: UpdateTest lost connection: You logged in from another location
+[00:03:29] [Server thread/INFO]: UpdateTest left the game
+[00:03:29] [Server thread/INFO]: UpdateTest[/127.0.0.1:36390] logged in with entity id 9695 at (1.9412819634890661, 72.0, 4.055350895684723)
+[00:03:29] [Server thread/INFO]: UpdateTest joined the game
+[00:03:29] [Server thread/INFO]: DebugTest lost connection: You logged in from another location
+[00:03:29] [Server thread/INFO]: DebugTest left the game
+[00:03:29] [Server thread/INFO]: DebugTest[/127.0.0.1:36398] logged in with entity id 9696 at (2.7, 70.0, 11.7)
+[00:03:29] [Server thread/INFO]: DebugTest joined the game
+[00:03:30] [Server thread/INFO]: StateTestBot lost connection: You logged in from another location
+[00:03:30] [Server thread/INFO]: StateTestBot left the game
+[00:03:30] [Server thread/INFO]: StateTestBot[/127.0.0.1:36402] logged in with entity id 9697 at (0.7, 71.0, 3.7)
+[00:03:30] [Server thread/INFO]: StateTestBot joined the game
+[00:03:30] [Server thread/INFO]: FinalTestBot lost connection: You logged in from another location
+[00:03:30] [Server thread/INFO]: FinalTestBot left the game
+[00:03:30] [Server thread/INFO]: FinalTestBot[/127.0.0.1:36418] logged in with entity id 9698 at (2.7, 70.0, 11.7)
+[00:03:30] [Server thread/INFO]: FinalTestBot joined the game
+[00:03:30] [Server thread/INFO]: InventoryTest[/127.0.0.1:41956] logged in with entity id 9702 at (1.5, 71.0, 6.5)
+[00:03:30] [Server thread/INFO]: InventoryTest joined the game
+[00:04:59] [Server thread/INFO]: StateTestBot lost connection: You logged in from another location
+[00:04:59] [Server thread/INFO]: StateTestBot left the game
+[00:04:59] [Server thread/INFO]: StateTestBot[/127.0.0.1:55184] logged in with entity id 9858 at (0.7, 71.0, 3.7)
+[00:04:59] [Server thread/INFO]: StateTestBot joined the game
+[00:05:00] [Server thread/INFO]: FinalTestBot lost connection: You logged in from another location
+[00:05:00] [Server thread/INFO]: FinalTestBot left the game
+[00:05:00] [Server thread/INFO]: FinalTestBot[/127.0.0.1:55186] logged in with entity id 9859 at (2.7, 70.0, 11.7)
+[00:05:00] [Server thread/INFO]: FinalTestBot joined the game
+[00:05:00] [Server thread/INFO]: InventoryTest lost connection: You logged in from another location
+[00:05:00] [Server thread/INFO]: InventoryTest left the game
+[00:05:00] [Server thread/INFO]: InventoryTest[/127.0.0.1:55198] logged in with entity id 9860 at (5.7, 71.0, 9.7)
+[00:05:00] [Server thread/INFO]: InventoryTest joined the game
+[00:05:00] [Server thread/INFO]: ResourceTest lost connection: You logged in from another location
+[00:05:00] [Server thread/INFO]: ResourceTest left the game
+[00:05:00] [Server thread/INFO]: ResourceTest[/127.0.0.1:55214] logged in with entity id 9861 at (2.7163111089040437, 73.0, -2.6367448372198448)
+[00:05:00] [Server thread/INFO]: ResourceTest joined the game
+[00:05:00] [Server thread/INFO]: TestBot2 lost connection: You logged in from another location
+[00:05:00] [Server thread/INFO]: TestBot2 left the game
+[00:05:00] [Server thread/INFO]: TestBot2[/127.0.0.1:43488] logged in with entity id 9862 at (11.7, 69.0, 10.7)
+[00:05:00] [Server thread/INFO]: TestBot2 joined the game
+[00:05:01] [Server thread/INFO]: SlotTest[/127.0.0.1:43502] logged in with entity id 9870 at (0.5, 72.0, 5.5)
+[00:05:01] [Server thread/INFO]: SlotTest joined the game
+[00:05:03] [Server thread/WARN]: ResourceTest moved wrongly!
+[00:06:42] [Server thread/INFO]: SlotTest lost connection: You logged in from another location
+[00:06:42] [Server thread/INFO]: SlotTest left the game
+[00:06:42] [Server thread/INFO]: SlotTest[/127.0.0.1:44244] logged in with entity id 10098 at (5.7, 71.0, 9.7)
+[00:06:42] [Server thread/INFO]: SlotTest joined the game
+[00:06:42] [Server thread/INFO]: PollTest lost connection: You logged in from another location
+[00:06:42] [Server thread/INFO]: PollTest left the game
+[00:06:43] [Server thread/INFO]: PollTest[/127.0.0.1:44258] logged in with entity id 10099 at (4.7, 71.0, 14.7)
+[00:06:43] [Server thread/INFO]: PollTest joined the game
+[00:06:43] [Server thread/INFO]: UpdateTest lost connection: You logged in from another location
+[00:06:43] [Server thread/INFO]: UpdateTest left the game
+[00:06:43] [Server thread/INFO]: UpdateTest[/127.0.0.1:44268] logged in with entity id 10100 at (4.7, 70.0, 7.7)
+[00:06:43] [Server thread/INFO]: UpdateTest joined the game
+[00:06:43] [Server thread/INFO]: StateTestBot lost connection: You logged in from another location
+[00:06:43] [Server thread/INFO]: StateTestBot left the game
+[00:06:43] [Server thread/INFO]: StateTestBot[/127.0.0.1:44278] logged in with entity id 10101 at (0.7, 71.0, 3.7)
+[00:06:43] [Server thread/INFO]: StateTestBot joined the game
+[00:06:43] [Server thread/INFO]: DebugTest lost connection: You logged in from another location
+[00:06:43] [Server thread/INFO]: DebugTest left the game
+[00:06:43] [Server thread/INFO]: DebugTest[/127.0.0.1:44286] logged in with entity id 10102 at (2.7, 70.0, 11.7)
+[00:06:43] [Server thread/INFO]: DebugTest joined the game
+[00:06:43] [Server thread/INFO]: FinalTestBot lost connection: You logged in from another location
+[00:06:43] [Server thread/INFO]: FinalTestBot left the game
+[00:06:43] [Server thread/INFO]: FinalTestBot[/127.0.0.1:44292] logged in with entity id 10103 at (2.7, 70.0, 11.7)
+[00:06:43] [Server thread/INFO]: FinalTestBot joined the game
+[00:06:44] [Server thread/INFO]: FinalTest[/127.0.0.1:44302] logged in with entity id 10104 at (-9.5, 84.0, 2.5)
+[00:06:44] [Server thread/INFO]: FinalTest joined the game
+[00:07:00] [Server thread/INFO]: PollTest was shot by Skeleton
+[00:07:30] [Server thread/INFO]: DebugTest was shot by Skeleton
+[00:08:02] [Server thread/INFO]: FinalTestBot was shot by Skeleton
+[00:08:07] [Server thread/INFO]: DebugTest lost connection: You logged in from another location
+[00:08:07] [Server thread/INFO]: DebugTest left the game
+[00:08:07] [Server thread/INFO]: DebugTest[/127.0.0.1:56156] logged in with entity id 10291 at (7.5, 71.0, 1.5)
+[00:08:07] [Server thread/INFO]: DebugTest joined the game
+[00:08:07] [Server thread/INFO]: FinalTestBot lost connection: You logged in from another location
+[00:08:07] [Server thread/INFO]: FinalTestBot left the game
+[00:08:07] [Server thread/INFO]: FinalTestBot[/127.0.0.1:56170] logged in with entity id 10292 at (-4.5, 84.0, -1.5)
+[00:08:07] [Server thread/INFO]: FinalTestBot joined the game
+[00:08:07] [Server thread/INFO]: FinalTest lost connection: You logged in from another location
+[00:08:07] [Server thread/INFO]: FinalTest left the game
+[00:08:07] [Server thread/INFO]: FinalTest[/127.0.0.1:56176] logged in with entity id 10294 at (10.7, 69.0, 2.7)
+[00:08:07] [Server thread/INFO]: FinalTest joined the game
+[00:08:08] [Server thread/INFO]: InventoryTest lost connection: You logged in from another location
+[00:08:08] [Server thread/INFO]: InventoryTest left the game
+[00:08:08] [Server thread/INFO]: InventoryTest[/127.0.0.1:56186] logged in with entity id 10295 at (5.7, 71.0, 9.7)
+[00:08:08] [Server thread/INFO]: InventoryTest joined the game
+[00:08:08] [Server thread/INFO]: ResourceTest lost connection: You logged in from another location
+[00:08:08] [Server thread/INFO]: ResourceTest left the game
+[00:08:08] [Server thread/INFO]: ResourceTest[/127.0.0.1:56198] logged in with entity id 10296 at (8.3, 69.0, 2.3)
+[00:08:08] [Server thread/INFO]: ResourceTest joined the game
+[00:08:08] [Server thread/INFO]: SlotTest lost connection: You logged in from another location
+[00:08:08] [Server thread/INFO]: SlotTest left the game
+[00:08:08] [Server thread/INFO]: SlotTest[/127.0.0.1:56200] logged in with entity id 10298 at (5.7, 71.0, 9.7)
+[00:08:08] [Server thread/INFO]: SlotTest joined the game
+[00:08:08] [Server thread/INFO]: TestBot2 lost connection: You logged in from another location
+[00:08:08] [Server thread/INFO]: TestBot2 left the game
+[00:08:08] [Server thread/INFO]: TestBot2[/127.0.0.1:56216] logged in with entity id 10299 at (11.7, 69.0, 10.7)
+[00:08:08] [Server thread/INFO]: TestBot2 joined the game
+[00:08:09] [Server thread/INFO]: CleanTest[/127.0.0.1:56222] logged in with entity id 10304 at (3.5, 79.0, -7.5)
+[00:08:09] [Server thread/INFO]: CleanTest joined the game
+[00:08:10] [Server thread/WARN]: FinalTestBot moved too quickly! 5.8,-13.0,6.8
+[00:43:09] [Server thread/INFO]: UpdateTest was slain by Zombie
+[00:43:18] [Server thread/INFO]: InventoryTest was slain by Zombie
+[00:43:24] [Server thread/INFO]: StateTestBot was slain by Zombie
+[00:43:28] [Server thread/INFO]: SlotTest was slain by Zombie
+[00:43:34] [Server thread/INFO]: InventoryTest was slain by Zombie
+[00:43:40] [Server thread/INFO]: SlotTest was slain by Zombie
+[00:43:52] [Server thread/INFO]: StateTestBot was slain by Zombie
+[00:44:04] [Server thread/INFO]: StateTestBot was slain by Zombie
+[00:44:42] [Server thread/INFO]: UpdateTest was shot by Skeleton
+[00:44:58] [Server thread/INFO]: InventoryTest was shot by Skeleton
+[00:45:15] [Server thread/INFO]: FinalTestBot was slain by Zombie
+[00:45:22] [Server thread/INFO]: TestBot2 was shot by Skeleton
+[00:45:27] [Server thread/INFO]: StateTestBot was slain by Zombie
+[00:45:34] [Server thread/INFO]: CleanTest was slain by Zombie
+[00:45:38] [Server thread/INFO]: UpdateTest was slain by Zombie
+[00:45:42] [Server thread/INFO]: LogTest2 was shot by Skeleton
+[00:45:49] [Server thread/INFO]: InventoryTest was slain by Zombie
+[00:46:00] [Server thread/INFO]: CleanTest was slain by Zombie
+[00:46:09] [Server thread/INFO]: LogTest2 was slain by Zombie
+[00:46:14] [Server thread/INFO]: DebugTest was shot by Skeleton
+[00:46:21] [Server thread/INFO]: FinalTest was slain by Zombie
+[00:46:26] [Server thread/INFO]: ResourceTest was slain by Zombie
+[00:46:39] [Server thread/INFO]: CleanTest was slain by Zombie
+[00:46:55] [Server thread/INFO]: FinalTest was slain by Zombie
+[00:47:09] [Server thread/INFO]: ResourceTest was shot by Skeleton
+[00:47:37] [Server thread/INFO]: CleanTest was slain by Zombie
+[00:47:56] [Server thread/INFO]: ResourceTest was slain by Zombie
+[01:01:15] [Server thread/INFO]: FinalTest was slain by Spider
+[01:01:21] [Server thread/INFO]: DebugTest was slain by Zombie
+[01:01:31] [Server thread/INFO]: CleanTest was slain by Spider
+[01:01:31] [Server thread/INFO]: ResourceTest was slain by Zombie
+[01:01:46] [Server thread/INFO]: CleanTest was slain by Spider
+[01:01:48] [Server thread/INFO]: SlotTest was slain by Zombie
+[01:03:23] [Server thread/INFO]: SlotTest was slain by Zombie
+[01:04:24] [Server thread/INFO]: DebugTest was slain by Zombie
+[01:04:36] [Server thread/INFO]: FinalTest was slain by Zombie
+[01:04:46] [Server thread/INFO]: ResourceTest was slain by Zombie
+[01:05:30] [Server thread/INFO]: CleanTest was slain by Phantom
+[01:27:08] [Server thread/INFO]: ResourceBot was slain by Phantom
+[01:41:38] [Server thread/INFO]: UpdateTest was slain by Phantom
+[01:42:33] [Server thread/INFO]: InventoryTest was slain by Phantom
+[01:43:24] [Server thread/INFO]: TestBot2 was slain by Phantom
+[01:44:19] [Server thread/INFO]: DefaultTestBot was slain by Phantom
+[01:45:24] [Server thread/INFO]: StateTestBot was slain by Phantom
+[01:46:58] [Server thread/INFO]: StateTestBot was slain by Phantom
+[01:47:51] [Server thread/INFO]: SlotTest was slain by Phantom
+[01:49:45] [Server thread/INFO]: DebugTest was slain by Phantom
+[02:03:20] [Server thread/INFO]: DebugTest was slain by Zombie
+[02:03:40] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[02:03:51] [Server thread/INFO]: FinalTest was slain by Zombie
+[02:03:58] [Server thread/INFO]: InventoryTest was slain by Zombie Villager
+[02:03:59] [Server thread/INFO]: UpdateTest was slain by Zombie
+[02:04:09] [Server thread/INFO]: TestBot2 was slain by Zombie Villager
+[02:04:10] [Server thread/INFO]: InventoryTest was slain by Zombie
+[02:04:21] [Server thread/INFO]: StateTestBot was slain by Zombie
+[02:04:34] [Server thread/INFO]: UpdateTest was slain by Zombie
+[02:04:47] [Server thread/INFO]: ResourceBot was slain by Zombie
+[02:04:58] [Server thread/INFO]: ResourceTest was slain by Zombie
+[02:05:12] [Server thread/INFO]: LogTest2 was slain by Zombie
+[02:21:11] [Server thread/INFO]: StateTestBot was slain by Phantom
+[02:22:10] [Server thread/INFO]: CleanTest was slain by Phantom
+[02:23:46] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[02:25:40] [Server thread/INFO]: PollTest was slain by Phantom
+[02:27:00] [Server thread/INFO]: InventoryTest was slain by Phantom
+[02:44:33] [Server thread/INFO]: FinalTestBot was shot by Skeleton
+[02:44:44] [Server thread/INFO]: AutoBot was shot by Skeleton
+[02:45:19] [Server thread/INFO]: AutoBot was shot by Skeleton
+[02:46:17] [Server thread/INFO]: LogTest2 was shot by Skeleton
+[02:46:48] [Server thread/INFO]: CleanTest was shot by Skeleton
+[02:47:21] [Server thread/INFO]: ResourceBot was shot by Skeleton
+[02:47:24] [Server thread/WARN]: CleanTest was kicked for floating too long!
+[02:47:24] [Server thread/INFO]: CleanTest lost connection: Flying is not enabled on this server
+[02:47:24] [Server thread/INFO]: CleanTest left the game
+[02:48:05] [Server thread/INFO]: InventoryTest was shot by Skeleton
+[02:55:22] [Server thread/INFO]: ResourceBot was slain by Zombie
+[03:01:15] [Server thread/INFO]: ResourceBot was slain by Zombie
+[03:01:26] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:01:39] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:01:52] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:02:08] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:02:21] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:02:35] [Server thread/INFO]: ResourceTest was slain by Zombie
+[03:02:53] [Server thread/INFO]: PollTest was slain by Zombie
+[03:03:06] [Server thread/INFO]: PollTest was slain by Zombie
+[03:03:16] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[03:03:29] [Server thread/INFO]: UpdateTest was slain by Zombie
+[03:03:39] [Server thread/INFO]: FinalTest was slain by Zombie
+[03:03:50] [Server thread/INFO]: StateTestBot was slain by Zombie
+[03:04:03] [Server thread/INFO]: PollTest was slain by Zombie
+[03:04:15] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:04:27] [Server thread/INFO]: TestBot2 was slain by Zombie
+[03:04:45] [Server thread/INFO]: TestBot2 was slain by Zombie
+[03:21:19] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:21:30] [Server thread/INFO]: TestBot2 was slain by Zombie
+[03:21:41] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:21:51] [Server thread/INFO]: StateTestBot was slain by Zombie
+[03:22:04] [Server thread/INFO]: FinalTest was slain by Zombie
+[03:22:16] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:22:29] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:22:40] [Server thread/INFO]: FinalTest was slain by Zombie
+[03:22:51] [Server thread/INFO]: UpdateTest was slain by Zombie
+[03:23:03] [Server thread/INFO]: ResourceTest was slain by Zombie
+[03:23:16] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:23:27] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:23:37] [Server thread/INFO]: TestBot2 was slain by Zombie
+[03:23:49] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:23:57] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:24:10] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:24:15] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:24:27] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:24:28] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:24:37] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:24:39] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:24:49] [Server thread/INFO]: InventoryTest was slain by Zombie
+[03:24:50] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:25:02] [Server thread/INFO]: LogTest2 was slain by Zombie
+[03:25:03] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:25:15] [Server thread/INFO]: PollTest was slain by Zombie
+[03:25:29] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:25:43] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:27:39] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:27:52] [Server thread/INFO]: DebugTest was slain by Zombie
+[03:28:05] [Server thread/INFO]: DebugTest was slain by Zombie
+[04:01:17] [Server thread/INFO]: PollTest was slain by Phantom
+[04:04:06] [Server thread/INFO]: LogTest2 was slain by Phantom
+[04:04:56] [Server thread/INFO]: StateTestBot was slain by Phantom
+[04:06:46] [Server thread/INFO]: StateTestBot was shot by Skeleton
+[04:07:12] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[04:07:16] [Server thread/INFO]: LogTest2 was shot by Skeleton
+[04:08:15] [Server thread/INFO]: LogTest2 was shot by Skeleton
+[04:22:21] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[04:23:43] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[04:25:25] [Server thread/INFO]: ResourceTest was slain by Phantom
+[04:26:41] [Server thread/INFO]: DefaultTestBot was slain by Phantom
+[04:27:45] [Server thread/INFO]: ResourceBot was slain by Phantom
+[04:42:07] [Server thread/INFO]: ResourceBot was slain by Phantom
+[04:43:42] [Server thread/INFO]: UpdateTest was slain by Phantom
+[04:45:01] [Server thread/INFO]: FinalTest was slain by Phantom
+[04:45:06] [Server thread/INFO]: FinalTestBot was slain by Zombie
+[04:45:18] [Server thread/INFO]: UpdateTest was slain by Zombie
+[04:45:31] [Server thread/INFO]: StateTestBot was slain by Zombie
+[04:45:51] [Server thread/INFO]: FinalTestBot was slain by Zombie
+[04:46:03] [Server thread/INFO]: ResourceBot was slain by Phantom
+[04:47:02] [Server thread/INFO]: TestBot2 was slain by Phantom
+[04:47:27] [Server thread/INFO]: SlotTest was slain by Phantom
+[05:04:14] [Server thread/INFO]: SlotTest was slain by Phantom
+[05:04:48] [Server thread/INFO]: DebugTest was slain by Spider
+[05:05:01] [Server thread/INFO]: PollTest was slain by Spider
+[05:05:16] [Server thread/INFO]: PollTest was slain by Spider
+[05:05:29] [Server thread/INFO]: SlotTest was slain by Spider
+[05:05:41] [Server thread/INFO]: UpdateTest was slain by Spider
+[05:05:55] [Server thread/INFO]: StateTestBot was slain by Spider
+[05:06:09] [Server thread/INFO]: DebugTest was slain by Phantom
+[05:06:11] [Server thread/INFO]: SlotTest was slain by Spider
+[05:06:24] [Server thread/INFO]: FinalTestBot was slain by Spider
+[05:06:38] [Server thread/INFO]: ResourceBot was slain by Spider
+[05:06:47] [Server thread/INFO]: DefaultTestBot was slain by Spider
+[05:07:00] [Server thread/INFO]: FinalTestBot was slain by Spider
+[05:07:13] [Server thread/INFO]: ResourceBot was slain by Spider
+[05:07:27] [Server thread/INFO]: DefaultTestBot was slain by Spider
+[05:07:27] [Server thread/INFO]: StateTestBot was slain by Phantom
+[05:07:42] [Server thread/INFO]: FinalTestBot was slain by Spider
+[05:07:57] [Server thread/INFO]: DebugTest was slain by Spider
+[05:22:21] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[05:25:56] [Server thread/INFO]: StateTestBot was slain by Phantom
+[05:26:53] [Server thread/INFO]: AutoBot was slain by Phantom
+[05:43:04] [Server thread/INFO]: FinalTestBot was slain by Phantom
+[05:47:27] [Server thread/INFO]: InventoryTest was slain by Phantom
+[05:48:40] [Server thread/INFO]: UpdateTest was slain by Enderman
+[05:49:46] [Server thread/INFO]: LogTest2 was slain by Enderman
+[06:01:50] [Server thread/INFO]: TestBot2 was slain by Zombie
+[06:02:04] [Server thread/INFO]: FinalTest was slain by Zombie
+[06:02:13] [Server thread/INFO]: AutoBot was slain by Zombie
+[06:02:14] [Server thread/INFO]: ResourceTest was slain by Zombie
+[06:02:25] [Server thread/INFO]: PollTest was slain by Zombie
+[06:02:26] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[06:02:38] [Server thread/INFO]: FinalTest was slain by Zombie
+[06:02:47] [Server thread/INFO]: TestBot2 was blown up by Creeper
+[06:02:55] [Server thread/INFO]: DebugTest was slain by Zombie
+[06:03:05] [Server thread/INFO]: TestBot2 was slain by Zombie
+[06:03:07] [Server thread/INFO]: StateTestBot was slain by Zombie
+[06:03:11] [Server thread/INFO]: UpdateTest was slain by Zombie
+[06:03:17] [Server thread/INFO]: ResourceBot was slain by Zombie
+[06:03:23] [Server thread/INFO]: FinalTestBot was slain by Zombie
+[06:03:33] [Server thread/INFO]: FinalTestBot was slain by Zombie
+[06:03:46] [Server thread/INFO]: PollTest was slain by Zombie
+[06:04:31] [Server thread/INFO]: DefaultTestBot was slain by Zombie
+[06:04:47] [Server thread/INFO]: TestBot2 was slain by Zombie
+[06:05:00] [Server thread/INFO]: AutoBot was slain by Zombie
+[06:05:21] [Server thread/INFO]: AutoBot was slain by Zombie
+[06:06:47] [Server thread/INFO]: DebugTest was slain by Zombie
+[06:06:59] [Server thread/INFO]: TestBot2 was slain by Zombie
+[06:07:12] [Server thread/INFO]: AutoBot was slain by Zombie
+[06:07:23] [Server thread/INFO]: TestBot2 was slain by Zombie
+[06:07:46] [Server thread/INFO]: DebugTest was slain by Zombie
+[06:08:14] [Server thread/INFO]: DebugTest was slain by Zombie
+[06:24:22] [Server thread/INFO]: SlotTest was shot by Skeleton
+[06:24:23] [Server thread/INFO]: InventoryTest was shot by Skeleton
+[06:24:58] [Server thread/INFO]: TestBot2 was shot by Skeleton
+[06:25:24] [Server thread/INFO]: ResourceBot was shot by Skeleton
+[06:26:31] [Server thread/INFO]: AutoBot was shot by Skeleton
+[06:27:11] [Server thread/INFO]: ResourceBot was shot by Skeleton
+[06:27:55] [Server thread/INFO]: InventoryTest was shot by Skeleton

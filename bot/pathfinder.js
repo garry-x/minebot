@@ -10,11 +10,11 @@ class Pathfinder {
   async moveTo(target, options = {}) {
     const { 
       range = 1, 
-      timeout = 30000, // Increased from 10s to 30s to allow more time for movement
+      timeout = parseInt(process.env.PATHFINDER_TIMEOUT || '30000'), // Increased from 10s to 30s to allow more time for movement
       useSprint = true,
       useJump = true,
       useParkour = true,
-      maxRetries = 5 // Increased retries for better stuck recovery
+      maxRetries = parseInt(process.env.MAX_PATHFIND_RETRIES || '5') // Increased retries for better stuck recovery
     } = options;
   
     logger.debug(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
@@ -80,8 +80,13 @@ class Pathfinder {
           
           const newDist = this.bot.entity.position.distanceTo(new Vec3(target.x, target.y, target.z));
           
-          // Detect if we're stuck
-          if (Math.abs(newDist - currentDist) < 0.1 && this.bot.onGround) {
+          // Detect if we're stuck - we're stuck if we haven't made progress toward target
+          // Calculate how much closer we got (positive = closer, negative = further)
+          const distChange = currentDist - newDist;
+          
+          // Only count as stuck if we moved further away by more than 0.5 blocks (not just slow movement)
+          // or if we stayed in place (distChange < 0.1 means almost no movement)
+          if (distChange < 0.1 && this.bot.onGround) {
             stuckCounter++;
             if (stuckCounter >= 3) {
               stuckCounter = 0;
@@ -133,7 +138,7 @@ class Pathfinder {
   async follow(entity, options = {}) {
     const { 
       distance = 2, 
-      timeout = 30000 
+      timeout = parseInt(process.env.FOLLOW_TIMEOUT || '30000') 
     } = options;
     
     logger.debug(`[Pathfinder] Following entity: ${entity.name}`);

@@ -366,6 +366,15 @@ app.get('/api/server/status', (req, res) => {
   });
 });
 
+// POST /api/server/stop - Stop the server
+app.post('/api/server/stop', (req, res) => {
+  logger.info('[Server] Received stop request via API');
+  res.json({ status: 'stopping', message: 'Server is shutting down' });
+  setTimeout(() => {
+    shutdown();
+  }, 100);
+});
+
 app.get('/api/bots', (req, res) => {
   const bots = Array.from(activeBots.entries()).map(([botId, bot]) => {
     if (!bot.bot) return null;
@@ -815,6 +824,117 @@ app.delete('/api/bot/:botId', async (req, res) => {
   } catch (error) {
       logger.error('Error removing bot:', error);
     res.status(500).json({ error: `Failed to remove bot: ${error.message}` });
+  }
+});
+
+// ===================== INSPECT API ENDPOINT =====================
+
+// GET /api/bot/:botId/inspect - Get detailed bot behavior information
+app.get('/api/bot/:botId/inspect', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const bot = activeBots.get(botId);
+    
+    if (!bot) {
+      return res.status(404).json({ 
+        error: 'Bot not found',
+        availableBots: Array.from(activeBots.keys())
+      });
+    }
+    
+    if (!bot.bot) {
+      return res.status(404).json({ 
+        error: 'Bot not fully initialized',
+        availableBots: Array.from(activeBots.keys())
+      });
+    }
+    
+    // Get basic bot data
+    const botData = {
+      botId: botId,
+      username: bot.bot.username,
+      connected: bot.isConnected,
+      state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+      mode: bot.currentMode || null,
+      deadReason: bot.deadReason || null,
+      health: bot.bot.health,
+      maxHealth: 20,
+      food: bot.bot.food,
+      foodSaturation: bot.bot.foodSaturation || 0,
+      position: bot.bot.entity.position,
+      gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
+      joinedAt: bot.botTime || bot.bot.joinTime || null
+    };
+    
+    // Get inventory breakdown
+    const inventory = bot.bot.inventory.items();
+    const inventoryBreakdown = {};
+    inventory.forEach(item => {
+      if (!inventoryBreakdown[item.name]) {
+        inventoryBreakdown[item.name] = { count: 0, items: [] };
+      }
+      inventoryBreakdown[item.name].count += item.count;
+      inventoryBreakdown[item.name].items.push({
+        name: item.name,
+        count: item.count,
+        metadata: item.metadata
+      });
+    });
+    
+    // Get movement state
+    const movementState = {
+      position: bot.bot.entity.position,
+      isMoving: bot.bot.movementState?.isMoving || false,
+      target: bot.pathfinder?.target || null,
+      pathQueueLength: bot.pathfinder?.path?.length || 0,
+      recentTravelDistance: 0 // Would need to track this
+    };
+    
+    // Get behavior state
+    const behaviorState = {
+      autonomousRunning: bot.autonomousRunning || false,
+      currentGoal: bot.goalState?.currentGoal || null,
+      goalProgress: bot.goalState ? (bot.goalState.progress || 0) : 0,
+      currentAction: bot.behaviors?.currentAction || null
+    };
+    
+    // Get evolution stats if available
+    let evolutionData = null;
+    if (bot.evolutionManager) {
+      try {
+        const stats = await bot.evolutionManager.getEvolutionStats();
+        evolutionData = {
+          enabled: true,
+          experienceCount: stats.totalExperiences,
+          baselineFitness: stats.baselineFitness,
+          recentFitness: stats.recentFitness.slice(-5),
+          domains: stats.domains
+        };
+      } catch (e) {
+        evolutionData = {
+          enabled: true,
+          error: e.message
+        };
+      }
+    } else {
+      evolutionData = { enabled: false };
+    }
+    
+    res.json({
+      success: true,
+      bot: botData,
+      inventory: {
+        totalItems: inventory.length,
+        breakdown: inventoryBreakdown,
+        itemCount: Object.values(inventoryBreakdown).reduce((sum, v) => sum + v.count, 0)
+      },
+      movement: movementState,
+      behavior: behaviorState,
+      evolution: evolutionData
+    });
+  } catch (error) {
+    logger.error('Error getting bot inspect data:', error);
+    res.status(500).json({ error: `Failed to get inspect data: ${error.message}` });
   }
 });
 

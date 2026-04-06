@@ -1,8 +1,9 @@
+require('dotenv').config();
 const mineflayer = require('mineflayer');
 
 const bot = mineflayer.createBot({
-  host: 'localhost',
-  port: 25565,
+  host: process.env.MINECRAFT_SERVER_HOST || 'localhost',
+  port: parseInt(process.env.MINECRAFT_SERVER_PORT || '25565'),
   username: 'test_bot',
   version: '1.21.11'
 });

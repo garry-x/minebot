@@ -1,140 +1,81 @@
 Starting net.minecraft.server.Main
-[09:40:41] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
-[09:40:41] [ServerMain/INFO]: Loaded 1470 recipes
-[09:40:41] [ServerMain/INFO]: Loaded 1584 advancements
-[09:40:41] [Server thread/INFO]: Starting minecraft server version 1.21.11
-[09:40:41] [Server thread/INFO]: Loading properties
-[09:40:41] [Server thread/INFO]: Default game type: SURVIVAL
-[09:40:41] [Server thread/INFO]: Generating keypair
-[09:40:41] [Server thread/INFO]: Starting Minecraft server on *:25565
-[09:40:41] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[09:40:41] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
-[09:40:41] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[09:40:41] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
-[09:40:41] [Server thread/INFO]: Preparing level "world"
-[09:40:42] [Server thread/INFO]: Loading 0 persistent chunks...
-[09:40:42] [Server thread/INFO]: Preparing spawn area: 100%
-[09:40:42] [Server thread/INFO]: Time elapsed: 12 ms
-[09:40:42] [Server thread/INFO]: Done (0.191s)! For help, type "help"
-[09:40:57] [Server thread/INFO]: EvTestBot2[/127.0.0.1:58870] logged in with entity id 78 at (-3.5, 71.0, 8.5)
-[09:40:57] [Server thread/INFO]: EvTestBot2 joined the game
-[09:42:23] [Server thread/INFO]: EvTestBot2 lost connection: Disconnected
-[09:42:23] [Server thread/INFO]: EvTestBot2 left the game
-[09:43:23] [Server thread/INFO]: Server empty for 60 seconds, pausing
-[09:43:47] [Server thread/INFO]: WebEvTestBot[/127.0.0.1:40416] logged in with entity id 505 at (8.5, 70.0, 9.5)
-[09:43:47] [Server thread/INFO]: WebEvTestBot joined the game
-[09:44:20] [Server thread/INFO]: WebEvTestBot lost connection: Disconnected
-[09:44:20] [Server thread/INFO]: WebEvTestBot left the game
-[09:45:20] [Server thread/INFO]: Server empty for 60 seconds, pausing
-[09:53:28] [Server thread/INFO]: EvTestBot4[/127.0.0.1:43752] logged in with entity id 854 at (-2.5, 71.0, 7.5)
-[09:53:28] [Server thread/INFO]: EvTestBot4 joined the game
-[09:53:32] [Server thread/INFO]: EvTestBot4 lost connection: Disconnected
-[09:53:32] [Server thread/INFO]: EvTestBot4 left the game
-[09:54:32] [Server thread/INFO]: Server empty for 60 seconds, pausing
-[22:34:46] [Server thread/INFO]: EvolutionTestBot[/127.0.0.1:56566] logged in with entity id 1209 at (1.5, 71.0, 6.5)
-[22:34:46] [Server thread/INFO]: EvolutionTestBot joined the game
-[22:35:47] [Server thread/INFO]: EvTestBot2[/127.0.0.1:40740] logged in with entity id 1534 at (-1.3, 70.0, 10.7)
-[22:35:47] [Server thread/INFO]: EvTestBot2 joined the game
-[22:38:12] [Server thread/INFO]: EvRuntimeTest[/127.0.0.1:51688] logged in with entity id 1827 at (0.5, 79.0, -5.5)
-[22:38:12] [Server thread/INFO]: EvRuntimeTest joined the game
-[22:38:16] [Server thread/WARN]: EvRuntimeTest moved too quickly! 4.2,-8.0,5.8
-[22:40:05] [Server thread/INFO]: TestBot[/127.0.0.1:50672] logged in with entity id 2076 at (-6.5, 102.0, -7.5)
-[22:40:05] [Server thread/INFO]: TestBot joined the game
-[22:40:08] [Server thread/WARN]: TestBot moved too quickly! 5.8,-26.0,5.1154028192306615
-[22:41:06] [Server thread/INFO]: TestBot2[/127.0.0.1:52304] logged in with entity id 2205 at (-4.5, 102.0, -8.5)
-[22:41:06] [Server thread/INFO]: TestBot2 joined the game
-[22:41:10] [Server thread/WARN]: TestBot2 moved too quickly! 5.8,-29.0,5.8
-[22:41:12] [Server thread/INFO]: TestBot2 fell from a high place
-[22:41:47] [Server thread/INFO]: TestBot was slain by Phantom
-[22:41:54] [Server thread/INFO]: TestBot3[/127.0.0.1:41454] logged in with entity id 2292 at (9.7, 69.0, 5.7)
-[22:41:54] [Server thread/INFO]: TestBot3 joined the game
-[22:42:45] [Server thread/INFO]: TestBot4[/127.0.0.1:34456] logged in with entity id 2398 at (12.7, 71.0, 5.7)
-[22:42:45] [Server thread/INFO]: TestBot4 joined the game
-[22:46:56] [Server thread/INFO]: EvTestBot2 was shot by Skeleton
-[22:47:52] [Server thread/INFO]: TestBot2 was shot by Skeleton
-[22:48:25] [Server thread/INFO]: EvolutionTestBot was shot by Skeleton
-[22:57:04] [Server thread/INFO]: TestBot5[/127.0.0.1:59580] logged in with entity id 4009 at (3.7, 71.0, 10.7)
-[22:57:04] [Server thread/INFO]: TestBot5 joined the game
-[22:57:43] [Server thread/INFO]: TestBot6[/127.0.0.1:38084] logged in with entity id 4085 at (7.3, 74.0, -4.50027633470197)
-[22:57:43] [Server thread/INFO]: TestBot6 joined the game
-[22:58:09] [Server thread/INFO]: TestBot7[/127.0.0.1:46704] logged in with entity id 4129 at (-0.5, 84.0, -5.5)
-[22:58:09] [Server thread/INFO]: TestBot7 joined the game
-[22:58:12] [Server thread/WARN]: TestBot7 moved too quickly! 4.869774444986518,-13.0,5.8000444246844065
-[22:58:41] [Server thread/INFO]: TestBot8[/127.0.0.1:50746] logged in with entity id 4196 at (4.5, 72.0, 10.5)
-[22:58:41] [Server thread/INFO]: TestBot8 joined the game
-[23:00:15] [Server thread/INFO]: TestBot9[/127.0.0.1:51052] logged in with entity id 4362 at (9.5, 69.0, 1.5)
-[23:00:15] [Server thread/INFO]: TestBot9 joined the game
-[23:00:18] [Server thread/WARN]: TestBot9 moved wrongly!
-[23:03:14] [Server thread/INFO]: TestBot5 was slain by Zombie
-[23:03:24] [Server thread/INFO]: TestBot8 was slain by Zombie
-[23:03:37] [Server thread/INFO]: EvRuntimeTest was slain by Zombie
-[23:03:47] [Server thread/INFO]: TestBot6 was slain by Zombie
-[23:03:57] [Server thread/INFO]: TestBot9 was slain by Zombie
-[23:04:10] [Server thread/INFO]: TestBot4 was slain by Zombie
-[23:04:17] [Server thread/INFO]: TestBot3 was slain by Zombie
-[23:04:29] [Server thread/INFO]: TestBot6 was slain by Zombie
-[23:04:40] [Server thread/INFO]: EvRuntimeTest was slain by Zombie
-[23:04:54] [Server thread/INFO]: TestBot7 was slain by Zombie
-[23:05:04] [Server thread/INFO]: TestBot2 was slain by Zombie
-[23:05:17] [Server thread/INFO]: TestBot5 was slain by Zombie
-[23:05:34] [Server thread/INFO]: TestBot8 was slain by Zombie
-[23:07:06] [Server thread/INFO]: TestBot10[/127.0.0.1:37310] logged in with entity id 5078 at (8.5, 69.0, 3.5)
-[23:07:06] [Server thread/INFO]: TestBot10 joined the game
-[23:07:47] [Server thread/INFO]: TestBot6 was slain by Zombie
-[23:07:58] [Server thread/INFO]: TestBot4 was slain by Zombie
-[23:08:08] [Server thread/INFO]: EvolutionTestBot lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: EvolutionTestBot left the game
-[23:08:08] [Server thread/INFO]: EvTestBot2 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: EvTestBot2 left the game
-[23:08:08] [Server thread/INFO]: EvRuntimeTest lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: EvRuntimeTest left the game
-[23:08:08] [Server thread/INFO]: TestBot lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot left the game
-[23:08:08] [Server thread/INFO]: TestBot2 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot2 left the game
-[23:08:08] [Server thread/INFO]: TestBot3 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot3 left the game
-[23:08:08] [Server thread/INFO]: TestBot4 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot4 left the game
-[23:08:08] [Server thread/INFO]: TestBot5 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot5 left the game
-[23:08:08] [Server thread/INFO]: TestBot6 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot6 left the game
-[23:08:08] [Server thread/INFO]: TestBot7 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot7 left the game
-[23:08:08] [Server thread/INFO]: TestBot8 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot8 left the game
-[23:08:08] [Server thread/INFO]: TestBot9 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot9 left the game
-[23:08:08] [Server thread/INFO]: TestBot10 lost connection: Disconnected
-[23:08:08] [Server thread/INFO]: TestBot10 left the game
-[23:09:08] [Server thread/INFO]: Server empty for 60 seconds, pausing
-[23:25:01] [Server thread/INFO]: TestBot2[/127.0.0.1:37502] logged in with entity id 5242 at (-6.5, 105.0, -8.5)
-[23:25:01] [Server thread/INFO]: TestBot2 joined the game
-[23:25:04] [Server thread/WARN]: TestBot2 moved too quickly! 5.8,-29.0,5.8
-[23:25:05] [Server thread/INFO]: TestBot2 fell from a high place
-[23:25:20] [Server thread/INFO]: TestBot2 was slain by Zombie
-[23:35:05] [Server thread/INFO]: TestBot2 lost connection: Disconnected
-[23:35:05] [Server thread/INFO]: TestBot2 left the game
-[23:36:05] [Server thread/INFO]: Server empty for 60 seconds, pausing
-[23:39:49] [Server thread/INFO]: ResourceBot[/127.0.0.1:55638] logged in with entity id 6623 at (-6.5, 75.0, 10.5)
-[23:39:49] [Server thread/INFO]: ResourceBot joined the game
-[23:41:27] [Server thread/INFO]: ResourceBot was slain by Zombie
-[23:41:40] [Server thread/INFO]: ResourceBot was slain by Zombie
-[23:41:50] [Server thread/INFO]: ResourceBot was slain by Zombie
-[23:44:31] [Server thread/INFO]: DefaultTestBot[/127.0.0.1:39722] logged in with entity id 7396 at (9.5, 74.0, -7.5)
-[23:44:31] [Server thread/INFO]: DefaultTestBot joined the game
-[23:45:43] [Server thread/INFO]: DefaultTestBot was slain by Zombie
-[23:45:58] [Server thread/INFO]: DefaultTestBot was slain by Zombie
-[23:46:15] [Server thread/INFO]: DefaultTestBot was slain by Zombie
-[23:47:12] [Server thread/INFO]: AutoBot[/127.0.0.1:51684] logged in with entity id 7734 at (-0.5, 71.0, 7.5)
-[23:47:12] [Server thread/INFO]: AutoBot joined the game
-[23:49:30] [Server thread/INFO]: LogTest2[/127.0.0.1:58140] logged in with entity id 8034 at (-7.5, 85.0, 0.5)
-[23:49:30] [Server thread/INFO]: LogTest2 joined the game
-[23:49:33] [Server thread/WARN]: LogTest2 moved too quickly! 9.2,-15.0,8.595485528630318
-[23:50:03] [Server thread/INFO]: AutoBot was shot by Skeleton
-[23:50:19] [Server thread/INFO]: FinalTestBot[/127.0.0.1:54270] logged in with entity id 8150 at (-8.5, 103.0, -6.5)
-[23:50:19] [Server thread/INFO]: FinalTestBot joined the game
-[23:50:22] [Server thread/WARN]: FinalTestBot moved too quickly! 9.196425697497931,-27.233632006042484,9.196425697498919
-[23:51:13] [Server thread/INFO]: AutoBot was shot by Skeleton
-[23:52:06] [Server thread/INFO]: LogTest2 was blown up by Creeper
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by com.sun.jna.Native in an unnamed module (file:/data/code/minebot/resources/java-1.21.11/libraries/net/java/dev/jna/jna/5.17.0/jna-5.17.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.joml.MemUtil$MemUtilUnsafe (file:/data/code/minebot/resources/java-1.21.11/libraries/org/joml/joml/1.10.8/joml-1.10.8.jar)
+WARNING: Please consider reporting this to the maintainers of class org.joml.MemUtil$MemUtilUnsafe
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+[09:45:15] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[09:45:16] [ServerMain/INFO]: Loaded 1470 recipes
+[09:45:16] [ServerMain/INFO]: Loaded 1584 advancements
+[09:45:16] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[09:45:16] [Server thread/INFO]: Loading properties
+[09:45:16] [Server thread/INFO]: Default game type: SURVIVAL
+[09:45:16] [Server thread/INFO]: Generating keypair
+[09:45:16] [Server thread/INFO]: Starting Minecraft server on *:25565
+[09:45:16] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[09:45:16] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[09:45:16] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[09:45:16] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[09:45:16] [Server thread/INFO]: Preparing level "world"
+[09:45:16] [Server thread/INFO]: Loading 0 persistent chunks...
+[09:45:16] [Server thread/INFO]: Time elapsed: 13 ms
+[09:45:16] [Server thread/INFO]: Done (0.154s)! For help, type "help"
+[09:45:53] [Server thread/INFO]: testbot01[/127.0.0.1:39432] logged in with entity id 80 at (2.7, 70.0, 15.7)
+[09:45:53] [Server thread/INFO]: testbot01 joined the game
+[09:47:37] [Server thread/INFO]: testbot01 lost connection: You logged in from another location
+[09:47:37] [Server thread/INFO]: testbot01 left the game
+[09:47:37] [Server thread/INFO]: testbot01[/127.0.0.1:51674] logged in with entity id 568 at (4.7, 68.0, 17.7)
+[09:47:37] [Server thread/INFO]: testbot01 joined the game
+[09:50:12] [Server thread/INFO]: testbot01 lost connection: You logged in from another location
+[09:50:12] [Server thread/INFO]: testbot01 left the game
+[09:50:12] [Server thread/INFO]: testbot01[/127.0.0.1:50434] logged in with entity id 1067 at (4.7, 68.0, 17.7)
+[09:50:12] [Server thread/INFO]: testbot01 joined the game
+[09:51:07] [Server thread/INFO]: testbot01 lost connection: You logged in from another location
+[09:51:07] [Server thread/INFO]: testbot01 left the game
+[09:51:07] [Server thread/INFO]: testbot01[/127.0.0.1:48890] logged in with entity id 1439 at (4.7, 68.0, 17.7)
+[09:51:07] [Server thread/INFO]: testbot01 joined the game
+[09:53:56] [Server thread/INFO]: testbot01 was slain by Zombie
+[09:54:07] [Server thread/INFO]: testbot01 lost connection: You logged in from another location
+[09:54:07] [Server thread/INFO]: testbot01 left the game
+[09:54:07] [Server thread/INFO]: testbot01[/127.0.0.1:53614] logged in with entity id 2057 at (-9.5, 103.0, -5.5)
+[09:54:07] [Server thread/INFO]: testbot01 joined the game
+[09:54:10] [Server thread/WARN]: testbot01 moved too quickly! 5.8,-27.0,6.8
+[09:55:09] [Server thread/INFO]: testbot01 lost connection: Disconnected
+[09:55:09] [Server thread/INFO]: testbot01 left the game
+[09:55:20] [Server thread/INFO]: testuser[/127.0.0.1:50148] logged in with entity id 2458 at (-3.5, 87.0, -4.5)
+[09:55:20] [Server thread/INFO]: testuser joined the game
+[09:55:23] [Server thread/WARN]: testuser moved too quickly! 8.095006282287121,-17.0,7.127839817043167
+[09:56:33] [Server thread/INFO]: testuser lost connection: You logged in from another location
+[09:56:33] [Server thread/INFO]: testuser left the game
+[09:56:33] [Server thread/INFO]: testuser[/127.0.0.1:43852] logged in with entity id 2926 at (-1.1228181530086185, 78.0, 0.5352039477876764)
+[09:56:33] [Server thread/INFO]: testuser joined the game
+[09:56:36] [Server thread/WARN]: testuser moved too quickly! 4.603308068289822,-8.0,4.823228028428463
+[09:59:36] [Server thread/INFO]: testuser lost connection: You logged in from another location
+[09:59:36] [Server thread/INFO]: testuser left the game
+[09:59:36] [Server thread/INFO]: testuser[/127.0.0.1:37336] logged in with entity id 3517 at (2.028949779912186, 71.0, 2.719331755259591)
+[09:59:36] [Server thread/INFO]: testuser joined the game
+[10:07:51] [Server thread/INFO]: testuser was shot by Skeleton
+[10:08:49] [Server thread/INFO]: testuser was shot by Skeleton
+[10:10:12] [Server thread/INFO]: testuser was shot by Skeleton
+[10:11:08] [Server thread/INFO]: testuser was shot by Skeleton
+[10:12:15] [Server thread/INFO]: testuser was shot by Skeleton
+[10:13:12] [Server thread/INFO]: testuser was shot by Skeleton
+[10:14:14] [Server thread/INFO]: testuser was shot by Skeleton
+[10:14:52] [Server thread/INFO]: testuser was shot by Pillager
+[10:23:17] [Server thread/INFO]: testuser lost connection: Disconnected
+[10:23:17] [Server thread/INFO]: testuser left the game
+[10:23:34] [Server thread/INFO]: testuser[/127.0.0.1:45514] logged in with entity id 6576 at (10.5, 70.0, 0.5)
+[10:23:34] [Server thread/INFO]: testuser joined the game
+[10:23:43] [Server thread/INFO]: testuser lost connection: Disconnected
+[10:23:43] [Server thread/INFO]: testuser left the game
+[10:24:43] [Server thread/INFO]: Server empty for 60 seconds, pausing
+[11:49:48] [Server thread/INFO]: test01[/127.0.0.1:43920] logged in with entity id 6928 at (-8.5, 75.0, 9.5)
+[11:49:48] [Server thread/INFO]: test01 joined the game
+[11:49:51] [Server thread/WARN]: test01 moved too quickly! 7.455920890579847,-4.768476202412984,8.388128451603823
+[11:50:09] [Server thread/INFO]: test01 was shot by Pillager
+[11:50:12] [Server thread/WARN]: test01 moved wrongly!
+[11:50:24] [Server thread/INFO]: test01 was shot by Pillager

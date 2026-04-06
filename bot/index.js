@@ -18,8 +18,8 @@ class MinecraftBot {
     this.pathfinder = null;
     this.statusInterval = null;
     this.botId = options.botId || null;
-    this.botServerHost = options.botServerHost || 'localhost';
-    this.botServerPort = options.botServerPort || 9500;
+    this.botServerHost = options.botServerHost || process.env.BOT_SERVER_HOST || 'localhost';
+    this.botServerPort = options.botServerPort || parseInt(process.env.BOT_SERVER_PORT || '9500');
     this.deadReason = null;
     this.currentMode = null;
     this.screenshotModule = null;
@@ -39,8 +39,8 @@ async connect(username, accessToken, startAutomatic = false) {
     // For offline mode, we need to provide a dummy access token
     // This prevents connection errors in some server configurations
     const botOptions = {
-      host: this.options.host || 'localhost',
-      port: this.options.port || 25565,
+      host: this.options.host || process.env.MINECRAFT_SERVER_HOST || 'localhost',
+      port: this.options.port || parseInt(process.env.MINECRAFT_SERVER_PORT || '25565'),
       username: username,
       version: '1.21.11' // Match server version
     };
@@ -185,7 +185,7 @@ async connect(username, accessToken, startAutomatic = false) {
           this.bot = null;
         }
       }
-    }, 60000);
+    }, parseInt(process.env.BOT_CONNECTION_TIMEOUT || '60000'));
   });
 }
 
@@ -303,8 +303,8 @@ async connect(username, accessToken, startAutomatic = false) {
 
     setupWebSocket() {
       // Connect to the backend WebSocket server
-      const wsHost = this.options.botServerHost || 'localhost';
-      const wsPort = this.options.botServerPort || 9500;
+      const wsHost = this.options.botServerHost || process.env.BOT_SERVER_HOST || 'localhost';
+      const wsPort = this.options.botServerPort || parseInt(process.env.BOT_SERVER_PORT || '9500');
       this.ws = new WebSocket(`ws://${wsHost}:${wsPort}/`);
       
       this.ws.on('open', () => {
@@ -323,7 +323,7 @@ async connect(username, accessToken, startAutomatic = false) {
         // Start sending periodic status updates
         this.statusInterval = setInterval(() => {
           this.sendStatusUpdate();
-        }, 3000); // Update every 3 seconds to match backend broadcast interval
+        }, parseInt(process.env.STATUS_UPDATE_INTERVAL || '3000'));
       });
     
     this.ws.on('message', (data) => {
@@ -369,9 +369,13 @@ async connect(username, accessToken, startAutomatic = false) {
       // Acknowledgment that bot is registered - log it
       logger.trace('Bot registration acknowledged');
       break;
+      case 'bots_list':
+      // Response to register_bot with current bots list - log and ignore
+      logger.trace('Received bots list from server');
+      break;
 
 default:
-        logger.warn('Unknown WebSocket message type:', message.type);
+        logger.trace('Unknown WebSocket message type:', message.type);
     }
   }
 

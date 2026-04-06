@@ -66,25 +66,25 @@ const ConfigPanel = () => {
     const defaultConfig = {
       'HOST': process.env.REACT_APP_DEFAULT_HOST || '0.0.0.0',
       'PORT': process.env.REACT_APP_DEFAULT_PORT || '9500',
-      'autoReconnectRetries': '3',
-      'autoReconnectDelay': '5000',
-      'broadcastInterval': '5000',
-      'serverStateSaveInterval': '30000',
-      'botStaleCleanupDays': '7',
+      'autoReconnectRetries': process.env.REACT_APP_AUTO_RECONNECT_RETRIES || '3',
+      'autoReconnectDelay': process.env.REACT_APP_AUTO_RECONNECT_DELAY || '5000',
+      'broadcastInterval': process.env.REACT_APP_BROADCAST_INTERVAL || '5000',
+      'serverStateSaveInterval': process.env.REACT_APP_SERVER_STATE_SAVE_INTERVAL || '30000',
+      'botStaleCleanupDays': process.env.REACT_APP_BOT_STALE_CLEANUP_DAYS || '7',
       'MINECRAFT_SERVER_HOST': process.env.REACT_APP_DEFAULT_MC_HOST || 'localhost',
       'MINECRAFT_SERVER_PORT': process.env.REACT_APP_DEFAULT_MC_PORT || '25565',
       'minecraftJarPath': 'server.jar',
       'minecraftServerDir': 'server',
       'minecraftMaxMemory': '4G',
-      'LLM_SERVICE_URL': process.env.REACT_APP_DEFAULT_LLM_URL || 'http://localhost:8080',
-      'VLLM_URL': process.env.REACT_APP_DEFAULT_VLLM_URL || 'http://localhost:8080',
-      'USE_FALLBACK': 'true',
+      'LLM_SERVICE_URL': process.env.REACT_APP_LLM_SERVICE_URL || 'http://localhost:8080',
+      'VLLM_URL': process.env.REACT_APP_VLLM_URL || 'http://localhost:8080',
+      'USE_FALLBACK': process.env.REACT_APP_USE_FALLBACK || 'true',
       'FRONTEND_PORT': process.env.REACT_APP_DEFAULT_FRONTEND_PORT || '3000',
-      'defaultBuildingWidth': '10',
-      'defaultBuildingLength': '10',
-      'defaultBuildingHeight': '6',
-      'defaultBuildingBlockType': 'stone',
-      'defaultGatheringRadius': '30'
+      'defaultBuildingWidth': process.env.REACT_APP_DEFAULT_BUILDING_WIDTH || '10',
+      'defaultBuildingLength': process.env.REACT_APP_DEFAULT_BUILDING_LENGTH || '10',
+      'defaultBuildingHeight': process.env.REACT_APP_DEFAULT_BUILDING_HEIGHT || '6',
+      'defaultBuildingBlockType': process.env.REACT_APP_DEFAULT_BUILDING_BLOCK_TYPE || 'stone',
+      'defaultGatheringRadius': process.env.REACT_APP_DEFAULT_GATHERING_RADIUS || '30'
     };
     
     const allConfig = { env: {}, defaults: {} };

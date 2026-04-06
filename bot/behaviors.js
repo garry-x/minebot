@@ -5,7 +5,7 @@ const logger = require('./logger');
 
 module.exports = function(bot, pathfinder, evolutionManager = null) {
   // Helper function to wait for a condition with retry logic
-  const waitForCondition = async (conditionFn, timeout = 10000, retryInterval = 500) => {
+  const waitForCondition = async (conditionFn, timeout = parseInt(process.env.WAIT_FOR_CONDITION_TIMEOUT || '10000'), retryInterval = parseInt(process.env.WAIT_RETRY_INTERVAL || '500')) => {
     const startTime = Date.now();
     while (Date.now() - startTime < timeout) {
       if (conditionFn()) {
@@ -17,7 +17,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
   };
 
   // Helper function to retry an operation with exponential backoff
-  const retryOperation = async (operationFn, maxRetries = 3, baseDelay = 1000) => {
+  const retryOperation = async (operationFn, maxRetries = parseInt(process.env.MAX_OPERATION_RETRIES || '3'), baseDelay = parseInt(process.env.BASE_RETRY_DELAY || '1000')) => {
     let lastError;
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
@@ -34,8 +34,8 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     throw lastError;
   };
 
-  // Helper function to find blocks nearby
-   const findBlocks = (blockNames, maxDistance = 32) => {
+   // Helper function to find blocks nearby
+    const findBlocks = (blockNames, maxDistance = parseInt(process.env.MAX_BLOCK_FIND_DISTANCE || '32')) => {
      const positions = [];
      for (const blockName of blockNames) {
        // Using the correct method for finding blocks in mineflayer 4.x
@@ -114,7 +114,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             logger.debug('Testing basic movement...');
             const pos = bot.entity.position;
             try {
-              await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5), { timeout: 15000 });
+              await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5), { timeout: 30000 });
               logger.debug(`Moved to new position: ${bot.entity.position}`);
             } catch (moveError) {
               logger.debug(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);

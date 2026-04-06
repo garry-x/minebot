@@ -17,6 +17,10 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
+db.on('error', (err) => {
+  logger.error('Database error:', err.message);
+});
+
 const BotGoal = require('./models/BotGoal');
 BotGoal.createTable();
 

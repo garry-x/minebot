@@ -1,128 +1,1646 @@
-[2026-04-05T15:50:12.873Z] PID file written: /data/code/minebot/logs/bot_server.pid (PID: 430689)
-[2026-04-05T15:50:12.884Z] WebSocket server listening on 0.0.0.0:9500
-[2026-04-05T15:50:12.884Z] Connected to SQLite database
-[2026-04-05T15:50:12.885Z] [Auto-Build] Build is outdated (git changes detected), running build...
-[2026-04-05T15:50:12.885Z] [Auto-Build] Running npm run build...
-[2026-04-05T15:50:12.887Z] [Evolution] Connecting to evolution database...
-[2026-04-05T15:50:12.888Z] [Evolution] Evolution tables initialized successfully
-[2026-04-05T15:50:12.921Z] [Server] Loading saved bots for auto-reconnect...
-[2026-04-05T15:50:12.922Z] [Server] No active bots to reconnect
-[2026-04-05T15:50:17.183Z] [Auto-Build] Build completed successfully
-[2026-04-05T15:50:17.183Z] [Auto-Build] Standard output: 
-> minecraft-robot-frontend@1.0.0 build
-> react-scripts build
+[Auto-Build] Build is outdated (git changes detected), running build...
+[Auto-Build] Running npm run build...
+[Auto-Build] Build completed successfully
+[API] Received request to start bot with username: test01
+[API] Creating bot instance for host: localhost:25565
+[Bot] Loading bot/index.js module
+[API] Attempting to connect bot...
+[Bot] connect() called, this.botId is: bot_1775447387769_9wz9atc49
+[Bot] Creating bot with username: test01
+[Bot] Target server: localhost:25565
+[Bot] Start automatic: true
+[Bot] Setting up event listeners
+[Bot] Bot spawned
+[Bot] Initializing evolution manager with botId: bot_1775447387769_9wz9atc49
+[Bot] Evolution manager initialized successfully
+[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
+[Screenshot] Using text-only mode (prismarine-viewer not available in Node.js)
+[Screenshot] Module initialized: 854 x 480 (prismarine: false)
+[Bot] Bot ready with ID: bot_1775447387769_9wz9atc49
+[Bot] Starting automatic behavior in survival mode
+[Behaviors] Setting currentMode to: survival
+Starting survival behavior with goal: basic_survival
+[Behaviors] Setting currentMode to: survival
+Starting automatic behavior in survival mode
+Auto-gathering survival resources...
+Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+No target blocks found nearby
+[Bot] Screenshot module initialized, starting stream
+[API] Bot started successfully with ID: bot_1775447387769_9wz9atc49
+[API] Evolution initialized and recorded: 1 experiences
+No natural resources found nearby - bot can connect and move!
+Testing basic movement...
+[Pathfinder] Moving to -3.5, 74.92159999847412, 14.5
+[API] Bot state saved successfully
+[Behaviors] Setting currentMode to: survival
+Starting survival behavior with goal: basic_survival
+[Behaviors] Setting currentMode to: survival
+Starting automatic behavior in survival mode
+Auto-gathering survival resources...
+Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+No target blocks found nearby
+[API] Automatic behavior started for bot bot_1775447387769_9wz9atc49
+No natural resources found nearby - bot can connect and move!
+Testing basic movement...
+[Pathfinder] Moving to 2.663257813738483, 72.92159999847412, 21.553755610589047
+[Bot] Bot died
+[Bot] Bot respawned
+[Pathfinder] Movement stopped
+[Pathfinder] Timeout reached after 30000ms
+[Behaviors] Movement test failed: Movement timeout. Continuing...
+Automatic behavior completed
+[Bot] Automatic behavior started with mode: survival
+[Pathfinder] Movement stopped
+[Pathfinder] Timeout reached after 30000ms
+[Behaviors] Movement test failed: Movement timeout. Continuing...
+Automatic behavior completed
+[Bot] Bot died
+[Bot] Bot respawned
+ot] Starting automatic behavior in survival mode
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] [Behaviors] Setting currentMode to: survival
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] [Behaviors] Setting currentMode to: survival
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] Starting automatic behavior in survival mode
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] Auto-gathering survival resources...
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] Starting survival behavior with goal: basic_survival
+[2026-04-06T03:49:48.090Z] [DEBUG] [unknown] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-06T03:49:48.132Z] [DEBUG] [unknown] No target blocks found nearby
+[2026-04-06T03:49:48.133Z] [INFO] [index.js:125:28] [Bot] Screenshot module initialized, starting stream
+[2026-04-06T03:49:48.133Z] [INFO] [bot_server.js:444:14] [API] Bot started successfully with ID: bot_1775447387769_9wz9atc49
+[2026-04-06T03:49:48.233Z] [INFO] [bot_server.js:457:18] [API] Evolution initialized and recorded: 1 experiences
+[2026-04-06T03:49:48.234Z] [DEBUG] [unknown] No natural resources found nearby - bot can connect and move!
+[2026-04-06T03:49:48.234Z] [DEBUG] [unknown] Testing basic movement...
+[2026-04-06T03:49:48.234Z] [DEBUG] [unknown] [Pathfinder] Moving to -3.5, 74.92159999847412, 14.5
+[2026-04-06T03:49:48.235Z] [DEBUG] [cli.js:301:16] Bot started successfully
+[2026-04-06T03:49:48.237Z] [DEBUG] [cli.js:303:16]   Username: test01
+[2026-04-06T03:49:48.237Z] [DEBUG] [cli.js:302:16]   Bot ID: bot_1775447387769_9wz9atc49
+[2026-04-06T03:49:48.237Z] [DEBUG] [cli.js:304:16]   Mode: survival
+[2026-04-06T03:49:50.251Z] [INFO] [unknown] [API] Bot state saved successfully
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] [Behaviors] Setting currentMode to: survival
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] Starting survival behavior with goal: basic_survival
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] [Behaviors] Setting currentMode to: survival
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] Auto-gathering survival resources...
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
+[2026-04-06T03:49:50.341Z] [DEBUG] [unknown] No target blocks found nearby
+[2026-04-06T03:49:50.251Z] [DEBUG] [unknown] Starting automatic behavior in survival mode
+[2026-04-06T03:49:50.341Z] [INFO] [unknown] [API] Automatic behavior started for bot bot_1775447387769_9wz9atc49
+[2026-04-06T03:49:50.416Z] [DEBUG] [unknown] No natural resources found nearby - bot can connect and move!
+[2026-04-06T03:49:50.416Z] [DEBUG] [unknown] Testing basic movement...
+[2026-04-06T03:49:50.416Z] [DEBUG] [unknown] [Pathfinder] Moving to 2.663257813738483, 72.92159999847412, 21.553755610589047
+[2026-04-06T03:49:52.908Z] [DEBUG] [cli.js:977:20] [31mError: Bot not found: test01[0m
+[2026-04-06T03:49:52.910Z] [DEBUG] [cli.js:978:20] 
+[2026-04-06T03:49:52.910Z] [DEBUG] [cli.js:979:20] Available bots:
+[2026-04-06T03:49:52.912Z] [DEBUG] [cli.js:989:26]   test01 (bot_1775447387769_9wz9atc49) - State: ALIVE
+[2026-04-06T03:50:02.889Z] [DEBUG] [cli.js:889:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:50:02.890Z] [DEBUG] [cli.js:890:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:50:02.890Z] [DEBUG] [cli.js:891:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:50:02.890Z] [DEBUG] [cli.js:892:18] 
+[2026-04-06T03:50:02.890Z] [DEBUG] [cli.js:894:18] [1mBot Information[0m
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:895:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:897:18]   Mode:         survival
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:896:18]   Username:     test01
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:898:18]   Game Mode:    creative
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:899:18]   State:        [32mALIVE[0m
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:900:18]   Connected:    [32mYes[0m
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:904:18] 
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:906:18] [1mHealth & Status[0m
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:908:18]   Food:         20/20
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:907:18]   Health:       [32m12.166666030883789[0m/20
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:909:18]   Saturation:   0.0
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:912:18] [1mPosition & Movement[0m
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:913:18]   Position:     0, 70, 0
+[2026-04-06T03:50:02.891Z] [DEBUG] [cli.js:914:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:923:18] [1mInventory[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:924:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:935:18] 
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:933:20]     (empty)
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:937:18] [1mBehavior[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:938:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:946:18] 
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:948:18] [1mEvolution[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:921:18] 
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:949:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:951:20]   Experiences:  11
+[2026-04-06T03:50:02.892Z] [DEBUG] [cli.js:1005:20] [31mError: Cannot read properties of null (reading 'toFixed')[0m
+[2026-04-06T03:50:09.403Z] [INFO] [client.js:85:12)] [Bot] Bot died
+[2026-04-06T03:50:09.448Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
+[2026-04-06T03:50:18.353Z] [DEBUG] [timers:605:17)] [Pathfinder] Timeout reached after 30000ms
+[2026-04-06T03:50:18.353Z] [DEBUG] [unknown] Automatic behavior completed
+[2026-04-06T03:50:18.353Z] [INFO] [index.js:149:29] [Bot] Automatic behavior started with mode: survival
+[2026-04-06T03:50:18.353Z] [DEBUG] [timers:605:17)] [Pathfinder] Movement stopped
+[2026-04-06T03:50:18.353Z] [DEBUG] [unknown] [Behaviors] Movement test failed: Movement timeout. Continuing...
+[2026-04-06T03:50:20.537Z] [DEBUG] [timers:605:17)] [Pathfinder] Timeout reached after 30000ms
+[2026-04-06T03:50:20.537Z] [DEBUG] [unknown] [Behaviors] Movement test failed: Movement timeout. Continuing...
+[2026-04-06T03:50:20.537Z] [DEBUG] [unknown] Automatic behavior completed
+[2026-04-06T03:50:20.537Z] [DEBUG] [timers:605:17)] [Pathfinder] Movement stopped
+[2026-04-06T03:50:24.903Z] [INFO] [client.js:85:12)] [Bot] Bot died
+[2026-04-06T03:50:24.947Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
+[2026-04-06T03:52:12.436Z] [DEBUG] [cli.js:1019:10)] Usage: minebot <system> <action> [args...]
 
-Creating an optimized production build...
-Compiled with warnings.
+minebot - Minecraft AI Robot System
 
-[eslint] 
-src/components/BotDetail.js
-  Line 29:6:  React Hook useEffect has a missing dependency: 'bot'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
-  Line 67:9:  The href attribute is required for an anchor to be keyboard accessible. Provide a valid, navigable address as the href value. If you cannot provide an href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+Systems:
+  bot         Bot control (use "minebot bot help" for details)
+  mc          Minecraft server control (use "minebot mc help" for details)
+  server      Bot server management (use "minebot server help" for details)
+  dev         Start development mode
 
-src/components/ConfigPanel.js
-  Line 51:6:  React Hook useEffect has a missing dependency: 'fetchDefaultValues'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+Top-level commands:
+  status [--json]  Show system status (bot server, bots, Minecraft server)
+                   --json    Output in JSON format
+  help            Show this help message
 
-src/components/Dashboard.js
-  Line 14:21:  'setInventory' is assigned a value but never used                                                                no-unused-vars
-  Line 112:6:  React Hook useEffect has a missing dependency: 'currentBotId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+Examples:
+  minebot bot start MyBot
+  minebot bot stop bot_123
+  minebot bot automatic MyBot survival
+  minebot bot list
+  minebot bot restart bot_123
+  minebot mc start
+  minebot mc stop
+  minebot server start
+  minebot server stop
+  minebot status
+  minebot status --json
 
-src/components/LogViewer.js
-  Line 14:9:  'intervalRef' is assigned a value but never used  no-unused-vars
+[2026-04-06T03:52:26.091Z] [DEBUG] [unknown] minebot bot <action> - Bot control
 
-src/components/VideoPlayer/VideoPlayer.jsx
-  Line 41:6:  React Hook useEffect has missing dependencies: 'autoConnect', 'setupWebSocket', and 'stopStream'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
-  Line 93:5:  Expected a default case                                                                                                                               default-case
+Bot Actions:
+  start <user>     Start a bot with username
+  stop <id>        Stop a bot by ID
+  automatic <user> [mode]
+                    Start automatic behavior on existing bot (survival|creative|building|gathering)
+  list             List bots
+  restart <id>     Restart a stopped bot by ID
+  remove <id>      Remove a bot by ID (from DB and server)
+  remove all       Remove all bots
+  cleanup          Remove stale bot entries (older than 30 days)
+  monitor          Monitor bot status in real-time
+  debug            Show real-time bot server logs with color coding
+  gather           Gather resources for a specific bot
+                     --botId <id>       Bot ID to control
+                     --blocks <list>    Comma-separated block types (e.g. oak_log,cobblestone)
+                     --radius <num>     Search radius (default: 20)
+  build            Build structures for a specific bot
+                     --botId <id>       Bot ID to control
+                     --block <type>     Block type to use (e.g. oak_log)
+                     --size <WxLxH>     Structure dimensions (e.g. 5x5x3)
+                     --offset <x,y,z>   Build offset from bot position (default: 0,0,0)
 
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-File sizes after gzip:
-
-  73.98 kB  build/static/js/main.e09d4b06.js
-  7.26 kB   build/static/css/main.ade65cab.css
-
-The project was built assuming it is hosted at /.
-You can control this with the homepage field in your package.json.
-
-The build folder is ready to be deployed.
-You may serve it with a static server:
-
-  npm install -g serve
-  serve -s build
-
-Find out more about deployment here:
-
-  https://cra.link/deployment
-
-
-[2026-04-05T15:50:17.183Z] [Auto-Build] Standard error: (node:430737) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
-(Use `node --trace-deprecation ...` to show where the warning was created)
-
-[2026-04-05T15:50:19.008Z] [API] Received request to start bot with username: FinalTestBot
-[2026-04-05T15:50:19.008Z] [API] Creating bot instance for host: localhost:25565
-[2026-04-05T15:50:19.008Z] [API] Loading bot/index.js from: /data/code/minebot/bot/index.js
-[2026-04-05T15:50:19.008Z] [Bot] Loading bot/index.js module
-[2026-04-05T15:50:19.138Z] [API] Bot instance created, botId from constructor: null
-[2026-04-05T15:50:19.138Z] [API] After setting botId: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.138Z] [API] Attempting to connect bot...
-[2026-04-05T15:50:19.138Z] [Bot] connect() called, this.botId is: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.138Z] [Bot] Creating bot with username: FinalTestBot
-[2026-04-05T15:50:19.138Z] [Bot] Target server: localhost:25565
-[2026-04-05T15:50:19.138Z] [Bot] Start automatic: true
-[2026-04-05T15:50:19.138Z] [Bot] Inside Promise, this.botId is: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.210Z] [Bot] After createBot, this.botId is: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.210Z] [Bot] Before ID check, this.botId is: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.210Z] [Bot] Using existing botId: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.210Z] [Bot] Setting up event listeners
-[2026-04-05T15:50:19.412Z] [Bot] Bot spawned
-[2026-04-05T15:50:19.413Z] [Bot] mcData loaded: true
-[2026-04-05T15:50:19.413Z] [Bot] mcData attached to _client: true
-[2026-04-05T15:50:19.414Z] WebSocket client connected
-[2026-04-05T15:50:19.414Z] [Bot] Bot version: 1.21.11
-[2026-04-05T15:50:19.414Z] [Bot] Initializing evolution manager with botId: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.414Z] WebSocket connected to backend at localhost:9500/
-[2026-04-05T15:50:19.415Z] Registered WebSocket for bot bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.415Z] Bot registration acknowledged
-WARN: [2026-04-05T15:50:19.415Z] Unknown WebSocket message type: bots_list
-[2026-04-05T15:50:19.416Z] [Bot] Evolution manager initialized successfully
-[2026-04-05T15:50:19.416Z] [Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)
-[2026-04-05T15:50:19.435Z] [Screenshot] prismarine-viewer detected, will attempt 3D rendering
-[2026-04-05T15:50:19.435Z] [Screenshot] Module initialized: 854 x 480 (prismarine: true)
-[2026-04-05T15:50:19.435Z] [Bot] Bot ready with ID: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.435Z] [Bot] Starting automatic behavior in survival mode
-[2026-04-05T15:50:19.435Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:50:19.435Z] Starting survival behavior with goal: basic_survival
-[2026-04-05T15:50:19.436Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:50:19.436Z] Starting automatic behavior in survival mode
-[2026-04-05T15:50:19.436Z] Auto-gathering survival resources...
-[2026-04-05T15:50:19.436Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-05T15:50:19.436Z] No target blocks found nearby
-[2026-04-05T15:50:19.437Z] [Bot] Screenshot module initialized, starting stream
-[2026-04-05T15:50:19.437Z] [Bot] Screenshot stream started success
-[2026-04-05T15:50:19.437Z] [API] Bot started successfully with ID: bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:19.514Z] [API] Evolution initialized and recorded: 1 experiences
-[2026-04-05T15:50:19.516Z] No natural resources found nearby - bot can connect and move!
-[2026-04-05T15:50:19.516Z] Testing basic movement...
-[2026-04-05T15:50:19.516Z] [Pathfinder] Moving to -3.5, 103, -1.5
-[2026-04-05T15:50:21.543Z] [API] Bot state saved successfully
-[2026-04-05T15:50:21.543Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:50:21.543Z] Starting survival behavior with goal: basic_survival
-[2026-04-05T15:50:21.543Z] [Behaviors] Setting currentMode to: survival
-[2026-04-05T15:50:21.543Z] Starting automatic behavior in survival mode
-[2026-04-05T15:50:21.543Z] Auto-gathering survival resources...
-[2026-04-05T15:50:21.543Z] Gathering resources: ["oak_log","cobblestone","wheat","carrot"] within radius 30
-[2026-04-05T15:50:21.746Z] No target blocks found nearby
-[2026-04-05T15:50:21.746Z] [API] Automatic behavior started for bot bot_1775404219138_7o9sa6uha
-[2026-04-05T15:50:21.819Z] No natural resources found nearby - bot can connect and move!
-[2026-04-05T15:50:21.819Z] Testing basic movement...
-[2026-04-05T15:50:21.819Z] [Pathfinder] Moving to 4.063316822488609, 78, 6.063316822489384
-[2026-04-05T15:50:35.059Z] [Pathfinder] Movement stopped
-[2026-04-05T15:50:35.060Z] [Pathfinder] Timeout reached after 15000ms
-[2026-04-05T15:50:35.060Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
-[2026-04-05T15:50:35.060Z] Automatic behavior completed
-[2026-04-05T15:50:35.060Z] [Bot] Automatic behavior started with mode: survival
-[2026-04-05T15:50:37.228Z] [Pathfinder] Movement stopped
-[2026-04-05T15:50:37.228Z] [Pathfinder] Timeout reached after 15000ms
-[2026-04-05T15:50:37.228Z] [Behaviors] Movement test failed: Movement timeout. Continuing...
-[2026-04-05T15:50:37.228Z] Automatic behavior completed
+Examples:
+  minebot bot start MyBot
+  minebot bot stop bot_123
+  minebot bot automatic MyBot survival
+  minebot bot list
+   minebot bot restart bot_123
+   minebot bot remove bot_123
+   minebot bot remove all
+   minebot bot cleanup
+   minebot bot monitor
+   minebot bot debug
+   minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30
+   minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0
+  
+[2026-04-06T03:57:37.576Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:37.577Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:37.588Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:37.588Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:37 | Update: 1 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:37.577Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:37.588Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:37.578Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:37.589Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:37.591Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:39.573Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:39 | Update: 2 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:39.574Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:41 | Update: 3 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:41.576Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:55.187Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:55.189Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:55.198Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:55 | Update: 1 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:55.198Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:55.189Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:55.188Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:55.199Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:55.200Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:55.201Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:57 | Update: 2 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:57.186Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:911:18] [36mTime: 11:57:59 | Update: 3 | Press Ctrl+C to stop[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:57:59.188Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:57:59.189Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:57:59.189Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:57:59.189Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:57:59.189Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:01.188Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:01 | Update: 4 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:01.189Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:03.189Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:03 | Update: 5 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:03.189Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:03.190Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:03.191Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:03.192Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:05 | Update: 6 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:05.192Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:05.193Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:05.194Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:07.193Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:07.193Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:07 | Update: 7 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:07.193Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:07.194Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:07.196Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:07.195Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:07.196Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:07.196Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:09 | Update: 8 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:09.194Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:09.195Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:09.196Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:11.198Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:11.198Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:11.198Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:11.198Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:11 | Update: 9 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:11.198Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:11.199Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:11.200Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:11.201Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:11.201Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:13 | Update: 10 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:13.197Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:13.198Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:13.199Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:15 | Update: 11 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:15.200Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:15.201Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:15.202Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:15.202Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:15.202Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:15.202Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:17.199Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:17.199Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:17.199Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:17.199Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:17 | Update: 12 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:17.199Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:17.200Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:17.201Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:19.203Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:19.203Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:19.203Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:19 | Update: 13 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:19.204Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:19.205Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:21 | Update: 14 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:21.203Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:21.204Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:23 | Update: 15 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:23.205Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:23.205Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:23.205Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:23.205Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:23.205Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:23.204Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:25.208Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:25 | Update: 16 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:25.209Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:27 | Update: 17 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:27.207Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:27.208Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:29 | Update: 18 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:29.208Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:31 | Update: 19 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:31.211Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:33.212Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:33 | Update: 20 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:33.212Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:33.213Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:35 | Update: 21 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:35.214Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:35.215Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:37 | Update: 22 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:37.218Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:39 | Update: 23 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:39.219Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:41 | Update: 24 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:41.219Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:41.220Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:43 | Update: 25 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:43.222Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:43.221Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:45 | Update: 26 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:45.222Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:45.223Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:47 | Update: 27 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:47.225Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:49 | Update: 28 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:49.226Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:49.227Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:51 | Update: 29 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:51.227Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:51.228Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:53 | Update: 30 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:53.228Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:53.229Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:55 | Update: 31 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:55.230Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:55.231Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:57 | Update: 32 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:57.232Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:57.233Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:911:18] [36mTime: 11:58:59 | Update: 33 | Press Ctrl+C to stop[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:58:59.234Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:59:01.237Z] [DEBUG] [cli.js:907:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:59:01.237Z] [DEBUG] [cli.js:908:18] [36m                   BOT INSPECT REPORT[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:909:18] [36m═══════════════════════════════════════════════════════════════[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:910:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:911:18] [36mTime: 11:59:01 | Update: 34 | Press Ctrl+C to stop[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:912:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:914:18] [1mBot Information[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:916:18]   Username:     test01
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:915:18]   Bot ID:       bot_1775447387769_9wz9atc49
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:917:18]   Mode:         survival
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:919:18]   State:        [32mALIVE[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:918:18]   Game Mode:    creative
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:922:20]   Dead Reason:  [31mBot died[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:920:18]   Connected:    [32mYes[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:924:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:926:18] [1mHealth & Status[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:927:18]   Health:       [32m20[0m/20
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:928:18]   Food:         20/20
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:932:18] [1mPosition & Movement[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:933:18]   Position:     2, 80, -7
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:930:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:934:18]   Movement:     [90mIDLE[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:929:18]   Saturation:   5.0
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:943:18] [1mInventory[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:941:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:953:20]     (empty)
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:944:18]   Total Items:  0 across 0 slots
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:955:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:966:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:958:18]   Autonomous:   [90mStopped[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:957:18] [1mBehavior[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:968:18] [1mEvolution[0m
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:971:20]   Experiences:  44
+[2026-04-06T03:59:01.239Z] [DEBUG] [cli.js:977:22]   Recent Avg:   0.500
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:969:18]   Status:       [34mENABLED[0m
+[2026-04-06T03:59:01.239Z] [DEBUG] [cli.js:991:18] 
+[2026-04-06T03:59:01.238Z] [DEBUG] [cli.js:973:22]   Baseline:     0.460
+[2026-04-06T03:59:01.239Z] [DEBUG] [cli.js:985:24]   Domains:      path:0, resource:3, behavior:0
+[2026-04-06T03:59:01.239Z] [DEBUG] [cli.js:993:18] [36m═══════════════════════════════════════════════════════════════[0m

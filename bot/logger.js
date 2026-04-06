@@ -1,8 +1,9 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 
-const LOG_DIR = path.join(__dirname, '..', 'logs');
-const LOG_FILE = path.join(LOG_DIR, 'bot_server.log');
+const LOG_DIR = path.join(__dirname, '..', process.env.LOG_DIR || 'logs');
+const LOG_FILE = path.join(LOG_DIR, process.env.BOT_LOG_FILE || 'bot_server.log');
 
 const LEVELS = {
   error: 0,
@@ -71,6 +72,8 @@ function log(level, message, ...args) {
   const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
   logStream.write(logMessage);
   logStream.end();
+  
+  console[level](message, ...args);
 }
 
 const logger = {

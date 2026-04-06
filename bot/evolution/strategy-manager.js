@@ -13,7 +13,8 @@ class StrategyEvolutionManager {
     this.weightEngines = {
       path: new WeightEngine('path'),
       resource: new WeightEngine('resource'),
-      behavior: new WeightEngine('behavior')
+      behavior: new WeightEngine('behavior'),
+      state: new WeightEngine('state')
     };
     
     this.experienceLogger = new ExperienceLogger(this.storage);
@@ -30,7 +31,7 @@ class StrategyEvolutionManager {
   }
 
   async _loadWeights() {
-    const domains = ['path', 'resource', 'behavior'];
+    const domains = ['path', 'resource', 'behavior', 'state'];
     
     for (const domain of domains) {
       const savedWeights = await this.storage.loadWeights(this.botId, domain);

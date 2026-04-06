@@ -4,8 +4,8 @@ const MinecraftBot = require('./bot/index');
 const bot = new MinecraftBot({
   host: process.env.MINECRAFT_SERVER_HOST || 'localhost',
   port: parseInt(process.env.MINECRAFT_SERVER_PORT || '25565'),
-  botServerHost: 'localhost',
-  botServerPort: 9500
+  botServerHost: process.env.BOT_SERVER_HOST || 'localhost',
+  botServerPort: parseInt(process.env.BOT_SERVER_PORT || '9500')
 });
 
 console.log('Starting bot...');

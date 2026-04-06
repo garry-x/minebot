@@ -93,8 +93,9 @@ const Dashboard = () => {
       };
       
       wsRef.current.onclose = () => {
-        console.log('WebSocket disconnected, reconnecting in 3s...');
-        setTimeout(connectWebSocket, 3000);
+        console.log('WebSocket disconnected, reconnecting...');
+        const reconnectDelay = parseInt(process.env.REACT_APP_WEBSOCKET_RECONNECT_DELAY || '3000', 10);
+        setTimeout(connectWebSocket, reconnectDelay);
       };
       
       wsRef.current.onerror = (error) => {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('dotenv').config();
 const logger = require("./bot/logger");
 
 const { spawn } = require('child_process');
@@ -7,8 +8,9 @@ const fs = require('fs');
 
 const BOT_SERVER_SCRIPT = path.join(__dirname, 'bot_server.js');
 const FRONTEND_DIR = path.join(__dirname, 'frontend');
-const MINECRAFT_SERVER_DIR = path.join(__dirname, 'resources');
-const MINECRAFT_SERVER_JAR = path.join(MINECRAFT_SERVER_DIR, 'minecraft_server.1.21.11.jar');
+const MINECRAFT_SERVER_DIR = path.join(__dirname, process.env.MINECRAFT_SERVER_DIR || 'resources');
+const MINECRAFT_JAR_FILENAME = process.env.MINECRAFT_JAR_PATH || 'minecraft_server.1.21.11.jar';
+const MINECRAFT_SERVER_JAR = path.join(MINECRAFT_SERVER_DIR, MINECRAFT_JAR_FILENAME);
 
 let botServerProcess = null;
 let minecraftServerProcess = null;
@@ -81,14 +83,47 @@ function stopBotServer() {
   }
 
   try {
-    process.kill(pid, 'SIGTERM');
-    logger.debug('Stopping bot server...');
-    setTimeout(() => {
+    const http = require('http');
+    const options = {
+      hostname: botHost,
+      port: botPort,
+      path: '/api/server/stop',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        logger.debug('Server stop request sent successfully');
+        try {
+          fs.unlinkSync(BOT_PID_FILE);
+        } catch (e) {}
+      });
+    });
+
+    req.on('error', (e) => {
+      logger.debug(`Bot server is not running: ${e.message}`);
       try {
         fs.unlinkSync(BOT_PID_FILE);
-      } catch (e) {}
-      logger.debug('Bot server stopped');
-    }, 1000);
+      } catch (e2) {}
+    });
+
+    req.end();
+    
+    setTimeout(() => {
+      try {
+        process.kill(pid, 'SIGTERM');
+        logger.debug('Bot server stopped');
+      } catch (e) {
+        logger.debug('Bot server is not running');
+      }
+    }, 500);
   } catch (e) {
     logger.debug('Bot server is not running');
     try {
@@ -208,7 +243,7 @@ function restartMinecraftServer() {
   setTimeout(startMinecraftServer, 3000);
 }
 
-function botControl(action, username, botId, mode) {
+function botControl(action, username, botId, mode, actionArgs = {}) {
   const http = require('http');
   
   function makeRequest(options, postData = null) {
@@ -463,7 +498,7 @@ function botControl(action, username, botId, mode) {
       }
       
       function fetchAndDisplay() {
-        if (!running) return;
+        if (!inspectRunning) return;
         
         const req = http2.request({
           hostname: botHost,
@@ -481,7 +516,7 @@ function botControl(action, username, botId, mode) {
               
               const now = new Date();
               logger.debug(`\x1B[36m=== Bot Monitor ===\x1B[0m Time: ${now.toLocaleTimeString()}`);
-              logger.debug(`Interval: ${interval}ms | Count: ${monitorCount}${maxCount > 0 ? `/${maxCount}` : ''} | Press Ctrl+C to stop`);
+              logger.debug(`Interval: ${interval}ms | Count: ${monitorCount}${inspectMaxCount > 0 ? `/${inspectMaxCount}` : ''} | Press Ctrl+C to stop`);
               logger.debug(`\x1B[36m${'='.repeat(60)}\x1B[0m`);
               
               if (parsed.count === 0) {
@@ -504,8 +539,8 @@ function botControl(action, username, botId, mode) {
               }
               
               if (maxCount > 0 && monitorCount >= maxCount) {
-                running = false;
-                logger.debug(`\x1B[36mMonitor stopped after ${maxCount} updates\x1B[0m`);
+                inspectRunning = false;
+                logger.debug(`\x1B[36mMonitor stopped after ${inspectMaxCount} updates\x1B[0m`);
                 process.exit(0);
               }
             } catch (e) {
@@ -516,7 +551,7 @@ function botControl(action, username, botId, mode) {
         
         req.on('error', (err) => {
           logger.debug(`\x1B[31mConnection error: ${err.message}\x1B[0m`);
-          running = false;
+          inspectRunning = false;
           process.exit(1);
         });
         
@@ -530,16 +565,16 @@ function botControl(action, username, botId, mode) {
       
       process.on('SIGINT', () => {
         logger.debug(`\n\x1B[36mMonitor stopped (Ctrl+C)\x1B[0m`);
-        running = false;
+        inspectRunning = false;
         process.exit(0);
       });
       
       fetchAndDisplay();
       const monitorInterval = setInterval(() => {
-        if (running) {
+        if (inspectRunning) {
           fetchAndDisplay();
         }
-      }, interval);
+      }, inspectInterval);
       break;
       
     case 'debug':
@@ -766,6 +801,256 @@ function botControl(action, username, botId, mode) {
       });
       break;
       
+    case 'inspect':
+      const http3 = require('http');
+      const inspectInterval = actionArgs && actionArgs.interval ? parseInt(actionArgs.interval, 10) : 2000;
+      const inspectMaxCount = actionArgs && actionArgs.count ? parseInt(actionArgs.count, 10) : 0;
+      let inspectCount = 0;
+      let inspectRunning = true;
+      
+      function clearScreen() {
+        process.stdout.write('\x1B[2J\x1B[0f');
+      }
+      
+      if (!botId) {
+        logger.debug('Error: botId is required');
+        logger.debug('Usage: minebot bot inspect <botId> [--interval <ms>] [--count <n>]');
+        logger.debug('');
+        logger.debug('Available bots:');
+        makeRequest({
+          hostname: botHost,
+          port: botPort,
+          path: '/api/bots',
+          method: 'GET'
+        })
+        .then(data => {
+          if (data.count > 0) {
+            data.bots.forEach(bot => {
+              logger.debug(`  ${bot.username} (${bot.botId}) - State: ${bot.state}`);
+            });
+          } else {
+            logger.debug('  No active bots found');
+            logger.debug('');
+            logger.debug('Start a bot with: minebot bot start <username>');
+          }
+        })
+        .catch(err => {
+          logger.debug(`  Could not fetch bot list: ${err.message}`);
+          logger.debug('');
+          logger.debug('Make sure bot server is running with: minebot server start');
+        });
+        return;
+      }
+      
+      function inspectBot() {
+        if (!inspectRunning) return;
+        
+        makeRequest({
+          hostname: botHost,
+          port: botPort,
+          path: `/api/bot/${botId}/inspect`,
+          method: 'GET'
+        })
+        .then(data => {
+          if (!inspectRunning) return;
+          
+          if (!data.success) {
+            logger.debug(`\x1B[31mError: ${data.error}\x1B[0m`);
+            if (data.availableBots && data.availableBots.length > 0) {
+              logger.debug('');
+              logger.debug('Available bots:');
+              data.availableBots.forEach(id => logger.debug(`  ${id}`));
+            }
+            if (inspectMaxCount === 0 || inspectCount < inspectMaxCount) {
+              setTimeout(inspectBot, inspectInterval);
+            }
+            return;
+          }
+          
+          const bot = data.bot;
+          const inv = data.inventory;
+          const move = data.movement;
+          const beh = data.behavior;
+          const evol = data.evolution;
+          
+          function colorHealth(health) {
+            if (health <= 5) return `\x1B[31m${health}\x1B[0m`;
+            if (health <= 10) return `\x1B[33m${health}\x1B[0m`;
+            return `\x1B[32m${health}\x1B[0m`;
+          }
+          
+          function formatState(state) {
+            switch (state) {
+              case 'ALIVE': return `\x1B[32m${state}\x1B[0m`;
+              case 'DEAD': return `\x1B[31m${state}\x1B[0m`;
+              case 'DISCONNECTED': return `\x1B[33m${state}\x1B[0m`;
+              default: return state;
+            }
+          }
+          
+          function formatMovement(moving) {
+            return moving ? `\x1B[36mMOVING\x1B[0m` : `\x1B[90mIDLE\x1B[0m`;
+          }
+          
+          function formatEvolution(enabled) {
+            return enabled ? `\x1B[34mENABLED\x1B[0m` : `\x1B[90mDISABLED\x1B[0m`;
+          }
+          
+          function formatPosition(pos) {
+            if (!pos) return 'N/A';
+            return `${Math.floor(pos.x)}, ${Math.floor(pos.y)}, ${Math.floor(pos.z)}`;
+          }
+          
+          inspectCount++;
+          
+          clearScreen();
+          logger.debug('\x1B[36m═══════════════════════════════════════════════════════════════\x1B[0m');
+          logger.debug('\x1B[36m                   BOT INSPECT REPORT\x1B[0m');
+          logger.debug('\x1B[36m═══════════════════════════════════════════════════════════════\x1B[0m');
+          logger.debug('');
+          logger.debug(`\x1B[36mTime: ${new Date().toLocaleTimeString()} | Update: ${inspectCount}${inspectMaxCount > 0 ? `/${inspectMaxCount}` : ''} | Press Ctrl+C to stop\x1B[0m`);
+          logger.debug('');
+          
+          logger.debug('\x1B[1mBot Information\x1B[0m');
+          logger.debug(`  Bot ID:       ${bot.botId}`);
+          logger.debug(`  Username:     ${bot.username}`);
+          logger.debug(`  Mode:         ${bot.mode || 'N/A'}`);
+          logger.debug(`  Game Mode:    ${bot.gameMode}`);
+          logger.debug(`  State:        ${formatState(bot.state)}`);
+          logger.debug(`  Connected:    ${bot.connected ? '\x1B[32mYes\x1B[0m' : '\x1B[31mNo\x1B[0m'}`);
+          if (bot.deadReason) {
+            logger.debug(`  Dead Reason:  \x1B[31m${bot.deadReason}\x1B[0m`);
+          }
+          logger.debug('');
+          
+          logger.debug('\x1B[1mHealth & Status\x1B[0m');
+          logger.debug(`  Health:       ${colorHealth(bot.health)}/${bot.maxHealth}`);
+          logger.debug(`  Food:         ${bot.food}/20`);
+          logger.debug(`  Saturation:   ${bot.foodSaturation.toFixed(1)}`);
+          logger.debug('');
+          
+          logger.debug('\x1B[1mPosition & Movement\x1B[0m');
+          logger.debug(`  Position:     ${formatPosition(bot.position)}`);
+          logger.debug(`  Movement:     ${formatMovement(move.isMoving)}`);
+          if (move.target) {
+            logger.debug(`  Target:       ${formatPosition(move.target)}`);
+          }
+          if (move.pathQueueLength > 0) {
+            logger.debug(`  Path Queue:   ${move.pathQueueLength} tasks`);
+          }
+          logger.debug('');
+          
+          logger.debug('\x1B[1mInventory\x1B[0m');
+          logger.debug(`  Total Items:  ${inv.itemCount} across ${inv.totalItems} slots`);
+          if (inv.totalItems > 0) {
+            const resources = ['oak_log', 'cobblestone', 'iron_ore', 'gold_ore', 'diamond', 'wheat', 'carrot', 'potato'];
+            resources.forEach(r => {
+              if (inv.breakdown[r]) {
+                logger.debug(`    ${r}: ${inv.breakdown[r].count}`);
+              }
+            });
+          } else {
+            logger.debug('    (empty)');
+          }
+          logger.debug('');
+          
+          logger.debug('\x1B[1mBehavior\x1B[0m');
+          logger.debug(`  Autonomous:   ${beh.autonomousRunning ? '\x1B[32mRunning\x1B[0m' : '\x1B[90mStopped\x1B[0m'}`);
+          if (beh.currentGoal) {
+            logger.debug(`  Goal:         ${beh.currentGoal}`);
+            logger.debug(`  Progress:     ${Math.round(beh.goalProgress * 100)}%`);
+          }
+          if (beh.currentAction) {
+            logger.debug(`  Current:      ${beh.currentAction}`);
+          }
+          logger.debug('');
+          
+          logger.debug('\x1B[1mEvolution\x1B[0m');
+          logger.debug(`  Status:       ${formatEvolution(evol.enabled)}`);
+          if (evol.enabled && !evol.error) {
+            logger.debug(`  Experiences:  ${evol.experienceCount}`);
+            if (evol.baselineFitness !== undefined) {
+              logger.debug(`  Baseline:     ${evol.baselineFitness.toFixed(3)}`);
+            }
+            if (evol.recentFitness && evol.recentFitness.length > 0) {
+              const avg = evol.recentFitness.reduce((a, b) => a + b, 0) / evol.recentFitness.length;
+              logger.debug(`  Recent Avg:   ${avg.toFixed(3)}`);
+            }
+            if (evol.domains) {
+              const domainStats = [];
+              for (const [domain, stats] of Object.entries(evol.domains)) {
+                domainStats.push(`${domain}:${stats.version}`);
+              }
+              if (domainStats.length > 0) {
+                logger.debug(`  Domains:      ${domainStats.join(', ')}`);
+              }
+            }
+          } else if (evol.error) {
+            logger.debug(`  Error:        ${evol.error}`);
+          }
+          logger.debug('');
+          
+          logger.debug('\x1B[36m═══════════════════════════════════════════════════════════════\x1B[0m');
+          
+          if (inspectMaxCount > 0 && inspectCount >= inspectMaxCount) {
+            inspectRunning = false;
+            logger.debug(`\x1B[36mInspect stopped after ${inspectMaxCount} updates\x1B[0m`);
+            process.exit(0);
+          }
+        })
+        .catch(err => {
+          if (!inspectRunning) return;
+          
+          if (err.message.includes('Bot not found') || err.message.includes('not fully initialized')) {
+            logger.debug(`\x1B[31mError: Bot not found: ${botId}\x1B[0m`);
+            logger.debug('');
+            logger.debug('Available bots:');
+            makeRequest({
+              hostname: botHost,
+              port: botPort,
+              path: '/api/bots',
+              method: 'GET'
+            })
+            .then(data => {
+              if (data.count > 0) {
+                data.bots.forEach(bot => {
+                  logger.debug(`  ${bot.username} (${bot.botId}) - State: ${bot.state}`);
+                });
+              } else {
+                logger.debug('  No active bots found');
+              }
+            })
+            .catch(() => {
+              logger.debug('  Could not fetch bot list');
+            });
+          } else if (err.message.includes('ECONNREFUSED') || err.message.includes('connect')) {
+            logger.debug(`\x1B[31mError: Bot server is not running\x1B[0m`);
+            logger.debug('');
+            logger.debug(`Please start bot server with: minebot server start`);
+          } else {
+            logger.debug(`\x1B[31mError: ${err.message}\x1B[0m`);
+          }
+          
+          if (inspectMaxCount === 0 || inspectCount < inspectMaxCount) {
+            setTimeout(inspectBot, inspectInterval);
+          }
+        });
+      }
+      
+      process.on('SIGINT', () => {
+        logger.debug(`\n\x1B[36mInspect stopped (Ctrl+C)\x1B[0m`);
+        inspectRunning = false;
+        process.exit(0);
+      });
+       
+       inspectBot();
+       const inspectIntervalId = setInterval(() => {
+         if (inspectRunning) {
+           inspectBot();
+         }
+       }, inspectInterval);
+       break;
+      
     default:
       logger.debug(`Unknown action: ${action}`);
   }
@@ -899,6 +1184,9 @@ switch(system) {
       case 'build':
         botControl('build');
         break;
+      case 'inspect':
+        botControl('inspect', null, commandArgs[0], null, commandArgs);
+        break;
       case 'help':
       case '-h':
       case '--help':
@@ -925,6 +1213,9 @@ Bot Actions:
                      --block <type>     Block type to use (e.g. oak_log)
                      --size <WxLxH>     Structure dimensions (e.g. 5x5x3)
                      --offset <x,y,z>   Build offset from bot position (default: 0,0,0)
+  inspect          Inspect bot in detail (--interval, --count flags supported)
+                     [--interval <ms>]  Update interval in ms (default: 2000)
+                     [--count <n>]      Number of updates before stopping (default: continuous)
 
 Examples:
   minebot bot start MyBot
@@ -935,10 +1226,12 @@ Examples:
    minebot bot remove bot_123
    minebot bot remove all
    minebot bot cleanup
-   minebot bot monitor
-   minebot bot debug
-   minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30
-   minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0
+    minebot bot monitor
+    minebot bot debug
+    minebot bot gather --botId bot_123 --blocks oak_log,cobblestone --radius 30
+    minebot bot build --botId bot_123 --block oak_log --size 5x5x3 --offset 0,0,0
+    minebot bot inspect bot_123
+    minebot bot inspect bot_123 --interval 1000 --count 10
   `);
         break;
       default:
@@ -1173,7 +1466,7 @@ function showSystemStatus(jsonOutput) {
           count: botsStatus.bots.count,
           bots: botsStatus.bots.bots
         } : { count: 0, bots: [] },
-        frontend: frontendStatus.frontend ? {
+        frontend: frontendStatus && frontendStatus.frontend ? {
           status: frontendStatus.frontend.status
         } : { status: 'unavailable' },
         mcServer: mcStatus.mcServer ? { status: 'RUNNING' } : { status: 'OFFLINE' }

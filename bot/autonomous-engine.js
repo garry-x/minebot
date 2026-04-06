@@ -24,7 +24,7 @@ class AutonomousEngine {
       health,
       food,
       inventoryCount: inventory.length,
-      isDaytime: this.bot.time.timeOfDay < 13000,
+      isDaytime: this.bot.time.timeOfDay < parseInt(process.env.MINECRAFT_DAYTIME_THRESHOLD || '13000'),
       nearbyEntities: this.bot.entities.length
     };
   }
@@ -88,7 +88,7 @@ class AutonomousEngine {
             this.bot.entity.position.z + 10
           );
           try {
-            await this.pathfinder.moveTo(safePos, { timeout: 15000 });
+            await this.pathfinder.moveTo(safePos, { timeout: 30000 });
           } catch (moveError) {
             logger.debug(`[AutonomousEngine] Could not find shelter: ${moveError.message}`);
           }
