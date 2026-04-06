@@ -63,75 +63,7 @@ try {
   }
 }
 
-function checkAndBuildFrontend() {
-  const frontendDir = path.join(__dirname, 'frontend');
-  const buildDir = path.join(frontendDir, 'build');
-  const indexHtml = path.join(buildDir, 'index.html');
-  
-  const { exec } = require('child_process');
-  
-  function runBuild(callback) {
-    logger.info('[Auto-Build] Running npm run build...');
-    
-    exec('npm run build', { 
-      cwd: frontendDir,
-      maxBuffer: 1024 * 1024 * 1024
-    }, (error, stdout, stderr) => {
-      if (error) {
-        logger.error('[Auto-Build] Build failed:', error.message);
-        logger.error('[Auto-Build] Build output:', stdout);
-        logger.error('[Auto-Build] Build error output:', stderr);
-        process.exit(1);
-      }
-      
-      logger.info('[Auto-Build] Build completed successfully');
-      logger.trace('[Auto-Build] Standard output:', stdout);
-      if (stderr) {
-        logger.trace('[Auto-Build] Standard error:', stderr);
-      }
-      callback();
-    });
-  }
-  
-  function runGitStatus(callback) {
-    exec('git status --porcelain', { 
-      cwd: frontendDir,
-      maxBuffer: 1024 * 1024 * 1024
-    }, (error, stdout, stderr) => {
-      if (error) {
-        logger.warn('[Auto-Build] Failed to run git status:', error.message);
-        callback(true);
-        return;
-      }
-      
-      const isDirty = stdout.trim().length > 0;
-      callback(isDirty);
-    });
-  }
-  
-  if (!fs.existsSync(buildDir)) {
-    logger.info('[Auto-Build] Build directory does not exist, running build...');
-    runBuild(() => {});
-    return;
-  }
-  
-  if (!fs.existsSync(indexHtml)) {
-    logger.info('[Auto-Build] index.html does not exist, running build...');
-    runBuild(() => {});
-    return;
-  }
-  
-  runGitStatus((needsBuild) => {
-    if (needsBuild) {
-      logger.info('[Auto-Build] Build is outdated (git changes detected), running build...');
-      runBuild(() => {});
-    } else {
-      logger.info('[Auto-Build] Build is up to date, skipping');
-    }
-  });
-}
-
-checkAndBuildFrontend();
+// Frontend removed, CLI only mode
 
 require('./config/db');
 const BotConfig = require('./config/models/BotConfig');
@@ -150,12 +82,8 @@ app.use((req, res, next) => {
   }
   next();
 });
-app.use(express.static('frontend/build'));
 
-// Catch-all route for React Router (handles all non-API routes)
-app.get(/^(?!\/api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
-});
+// CLI only mode - no frontend routes
 
 const activeBots = new Map();
 const botConnections = new Map();
@@ -172,24 +100,10 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    serverMode: 'online',
+    serverMode: 'cli-only',
     mcServer: process.env.MINECRAFT_SERVER_HOST || 'localhost',
     mcPort: process.env.MINECRAFT_SERVER_PORT || 25565,
-    frontendUrl: `http://localhost:${PORT}/`,
     uptimeSeconds: Math.floor((Date.now() - botServerStartTime) / 1000)
-  });
-});
-
-app.get('/api/frontend/status', (req, res) => {
-  const frontendPath = path.join(__dirname, 'frontend', 'build');
-  const indexHtmlPath = path.join(frontendPath, 'index.html');
-  
-  res.json({
-    frontend: {
-      buildDir: frontendPath,
-      indexHtmlExists: fs.existsSync(indexHtmlPath),
-      status: fs.existsSync(frontendPath) && fs.existsSync(indexHtmlPath) ? 'available' : 'unavailable'
-    }
   });
 });
 
@@ -1301,37 +1215,11 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-// Handle WebSocket messages from frontend
+// Handle WebSocket messages (CLI only)
 function handleWebSocketMessage(ws, message) {
   switch (message.type) {
-    case 'command':
-      // Forward command to bot
-      if (message.data && message.data.botId) {
-        const bot = activeBots.get(message.data.botId);
-        if (bot) {
-          // Execute command on the bot
-          executeBotCommand(bot, message.data, ws);
-        } else {
-          ws.send(JSON.stringify({
-            type: 'error',
-            data: { message: 'Bot not found' }
-          }));
-        }
-      }
-      break;
-    case 'stream':
-      // Handle stream commands
-      if (message.data) {
-        handleStreamCommand(ws, message.data);
-      } else {
-        ws.send(JSON.stringify({
-          type: 'stream_error',
-          data: { message: 'Stream data is required' }
-        }));
-      }
-      break;
     case 'get_status':
-      // Send status of all bots
+      // Send status of all bots for CLI monitoring
       const botStatuses = [];
       for (const [botId, bot] of activeBots.entries()) {
         botStatuses.push({
@@ -1786,13 +1674,11 @@ const shutdown = async () => {
   server.close(async (err) => {
     if (err) {
       logger.error('Error closing server:', err);
-      logStream.end();
       process.exit(1);
     }
     // Close WebSocket server
     wss.close(() => {
       logger.trace('WebSocket server closed');
-      logStream.end();
       // Clean up PID file on graceful shutdown
       try {
         fs.unlinkSync(pidFile);
