@@ -9,11 +9,8 @@
   "scripts": {
     "start": "node bot_server.js",
     "dev": "nodemon bot_server.js",
-    "frontend:dev": "cd frontend && npm start",
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "cd frontend && npm run build",
-    "start:prod": "npm run build && NODE_ENV=production node bot_server.js",
     "cli": "node cli.js"
   },
   "dependencies": {
