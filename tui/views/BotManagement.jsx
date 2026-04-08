@@ -1,10 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, Newline } from 'ink';
+import { Box, Text, Newline, useInput } from 'ink';
 import * as integration from '../integration.mjs';
 
 const BotManagement = ({ systemStatus }) => {
   const [bots, setBots] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState('bots');
+
+  useInput((input, key) => {
+    if (key.upArrow) {
+      if (activeSection === 'bots') {
+        setSelectedIndex(prev => Math.max(0, prev - 1));
+      } else {
+        setActiveSection('bots');
+        setSelectedIndex(bots.length > 0 ? bots.length - 1 : 0);
+      }
+    } else if (key.downArrow) {
+      if (activeSection === 'bots') {
+        if (selectedIndex < bots.length - 1) {
+          setSelectedIndex(prev => prev + 1);
+        } else {
+          setActiveSection('actions');
+          setSelectedIndex(0);
+        }
+      } else {
+        setSelectedIndex(prev => Math.min(botActions.length - 1, prev + 1));
+      }
+    } else if (key.return) {
+      if (activeSection === 'actions' && selectedIndex < botActions.length) {
+        console.log(`Executing: ${botActions[selectedIndex].label}`);
+      }
+    }
+  });
 
   useEffect(() => {
     const loadBots = async () => {
@@ -42,10 +69,10 @@ const BotManagement = ({ systemStatus }) => {
             <Box width={8}><Text bold>Health</Text></Box>
           </Box>
           {bots.map((bot, index) => (
-            <Box key={bot.name || index} flexDirection="row" marginBottom={1}>
+            <Box key={`bot-${bot.name || index}`} flexDirection="row" marginBottom={1}>
               <Box width={20}>
-                <Text color={index === selectedIndex ? 'green' : 'white'}>
-                  {index === selectedIndex ? '› ' : '  '}{bot.name || 'Unknown'}
+                <Text color={activeSection === 'bots' && index === selectedIndex ? 'green' : 'white'}>
+                  {activeSection === 'bots' && index === selectedIndex ? '› ' : '  '}{bot.name || 'Unknown'}
                 </Text>
               </Box>
               <Box width={12}>
@@ -75,9 +102,9 @@ const BotManagement = ({ systemStatus }) => {
       <Text bold>Bot Actions:</Text>
       <Box flexDirection="column" marginY={1}>
         {botActions.map((action, index) => (
-          <Box key={index}>
-            <Text color={index === selectedIndex ? 'green' : 'white'}>
-              {index === selectedIndex ? '› ' : '  '}{action.label}
+          <Box key={`action-${index}`}>
+            <Text color={activeSection === 'actions' && index === selectedIndex ? 'green' : 'white'}>
+              {activeSection === 'actions' && index === selectedIndex ? '› ' : '  '}{action.label}
             </Text>
             <Text dim> ({action.description})</Text>
           </Box>

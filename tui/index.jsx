@@ -46,7 +46,7 @@ const AdminTUI = () => {
     return () => clearInterval(interval);
   }, [refreshStatus]);
 
-  useInput((input) => {
+  useInput((input, key) => {
     if (input === 'q' || input === 'Q') {
       exit();
       return;

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Box, Text, Newline } from 'ink';
+import { Box, Text, Newline, useInput } from 'ink';
 import SelectableMenu from '../components/SelectableMenu.jsx';
 import * as integration from '../integration.mjs';
 
@@ -29,6 +29,31 @@ const ServerControl = ({ onAction, systemStatus }) => {
   const [botSelectedIndex, setBotSelectedIndex] = useState(0);
   const [activePanel, setActivePanel] = useState('minecraft');
   const [executing, setExecuting] = useState(null);
+
+  useInput((input, key) => {
+    if (key.upArrow) {
+      if (activePanel === 'minecraft') {
+        setMcSelectedIndex(prev => Math.max(0, prev - 1));
+      } else {
+        setBotSelectedIndex(prev => Math.max(0, prev - 1));
+      }
+    } else if (key.downArrow) {
+      if (activePanel === 'minecraft') {
+        setMcSelectedIndex(prev => Math.min(mcActions.length - 1, prev + 1));
+      } else {
+        setBotSelectedIndex(prev => Math.min(botActions.length - 1, prev + 1));
+      }
+    } else if (key.return) {
+      if (activePanel === 'minecraft') {
+        executeMcAction(mcSelectedIndex);
+      } else {
+        executeBotAction(botSelectedIndex);
+      }
+    } else if (key.tab) {
+      setActivePanel(prev => prev === 'minecraft' ? 'bot' : 'minecraft');
+    }
+  });
+
 
   const executeMcAction = useCallback(async (index) => {
     const action = mcActions[index];
