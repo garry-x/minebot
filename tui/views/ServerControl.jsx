@@ -1,11 +1,36 @@
 import React, { useState, useCallback } from 'react';
 import { Box, Text, Newline, useInput } from 'ink';
-import SelectableMenu from '../components/SelectableMenu.jsx';
 import * as integration from '../integration.mjs';
 
 const StatusBadge = ({ status }) => {
-  const color = status === 'RUNNING' ? 'green' : status === 'STOPPED' ? 'red' : 'yellow';
-  return <Text color={color} bold>{status}</Text>;
+  const config = {
+    RUNNING: { color: 'green', symbol: '●' },
+    STOPPED: { color: 'red', symbol: '●' },
+    WARNING: { color: 'yellow', symbol: '●' },
+    UNKNOWN: { color: 'gray', symbol: '○' }
+  };
+  const { color, symbol } = config[status] || config.UNKNOWN;
+  return <Text color={color}>{symbol} {status}</Text>;
+};
+
+const ActionItem = ({ label, description, isSelected, isFocused }) => {
+  const borderColor = isFocused ? 'green' : 'gray';
+  const textColor = isSelected ? 'green' : 'white';
+  
+  return (
+    <Box 
+      borderStyle={isSelected ? 'single' : undefined}
+      borderColor={borderColor}
+      paddingX={1}
+      marginY={1}
+    >
+      <Text color={textColor} bold={isSelected}>
+        {isSelected ? '▸ ' : '  '}
+        {label}
+      </Text>
+      <Text dim> - {description}</Text>
+    </Box>
+  );
 };
 
 const ServerControl = ({ onAction, systemStatus }) => {
@@ -13,15 +38,15 @@ const ServerControl = ({ onAction, systemStatus }) => {
   const botServer = systemStatus?.botServer || { status: 'UNKNOWN' };
 
   const [mcActions] = useState([
-    { label: 'Start Server', description: 'Start Minecraft server' },
-    { label: 'Stop Server', description: 'Gracefully stop server' },
-    { label: 'Restart Server', description: 'Restart with same settings' },
+    { label: 'Start', description: 'Start Minecraft server' },
+    { label: 'Stop', description: 'Gracefully stop server' },
+    { label: 'Restart', description: 'Restart with same settings' },
     { label: 'Force Stop', description: 'Force immediate shutdown' },
   ]);
 
   const [botActions] = useState([
-    { label: 'Start Bot Server', description: 'Start bot API server' },
-    { label: 'Stop Bot Server', description: 'Stop bot API server' },
+    { label: 'Start', description: 'Start bot API server' },
+    { label: 'Stop', description: 'Stop bot API server' },
     { label: 'View Logs', description: 'Show server logs' },
   ]);
 
@@ -45,109 +70,117 @@ const ServerControl = ({ onAction, systemStatus }) => {
       }
     } else if (key.return) {
       if (activePanel === 'minecraft') {
-        executeMcAction(mcSelectedIndex);
+        console.log(`Execute MC action: ${mcActions[mcSelectedIndex].label}`);
       } else {
-        executeBotAction(botSelectedIndex);
+        console.log(`Execute Bot action: ${botActions[botSelectedIndex].label}`);
       }
     } else if (key.tab) {
       setActivePanel(prev => prev === 'minecraft' ? 'bot' : 'minecraft');
     }
   });
 
-
-  const executeMcAction = useCallback(async (index) => {
-    const action = mcActions[index];
-    setExecuting(`minecraft:${action.label}`);
-    onAction(`Executing: ${action.label}...`);
-
-    try {
-      let result;
-      switch (index) {
-        case 0: result = await integration.startMinecraftServer(); break;
-        case 1: result = await integration.stopMinecraftServer(); break;
-        case 2: result = await integration.restartMinecraftServer(); break;
-        case 3: result = await integration.stopMinecraftServer(true); break;
-      }
-      onAction(result?.message || result?.success ? `${action.label}: done` : `${action.label}: failed`);
-    } catch (e) {
-      onAction(`${action.label}: error - ${e.message}`);
-    }
-    setExecuting(null);
-  }, [mcActions, onAction]);
-
-  const executeBotAction = useCallback(async (index) => {
-    const action = botActions[index];
-    if (index === 2) {
-      onAction('bot:View Logs');
-      return;
-    }
-    setExecuting(`bot:${action.label}`);
-    onAction(`Executing: ${action.label}...`);
-
-    try {
-      let result;
-      switch (index) {
-        case 0: result = await integration.startBotServer(); break;
-        case 1: result = await integration.stopBotServer(); break;
-      }
-      onAction(result?.message || result?.success ? `${action.label}: done` : `${action.label}: failed`);
-    } catch (e) {
-      onAction(`${action.label}: error - ${e.message}`);
-    }
-    setExecuting(null);
-  }, [botActions, onAction]);
-
   return (
     <Box flexDirection="column" padding={1}>
       <Text bold color="cyan">Server Control</Text>
       <Text dim>───────────────────────────────────────────────────────</Text>
       <Newline />
-      <Text bold>Server Status:</Text>
-      <Box flexDirection="row" gap={4} marginY={1}>
-        <Box flexDirection="column" width={40}>
-          <Text>Minecraft Server: <StatusBadge status={mcServer.status} /></Text>
-          {mcServer.version && <Text dim>  Version: {mcServer.version}</Text>}
-          {mcServer.players !== undefined && <Text dim>  Players: {mcServer.players}</Text>}
+      
+      {/* Status Cards */}
+      <Box flexDirection="row" gap={2} marginBottom={2}>
+        <Box 
+          flexDirection="column" 
+          width={36}
+          borderStyle="round" 
+          borderColor={activePanel === 'minecraft' ? 'green' : 'gray'}
+          padding={1}
+        >
+          <Box marginBottom={1}>
+            <Text bold>Minecraft Server</Text>
+          </Box>
+          <StatusBadge status={mcServer.status} />
+          <Text dim>Version: {mcServer.version || 'N/A'}</Text>
+          <Text dim>Players: {mcServer.players ?? 0}</Text>
         </Box>
-        <Box flexDirection="column" width={40}>
-          <Text>Bot Server: <StatusBadge status={botServer.status} /></Text>
-          {botServer.uptime && <Text dim>  Uptime: {botServer.uptime}</Text>}
-          {botServer.activeBots !== undefined && <Text dim>  Active Bots: {botServer.activeBots}</Text>}
+        
+        <Box 
+          flexDirection="column" 
+          width={36}
+          borderStyle="round" 
+          borderColor={activePanel === 'bot' ? 'green' : 'gray'}
+          padding={1}
+        >
+          <Box marginBottom={1}>
+            <Text bold>Bot Server</Text>
+          </Box>
+          <StatusBadge status={botServer.status} />
+          <Text dim>Uptime: {botServer.uptime || 'N/A'}</Text>
+          <Text dim>Active Bots: {botServer.activeBots ?? 0}</Text>
         </Box>
       </Box>
+      
+      {/* Action Panels */}
+      <Box flexDirection="row" gap={2}>
+        <Box 
+          flexDirection="column" 
+          width={36}
+          borderStyle={activePanel === 'minecraft' ? 'double' : 'single'}
+          borderColor={activePanel === 'minecraft' ? 'green' : 'gray'}
+          padding={1}
+        >
+          <Box marginBottom={1}>
+            <Text bold color={activePanel === 'minecraft' ? 'green' : 'white'}>
+              {activePanel === 'minecraft' ? '▸ ' : '  '}
+              Minecraft Actions
+            </Text>
+          </Box>
+          {mcActions.map((action, index) => (
+            <Box key={`mc-${index}`} marginY={1}>
+              <Text 
+                color={activePanel === 'minecraft' && mcSelectedIndex === index ? 'green' : 'white'}
+                bold={activePanel === 'minecraft' && mcSelectedIndex === index}
+              >
+                {activePanel === 'minecraft' && mcSelectedIndex === index ? '▸ ' : '  '}
+                {action.label}
+              </Text>
+              <Text dim> - {action.description}</Text>
+            </Box>
+          ))}
+        </Box>
+        
+        <Box 
+          flexDirection="column" 
+          width={36}
+          borderStyle={activePanel === 'bot' ? 'double' : 'single'}
+          borderColor={activePanel === 'bot' ? 'green' : 'gray'}
+          padding={1}
+        >
+          <Box marginBottom={1}>
+            <Text bold color={activePanel === 'bot' ? 'green' : 'white'}>
+              {activePanel === 'bot' ? '▸ ' : '  '}
+              Bot Server Actions
+            </Text>
+          </Box>
+          {botActions.map((action, index) => (
+            <Box key={`bot-${index}`} marginY={1}>
+              <Text 
+                color={activePanel === 'bot' && botSelectedIndex === index ? 'green' : 'white'}
+                bold={activePanel === 'bot' && botSelectedIndex === index}
+              >
+                {activePanel === 'bot' && botSelectedIndex === index ? '▸ ' : '  '}
+                {action.label}
+              </Text>
+              <Text dim> - {action.description}</Text>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+      
       <Newline />
-      <Box flexDirection="row" gap={4}>
-        <Box flexDirection="column" flexGrow={1}>
-          <SelectableMenu
-            items={mcActions}
-            selectedIndex={mcSelectedIndex}
-            onSelect={setMcSelectedIndex}
-            onCancel={() => onAction('cancelled')}
-            title="Minecraft Actions"
-            focused={activePanel === 'minecraft'}
-            borderColor="green"
-          />
-        </Box>
-        <Box flexDirection="column" flexGrow={1}>
-          <SelectableMenu
-            items={botActions}
-            selectedIndex={botSelectedIndex}
-            onSelect={setBotSelectedIndex}
-            onCancel={() => onAction('cancelled')}
-            title="Bot Server Actions"
-            focused={activePanel === 'bot'}
-            borderColor="blue"
-          />
-        </Box>
-      </Box>
-      <Newline />
-      <Box flexDirection="column">
-        <Text dim>
-          {activePanel === 'minecraft'
-            ? <>▶ <Text color="green">Minecraft Actions</Text> panel focused • [Tab] to switch • [1-5] to switch views</>
-            : <>▶ <Text color="blue">Bot Server Actions</Text> panel focused • [Tab] to switch • [1-5] to switch views</>}
-        </Text>
-      </Box>
+      <Text dim>
+        <Text color="cyan">Tab</Text> to switch panel • 
+        <Text color="cyan">↑↓</Text> to navigate • 
+        <Text color="cyan">Enter</Text> to execute
+      </Text>
     </Box>
   );
 };
