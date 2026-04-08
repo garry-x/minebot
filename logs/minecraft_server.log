@@ -8,45 +8,20 @@ WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
 WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.joml.MemUtil$MemUtilUnsafe (file:/data/code/minebot/resources/java-1.21.11/libraries/org/joml/joml/1.10.8/joml-1.10.8.jar)
 WARNING: Please consider reporting this to the maintainers of class org.joml.MemUtil$MemUtilUnsafe
 WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
-[16:27:58] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
-[16:27:59] [ServerMain/INFO]: Loaded 1470 recipes
-[16:27:59] [ServerMain/INFO]: Loaded 1584 advancements
-[16:27:59] [Server thread/INFO]: Starting minecraft server version 1.21.11
-[16:27:59] [Server thread/INFO]: Loading properties
-[16:27:59] [Server thread/INFO]: Default game type: SURVIVAL
-[16:27:59] [Server thread/INFO]: Generating keypair
-[16:27:59] [Server thread/INFO]: Starting Minecraft server on *:25565
-[16:27:59] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[16:27:59] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
-[16:27:59] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[16:27:59] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
-[16:27:59] [Server thread/INFO]: Preparing level "world"
-[16:27:59] [Server thread/INFO]: Loading 0 persistent chunks...
-[16:27:59] [Server thread/INFO]: Preparing spawn area: 100%
-[16:27:59] [Server thread/INFO]: Time elapsed: 14 ms
-[16:27:59] [Server thread/INFO]: Done (0.152s)! For help, type "help"
-[16:28:33] [Server thread/INFO]: MyBot01[/127.0.0.1:41612] logged in with entity id 85 at (12.207669536341132, 71.0, 3.2708357492839775)
-[16:28:33] [Server thread/INFO]: MyBot01 joined the game
-[16:28:49] [Server thread/INFO]: MyBot01 was slain by Zombie
-[16:29:30] [Server thread/INFO]: MyBot01 was slain by Zombie
-[16:30:58] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:33:02] [Server thread/INFO]: MyBot01 lost connection: You logged in from another location
-[16:33:02] [Server thread/INFO]: MyBot01 left the game
-[16:33:03] [Server thread/WARN]: handleDisconnection() called twice
-[16:33:03] [Server thread/INFO]: MyBot01[/127.0.0.1:50202] logged in with entity id 836 at (0.5, 86.0, -7.5)
-[16:33:03] [Server thread/INFO]: MyBot01 joined the game
-[16:33:06] [Server thread/WARN]: MyBot01 moved too quickly! 3.6606207395767685,-14.0,3.6606207395775145
-[16:33:07] [Server thread/INFO]: MyBot01 fell from a high place
-[16:33:10] [Server thread/WARN]: MyBot01 moved too quickly! 4.360768601165895,-17.0,5.233419452259525
-[16:33:46] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:34:25] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:36:18] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:37:19] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:38:00] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:39:05] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:39:59] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:40:46] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:41:23] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:41:53] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:42:31] [Server thread/INFO]: MyBot01 was shot by Pillager
-[16:43:54] [Server thread/INFO]: MyBot01 was shot by Pillager
+[14:34:33] [ServerMain/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, profilesHost=https://api.mojang.com, name=PROD]
+[14:34:33] [ServerMain/INFO]: Loaded 1470 recipes
+[14:34:34] [ServerMain/INFO]: Loaded 1584 advancements
+[14:34:34] [Server thread/INFO]: Starting minecraft server version 1.21.11
+[14:34:34] [Server thread/INFO]: Loading properties
+[14:34:34] [Server thread/INFO]: Default game type: CREATIVE
+[14:34:34] [Server thread/INFO]: Generating keypair
+[14:34:34] [Server thread/INFO]: Starting Minecraft server on *:25565
+[14:34:34] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[14:34:34] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[14:34:34] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[14:34:34] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[14:34:34] [Server thread/INFO]: Preparing level "world"
+[14:34:34] [Server thread/INFO]: Loading 0 persistent chunks...
+[14:34:34] [Server thread/INFO]: Time elapsed: 10 ms
+[14:34:34] [Server thread/INFO]: Done (0.156s)! For help, type "help"
+[14:35:34] [Server thread/INFO]: Server empty for 60 seconds, pausing

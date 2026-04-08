@@ -499,6 +499,11 @@ app.post('/api/bot/:botId/goal/select', async (req, res) => {
     const { botId } = req.params;
     const { goalId } = req.body;
     
+    // Validate goalId
+    if (!goalId || typeof goalId !== 'string' || goalId.trim() === '') {
+      return res.status(400).json({ error: 'Valid goalId is required' });
+    }
+    
     const bot = activeBots.get(botId);
     if (!bot) {
       return res.status(404).json({ error: 'Bot not found' });

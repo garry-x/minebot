@@ -141,6 +141,9 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       logger.debug(`At offset: ${offsetX}, ${offsetY}, ${offsetZ}`);
       
       try {
+        // Check if we're in creative mode
+        const isCreativeMode = bot.gameMode === 1 || bot.gameMode === 'creative';
+        
         // Build a simple prism structure
         for (let y = 0; y < height; y++) {
           for (let x = 0; x < width; x++) {
@@ -157,17 +160,36 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
                 z: Math.floor(bot.entity.position.z) + offsetZ + z
               };
               
-              // Wait until we have the block in inventory with retry logic
-              await retryOperation(async () => {
-                await waitForCondition(() => {
-                  const item = bot.inventory.items().find(i => i.name === blockType && i.count > 0);
-                  return item !== undefined;
-                }, 15000); // Increased timeout for gathering materials
-              });
-              
-              // Equip the block
-              const item = bot.inventory.items().find(i => i.name === blockType && i.count > 0);
-              await bot.equip(item, 'hand');
+              // In creative mode, skip inventory check since we have all blocks
+              if (!isCreativeMode) {
+                // Wait until we have the block in inventory with retry logic
+                await retryOperation(async () => {
+                  await waitForCondition(() => {
+                    const item = bot.inventory.items().find(i => i.name === blockType && i.count > 0);
+                    return item !== undefined;
+                  }, 15000); // Increased timeout for gathering materials
+                });
+                
+                // Equip the block
+                const item = bot.inventory.items().find(i => i.name === blockType && i.count > 0);
+                await bot.equip(item, 'hand');
+              } else {
+                // In creative mode, try to equip the block directly
+                try {
+                  // First check if we already have the block
+                  let item = bot.inventory.items().find(i => i.name === blockType && i.count > 0);
+                  if (!item) {
+                    // In creative mode, we might need to give ourselves the block
+                    // For now, we'll try to equip it anyway or use creative mode API
+                    logger.debug(`In creative mode, attempting to use block: ${blockType}`);
+                  }
+                  if (item) {
+                    await bot.equip(item, 'hand');
+                  }
+                } catch (equipError) {
+                  logger.warn(`Could not equip block in creative mode: ${equipError.message}`);
+                }
+              }
               
               // Place the block with retry logic
               await retryOperation(async () => {
