@@ -47,25 +47,18 @@ const Section = ({ title, children, width }) => (
 );
 
 const Dashboard = ({ systemStatus }) => {
-  const [stats, setStats] = useState({
-    botServer: { status: 'RUNNING', uptime: '2h 34m', version: '1.0.0', activeBots: 2 },
-    mcServer: { status: 'RUNNING', players: 0, address: 'localhost:25565', world: 'default', version: '1.21.11' },
-    bots: [
-      { name: 'ConsoleTestBot', status: 'ALIVE', location: '4, 68, 17', health: '20' },
-      { name: 'OptimizedBot', status: 'ALIVE', location: '4, 68, 17', health: '20' }
-    ],
-    resources: { cpu: 25, memory: 36, disk: 13 }
-  });
+  const botServer = systemStatus?.botServer || { status: 'UNKNOWN', uptime: 'N/A', version: 'N/A', activeBots: 0 };
+  const mcServer = systemStatus?.mcServer || { status: 'UNKNOWN', players: 0, world: 'N/A', version: 'N/A' };
+  const bots = systemStatus?.bots || [];
+
+  const [resources, setResources] = useState({ cpu: 25, memory: 36, disk: 13 });
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStats(prev => ({
-        ...prev,
-        resources: {
-          cpu: Math.min(100, Math.max(0, prev.resources.cpu + (Math.random() * 10 - 5))),
-          memory: Math.min(100, Math.max(0, prev.resources.memory + (Math.random() * 5 - 2.5))),
-          disk: Math.min(100, Math.max(0, prev.resources.disk + (Math.random() * 2 - 1)))
-        }
+      setResources(prev => ({
+        cpu: Math.min(100, Math.max(0, prev.cpu + (Math.random() * 10 - 5))),
+        memory: Math.min(100, Math.max(0, prev.memory + (Math.random() * 5 - 2.5))),
+        disk: Math.min(100, Math.max(0, prev.disk + (Math.random() * 2 - 1)))
       }));
     }, 10000);
     return () => clearInterval(interval);
@@ -77,15 +70,15 @@ const Dashboard = ({ systemStatus }) => {
         <Box flexDirection="row" gap={4}>
           <Box flexDirection="column">
             <Text dim>bot server</Text>
-            <StatusBadge status={stats.botServer.status} />
-            <Text dim>uptime {stats.botServer.uptime} · v{stats.botServer.version}</Text>
-            <Text dim>{stats.botServer.activeBots} bots connected</Text>
+            <StatusBadge status={botServer.status} />
+            <Text dim>uptime {botServer.uptime} · v{botServer.version}</Text>
+            <Text dim>{botServer.activeBots} bots connected</Text>
           </Box>
           <Box flexDirection="column">
             <Text dim>minecraft server</Text>
-            <StatusBadge status={stats.mcServer.status} />
-            <Text dim>{stats.mcServer.players} players · v{stats.mcServer.version}</Text>
-            <Text dim>world: {stats.mcServer.world}</Text>
+            <StatusBadge status={mcServer.status} />
+            <Text dim>{mcServer.players} players · v{mcServer.version}</Text>
+            <Text dim>world: {mcServer.world}</Text>
           </Box>
         </Box>
       </Section>
@@ -93,7 +86,7 @@ const Dashboard = ({ systemStatus }) => {
       <Newline />
 
       <Section title="Bots">
-        {stats.bots.length > 0 ? (
+        {bots.length > 0 ? (
           <Box flexDirection="column">
             <Box flexDirection="row">
               <Text bold dim width={18}>name</Text>
@@ -101,7 +94,7 @@ const Dashboard = ({ systemStatus }) => {
               <Text bold dim width={14}>location</Text>
               <Text bold dim width={8}>health</Text>
             </Box>
-            {stats.bots.map((bot, i) => (
+            {bots.map((bot, i) => (
               <Box key={`bot-${i}`} flexDirection="row">
                 <Text width={18}>{bot.name}</Text>
                 <Box width={10}>
@@ -121,9 +114,9 @@ const Dashboard = ({ systemStatus }) => {
 
       <Section title="Resources">
         <Box flexDirection="column">
-          <ResourceBar label="cpu" value={Math.round(stats.resources.cpu)} />
-          <ResourceBar label="memory" value={Math.round(stats.resources.memory)} />
-          <ResourceBar label="disk" value={Math.round(stats.resources.disk)} />
+          <ResourceBar label="cpu" value={Math.round(resources.cpu)} />
+          <ResourceBar label="memory" value={Math.round(resources.memory)} />
+          <ResourceBar label="disk" value={Math.round(resources.disk)} />
         </Box>
       </Section>
     </Box>
