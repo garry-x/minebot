@@ -5,50 +5,44 @@ const StatusBadge = ({ status }) => {
   const config = {
     RUNNING: { color: 'green', symbol: '●' },
     ALIVE: { color: 'green', symbol: '●' },
+    NOT_RUNNING: { color: 'red', symbol: '●' },
     STOPPED: { color: 'red', symbol: '●' },
     WARNING: { color: 'yellow', symbol: '●' },
-    UNKNOWN: { color: 'gray', symbol: '○' }
+    UNKNOWN: { color: 'gray', symbol: '○' },
   };
   const { color, symbol } = config[status] || config.UNKNOWN;
-  return <Text color={color}>{symbol} {status}</Text>;
+  return <Text><Text color={color}>{symbol}</Text> <Text color={color}>{status}</Text></Text>;
 };
 
 const ResourceBar = ({ label, value, max = 100 }) => {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
-  const barWidth = 20;
+  const barWidth = 24;
   const filled = Math.floor((percentage / 100) * barWidth);
   const empty = barWidth - filled;
-  const bar = '█'.repeat(filled) + '░'.repeat(empty);
-  
+
   let color = 'green';
   if (percentage > 80) color = 'red';
   else if (percentage > 60) color = 'yellow';
-  
-  const statusText = percentage > 80 ? 'HIGH' : percentage > 60 ? 'WARN' : 'OK';
-  
+
   return (
     <Box>
-      <Text bold width={8}>{label}</Text>
-      <Text> </Text>
-      <Text color={color}>{bar}</Text>
-      <Text> {Math.round(value)}% </Text>
-      <Text color={color} bold>{statusText}</Text>
+      <Text dim width={8}>{label}</Text>
+      <Text color={color}>{'█'.repeat(filled)}</Text>
+      <Text dim>{'░'.repeat(empty)}</Text>
+      <Text> {Math.round(value)}%</Text>
     </Box>
   );
 };
 
-const Card = ({ title, children, width = 38 }) => (
-  <Box 
-    flexDirection="column" 
-    width={width}
-    borderStyle="round" 
-    borderColor="blue"
-    padding={1}
-  >
-    <Box marginBottom={1}>
-      <Text bold color="cyan">{title}</Text>
+const Section = ({ title, children, width }) => (
+  <Box flexDirection="column" width={width}>
+    <Box marginBottom={0}>
+      <Text bold color="white">{title}</Text>
     </Box>
-    {children}
+    <Text dim>──────────────────────────────────────</Text>
+    <Box flexDirection="column" marginTop={0}>
+      {children}
+    </Box>
   </Box>
 );
 
@@ -78,65 +72,63 @@ const Dashboard = ({ systemStatus }) => {
   }, []);
 
   return (
-    <Box flexDirection="column" padding={1} gap={1}>
-      <Text bold color="cyan">Dashboard</Text>
-      <Text dim>System Overview</Text>
-      <Newline />
-      
-      <Box flexDirection="row" gap={2}>
-        <Card title="Bot Server" width={36}>
-          <Box flexDirection="column" gap={1}>
+    <Box flexDirection="column">
+      {/* Status Overview */}
+      <Section title="Status">
+        <Box flexDirection="row" gap={4}>
+          <Box flexDirection="column">
+            <Text dim>bot server</Text>
             <StatusBadge status={stats.botServer.status} />
-            <Text dim>Uptime: {stats.botServer.uptime}</Text>
-            <Text dim>Version: {stats.botServer.version}</Text>
-            <Text dim>Active: {stats.botServer.activeBots} bots</Text>
+            <Text dim>uptime {stats.botServer.uptime} · v{stats.botServer.version}</Text>
+            <Text dim>{stats.botServer.activeBots} bots connected</Text>
           </Box>
-        </Card>
-        
-        <Card title="Minecraft Server" width={36}>
-          <Box flexDirection="column" gap={1}>
+          <Box flexDirection="column">
+            <Text dim>minecraft server</Text>
             <StatusBadge status={stats.mcServer.status} />
-            <Text dim>Players: {stats.mcServer.players}</Text>
-            <Text dim>World: {stats.mcServer.world}</Text>
-            <Text dim>Version: {stats.mcServer.version}</Text>
+            <Text dim>{stats.mcServer.players} players · v{stats.mcServer.version}</Text>
+            <Text dim>world: {stats.mcServer.world}</Text>
           </Box>
-        </Card>
-      </Box>
-      
+        </Box>
+      </Section>
+
       <Newline />
-      
-      <Card title="Active Bots" width={74}>
+
+      {/* Active Bots */}
+      <Section title="Bots">
         {stats.bots.length > 0 ? (
-          <Box flexDirection="column" gap={1}>
+          <Box flexDirection="column">
             <Box flexDirection="row">
-              <Text bold width={16}>Name</Text>
-              <Text bold width={10}>Status</Text>
-              <Text bold width={16}>Location</Text>
-              <Text bold width={8}>Health</Text>
+              <Text bold dim width={18}>name</Text>
+              <Text bold dim width={10}>status</Text>
+              <Text bold dim width={14}>location</Text>
+              <Text bold dim width={8}>health</Text>
             </Box>
-            {stats.bots.map((bot, index) => (
-              <Box key={`bot-${index}`} flexDirection="row">
-                <Text color="green" width={16}>{bot.name}</Text>
-                <Text color={bot.status === 'ALIVE' ? 'green' : 'red'} width={10}>{bot.status}</Text>
-                <Text dim width={16}>{bot.location}</Text>
-                <Text color={parseInt(bot.health) > 15 ? 'green' : parseInt(bot.health) > 5 ? 'yellow' : 'red'} width={8}>{bot.health}</Text>
+            {stats.bots.map((bot, i) => (
+              <Box key={`bot-${i}`} flexDirection="row">
+                <Text width={18}>{bot.name}</Text>
+                <Box width={10}>
+                  <StatusBadge status={bot.status} />
+                </Box>
+                <Text dim width={14}>{bot.location}</Text>
+                <Text color={parseInt(bot.health) > 15 ? 'green' : parseInt(bot.health) > 5 ? 'yellow' : 'red'} width={8}>{bot.health}/20</Text>
               </Box>
             ))}
           </Box>
         ) : (
-          <Text dim>No active bots</Text>
+          <Text dim>No bots connected</Text>
         )}
-      </Card>
-      
+      </Section>
+
       <Newline />
-      
-      <Card title="System Resources" width={74}>
-        <Box flexDirection="column" gap={1}>
-          <ResourceBar label="CPU" value={Math.round(stats.resources.cpu)} />
-          <ResourceBar label="Memory" value={Math.round(stats.resources.memory)} />
-          <ResourceBar label="Disk" value={Math.round(stats.resources.disk)} />
+
+      {/* Resources */}
+      <Section title="Resources">
+        <Box flexDirection="column">
+          <ResourceBar label="cpu" value={Math.round(stats.resources.cpu)} />
+          <ResourceBar label="memory" value={Math.round(stats.resources.memory)} />
+          <ResourceBar label="disk" value={Math.round(stats.resources.disk)} />
         </Box>
-      </Card>
+      </Section>
     </Box>
   );
 };

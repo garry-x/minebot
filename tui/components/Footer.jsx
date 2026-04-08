@@ -1,40 +1,34 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 
-const Shortcut = ({ key, description }) => (
-  <Box marginRight={2}>
-    <Text color="cyan" bold>{key}</Text>
-    <Text dim> {description}</Text>
-  </Box>
+const Kbd = ({ children }) => (
+  <Text color="blue" bold>{children}</Text>
 );
 
-const Footer = ({ currentView }) => {
-  return (
-    <Box 
-      flexDirection="column" 
-      marginTop={1}
-      borderStyle="single"
-      borderColor="gray"
-      paddingX={1}
-      paddingY={1}
-    >
-      <Box flexDirection="row" marginBottom={1}>
-        <Shortcut key="1-5" description="Switch views" />
-        <Shortcut key="↑↓" description="Navigate" />
-        <Shortcut key="Enter" description="Select" />
-        <Shortcut key="Tab" description="Switch panel" />
+const Footer = ({ currentView }) => (
+  <Box flexDirection="column" marginTop={1} paddingX={1}>
+    <Text dim>─────────────────────────────────────────────────────────</Text>
+    <Box flexDirection="row" marginTop={0}>
+      <Box marginRight={3}>
+        <Kbd>[1-5]</Kbd><Text dim> views</Text>
       </Box>
-      <Box flexDirection="row">
-        <Shortcut key="q" description="Quit" />
-        <Shortcut key="h" description="Help" />
-        <Shortcut key="r" description="Refresh" />
-        <Box marginLeft={4}>
-          <Text dim>Current: </Text>
-          <Text color="cyan">{currentView}</Text>
-        </Box>
+      <Box marginRight={3}>
+        <Kbd>[↑↓]</Kbd><Text dim> navigate</Text>
+      </Box>
+      <Box marginRight={3}>
+        <Kbd>[Enter]</Kbd><Text dim> select</Text>
+      </Box>
+      <Box marginRight={3}>
+        <Kbd>[Tab]</Kbd><Text dim> panel</Text>
+      </Box>
+      <Box marginRight={3}>
+        <Kbd>[r]</Kbd><Text dim> refresh</Text>
+      </Box>
+      <Box marginRight={3}>
+        <Kbd>[q]</Kbd><Text dim> quit</Text>
       </Box>
     </Box>
-  );
-};
+  </Box>
+);
 
 export default Footer;

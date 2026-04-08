@@ -19,24 +19,16 @@ export const VIEWS = {
 
 export const NAV_ITEMS = [
   { key: '1', label: 'Dashboard', view: VIEWS.DASHBOARD },
-  { key: '2', label: 'Bot Mgmt', view: VIEWS.BOT_MANAGEMENT },
+  { key: '2', label: 'Bots', view: VIEWS.BOT_MANAGEMENT },
   { key: '3', label: 'Servers', view: VIEWS.SERVER_CONTROL },
   { key: '4', label: 'Logs', view: VIEWS.LOG_VIEWER },
   { key: '5', label: 'Help', view: VIEWS.HELP },
 ];
 
 const Header = () => (
-  <Box 
-    flexDirection="row" 
-    justifyContent="space-between"
-    paddingY={1}
-  >
-    <Text bold color="cyan">
-      ▓█ MineBot Admin Console █▓
-    </Text>
-    <Text dim>
-      v1.0.0
-    </Text>
+  <Box flexDirection="row" justifyContent="space-between" paddingY={0}>
+    <Text bold color="blue">minebot</Text>
+    <Text dim>admin console</Text>
   </Box>
 );
 
@@ -72,8 +64,8 @@ const AdminTUI = () => {
     }
     if (input === 'r' || input === 'R') {
       refreshStatus();
-      setActionMessage('Refreshing...');
-      setTimeout(() => setActionMessage(''), 1500);
+      setActionMessage('↻ Refreshed');
+      setTimeout(() => setActionMessage(''), 2000);
       return;
     }
     if (input === 'm' || input === 'M') {
@@ -114,37 +106,18 @@ const AdminTUI = () => {
   };
 
   return (
-    <Box flexDirection="column" padding={1}>
+    <Box flexDirection="column" paddingX={1}>
       <Header />
-      
-      <Box 
-        flexDirection="column" 
-        borderStyle="round" 
-        borderColor="blue"
-        padding={1}
-      >
-        <Navigation 
-          currentView={currentView} 
-          navItems={NAV_ITEMS}
-        />
-        
-        <Box 
-          borderStyle="single" 
-          borderColor="gray" 
-          padding={1}
-          marginY={1}
-        >
-          {renderView()}
-        </Box>
-        
-        {actionMessage && (
-          <Box marginTop={1} paddingX={1}>
-            <Text color="cyan">ℹ {actionMessage}</Text>
-          </Box>
-        )}
-        
-        <Footer currentView={currentView} />
+      <Navigation currentView={currentView} navItems={NAV_ITEMS} />
+      <Box flexDirection="column" paddingY={1}>
+        {renderView()}
       </Box>
+      {actionMessage && (
+        <Box paddingX={1}>
+          <Text color="blue">  {actionMessage}</Text>
+        </Box>
+      )}
+      <Footer currentView={currentView} />
     </Box>
   );
 };
