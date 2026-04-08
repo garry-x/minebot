@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text, Newline, useInput } from 'ink';
 import * as integration from '../integration.mjs';
 
+const StatusBadge = ({ status }) => {
+  const config = {
+    ALIVE: { color: 'green', symbol: '●' },
+    WOUNDED: { color: 'yellow', symbol: '●' },
+    DEAD: { color: 'red', symbol: '●' },
+    UNKNOWN: { color: 'gray', symbol: '○' },
+  };
+  const { color, symbol } = config[status] || config.UNKNOWN;
+  return <Text><Text color={color}>{symbol}</Text></Text>;
+};
+
 const BotManagement = ({ systemStatus }) => {
   const [bots, setBots] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -54,63 +65,65 @@ const BotManagement = ({ systemStatus }) => {
   ];
 
   return (
-    <Box flexDirection="column" padding={1}>
-      <Text bold color="cyan">Bot Management</Text>
-      <Text dim>───────────────────────────────────────────────────────</Text>
-      <Newline />
-      <Text bold>Available Bots ({bots.length}):</Text>
-      <Newline />
-      {bots.length > 0 ? (
-        <Box flexDirection="column">
-          <Box flexDirection="row" marginBottom={1}>
-            <Box width={20}><Text bold>Name</Text></Box>
-            <Box width={12}><Text bold>Status</Text></Box>
-            <Box width={15}><Text bold>Location</Text></Box>
-            <Box width={8}><Text bold>Health</Text></Box>
-          </Box>
-          {bots.map((bot, index) => (
-            <Box key={`bot-${bot.name || index}`} flexDirection="row" marginBottom={1}>
-              <Box width={20}>
-                <Text color={activeSection === 'bots' && index === selectedIndex ? 'green' : 'white'}>
-                  {activeSection === 'bots' && index === selectedIndex ? '› ' : '  '}{bot.name || 'Unknown'}
-                </Text>
-              </Box>
-              <Box width={12}>
-                <Text color={bot.status === 'ALIVE' ? 'green' : bot.status === 'WOUNDED' ? 'yellow' : 'red'}>
-                  {bot.status}
-                </Text>
-              </Box>
-              <Box width={15}>
-                <Text dim>{bot.location || 'Unknown'}</Text>
-              </Box>
-              <Box width={8}>
-                <Text color={bot.health > 15 ? 'green' : bot.health > 5 ? 'yellow' : 'red'}>
-                  {bot.health || 0}
-                </Text>
-              </Box>
+    <Box flexDirection="column">
+      <Box flexDirection="column">
+        <Text bold>Bots</Text>
+        <Text dim>─────────────────────────────────────────────────────────</Text>
+        {bots.length > 0 ? (
+          <Box flexDirection="column">
+            <Box flexDirection="row" marginBottom={0}>
+              <Text bold dim width={18}>name</Text>
+              <Text bold dim width={10}>status</Text>
+              <Text bold dim width={14}>location</Text>
+              <Text bold dim width={8}>health</Text>
             </Box>
-          ))}
-        </Box>
-      ) : (
-        <Box paddingLeft={2}>
-          <Text dim>No bots connected</Text>
-          <Newline />
-          <Text>Use "Start New Bot" to create your first bot.</Text>
-        </Box>
-      )}
-      <Newline />
-      <Text bold>Bot Actions:</Text>
-      <Box flexDirection="column" marginY={1}>
-        {botActions.map((action, index) => (
-          <Box key={`action-${index}`}>
-            <Text color={activeSection === 'actions' && index === selectedIndex ? 'green' : 'white'}>
-              {activeSection === 'actions' && index === selectedIndex ? '› ' : '  '}{action.label}
-            </Text>
-            <Text dim> ({action.description})</Text>
+            {bots.map((bot, index) => {
+              const isSelected = activeSection === 'bots' && index === selectedIndex;
+              return (
+                <Box key={`bot-${bot.name || index}`} flexDirection="row">
+                  <Text color={isSelected ? 'green' : 'gray'} width={2}>{isSelected ? '▸' : ' '}</Text>
+                  <Text color={isSelected ? 'white' : 'gray'} bold={isSelected} width={16}>{bot.name || 'Unknown'}</Text>
+                  <Box width={10}>
+                    <StatusBadge status={bot.status} />
+                    <Text color={bot.status === 'ALIVE' ? 'green' : bot.status === 'WOUNDED' ? 'yellow' : 'red'}> {bot.status}</Text>
+                  </Box>
+                  <Text dim width={14}>{bot.location || 'Unknown'}</Text>
+                  <Text color={bot.health > 15 ? 'green' : bot.health > 5 ? 'yellow' : 'red'} width={8}>{bot.health || 0}/20</Text>
+                </Box>
+              );
+            })}
           </Box>
-        ))}
+        ) : (
+          <Box paddingLeft={2} flexDirection="column">
+            <Text dim>No bots connected</Text>
+            <Text dim>Use "Start New Bot" to create your first bot.</Text>
+          </Box>
+        )}
       </Box>
-      <Text dim>↑↓: Select action/bot | Enter: Execute | 1-5: Switch views</Text>
+
+      <Newline />
+
+      <Box flexDirection="column">
+        <Text bold>Actions</Text>
+        <Text dim>─────────────────────────────────────────────────────────</Text>
+        <Box flexDirection="column">
+          {botActions.map((action, index) => {
+            const isSelected = activeSection === 'actions' && index === selectedIndex;
+            return (
+              <Box key={`action-${index}`}>
+                <Text color={isSelected ? 'green' : 'gray'}>{isSelected ? '▸ ' : '  '}</Text>
+                <Text color={isSelected ? 'white' : 'gray'} bold={isSelected}>{action.label}</Text>
+                <Text dim>{'  '}{action.description}</Text>
+              </Box>
+            );
+          })}
+        </Box>
+      </Box>
+
+      <Newline />
+      <Text dim>
+        <Text color="blue">[↑↓]</Text> select · <Text color="blue">[Enter]</Text> execute · <Text color="blue">[1-5]</Text> switch views
+      </Text>
     </Box>
   );
 };

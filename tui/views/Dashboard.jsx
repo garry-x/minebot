@@ -73,7 +73,6 @@ const Dashboard = ({ systemStatus }) => {
 
   return (
     <Box flexDirection="column">
-      {/* Status Overview */}
       <Section title="Status">
         <Box flexDirection="row" gap={4}>
           <Box flexDirection="column">
@@ -93,7 +92,6 @@ const Dashboard = ({ systemStatus }) => {
 
       <Newline />
 
-      {/* Active Bots */}
       <Section title="Bots">
         {stats.bots.length > 0 ? (
           <Box flexDirection="column">
@@ -121,7 +119,6 @@ const Dashboard = ({ systemStatus }) => {
 
       <Newline />
 
-      {/* Resources */}
       <Section title="Resources">
         <Box flexDirection="column">
           <ResourceBar label="cpu" value={Math.round(stats.resources.cpu)} />

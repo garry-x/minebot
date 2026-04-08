@@ -1,18 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 
-/**
- * A reusable dropdown/select component with arrow key navigation
- * 
- * @param {Object} props
- * @param {Array} props.items - Array of menu items
- * @param {number} props.selectedIndex - Currently selected index
- * @param {Function} props.onSelect - Callback when item is selected (index)
- * @param {Function} props.onCancel - Callback when Escape is pressed
- * @param {string} props.title - Title for the menu
- * @param {boolean} props.focused - Whether this menu has keyboard focus
- * @param {string} props.borderColor - Border color when focused
- */
 const SelectableMenu = ({
   items = [],
   selectedIndex = 0,
@@ -22,23 +10,17 @@ const SelectableMenu = ({
   focused = true,
   borderColor = 'blue'
 }) => {
-  // Ensure selectedIndex is within bounds
   const safeSelectedIndex = Math.max(0, Math.min(selectedIndex, items.length - 1));
 
   return (
-    <Box
-      flexDirection="column"
-      borderStyle={focused ? 'round' : 'single'}
-      borderColor={focused ? borderColor : 'gray'}
-      padding={1}
-      width="100%"
-    >
+    <Box flexDirection="column" width="100%">
       {title && (
-        <Box marginBottom={1}>
-          <Text bold color={focused ? 'cyan' : 'gray'}>{title}</Text>
+        <Box marginBottom={0}>
+          <Text bold color={focused ? 'white' : 'gray'}>{title}</Text>
         </Box>
       )}
-      
+      <Text dim>──────────────────────────────────────</Text>
+
       {items.length === 0 ? (
         <Text dim>No items available</Text>
       ) : (
@@ -46,44 +28,37 @@ const SelectableMenu = ({
           {items.map((item, index) => {
             const isSelected = index === safeSelectedIndex;
             const isDisabled = item.disabled || false;
-            
+
             return (
               <Box key={index} flexDirection="row">
-                <Text color={isDisabled ? 'gray' : (isSelected ? 'green' : 'white')}>
-                  {isSelected ? '› ' : '  '}
+                <Text color={isDisabled ? 'gray' : (isSelected ? 'green' : 'gray')}>
+                  {isSelected ? '▸ ' : '  '}
                 </Text>
                 <Text
-                  color={isDisabled ? 'gray' : (isSelected ? 'green' : 'white')}
+                  color={isDisabled ? 'gray' : (isSelected ? 'white' : 'gray')}
                   bold={isSelected}
                 >
                   {item.label || item}
                 </Text>
                 {item.description && (
-                  <Text dim> - {item.description}</Text>
+                  <Text dim>{'  '}{item.description}</Text>
                 )}
                 {isDisabled && (
-                  <Text dim italic> (disabled)</Text>
+                  <Text dim> (disabled)</Text>
                 )}
               </Box>
             );
           })}
         </Box>
       )}
-      
-      {/* Footer with instructions */}
-      <Box marginTop={1}>
-        <Text dim>
-          {focused ? (
-            <>
-              [↑↓] Navigate • [Enter] Select • [Esc] Cancel • [Tab] Switch panels
-            </>
-          ) : (
-            <>
-              [Tab] to focus
-            </>
-          )}
-        </Text>
-      </Box>
+
+      {focused && (
+        <Box marginTop={1}>
+          <Text dim>
+            <Text color="blue">[↑↓]</Text> navigate · <Text color="blue">[Enter]</Text> select · <Text color="blue">[Esc]</Text> cancel
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

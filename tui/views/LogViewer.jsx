@@ -3,7 +3,7 @@ import { Box, Text, Newline } from 'ink';
 import SelectableMenu from '../components/SelectableMenu.jsx';
 
 const LogEntry = ({ timestamp, level, message, source }) => {
-  const levelColor = { INFO: 'cyan', WARN: 'yellow', ERROR: 'red', DEBUG: 'gray' }[level?.toUpperCase()] || 'white';
+  const levelColor = { INFO: 'blue', WARN: 'yellow', ERROR: 'red', DEBUG: 'gray' }[level?.toUpperCase()] || 'white';
   const formatTime = (ts) => {
     if (!ts) return '--:--:--';
     const d = new Date(ts);
@@ -11,10 +11,10 @@ const LogEntry = ({ timestamp, level, message, source }) => {
   };
 
   return (
-    <Box flexDirection="row" gap={2}>
+    <Box flexDirection="row" gap={1}>
       <Text dim width={10}>{formatTime(timestamp)}</Text>
       <Text color={levelColor} width={8} bold>{(level || '').toUpperCase()}</Text>
-      <Text width={12}>{source}</Text>
+      <Text dim width={12}>{source}</Text>
       <Text>{message}</Text>
     </Box>
   );
@@ -67,44 +67,49 @@ const LogViewer = () => {
     if (index === 5) setLogs([]);
   };
 
+  const filterColor = filter === 'ALL' ? 'blue' : filter === 'ERROR' ? 'red' : filter === 'WARN' ? 'yellow' : 'green';
+
   return (
-    <Box flexDirection="column" padding={1} gap={1}>
-      <Text bold color="cyan">Log Viewer</Text>
-      <Text dim>───────────────────────────────────────────────────────</Text>
-      <Newline />
+    <Box flexDirection="column">
       <Box flexDirection="row" justifyContent="space-between">
-        <Box><Text>Filter: </Text><Text color={filter === 'ALL' ? 'cyan' : filter === 'ERROR' ? 'red' : filter === 'WARN' ? 'yellow' : 'green'} bold>{filter}</Text></Box>
-        <Box><Text>Showing: </Text><Text color="cyan" bold>{logs.length}</Text><Text> entries</Text></Box>
+        <Text bold>Logs</Text>
+        <Text dim>filter: <Text color={filterColor} bold>{filter}</Text> · <Text bold>{logs.length}</Text> entries</Text>
       </Box>
-      <Newline />
+      <Text dim>─────────────────────────────────────────────────────────</Text>
+
       <SelectableMenu
-        title="Log Actions"
+        title="Filters"
         items={logActions}
         selectedIndex={selectedIndex}
         onSelect={handleSelectAction}
         focused={true}
-        borderColor="yellow"
+        borderColor="blue"
       />
+
       <Newline />
-      <Box flexDirection="column" borderStyle="single" borderColor="gray" padding={1}>
-        <Text bold>Recent Log Entries:</Text>
-        <Newline />
-        <Box flexDirection="row" gap={2} marginBottom={1}>
-          <Text dim width={10}>Time</Text>
-          <Text dim width={8}>Level</Text>
-          <Text dim width={12}>Source</Text>
-          <Text dim>Message</Text>
+
+      <Box flexDirection="column">
+        <Text bold>Entries</Text>
+        <Text dim>──────────────────────────────────────</Text>
+        <Box flexDirection="row" gap={1} marginBottom={0}>
+          <Text dim width={10}>time</Text>
+          <Text dim width={8}>level</Text>
+          <Text dim width={12}>source</Text>
+          <Text dim>message</Text>
         </Box>
         {logs.length > 0 ? (
-          <Box flexDirection="column" gap={0}>
+          <Box flexDirection="column">
             {logs.map((log, i) => <LogEntry key={i} {...log} />)}
           </Box>
         ) : (
-          <Box paddingLeft={2}><Text dim>No log entries to display</Text></Box>
+          <Text dim>No log entries to display</Text>
         )}
       </Box>
+
       <Newline />
-      <Text dim>[↑↓] Navigate actions • [Enter] Select filter • [1-5] Switch views</Text>
+      <Text dim>
+        <Text color="blue">[↑↓]</Text> navigate · <Text color="blue">[Enter]</Text> select filter · <Text color="blue">[1-5]</Text> switch views
+      </Text>
     </Box>
   );
 };

@@ -5,33 +5,26 @@ import * as integration from '../integration.mjs';
 const StatusBadge = ({ status }) => {
   const config = {
     RUNNING: { color: 'green', symbol: '●' },
+    NOT_RUNNING: { color: 'red', symbol: '●' },
     STOPPED: { color: 'red', symbol: '●' },
     WARNING: { color: 'yellow', symbol: '●' },
-    UNKNOWN: { color: 'gray', symbol: '○' }
+    UNKNOWN: { color: 'gray', symbol: '○' },
   };
   const { color, symbol } = config[status] || config.UNKNOWN;
-  return <Text color={color}>{symbol} {status}</Text>;
+  return <Text><Text color={color}>{symbol}</Text> <Text color={color}>{status}</Text></Text>;
 };
 
-const ActionItem = ({ label, description, isSelected, isFocused }) => {
-  const borderColor = isFocused ? 'green' : 'gray';
-  const textColor = isSelected ? 'green' : 'white';
-  
-  return (
-    <Box 
-      borderStyle={isSelected ? 'single' : undefined}
-      borderColor={borderColor}
-      paddingX={1}
-      marginY={1}
-    >
-      <Text color={textColor} bold={isSelected}>
-        {isSelected ? '▸ ' : '  '}
-        {label}
-      </Text>
-      <Text dim> - {description}</Text>
+const Section = ({ title, children, width, active }) => (
+  <Box flexDirection="column" width={width}>
+    <Box marginBottom={0}>
+      <Text bold color={active ? 'white' : 'gray'}>{active ? '▸ ' : '  '}{title}</Text>
     </Box>
-  );
-};
+    <Text dim>──────────────────────────────────────</Text>
+    <Box flexDirection="column" marginTop={0}>
+      {children}
+    </Box>
+  </Box>
+);
 
 const ServerControl = ({ onAction, systemStatus }) => {
   const mcServer = systemStatus?.mcServer || { status: 'UNKNOWN' };
@@ -53,7 +46,6 @@ const ServerControl = ({ onAction, systemStatus }) => {
   const [mcSelectedIndex, setMcSelectedIndex] = useState(0);
   const [botSelectedIndex, setBotSelectedIndex] = useState(0);
   const [activePanel, setActivePanel] = useState('minecraft');
-  const [executing, setExecuting] = useState(null);
 
   useInput((input, key) => {
     if (key.upArrow) {
@@ -80,106 +72,65 @@ const ServerControl = ({ onAction, systemStatus }) => {
   });
 
   return (
-    <Box flexDirection="column" padding={1}>
-      <Text bold color="cyan">Server Control</Text>
-      <Text dim>───────────────────────────────────────────────────────</Text>
-      <Newline />
-      
-      {/* Status Cards */}
-      <Box flexDirection="row" gap={2} marginBottom={2}>
-        <Box 
-          flexDirection="column" 
-          width={36}
-          borderStyle="round" 
-          borderColor={activePanel === 'minecraft' ? 'green' : 'gray'}
-          padding={1}
-        >
-          <Box marginBottom={1}>
-            <Text bold>Minecraft Server</Text>
-          </Box>
+    <Box flexDirection="column">
+      <Box flexDirection="row" gap={4} marginBottom={1}>
+        <Box flexDirection="column">
+          <Text dim>minecraft server</Text>
           <StatusBadge status={mcServer.status} />
-          <Text dim>Version: {mcServer.version || 'N/A'}</Text>
-          <Text dim>Players: {mcServer.players ?? 0}</Text>
+          <Text dim>v{mcServer.version || 'N/A'} · {mcServer.players ?? 0} players</Text>
         </Box>
-        
-        <Box 
-          flexDirection="column" 
-          width={36}
-          borderStyle="round" 
-          borderColor={activePanel === 'bot' ? 'green' : 'gray'}
-          padding={1}
-        >
-          <Box marginBottom={1}>
-            <Text bold>Bot Server</Text>
-          </Box>
+        <Box flexDirection="column">
+          <Text dim>bot server</Text>
           <StatusBadge status={botServer.status} />
-          <Text dim>Uptime: {botServer.uptime || 'N/A'}</Text>
-          <Text dim>Active Bots: {botServer.activeBots ?? 0}</Text>
+          <Text dim>uptime {botServer.uptime || 'N/A'} · {botServer.activeBots ?? 0} bots</Text>
         </Box>
       </Box>
-      
-      {/* Action Panels */}
+
+      <Text dim>─────────────────────────────────────────────────────────</Text>
+
       <Box flexDirection="row" gap={2}>
-        <Box 
-          flexDirection="column" 
-          width={36}
-          borderStyle={activePanel === 'minecraft' ? 'double' : 'single'}
-          borderColor={activePanel === 'minecraft' ? 'green' : 'gray'}
-          padding={1}
-        >
-          <Box marginBottom={1}>
-            <Text bold color={activePanel === 'minecraft' ? 'green' : 'white'}>
-              {activePanel === 'minecraft' ? '▸ ' : '  '}
-              Minecraft Actions
-            </Text>
+        <Section title="Minecraft Actions" width={36} active={activePanel === 'minecraft'}>
+          <Box flexDirection="column">
+            {mcActions.map((action, index) => {
+              const isSelected = activePanel === 'minecraft' && mcSelectedIndex === index;
+              return (
+                <Box key={`mc-${index}`}>
+                  <Text color={isSelected ? 'green' : 'gray'}>
+                    {isSelected ? '▸ ' : '  '}
+                  </Text>
+                  <Text color={isSelected ? 'white' : 'gray'} bold={isSelected}>
+                    {action.label}
+                  </Text>
+                  <Text dim>{'  '}{action.description}</Text>
+                </Box>
+              );
+            })}
           </Box>
-          {mcActions.map((action, index) => (
-            <Box key={`mc-${index}`} marginY={1}>
-              <Text 
-                color={activePanel === 'minecraft' && mcSelectedIndex === index ? 'green' : 'white'}
-                bold={activePanel === 'minecraft' && mcSelectedIndex === index}
-              >
-                {activePanel === 'minecraft' && mcSelectedIndex === index ? '▸ ' : '  '}
-                {action.label}
-              </Text>
-              <Text dim> - {action.description}</Text>
-            </Box>
-          ))}
-        </Box>
-        
-        <Box 
-          flexDirection="column" 
-          width={36}
-          borderStyle={activePanel === 'bot' ? 'double' : 'single'}
-          borderColor={activePanel === 'bot' ? 'green' : 'gray'}
-          padding={1}
-        >
-          <Box marginBottom={1}>
-            <Text bold color={activePanel === 'bot' ? 'green' : 'white'}>
-              {activePanel === 'bot' ? '▸ ' : '  '}
-              Bot Server Actions
-            </Text>
+        </Section>
+
+        <Section title="Bot Server Actions" width={36} active={activePanel === 'bot'}>
+          <Box flexDirection="column">
+            {botActions.map((action, index) => {
+              const isSelected = activePanel === 'bot' && botSelectedIndex === index;
+              return (
+                <Box key={`bot-${index}`}>
+                  <Text color={isSelected ? 'green' : 'gray'}>
+                    {isSelected ? '▸ ' : '  '}
+                  </Text>
+                  <Text color={isSelected ? 'white' : 'gray'} bold={isSelected}>
+                    {action.label}
+                  </Text>
+                  <Text dim>{'  '}{action.description}</Text>
+                </Box>
+              );
+            })}
           </Box>
-          {botActions.map((action, index) => (
-            <Box key={`bot-${index}`} marginY={1}>
-              <Text 
-                color={activePanel === 'bot' && botSelectedIndex === index ? 'green' : 'white'}
-                bold={activePanel === 'bot' && botSelectedIndex === index}
-              >
-                {activePanel === 'bot' && botSelectedIndex === index ? '▸ ' : '  '}
-                {action.label}
-              </Text>
-              <Text dim> - {action.description}</Text>
-            </Box>
-          ))}
-        </Box>
+        </Section>
       </Box>
-      
+
       <Newline />
       <Text dim>
-        <Text color="cyan">Tab</Text> to switch panel • 
-        <Text color="cyan">↑↓</Text> to navigate • 
-        <Text color="cyan">Enter</Text> to execute
+        <Text color="blue">[Tab]</Text> switch panel · <Text color="blue">[↑↓]</Text> navigate · <Text color="blue">[Enter]</Text> execute
       </Text>
     </Box>
   );
