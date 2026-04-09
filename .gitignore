@@ -1,8 +1,12 @@
 node_modules/
 .worktrees/
-.env
 dist/
-.DS_Store
 resources/
 coverage/
-logs/.*
+logs/
+.DS_Store
+.env
+*.sh
+bot/*.db
+bot/evolution.db
+bot/bot_config.db
