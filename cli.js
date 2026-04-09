@@ -669,6 +669,116 @@ botCommand
 
 
 
+// Watch bot status
+botCommand
+  .command('watch <botIdOrName>')
+  .description('实时查看机器人状态')
+  .option('-n, --events <number>', '显示最近多少条事件', '50')
+  .option('-i, --interval <ms>', '刷新间隔(毫秒)', '1000')
+  .action(async (botIdOrName, options) => {
+    const resolvedBotId = await resolveBotId(botIdOrName);
+    
+    const botStatus = await getBotServerStatus();
+    if (botStatus.status !== 'RUNNING') {
+      console.log('❌ Bot服务器未运行');
+      return;
+    }
+
+    const port = process.env.BOT_SERVER_PORT || process.env.PORT || 9500;
+    const eventLimit = parseInt(options.events);
+    const interval = parseInt(options.interval);
+    
+    console.clear();
+    console.log(`\n🔍 正在监控机器人: ${botIdOrName}`);
+    console.log(`📊 刷新间隔: ${interval}ms | 显示事件数: ${eventLimit}`);
+    console.log(`⏹️  按 Ctrl+C 退出监控\n`);
+    console.log('─'.repeat(60));
+
+    let isFirst = true;
+    
+    const showBotStatus = async () => {
+      try {
+        const data = await makeRequest({
+          hostname: 'localhost',
+          port: port,
+          path: `/api/bot/${resolvedBotId}/watch?events=${eventLimit}`,
+          method: 'GET',
+          timeout: 5000
+        });
+
+        if (!data.success) {
+          console.log(`❌ 获取机器人状态失败: ${data.error}`);
+          return;
+        }
+
+        console.clear();
+        
+        console.log(`\n🤖 机器人: ${data.username} | ID: ${data.botId}`);
+        console.log(`📡 状态: ${data.state} | 模式: ${data.mode || 'N/A'}`);
+        console.log('─'.repeat(60));
+        
+        console.log(`❤️  生命值: ${data.health.current}/${data.health.max}  |  🍖 饥饿值: ${data.health.food}/20`);
+        
+        if (data.position) {
+          console.log(`📍 位置: (${data.position.x}, ${data.position.y}, ${data.position.z})`);
+        }
+        
+        console.log(`🎮 游戏模式: ${data.gameMode}`);
+        
+        if (data.goal && data.goal.currentGoal) {
+          console.log(`\n🎯 当前目标: ${data.goal.currentGoal}`);
+          const progressBar = '█'.repeat(Math.floor(data.goal.progress / 10)) + '░'.repeat(10 - Math.floor(data.goal.progress / 10));
+          console.log(`   进度: ${progressBar} ${Math.round(data.goal.progress)}%`);
+        }
+        
+        console.log('\n📜 最近事件:');
+        console.log('─'.repeat(60));
+        
+        if (data.events && data.events.length > 0) {
+          data.events.slice(0, eventLimit).forEach(event => {
+            const time = new Date(event.timestamp).toLocaleTimeString();
+            const typeIcon = {
+              'status': '📡',
+              'health': '❤️',
+              'food': '🍖',
+              'movement': '👣',
+              'death': '💀',
+              'respawn': '✨',
+              'disconnect': '🔌',
+              'connect': '🔗'
+            }[event.type] || '📝';
+            
+            console.log(`  ${typeIcon} [${time}] ${event.message}`);
+          });
+        } else {
+          console.log('  暂无事件记录');
+        }
+        
+        console.log('\n' + '─'.repeat(60));
+        console.log(`⏰ 最后更新: ${new Date().toLocaleTimeString()}`);
+        console.log('   按 Ctrl+C 退出监控');
+        
+      } catch (error) {
+        if (isFirst) {
+          console.log(`❌ 请求失败: ${error.message}`);
+          isFirst = false;
+        }
+      }
+    };
+
+    await showBotStatus();
+    isFirst = false;
+    
+    const watchInterval = setInterval(showBotStatus, interval);
+    
+    process.on('SIGINT', () => {
+      clearInterval(watchInterval);
+      console.clear();
+      console.log('\n👋 监控已退出');
+      process.exit(0);
+    });
+  });
+
 // 自动目标控制命令
 botCommand
   .command('auto <botId>')

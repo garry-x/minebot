@@ -194,6 +194,92 @@ class BotState {
       });
     });
   }
+
+  // Bot events storage
+  static createEventsTable() {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        CREATE TABLE IF NOT EXISTS bot_events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          bot_id TEXT NOT NULL,
+          event_type TEXT NOT NULL,
+          message TEXT,
+          data TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `;
+      
+      db.run(sql, function(err) {
+        if (err) {
+          return reject(err);
+        }
+        
+        // Create index for faster queries
+        const indexSql = `
+          CREATE INDEX IF NOT EXISTS idx_bot_events_bot_id_created 
+          ON bot_events(bot_id, created_at DESC)
+        `;
+        
+        db.run(indexSql, function(err) {
+          if (err) {
+            return reject(err);
+          }
+          resolve();
+        });
+      });
+    });
+  }
+
+  static addEvent(botId, eventType, message, data = null) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        INSERT INTO bot_events (bot_id, event_type, message, data)
+        VALUES (?, ?, ?, ?)
+      `;
+      
+      db.run(sql, [botId, eventType, message, data ? JSON.stringify(data) : null], function(err) {
+        if (err) reject(err);
+        else resolve(this.lastID);
+      });
+    });
+  }
+
+  static getEvents(botId, limit = 50) {
+    return new Promise((resolve, reject) => {
+      const sql = `
+        SELECT * FROM bot_events 
+        WHERE bot_id = ? 
+        ORDER BY created_at DESC 
+        LIMIT ?
+      `;
+      
+      db.all(sql, [botId, limit], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
+    });
+  }
+
+  static clearOldEvents(botId, keepCount = 100) {
+    return new Promise((resolve, reject) => {
+      // Keep only the most recent events
+      const sql = `
+        DELETE FROM bot_events 
+        WHERE bot_id = ? 
+        AND id NOT IN (
+          SELECT id FROM bot_events 
+          WHERE bot_id = ? 
+          ORDER BY created_at DESC 
+          LIMIT ?
+        )
+      `;
+      
+      db.run(sql, [botId, botId, keepCount], function(err) {
+        if (err) reject(err);
+        else resolve(this.changes);
+      });
+    });
+  }
 }
 
 module.exports = BotState;

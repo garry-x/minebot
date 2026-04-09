@@ -89,6 +89,7 @@ const activeBots = new Map();
 const botConnections = new Map();
 const botServerStartTime = Date.now();
 const retryQueue = new Map();
+const botLastStates = new Map();
 
 // 根据 botId 或 botName 查找 bot
 function findBotByIdOrName(botIdOrName) {
@@ -916,6 +917,106 @@ app.get('/api/bot/:botId/inspect', async (req, res) => {
   }
 });
 
+// ===================== BOT WATCH API ENDPOINTS =====================
+
+// GET /api/bot/:botId/events - Get recent bot events
+app.get('/api/bot/:botId/events', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    const events = await BotState.getEvents(botId, limit);
+    
+    res.json({
+      success: true,
+      botId,
+      count: events.length,
+      events: events.map(e => ({
+        id: e.id,
+        type: e.event_type,
+        message: e.message,
+        data: e.data ? JSON.parse(e.data) : null,
+        timestamp: e.created_at
+      }))
+    });
+  } catch (error) {
+    logger.error('Error getting bot events:', error);
+    res.status(500).json({ error: `Failed to get bot events: ${error.message}` });
+  }
+});
+
+// GET /api/bot/:botId/watch - Get comprehensive bot status for watch mode
+app.get('/api/bot/:botId/watch', async (req, res) => {
+  try {
+    const { botId } = req.params;
+    const eventLimit = Math.min(parseInt(req.query.events) || 50, 200);
+    
+    const bot = activeBots.get(botId);
+    if (!bot) {
+      return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.bot) {
+      return res.status(404).json({ error: 'Bot not fully initialized' });
+    }
+    
+    const pos = bot.bot.entity.position;
+    
+    let goalInfo = null;
+    if (bot.goalState) {
+      const inventory = bot.bot.inventory.items();
+      const progress = GoalSystem.calculateProgress(bot.goalState, inventory);
+      goalInfo = {
+        currentGoal: bot.goalState.currentGoal,
+        progress: progress.progress,
+        details: progress
+      };
+    }
+    
+    const events = await BotState.getEvents(botId, eventLimit);
+    
+    res.json({
+      success: true,
+      botId,
+      username: bot.bot.username,
+      state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+      mode: bot.currentMode,
+      health: {
+        current: bot.bot.health,
+        max: 20,
+        food: bot.bot.food,
+        foodSaturation: bot.bot.foodSaturation
+      },
+      position: {
+        x: Math.floor(pos.x),
+        y: Math.floor(pos.y),
+        z: Math.floor(pos.z),
+        world: 'overworld'
+      },
+      gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
+      goal: goalInfo,
+      connected: bot.isConnected,
+      deadReason: bot.deadReason,
+      joinedAt: bot.botTime || bot.bot.joinTime,
+      events: events.map(e => ({
+        id: e.id,
+        type: e.event_type,
+        message: e.message,
+        data: e.data ? JSON.parse(e.data) : null,
+        timestamp: e.created_at
+      }))
+    });
+  } catch (error) {
+    logger.error('Error getting bot watch data:', error);
+    res.status(500).json({ error: `Failed to get bot watch data: ${error.message}` });
+  }
+});
+
 // ===================== EVOLUTION API ENDPOINTS =====================
 
 // GET /api/bot/:botId/evolution/stats - Get evolution statistics
@@ -1226,6 +1327,7 @@ server.listen(PORT, HOST, async () => {
   // Initialize database tables first to avoid race condition
   try {
     await BotState.createTable();
+    await BotState.createEventsTable();
   } catch (err) {
     logger.error(`[Server] Failed to create database tables: ${err.message}`);
   }
@@ -1339,10 +1441,33 @@ function handleWebSocketMessage(ws, message) {
       }
       break;
     case 'status_update':
-      // Forward status updates from bots to all frontend clients
       if (verbose) {
         logger.trace('Forwarding status update from bot:', message.data);
       }
+      
+      if (message.data && message.data.botId) {
+        const botId = message.data.botId;
+        const bot = activeBots.get(botId);
+        
+        if (message.data.message) {
+          if (message.data.message.includes('died')) {
+            BotState.addEvent(botId, 'death', 'Bot died', {
+              position: message.data.position
+            }).catch(() => {});
+          } else if (message.data.message.includes('disconnect') || message.data.message.includes('Disconnected')) {
+            BotState.addEvent(botId, 'disconnect', 'Bot disconnected', {
+              reason: message.data.message
+            }).catch(() => {});
+          } else if (message.data.message.includes('respawn')) {
+            BotState.addEvent(botId, 'respawn', 'Bot respawned', {
+              position: message.data.position
+            }).catch(() => {});
+          }
+        }
+        
+        botLastStates.delete(botId);
+      }
+      
       ws.send(JSON.stringify({
         type: 'status_update',
         data: { bots: [message.data] }
@@ -1650,7 +1775,61 @@ function broadcastStatusUpdate() {
 }
 
 // Set up periodic status broadcasting
-setInterval(broadcastStatusUpdate, 3000); // Broadcast every 3 seconds for more real-time feel
+setInterval(broadcastStatusUpdate, 3000);
+
+// Record bot events for watch mode
+setInterval(async () => {
+  for (const [botId, bot] of activeBots.entries()) {
+    if (!bot.bot || !bot.isConnected) continue;
+    
+    try {
+      const pos = bot.bot.entity.position;
+      const health = bot.bot.health;
+      const food = bot.bot.food;
+      const key = `${botId}_${Math.floor(Date.now() / 10000)}`;
+      const lastState = botLastStates.get(botId);
+      
+      if (!lastState) {
+        botLastStates.set(botId, { health, food, pos });
+        await BotState.addEvent(botId, 'status', 'Bot connected', {
+          username: bot.bot.username,
+          position: { x: Math.floor(pos.x), y: Math.floor(pos.y), z: Math.floor(pos.z) }
+        });
+        continue;
+      }
+      
+      if (lastState.health !== health) {
+        await BotState.addEvent(botId, 'health', `Health changed: ${lastState.health} -> ${health}`, {
+          old: lastState.health,
+          new: health
+        });
+      }
+      
+      if (lastState.food !== food) {
+        await BotState.addEvent(botId, 'food', `Food changed: ${lastState.food} -> ${food}`, {
+          old: lastState.food,
+          new: food
+        });
+      }
+      
+      const dx = Math.abs(pos.x - lastState.pos.x);
+      const dy = Math.abs(pos.y - lastState.pos.y);
+      const dz = Math.abs(pos.z - lastState.pos.z);
+      if (dx > 5 || dy > 3 || dz > 5) {
+        await BotState.addEvent(botId, 'movement', `Moved to (${Math.floor(pos.x)}, ${Math.floor(pos.y)}, ${Math.floor(pos.z)})`, {
+          from: lastState.pos,
+          to: { x: Math.floor(pos.x), y: Math.floor(pos.y), z: Math.floor(pos.z) }
+        });
+      }
+      
+      botLastStates.set(botId, { health, food, pos });
+      
+      await BotState.clearOldEvents(botId, 100);
+    } catch (err) {
+      logger.error(`[Server] Failed to record bot event: ${err.message}`);
+    }
+  }
+}, 5000);
 
 // Set up periodic server state saving
 setInterval(async () => {
