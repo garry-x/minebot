@@ -90,6 +90,38 @@ const botConnections = new Map();
 const botServerStartTime = Date.now();
 const retryQueue = new Map();
 
+// 根据 botId 或 botName 查找 bot
+function findBotByIdOrName(botIdOrName) {
+  // 先按 botId 查找
+  if (activeBots.has(botIdOrName)) {
+    return { bot: activeBots.get(botIdOrName), botId: botIdOrName };
+  }
+  // 再按 botName (username) 查找
+  for (const [botId, bot] of activeBots.entries()) {
+    if (bot.bot && bot.bot.username === botIdOrName) {
+      return { bot, botId };
+    }
+  }
+  return null;
+}
+
+// 中间件：根据 botId 或 botName 查找 bot 并添加到 req
+function resolveBot(req, res, next) {
+  const botIdOrName = req.params.botId;
+  if (!botIdOrName) {
+    return next();
+  }
+  
+  const result = findBotByIdOrName(botIdOrName);
+  if (!result) {
+    return res.status(404).json({ error: 'Bot not found' });
+  }
+  
+  req.bot = result.bot;
+  req.botId = result.botId;
+  next();
+}
+
 // Initialize streaming routes (needs access to activeBots)
 const streamRoutes = require('./routes/stream')(activeBots);
 app.use('/api', streamRoutes);

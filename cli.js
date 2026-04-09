@@ -77,6 +77,29 @@ async function makeRequest(options, postData = null) {
   });
 }
 
+// 根据 botId 或 botName 获取 botId
+async function resolveBotId(botIdOrName) {
+  const data = await makeRequest({
+    hostname: 'localhost',
+    port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+    path: '/api/bots',
+    method: 'GET',
+    timeout: 5000
+  });
+  
+  if (data.bots) {
+    // 先按 botId 查找
+    const byBotId = data.bots.find(b => b.botId === botIdOrName);
+    if (byBotId) return byBotId.botId;
+    
+    // 再按 username 查找
+    const byUsername = data.bots.find(b => b.username === botIdOrName);
+    if (byUsername) return byUsername.botId;
+  }
+  
+  return botIdOrName;
+}
+
 function formatUptime(seconds) {
   if (!seconds) return 'N/A';
   const days = Math.floor(seconds / 86400);
@@ -377,6 +400,7 @@ botCommand
   .command('stop <botId>')
   .description('停止一个机器人')
   .action(async botId => {
+    const resolvedBotId = await resolveBotId(botId);
     console.log(`🛑 停止机器人 "${botId}"...`);
 
     const botStatus = await getBotServerStatus();
@@ -389,7 +413,7 @@ botCommand
       const data = await makeRequest({
         hostname: 'localhost',
         port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: `/api/bot/${botId}/stop`,
+        path: `/api/bot/${resolvedBotId}/stop`,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         timeout: 5000
@@ -536,6 +560,7 @@ botCommand
 
     // 如果提供了botId但没有提供goalId，并且有--status选项，查看状态
     if (!goalId && options.status) {
+      const resolvedBotId = await resolveBotId(botId);
       console.log(`📊 查看机器人 "${botId}" 目标状态...`);
 
       const botStatus = await getBotServerStatus();
@@ -548,7 +573,7 @@ botCommand
         const data = await makeRequest({
           hostname: 'localhost',
           port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: `/api/bot/${botId}/goal/status`,
+          path: `/api/bot/${resolvedBotId}/goal/status`,
           method: 'GET',
           timeout: 5000
         });
@@ -608,6 +633,7 @@ botCommand
     }
 
     // 设置目标
+    const resolvedBotId = await resolveBotId(botId);
     console.log(`🎯 设置机器人 "${botId}" 目标为 "${goalId}"...`);
 
     const botStatus = await getBotServerStatus();
@@ -621,7 +647,7 @@ botCommand
         {
           hostname: 'localhost',
           port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: `/api/bot/${botId}/goal/select`,
+          path: `/api/bot/${resolvedBotId}/goal/select`,
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000
@@ -650,6 +676,8 @@ botCommand
   .option('-s, --start', '启动自动目标')
   .option('--stop', '停止自动目标')
   .action(async (botId, options) => {
+    const resolvedBotId = await resolveBotId(botId);
+    
     // 无参数时默认显示状态
     if (!options.start && !options.stop) {
       console.log(`📊 查看机器人 "${botId}" 自动目标状态...`);
@@ -664,7 +692,7 @@ botCommand
         const data = await makeRequest({
           hostname: 'localhost',
           port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: `/api/bot/${botId}/goal/status`,
+          path: `/api/bot/${resolvedBotId}/goal/status`,
           method: 'GET',
           timeout: 5000
         });
@@ -713,7 +741,7 @@ botCommand
             timeout: 5000
           },
           JSON.stringify({
-            botId
+            botId: resolvedBotId
           })
         );
 
@@ -743,7 +771,7 @@ botCommand
         const data = await makeRequest({
           hostname: 'localhost',
           port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: `/api/bot/${botId}/stop`,
+          path: `/api/bot/${resolvedBotId}/stop`,
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000
