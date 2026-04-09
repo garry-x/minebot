@@ -649,7 +649,6 @@ botCommand
   .description('机器人自动目标控制')
   .option('-s, --start', '启动自动目标')
   .option('--stop', '停止自动目标')
-  .option('-g, --goal <goalId>', '设置初始目标', 'basic_survival')
   .action(async (botId, options) => {
     // 无参数时默认显示状态
     if (!options.start && !options.stop) {
@@ -714,16 +713,12 @@ botCommand
             timeout: 5000
           },
           JSON.stringify({
-            botId,
-            mode: options.mode,
-            initialGoal: options.goal
+            botId
           })
         );
 
         if (data.success) {
           console.log(`✅ 机器人 "${botId}" 自动目标启动成功！`);
-          console.log(`🎯 目标: ${data.goal || options.goal}`);
-          console.log(`🎮 模式: ${data.mode || options.mode}`);
           if (data.message) console.log(`📝 ${data.message}`);
         } else {
           console.log(`❌ 启动失败: ${data.error || '未知错误'}`);
