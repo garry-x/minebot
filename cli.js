@@ -92,9 +92,9 @@ async function resolveBotId(botIdOrName) {
     const byBotId = data.bots.find(b => b.botId === botIdOrName);
     if (byBotId) return byBotId.botId;
     
-    // 再按 username 查找
-    const byUsername = data.bots.find(b => b.username === botIdOrName);
-    if (byUsername) return byUsername.botId;
+    // 再按 botName 查找
+    const byBotName = data.bots.find(b => b.username === botIdOrName);
+    if (byBotName) return byBotName.botId;
   }
   
   return botIdOrName;
@@ -350,13 +350,13 @@ const botCommand = program.command('bot').description('机器人管理');
 
 // 启动机器人
 botCommand
-  .command('start <username>')
+  .command('start <botName>')
   .description('启动一个机器人')
   .option('-h, --host <host>', 'Minecraft服务器地址', 'localhost')
   .option('-p, --port <port>', 'Minecraft服务器端口', '25565')
   .option('--version <version>', 'Minecraft版本', '1.21.11')
-  .action(async (username, options) => {
-    console.log(`🤖 启动机器人 "${username}"...`);
+  .action(async (botName, options) => {
+    console.log(`🤖 启动机器人 "${botName}"...`);
 
     const botStatus = await getBotServerStatus();
     if (botStatus.status !== 'RUNNING') {
@@ -375,7 +375,7 @@ botCommand
           timeout: 5000
         },
         JSON.stringify({
-          username,
+          username: botName,
           host: options.host,
           port: parseInt(options.port),
           version: options.version
@@ -383,7 +383,7 @@ botCommand
       );
 
       if (data.success) {
-        console.log(`✅ 机器人 "${username}" 启动成功！`);
+        console.log(`✅ 机器人 "${botName}" 启动成功！`);
         if (data.botId) console.log(`🤖 Bot ID: ${data.botId}`);
         if (data.goal) console.log(`🎯 自动目标: ${data.goal}`);
         console.log(`📝 ${data.message || '自动行为已启用'}`);
