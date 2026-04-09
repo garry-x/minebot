@@ -1,0 +1,48 @@
+{
+  "recommendedUpdates": {
+    "dependencies": {
+      "axios": "^1.7.0",
+      "commander": "^12.1.0",
+      "dotenv": "^16.4.5",
+      "express": "^4.19.2",
+      "mineflayer": "^4.15.0",
+      "mineflayer-pathfinder": "^2.4.5",
+      "prismarine-viewer": "^1.33.0",
+      "sqlite3": "^5.1.7",
+      "vec3": "^0.1.10",
+      "ws": "^8.17.0"
+    },
+    "devDependencies": {
+      "esbuild": "^0.21.5",
+      "jest": "^29.7.0",
+      "nodemon": "^3.1.0",
+      "supertest": "^6.3.4",
+      "eslint": "^8.57.0",
+      "prettier": "^3.2.5",
+      "husky": "^9.0.11"
+    }
+  },
+  "securityUpdates": {
+    "highPriority": [
+      "express",
+      "sqlite3",
+      "ws"
+    ],
+    "mediumPriority": [
+      "axios",
+      "dotenv"
+    ]
+  },
+  "updateCommands": {
+    "checkUpdates": "npm outdated",
+    "updateAll": "npm update",
+    "updateSecurity": "npm audit fix",
+    "updateMajor": "npx npm-check-updates -u"
+  },
+  "notes": {
+    "express": "从4.x升级到5.x需要检查中间件API变化",
+    "sqlite3": "5.x到6.x有API变化，需要测试",
+    "mineflayer-pathfinder": "1.x到2.x有重大变更，需要仔细测试",
+    "jest": "保持当前版本，30.x有重大变更"
+  }
+}
