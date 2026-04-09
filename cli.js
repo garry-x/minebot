@@ -644,119 +644,115 @@ botCommand
 
 
 // 自动目标控制命令
-const autoCommand = botCommand.command('auto <botId>').description('机器人自动目标控制');
-
-// 启动自动目标
-autoCommand
-  .command('start')
-  .description('启动机器人自动目标')
+botCommand
+  .command('auto <botId>')
+  .description('机器人自动目标控制')
+  .option('-s, --start', '启动自动目标')
+  .option('--stop', '停止自动目标')
+  .option('--status', '查看自动目标状态')
   .option('-g, --goal <goalId>', '设置初始目标', 'basic_survival')
   .option('-m, --mode <mode>', '设置模式', 'survival')
   .action(async (botId, options) => {
-    console.log(`🤖 启动机器人 "${botId}" 自动目标...`);
+    // 启动自动目标
+    if (options.start) {
+      console.log(`🤖 启动机器人 "${botId}" 自动目标...`);
 
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
+      const botStatus = await getBotServerStatus();
+      if (botStatus.status !== 'RUNNING') {
+        console.log('❌ Bot服务器未运行');
+        return;
+      }
+
+      try {
+        const data = await makeRequest(
+          {
+            hostname: 'localhost',
+            port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+            path: '/api/bot/automatic',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 5000
+          },
+          JSON.stringify({
+            botId,
+            mode: options.mode,
+            initialGoal: options.goal
+          })
+        );
+
+        if (data.success) {
+          console.log(`✅ 机器人 "${botId}" 自动目标启动成功！`);
+          console.log(`🎯 目标: ${data.goal || options.goal}`);
+          console.log(`🎮 模式: ${data.mode || options.mode}`);
+          if (data.message) console.log(`📝 ${data.message}`);
+        } else {
+          console.log(`❌ 启动失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        console.error(`❌ 请求失败: ${error.message}`);
+      }
       return;
     }
 
-    try {
-      const data = await makeRequest(
-        {
+    // 停止自动目标
+    if (options.stop) {
+      console.log(`🛑 停止机器人 "${botId}" 自动目标...`);
+
+      const botStatus = await getBotServerStatus();
+      if (botStatus.status !== 'RUNNING') {
+        console.log('❌ Bot服务器未运行');
+        return;
+      }
+
+      try {
+        const data = await makeRequest({
           hostname: 'localhost',
           port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: '/api/bot/automatic',
+          path: `/api/bot/${botId}/stop`,
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           timeout: 5000
-        },
-        JSON.stringify({
-          botId,
-          mode: options.mode,
-          initialGoal: options.goal
-        })
-      );
+        });
 
-      if (data.success) {
-        console.log(`✅ 机器人 "${botId}" 自动目标启动成功！`);
-        console.log(`🎯 目标: ${data.goal || options.goal}`);
-        console.log(`🎮 模式: ${data.mode || options.mode}`);
-        if (data.message) console.log(`📝 ${data.message}`);
-      } else {
-        console.log(`❌ 启动失败: ${data.error || '未知错误'}`);
+        if (data.success) {
+          console.log(`✅ 机器人 "${botId}" 自动目标停止成功！`);
+        } else {
+          console.log(`❌ 停止失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        console.error(`❌ 请求失败: ${error.message}`);
       }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
-
-// 停止自动目标
-autoCommand
-  .command('stop')
-  .description('停止机器人自动目标')
-  .action(async (botId) => {
-    console.log(`🛑 停止机器人 "${botId}" 自动目标...`);
-
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
       return;
     }
 
-    try {
-      const data = await makeRequest({
-        hostname: 'localhost',
-        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: `/api/bot/${botId}/stop`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 5000
-      });
+    // 查看自动目标状态
+    if (options.status) {
+      console.log(`📊 查看机器人 "${botId}" 自动目标状态...`);
 
-      if (data.success) {
-        console.log(`✅ 机器人 "${botId}" 自动目标停止成功！`);
-      } else {
-        console.log(`❌ 停止失败: ${data.error || '未知错误'}`);
+      const botStatus = await getBotServerStatus();
+      if (botStatus.status !== 'RUNNING') {
+        console.log('❌ Bot服务器未运行');
+        return;
       }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
 
+      try {
+        const data = await makeRequest({
+          hostname: 'localhost',
+          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+          path: `/api/bot/${botId}/goal/status`,
+          method: 'GET',
+          timeout: 5000
+        });
 
-
-// 查看自动目标状态
-autoCommand
-  .command('status')
-  .description('查看机器人自动目标状态')
-  .action(async (botId) => {
-    console.log(`📊 查看机器人 "${botId}" 自动目标状态...`);
-
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
-      return;
-    }
-
-    try {
-      const data = await makeRequest({
-        hostname: 'localhost',
-        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: `/api/bot/${botId}/goal/status`,
-        method: 'GET',
-        timeout: 5000
-      });
-
-      console.log(`🤖 机器人 "${botId}" 状态:`);
-      if (data.status) console.log(`  🔄 状态: ${data.status}`);
-      if (data.progress) console.log(`  📈 进度: ${data.progress}%`);
-      if (data.currentGoal) console.log(`  🎯 目标: ${data.currentGoal}`);
-      if (data.subTasks) {
-        console.log(`  📋 子任务:`);
-        data.subTasks.forEach((task, index) => {
-          const status = task.completed ? '✅' : '⏳';
-          console.log(`    ${status} ${task.name}: ${task.progress || 0}%`);
+        console.log(`🤖 机器人 "${botId}" 状态:`);
+        if (data.status) console.log(`  🔄 状态: ${data.status}`);
+        if (data.progress) console.log(`  📈 进度: ${data.progress}%`);
+        if (data.currentGoal) console.log(`  🎯 目标: ${data.currentGoal}`);
+        if (data.subTasks) {
+          console.log(`  📋 子任务:`);
+          data.subTasks.forEach((task, index) => {
+            const status = task.completed ? '✅' : '⏳';
+            console.log(`    ${status} ${task.name}: ${task.progress || 0}%`);
         });
       }
       if (data.materials) {
@@ -765,9 +761,14 @@ autoCommand
           console.log(`    📦 ${material}: ${count}`);
         });
       }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
+      } catch (error) {
+        console.error(`❌ 请求失败: ${error.message}`);
+      }
+      return;
     }
+
+    console.log('❌ 请指定操作: --start, --stop 或 --status');
+    console.log('用法: minebot bot auto <botId> --start');
   });
 
 // Minecraft服务器管理命令
