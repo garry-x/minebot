@@ -507,64 +507,24 @@ botCommand
         });
 
         if (data.success && data.goals) {
-          // 难度标签映射
           const difficultyLabels = {
-            beginner: { emoji: '🟢', label: '初级', color: '\x1b[32m' },
-            intermediate: { emoji: '🟡', label: '中级', color: '\x1b[33m' },
-            advanced: { emoji: '🔴', label: '高级', color: '\x1b[31m' },
-            expert: { emoji: '🔵', label: '专家', color: '\x1b[34m' }
+            beginner: '🟢',
+            intermediate: '🟡',
+            advanced: '🔴',
+            expert: '🔵'
           };
-          const resetColor = '\x1b[0m';
-          const boldColor = '\x1b[1m';
 
-          console.log(`\n${boldColor}🎯 可用目标列表 (共${data.goals.length}个)${resetColor}\n`);
-
-          // 按难度分组显示
-          const groupedGoals = {
-            beginner: [],
-            intermediate: [],
-            advanced: [],
-            expert: []
-          };
+          console.log(`\n🎯 可用目标 (${data.goals.length}个):\n`);
+          console.log('  ID                    难度  名称');
 
           data.goals.forEach(goal => {
-            if (groupedGoals[goal.difficulty]) {
-              groupedGoals[goal.difficulty].push(goal);
-            } else {
-              groupedGoals.beginner.push(goal);
-            }
+            const diffEmoji = difficultyLabels[goal.difficulty] || '⚪';
+            const name = goal.name || goal.id;
+            console.log(`  ${goal.id.padEnd(20)} ${diffEmoji}   ${name}`);
           });
 
-          // 遍历每个难度级别
-          Object.keys(groupedGoals).forEach(difficulty => {
-            const goals = groupedGoals[difficulty];
-            if (goals.length === 0) return;
-
-            const diffInfo = difficultyLabels[difficulty];
-            console.log(`${diffInfo.color}${diffInfo.emoji} ${diffInfo.label} (${goals.length}个)${resetColor}`);
-            console.log('─'.repeat(70));
-
-            goals.forEach((goal, index) => {
-              const subTaskCount = goal.subTasks ? goal.subTasks.length : 0;
-              const rewardCount = goal.rewards ? goal.rewards.length : 0;
-              const desc = goal.description ? (goal.description.length > 35 ? goal.description.substring(0, 34) + '…' : goal.description) : '无描述';
-              const name = goal.name || goal.id;
-
-              // 格式化输出
-              console.log(`  ${boldColor}${index + 1}.${resetColor} ${boldColor}${name}${resetColor}`);
-              console.log(`     📋 ID: ${goal.id}`);
-              console.log(`     📝 ${desc}`);
-              console.log(`     ✅ 子任务: ${subTaskCount}个  |  🎁 奖励: ${rewardCount}个`);
-              console.log();
-            });
-          });
-
-          console.log('─'.repeat(70));
-          console.log(`${boldColor}💡 快速选择:${resetColor}`);
-          console.log(`   minebot bot goal <botId> basic_survival   # 选择"基础生存"`);
-          console.log(`   minebot bot goal <botId> diamond_gear   # 选择"钻石装备"`);
-          console.log(`   minebot bot goal <botId> --status        # 查看当前状态`);
-          console.log();
+          console.log('\n用法: minebot bot goal <botId> <goalId>');
+          console.log('例:  minebot bot goal testbot basic_survival');
         } else {
           console.log('❌ 获取目标列表失败');
         }
