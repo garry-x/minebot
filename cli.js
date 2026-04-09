@@ -650,7 +650,6 @@ botCommand
   .option('-s, --start', '启动自动目标')
   .option('--stop', '停止自动目标')
   .option('-g, --goal <goalId>', '设置初始目标', 'basic_survival')
-  .option('-m, --mode <mode>', '设置模式', 'survival')
   .action(async (botId, options) => {
     // 无参数时默认显示状态
     if (!options.start && !options.stop) {

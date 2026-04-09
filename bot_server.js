@@ -390,12 +390,23 @@ app.post('/api/bot/start', async (req, res) => {
       }
     }
     
+    // 自动开启自动目标模式
+    try {
+      const goalState = GoalSystem.createGoalState('basic_survival', botId);
+      bot.goalState = goalState;
+      bot.currentMode = 'auto';
+      await BotGoal.saveGoal(botId, 'basic_survival', goalState);
+      logger.info(`[API] Auto mode enabled for bot ${botId} with goal: basic_survival`);
+    } catch (autoErr) {
+      logger.error(`[API] Failed to enable auto mode: ${autoErr.message}`);
+    }
+    
     res.json({ 
       success: true, 
       botId,
       username,
-      mode: 'survival',
-      message: 'Bot started successfully (offline mode) with automatic behavior enabled'
+      mode: 'auto',
+      message: 'Bot started successfully with auto mode enabled'
     });
     
     // Save bot state to persistent store (after bot is ready)
@@ -405,7 +416,7 @@ app.post('/api/bot/start', async (req, res) => {
           const position = bot.bot.entity.position;
           await BotState.saveBot(botId, {
             username: bot.bot.username,
-            mode: 'survival',
+            mode: 'auto',
             position_x: position.x,
             position_y: position.y,
             position_z: position.z,
@@ -477,7 +488,7 @@ app.post('/api/bot/automatic', async (req, res) => {
       const position = bot.bot.entity.position;
       await BotState.saveBot(targetBotId, {
         username: bot.bot.username,
-        mode: mode || 'survival',
+        mode: mode || 'auto',
         position_x: position.x,
         position_y: position.y,
         position_z: position.z,
@@ -491,7 +502,7 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     // Start automatic behavior
     bot.behaviors.automaticBehavior({ 
-      mode: mode || 'survival',
+      mode: 'auto',
       initialGoal: initialGoal || 'basic_survival'
     }).catch(err => {
       logger.error('Error in automatic behavior:', err);
