@@ -724,43 +724,7 @@ autoCommand
     }
   });
 
-// 设置自动目标
-autoCommand
-  .command('goal <goalId>')
-  .description('设置机器人目标')
-  .action(async (botId, goalId) => {
-    console.log(`🎯 设置机器人 "${botId}" 目标为 "${goalId}"...`);
 
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
-      return;
-    }
-
-    try {
-      const data = await makeRequest(
-        {
-          hostname: 'localhost',
-          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: `/api/bot/${botId}/goal/select`,
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 5000
-        },
-        JSON.stringify({ goalId })
-      );
-
-      if (data.success) {
-        console.log(`✅ 机器人目标设置成功！`);
-        console.log(`🎯 目标: ${data.goalName || goalId}`);
-        if (data.message) console.log(`📝 ${data.message}`);
-      } else {
-        console.log(`❌ 设置失败: ${data.error || '未知错误'}`);
-      }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
 
 // 查看自动目标状态
 autoCommand
