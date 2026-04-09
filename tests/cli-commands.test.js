@@ -126,6 +126,15 @@ describe('CLI Command Structure', () => {
       expect(result.output).toContain('--start');
       expect(result.output).toContain('--stop');
     });
+
+    test('bot remove should accept -a/--all and -y/--yes options', () => {
+      const result = runCLI('bot remove --help');
+      expect(result.success).toBe(true);
+      expect(result.output).toContain('-a, --all');
+      expect(result.output).toContain('-y, --yes');
+      expect(result.output).toContain('删除所有机器人（需要二次确认）');
+      expect(result.output).toContain('自动确认删除操作，跳过二次确认');
+    });
   });
 
   describe('Minecraft command group', () => {
@@ -201,6 +210,8 @@ describe('CLI Integration Tests (Placeholders)', () => {
   test.todo('bot start should create new bot via API');
   test.todo('bot stop should stop bot via API');
   test.todo('bot list should fetch bots from API');
+  test.todo('bot remove should delete single bot via API');
+  test.todo('bot remove --all should delete all bots via API');
   test.todo('mc start should start Minecraft server');
   test.todo('mc stop should stop Minecraft server');
   test.todo('status should check both servers');

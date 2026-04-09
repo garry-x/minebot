@@ -980,6 +980,151 @@ botCommand
     console.log('查看状态: minebot bot auto <botId>');
   });
 
+// 删除机器人
+botCommand
+  .command('remove <botId>')
+  .description('删除一个机器人或所有机器人')
+  .option('-a, --all', '删除所有机器人（需要二次确认）')
+  .option('-y, --yes', '自动确认删除操作，跳过二次确认')
+  .action(async (botId, options) => {
+    const botStatus = await getBotServerStatus();
+    if (botStatus.status !== 'RUNNING') {
+      console.log('❌ Bot服务器未运行');
+      return;
+    }
+
+    // 删除所有机器人
+    if (options.all) {
+      console.log('⚠️  警告：您将要删除所有机器人！');
+      
+      // 如果没有自动确认，需要用户二次确认
+      if (!options.yes) {
+        console.log('此操作将：');
+        console.log('  - 停止所有正在运行的机器人');
+        console.log('  - 从数据库中删除所有机器人记录');
+        console.log('  - 无法撤销！');
+        
+        const readline = require('readline');
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout
+        });
+        
+        try {
+          const answer = await new Promise(resolve => {
+            rl.question('确定要删除所有机器人吗？(输入 "yes" 确认): ', resolve);
+          });
+          rl.close();
+          
+          if (answer.toLowerCase() !== 'yes') {
+            console.log('❌ 操作已取消');
+            return;
+          }
+        } catch (error) {
+          console.error('❌ 确认失败:', error.message);
+          rl.close();
+          return;
+        }
+      }
+      
+      console.log('🗑️  删除所有机器人...');
+      
+      try {
+        const data = await makeRequest({
+          hostname: 'localhost',
+          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+          path: '/api/bots',
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 10000
+        });
+        
+        if (data.success) {
+          console.log(`✅ 成功删除 ${data.removed || 0} 个机器人！`);
+          console.log(`📝 ${data.message || '所有机器人已删除'}`);
+        } else {
+          console.log(`❌ 删除失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        console.error(`❌ 请求失败: ${error.message}`);
+      }
+      return;
+    }
+    
+    // 删除单个机器人
+    const resolvedBotId = await resolveBotId(botId);
+    
+    // 获取机器人信息以显示正确的名称
+    let displayName = botId;
+    try {
+      const botData = await makeRequest({
+        hostname: 'localhost',
+        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+        path: '/api/bots',
+        method: 'GET',
+        timeout: 3000
+      });
+      
+      if (botData.bots) {
+        const bot = botData.bots.find(b => b.botId === resolvedBotId);
+        if (bot && bot.username) {
+          displayName = bot.username;
+        }
+      }
+    } catch (error) {
+      // 如果获取机器人信息失败，继续使用原始名称
+    }
+    
+    console.log(`🗑️  删除机器人 "${displayName}"...`);
+    
+    // 如果没有自动确认，需要用户二次确认
+    if (!options.yes) {
+      console.log(`⚠️  警告：您将要删除机器人 "${displayName}" (ID: ${resolvedBotId})`);
+      
+      const readline = require('readline');
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+      
+      try {
+        const answer = await new Promise(resolve => {
+          rl.question('确定要删除这个机器人吗？(输入 "yes" 确认): ', resolve);
+        });
+        rl.close();
+        
+        if (answer.toLowerCase() !== 'yes') {
+          console.log('❌ 操作已取消');
+          return;
+        }
+      } catch (error) {
+        console.error('❌ 确认失败:', error.message);
+        rl.close();
+        return;
+      }
+    }
+    
+    try {
+      const data = await makeRequest({
+        hostname: 'localhost',
+        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+        path: `/api/bot/${resolvedBotId}`,
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 5000
+      });
+      
+      if (data.success) {
+        console.log(`✅ 机器人 "${displayName}" 删除成功！`);
+        console.log(`📝 ${data.message || '机器人已删除'}`);
+      } else {
+        console.log(`❌ 删除失败: ${data.error || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error(`❌ 请求失败: ${error.message}`);
+    }
+  });
+
 // Minecraft服务器管理命令
 const mcCommand = program.command('mc').description('Minecraft服务器管理');
 
