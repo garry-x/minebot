@@ -107,6 +107,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// GET /api/goals - 获取所有可用目标
+app.get('/api/goals', (req, res) => {
+  try {
+    const goals = GoalSystem.getAllGoals();
+    res.json({
+      success: true,
+      goals: goals
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // GET /api/server/logs - Get recent log entries
 app.get('/api/server/logs', (req, res) => {
   try {

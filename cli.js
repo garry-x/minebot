@@ -479,89 +479,16 @@ botCommand
     }
   });
 
-// 启动机器人自动目标
-botCommand
-  .command('auto-start <botId>')
-  .description('启动机器人自动目标')
-  .option('-g, --goal <goalId>', '设置初始目标', 'basic_survival')
-  .option('-m, --mode <mode>', '设置模式', 'survival')
-  .action(async (botId, options) => {
-    console.log(`🤖 启动机器人 "${botId}" 自动目标...`);
 
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
-      return;
-    }
 
-    try {
-      const data = await makeRequest(
-        {
-          hostname: 'localhost',
-          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: '/api/bot/automatic',
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 5000
-        },
-        JSON.stringify({
-          botId,
-          mode: options.mode,
-          initialGoal: options.goal
-        })
-      );
 
-      if (data.success) {
-        console.log(`✅ 机器人 "${botId}" 自动目标启动成功！`);
-        console.log(`🎯 目标: ${data.goal || options.goal}`);
-        console.log(`🎮 模式: ${data.mode || options.mode}`);
-        if (data.message) console.log(`📝 ${data.message}`);
-      } else {
-        console.log(`❌ 启动失败: ${data.error || '未知错误'}`);
-      }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
-
-// 停止机器人自动目标
-botCommand
-  .command('auto-stop <botId>')
-  .description('停止机器人自动目标')
-  .action(async (botId) => {
-    console.log(`🛑 停止机器人 "${botId}" 自动目标...`);
-
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
-      return;
-    }
-
-    try {
-      const data = await makeRequest({
-        hostname: 'localhost',
-        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: `/api/bot/${botId}/stop`,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 5000
-      });
-
-      if (data.success) {
-        console.log(`✅ 机器人 "${botId}" 自动目标停止成功！`);
-      } else {
-        console.log(`❌ 停止失败: ${data.error || '未知错误'}`);
-      }
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
 
 // 设置机器人目标或列出所有目标
 botCommand
   .command('goal [botId] [goalId]')
   .description('设置机器人目标或列出所有可用目标')
-  .action(async (botId, goalId) => {
+  .option('-s, --status', '查看机器人目标状态')
+  .action(async (botId, goalId, options) => {
     // 如果没有提供参数，列出所有可用目标
     if (!botId) {
       const botStatus = await getBotServerStatus();
@@ -582,25 +509,62 @@ botCommand
         if (data.success && data.goals) {
           // 难度标签映射
           const difficultyLabels = {
-            beginner: '🟢 初级',
-            intermediate: '🟡 中级',
-            advanced: '🔴 高级',
-            expert: '🔵 专家'
+            beginner: { emoji: '🟢', label: '初级', color: '\x1b[32m' },
+            intermediate: { emoji: '🟡', label: '中级', color: '\x1b[33m' },
+            advanced: { emoji: '🔴', label: '高级', color: '\x1b[31m' },
+            expert: { emoji: '🔵', label: '专家', color: '\x1b[34m' }
+          };
+          const resetColor = '\x1b[0m';
+          const boldColor = '\x1b[1m';
+
+          console.log(`\n${boldColor}🎯 可用目标列表 (共${data.goals.length}个)${resetColor}\n`);
+
+          // 按难度分组显示
+          const groupedGoals = {
+            beginner: [],
+            intermediate: [],
+            advanced: [],
+            expert: []
           };
 
-          console.log(`\n🎯 可用目标列表 (共${data.goals.length}个):\n`);
-          console.log('ID                    难度     名称');
-          console.log('─'.repeat(60));
-
           data.goals.forEach(goal => {
-            const difficulty = difficultyLabels[goal.difficulty] || '⚪ 其他';
-            const name = goal.name.length > 10 ? goal.name.substring(0, 9) + '…' : goal.name.padEnd(10);
-            console.log(`${goal.id.padEnd(20)} ${difficulty.padEnd(8)} ${name}`);
+            if (groupedGoals[goal.difficulty]) {
+              groupedGoals[goal.difficulty].push(goal);
+            } else {
+              groupedGoals.beginner.push(goal);
+            }
           });
 
-          console.log('─'.repeat(60));
-          console.log('\n💡 使用: minebot bot goal <botId> <goalId>');
-          console.log('📖 查看详情: minebot bot goal <goalId> --info');
+          // 遍历每个难度级别
+          Object.keys(groupedGoals).forEach(difficulty => {
+            const goals = groupedGoals[difficulty];
+            if (goals.length === 0) return;
+
+            const diffInfo = difficultyLabels[difficulty];
+            console.log(`${diffInfo.color}${diffInfo.emoji} ${diffInfo.label} (${goals.length}个)${resetColor}`);
+            console.log('─'.repeat(70));
+
+            goals.forEach((goal, index) => {
+              const subTaskCount = goal.subTasks ? goal.subTasks.length : 0;
+              const rewardCount = goal.rewards ? goal.rewards.length : 0;
+              const desc = goal.description ? (goal.description.length > 35 ? goal.description.substring(0, 34) + '…' : goal.description) : '无描述';
+              const name = goal.name || goal.id;
+
+              // 格式化输出
+              console.log(`  ${boldColor}${index + 1}.${resetColor} ${boldColor}${name}${resetColor}`);
+              console.log(`     📋 ID: ${goal.id}`);
+              console.log(`     📝 ${desc}`);
+              console.log(`     ✅ 子任务: ${subTaskCount}个  |  🎁 奖励: ${rewardCount}个`);
+              console.log();
+            });
+          });
+
+          console.log('─'.repeat(70));
+          console.log(`${boldColor}💡 快速选择:${resetColor}`);
+          console.log(`   minebot bot goal <botId> basic_survival   # 选择"基础生存"`);
+          console.log(`   minebot bot goal <botId> diamond_gear   # 选择"钻石装备"`);
+          console.log(`   minebot bot goal <botId> --status        # 查看当前状态`);
+          console.log();
         } else {
           console.log('❌ 获取目标列表失败');
         }
@@ -610,10 +574,76 @@ botCommand
       return;
     }
 
-    // 如果只提供了botId但没有提供goalId
+    // 如果提供了botId但没有提供goalId，并且有--status选项，查看状态
+    if (!goalId && options.status) {
+      console.log(`📊 查看机器人 "${botId}" 目标状态...`);
+
+      const botStatus = await getBotServerStatus();
+      if (botStatus.status !== 'RUNNING') {
+        console.log('❌ Bot服务器未运行');
+        return;
+      }
+
+      try {
+        const data = await makeRequest({
+          hostname: 'localhost',
+          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+          path: `/api/bot/${botId}/goal/status`,
+          method: 'GET',
+          timeout: 5000
+        });
+
+        console.log(`🤖 机器人 "${botId}" 目标状态:`);
+        
+        if (data.error) {
+          console.log(`  ❌ ${data.error}`);
+          return;
+        }
+        
+        if (data.currentGoal) {
+          console.log(`  🎯 当前目标: ${data.currentGoal.name || data.currentGoal.id || '未知'}`);
+          if (data.currentGoal.description) console.log(`  📝 描述: ${data.currentGoal.description}`);
+        }
+        
+        if (data.progress !== undefined) {
+          const progressBar = '█'.repeat(Math.floor(data.progress / 10)) + '░'.repeat(10 - Math.floor(data.progress / 10));
+          console.log(`  📈 总体进度: ${progressBar} ${data.progress}%`);
+        }
+        
+        if (data.subTasks && Array.isArray(data.subTasks)) {
+          console.log(`  📋 子任务进度:`);
+          data.subTasks.forEach((task, index) => {
+            const status = task.completed ? '✅' : (task.started ? '🔄' : '⏳');
+            const progress = task.progress !== undefined ? ` (${task.progress}%)` : '';
+            console.log(`    ${status} ${task.name || task.id}: ${task.completed ? '已完成' : '进行中'}${progress}`);
+          });
+        }
+        
+        if (data.materials && Object.keys(data.materials).length > 0) {
+          console.log(`  🧱 收集材料:`);
+          Object.entries(data.materials).forEach(([material, count]) => {
+            console.log(`    📦 ${material}: ${count}`);
+          });
+        }
+        
+        if (data.startedAt) {
+          const started = new Date(data.startedAt);
+          const now = new Date();
+          const duration = Math.floor((now - started) / 1000 / 60); // 分钟
+          console.log(`  ⏱️  已运行: ${duration}分钟`);
+        }
+        
+      } catch (error) {
+        console.error(`❌ 请求失败: ${error.message}`);
+      }
+      return;
+    }
+
+    // 如果只提供了botId但没有提供goalId，也没有--status选项
     if (!goalId) {
-      console.log('❌ 请提供目标ID');
+      console.log('❌ 请提供目标ID或使用 --status 选项查看状态');
       console.log('💡 使用 "minebot bot goal" 查看所有可用目标');
+      console.log('💡 使用 "minebot bot goal <botId> --status" 查看机器人目标状态');
       return;
     }
 
@@ -651,72 +681,7 @@ botCommand
     }
   });
 
-// 查看机器人目标状态
-botCommand
-  .command('goal-status <botId>')
-  .description('查看机器人目标状态')
-  .action(async (botId) => {
-    console.log(`📊 查看机器人 "${botId}" 目标状态...`);
 
-    const botStatus = await getBotServerStatus();
-    if (botStatus.status !== 'RUNNING') {
-      console.log('❌ Bot服务器未运行');
-      return;
-    }
-
-    try {
-      const data = await makeRequest({
-        hostname: 'localhost',
-        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: `/api/bot/${botId}/goal/status`,
-        method: 'GET',
-        timeout: 5000
-      });
-
-      console.log(`🤖 机器人 "${botId}" 目标状态:`);
-      
-      if (data.error) {
-        console.log(`  ❌ ${data.error}`);
-        return;
-      }
-      
-      if (data.currentGoal) {
-        console.log(`  🎯 当前目标: ${data.currentGoal.name || data.currentGoal.id || '未知'}`);
-        if (data.currentGoal.description) console.log(`  📝 描述: ${data.currentGoal.description}`);
-      }
-      
-      if (data.progress !== undefined) {
-        const progressBar = '█'.repeat(Math.floor(data.progress / 10)) + '░'.repeat(10 - Math.floor(data.progress / 10));
-        console.log(`  📈 总体进度: ${progressBar} ${data.progress}%`);
-      }
-      
-      if (data.subTasks && Array.isArray(data.subTasks)) {
-        console.log(`  📋 子任务进度:`);
-        data.subTasks.forEach((task, index) => {
-          const status = task.completed ? '✅' : (task.started ? '🔄' : '⏳');
-          const progress = task.progress !== undefined ? ` (${task.progress}%)` : '';
-          console.log(`    ${status} ${task.name || task.id}: ${task.completed ? '已完成' : '进行中'}${progress}`);
-        });
-      }
-      
-      if (data.materials && Object.keys(data.materials).length > 0) {
-        console.log(`  🧱 收集材料:`);
-        Object.entries(data.materials).forEach(([material, count]) => {
-          console.log(`    📦 ${material}: ${count}`);
-        });
-      }
-      
-      if (data.startedAt) {
-        const started = new Date(data.startedAt);
-        const now = new Date();
-        const duration = Math.floor((now - started) / 1000 / 60); // 分钟
-        console.log(`  ⏱️  已运行: ${duration}分钟`);
-      }
-      
-    } catch (error) {
-      console.error(`❌ 请求失败: ${error.message}`);
-    }
-  });
 
 // 自动目标控制命令
 const autoCommand = botCommand.command('auto <botId>').description('机器人自动目标控制');
