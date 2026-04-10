@@ -563,7 +563,10 @@ botCommand
         return;
       }
 
-      console.log(`总共 ${bots.length} 个机器人:\n`);
+      const activeCount = bots.filter(b => b.status === 'active' || b.state === 'ALIVE').length;
+      const stoppedCount = bots.length - activeCount;
+      
+      console.log(`总共 ${bots.length} 个机器人 (运行中: ${activeCount} | 已停止: ${stoppedCount}):\n`);
 
       for (const bot of bots) {
         const botId = bot.botId || bot.id || 'Unknown';
@@ -1114,7 +1117,7 @@ botCommand
 
 // 删除机器人
 botCommand
-  .command('remove <botId>')
+  .command('remove [botId]')
   .description('删除一个机器人或所有机器人')
   .option('-a, --all', '删除所有机器人（需要二次确认）')
   .option('-y, --yes', '自动确认删除操作，跳过二次确认')
@@ -1126,7 +1129,7 @@ botCommand
     }
 
     // 删除所有机器人
-    if (options.all) {
+    if (options.all || !botId) {
       console.log('⚠️  警告：您将要删除所有机器人！');
       
       // 如果没有自动确认，需要用户二次确认
