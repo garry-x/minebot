@@ -15,12 +15,24 @@ class EvolutionStorage {
           reject(new Error(`Failed to connect to evolution database: ${err.message}`));
           return;
         }
-        this.db.run('PRAGMA busy_timeout = 5000', (err) => {
+        this.db.run('PRAGMA journal_mode=WAL', (err) => {
           if (err) {
-            reject(new Error(`Failed to set busy timeout: ${err.message}`));
+            reject(new Error(`Failed to set WAL mode: ${err.message}`));
             return;
           }
-          resolve();
+          this.db.run('PRAGMA synchronous=NORMAL', (err) => {
+            if (err) {
+              reject(new Error(`Failed to set synchronous: ${err.message}`));
+              return;
+            }
+            this.db.run('PRAGMA busy_timeout = 5000', (err) => {
+              if (err) {
+                reject(new Error(`Failed to set busy timeout: ${err.message}`));
+                return;
+              }
+              resolve();
+            });
+          });
         });
       });
     });
@@ -88,6 +100,7 @@ class EvolutionStorage {
     await this._runQuery(`CREATE INDEX IF NOT EXISTS idx_weights_bot_domain ON evolution_weights(bot_id, domain)`);
     await this._runQuery(`CREATE INDEX IF NOT EXISTS idx_exp_bot_type ON experience_log(bot_id, type)`);
     await this._runQuery(`CREATE INDEX IF NOT EXISTS idx_exp_success ON experience_log(id, bot_id, success)`);
+    await this._runQuery(`CREATE INDEX IF NOT EXISTS idx_exp_created_at ON experience_log(created_at)`);
   }
 
   async _runMigrations() {

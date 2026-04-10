@@ -3,6 +3,10 @@ const path = require('path');
 const dbPath = path.resolve(__dirname, '../../bot/bot_config.db');
 const db = new sqlite3.Database(dbPath);
 
+// Enable WAL mode for better concurrent write performance
+db.run('PRAGMA journal_mode=WAL');
+db.run('PRAGMA synchronous=NORMAL');
+
 class BotState {
   static createTable() {
     return new Promise((resolve, reject) => {
@@ -45,7 +49,19 @@ class BotState {
           if (err) {
             return reject(err);
           }
-          resolve();
+          
+          db.run('CREATE INDEX IF NOT EXISTS idx_bot_states_status ON bot_states(status)', function(err) {
+            if (err) return reject(err);
+            
+            db.run('CREATE INDEX IF NOT EXISTS idx_bot_states_updated_at ON bot_states(updated_at)', function(err) {
+              if (err) return reject(err);
+              
+              db.run('CREATE INDEX IF NOT EXISTS idx_bot_states_status_updated ON bot_states(status, updated_at)', function(err) {
+                if (err) return reject(err);
+                resolve();
+              });
+            });
+          });
         });
       });
     });

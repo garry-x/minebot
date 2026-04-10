@@ -1,44 +1,184 @@
-Another instance is already running (PID: 1196225)
-[2026-04-09T14:24:25.633Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:28.635Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:31.636Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:34.639Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:37.642Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:40.643Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:43.645Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:46.646Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:49.648Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:52.651Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:55.654Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:24:58.653Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:01.656Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:04.657Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:07.659Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:10.662Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:13.664Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:16.667Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:19.670Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:22.673Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:25.676Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:28.676Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:31.678Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:34.682Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:37.683Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:40.685Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:43.689Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:46.690Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:49.694Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:52.698Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:55.701Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:25:58.702Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:01.702Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:04.705Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:07.709Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:10.711Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:13.711Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:16.714Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:19.716Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:22.719Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:25.720Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:28.720Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
-[2026-04-09T14:26:31.721Z] [ERROR] [unknown] [Server] Failed to save periodic server state: SQLITE_READONLY: attempt to write a readonly database
+[API] Bot removed: all
+[API] Received request to start bot with username: bot00
+[API] Creating bot instance for host: localhost:25565
+[Bot] Loading bot/index.js module
+[API] Attempting to connect bot...
+[Bot] connect() called, this.botId is: bot_1775806742271_e350onkgs
+[Bot] Creating bot with username: bot00
+[Bot] Target server: localhost:25565
+[Bot] Start automatic: true
+[Bot] Setting up event listeners
+[Bot] Bot spawned
+Mineflayer detected that you are using a deprecated event (physicTick)! Please use this event (physicsTick) instead.
+[Bot] Loaded mineflayer-pathfinder plugin
+[Bot] Initializing evolution manager with botId: bot_1775806742271_e350onkgs
+[Bot] Evolution manager initialized successfully
+[Pathfinder] Using mineflayer-pathfinder plugin
+[Screenshot] Using text-only mode (prismarine-viewer not available in Node.js)
+[Screenshot] Module initialized: 854 x 480 (prismarine: false)
+[Bot] Bot ready with ID: bot_1775806742271_e350onkgs
+[Bot] Starting automatic behavior in survival mode
+[Behaviors] Setting currentMode to: survival
+Starting survival behavior with goal: basic_survival
+[Behaviors] Setting currentMode to: survival
+Starting automatic behavior in survival mode
+Auto-gathering survival resources...
+Bot is at height 72, descending to ground...
+[Pathfinder] Moving to 3.5, 63, -1.5
+[Bot] Screenshot module initialized, starting stream
+[API] Bot started successfully with ID: bot_1775806742271_e350onkgs
+[API] Evolution initialized and recorded: 1 experiences
+[API] Auto mode enabled for bot bot_1775806742271_e350onkgs with goal: basic_survival
+[API] Bot state saved successfully
+[Behaviors] Setting currentMode to: survival
+Starting survival behavior with goal: basic_survival
+[Behaviors] Setting currentMode to: survival
+Starting automatic behavior in survival mode
+Auto-gathering survival resources...
+Bot is at height 72, descending to ground...
+[Pathfinder] Moving to 2.346201117367742, 63, -0.34620111736762943
+[API] Automatic behavior started for bot bot_1775806742271_e350onkgs
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 9.15
+Survival cycle 1/10, health: 20
+Gathering resources: ["coal_ore","oak_log","dirt","cobblestone","iron_ore"] within radius 30
+Found 1056 blocks to gather
+[Evolution] Resource weights: {"value":0.294,"proximity":0.294,"safety":0.196,"tool_efficiency":0.196}
+Moving to block at 7, 71, -3
+[Pathfinder] Moving to 7, 71, -3
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 9.00
+Survival cycle 1/10, health: 20
+Gathering resources: ["coal_ore","oak_log","dirt","cobblestone","iron_ore"] within radius 30
+Found 1056 blocks to gather
+[Evolution] Resource weights: {"value":0.294,"proximity":0.294,"safety":0.196,"tool_efficiency":0.196}
+Moving to block at 7, 71, -3
+[Pathfinder] Moving to 7, 71, -3
+[Pathfinder] Close enough after error (5.54)
+No optimal tool for dirt, attempting anyway
+[Pathfinder] Reached target via plugin
+Attempt 1 failed, retrying in 1000ms...
+Attempt 1 failed, retrying in 1000ms...
+Collected dirt
+Moving to block at 7, 71, -4
+[Pathfinder] Moving to 7, 71, -4
+[Pathfinder] Reached target via plugin
+Attempt 2 failed, retrying in 2000ms...
+Collected dirt
+Moving to block at 8, 72, -3
+[Pathfinder] Moving to 8, 72, -3
+[Pathfinder] Reached target via plugin
+Attempt 1 failed, retrying in 1000ms...
+Collected dirt
+Moving to block at 7, 71, -4
+[Pathfinder] Moving to 7, 71, -4
+Collected dirt
+Moving to block at 8, 71, -3
+[Pathfinder] Moving to 8, 71, -3
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+Moving to block at 8, 72, -3
+[Pathfinder] Moving to 8, 72, -3
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+Moving to block at 8, 72, -4
+[Pathfinder] Moving to 8, 72, -4
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+Moving to block at 8, 71, -3
+[Pathfinder] Moving to 8, 71, -3
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+Moving to block at 8, 71, -4
+[Pathfinder] Moving to 8, 71, -4
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[Behaviors] Stopping resource gathering after 3 consecutive failures
+[Behaviors] Resource gathering completed. Success: 1, Failures: 3, Success Rate: 0.25
+Resource gathering completed
+Successfully gathered resources in cycle 1
+Automatic behavior completed
+[Bot] Bot died
+[Bot] Bot respawned
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -1, 66, 0
+[Pathfinder] Moving to -1, 66, 0
+[Bot] Bot died
+[Bot] Bot respawned
+Cannot reach block: Pathfinder timeout, dist: 31.28, dist=31.3
+Moving to block at 9, 72, -3
+[Pathfinder] Moving to 9, 72, -3
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 31.28
+[Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 30.31
+Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=30.3
+Moving to block at 9, 71, -3
+[Pathfinder] Moving to 9, 71, -3
+Cannot reach block: Pathfinder timeout, dist: NaN, dist=NaN
+[Behaviors] Stopping resource gathering after 3 consecutive failures
+[Behaviors] Resource gathering completed. Success: 4, Failures: 3, Success Rate: 0.57
+Resource gathering completed
+Successfully gathered resources in cycle 1
+Automatic behavior completed
+[Bot] Automatic behavior started with mode: survival
+n 1000ms...
+[2026-04-10T07:39:07.086Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T07:39:07.592Z] [DEBUG] [unknown] Moving to block at 7, 71, -4
+[2026-04-10T07:39:07.592Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, -4
+[2026-04-10T07:39:07.786Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T07:39:07.786Z] [DEBUG] [behaviors.js:52:19)] Attempt 2 failed, retrying in 2000ms...
+[2026-04-10T07:39:08.538Z] [DEBUG] [task_queues:104:5)] Collected dirt
+[2026-04-10T07:39:09.040Z] [DEBUG] [unknown] Moving to block at 8, 72, -3
+[2026-04-10T07:39:09.040Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -3
+[2026-04-10T07:39:09.042Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T07:39:09.786Z] [DEBUG] [behaviors.js:52:19)] Attempt 1 failed, retrying in 1000ms...
+[2026-04-10T07:39:10.536Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T07:39:11.040Z] [DEBUG] [unknown] Moving to block at 7, 71, -4
+[2026-04-10T07:39:11.040Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, -4
+[2026-04-10T07:39:14.537Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T07:39:15.041Z] [DEBUG] [unknown] Moving to block at 8, 71, -3
+[2026-04-10T07:39:15.041Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -3
+[2026-04-10T07:39:15.042Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] Moving to block at 8, 72, -3
+[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -3
+[2026-04-10T07:39:15.044Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] Moving to block at 8, 72, -4
+[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -4
+[2026-04-10T07:39:15.045Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] Moving to block at 8, 71, -3
+[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -3
+[2026-04-10T07:39:15.046Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] Moving to block at 8, 71, -4
+[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -4
+[2026-04-10T07:39:15.047Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
+[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] [Behaviors] Stopping resource gathering after 3 consecutive failures
+[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] [Behaviors] Resource gathering completed. Success: 1, Failures: 3, Success Rate: 0.25
+[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Resource gathering completed
+[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Successfully gathered resources in cycle 1
+[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Automatic behavior completed
+[2026-04-10T07:39:31.336Z] [INFO] [client.js:85:12)] [Bot] Bot died
+[2026-04-10T07:39:31.380Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
+[2026-04-10T07:39:33.425Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T07:39:34.175Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T07:39:34.679Z] [DEBUG] [unknown] Moving to block at -1, 66, 0
+[2026-04-10T07:39:34.680Z] [DEBUG] [unknown] [Pathfinder] Moving to -1, 66, 0
+[2026-04-10T07:39:58.735Z] [INFO] [client.js:85:12)] [Bot] Bot died
+[2026-04-10T07:39:58.780Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
+[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: 31.28, dist=31.3
+[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] Moving to block at 9, 72, -3
+[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 72, -3
+[2026-04-10T07:39:59.681Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 31.28
+[2026-04-10T07:39:59.681Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 30.31
+[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=30.3
+[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] Moving to block at 9, 71, -3
+[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 71, -3
+[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: NaN, dist=NaN
+[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] [Behaviors] Stopping resource gathering after 3 consecutive failures
+[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] [Behaviors] Resource gathering completed. Success: 4, Failures: 3, Success Rate: 0.57
+[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Resource gathering completed
+[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Successfully gathered resources in cycle 1
+[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Automatic behavior completed
+[2026-04-10T07:40:24.685Z] [INFO] [index.js:179:29] [Bot] Automatic behavior started with mode: survival

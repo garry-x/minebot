@@ -16,7 +16,30 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     throw new Error(`Timeout waiting for condition after ${timeout}ms`);
   };
 
-  // Helper function to retry an operation with exponential backoff
+  const collectNearbyItems = async (botInstance, maxDistance = 3) => {
+    const startTime = Date.now();
+    const collectTimeout = 5000;
+    
+    while (Date.now() - startTime < collectTimeout) {
+      const items = Object.values(botInstance.entities || {}).filter(e => 
+        e && e.name === 'Item' && 
+        e.position && botInstance.entity.position.distanceTo(e.position) <= maxDistance
+      );
+      
+      if (items.length === 0) break;
+      
+      for (const item of items) {
+        try {
+          await botInstance.lookAt(item.position);
+          await botInstance.moveAt(item.position);
+          await new Promise(r => setTimeout(r, 100));
+        } catch (e) {}
+      }
+      
+      await new Promise(r => setTimeout(r, 200));
+    }
+  };
+  
   const retryOperation = async (operationFn, maxRetries = parseInt(process.env.MAX_OPERATION_RETRIES || '3'), baseDelay = parseInt(process.env.BASE_RETRY_DELAY || '1000')) => {
     let lastError;
     for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -25,7 +48,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       } catch (error) {
         lastError = error;
         if (attempt < maxRetries - 1) {
-          const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+          const delay = baseDelay * Math.pow(2, attempt);
            logger.debug(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -34,22 +57,50 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
     throw lastError;
   };
 
-   // Helper function to find blocks nearby
-    const findBlocks = (blockNames, maxDistance = parseInt(process.env.MAX_BLOCK_FIND_DISTANCE || '32')) => {
-     const positions = [];
-     for (const blockName of blockNames) {
-       // Using the correct method for finding blocks in mineflayer 4.x
-       const block = bot.findBlock({
-         point: bot.entity.position,
-         matching: blockName,
-         maxDistance: maxDistance
-       });
-       if (block) {
-         positions.push(block.position);
-       }
-     }
-     return positions;
-   };
+     // Helper function to find blocks nearby - scans a volume for all matching blocks
+     const findBlocks = (blockNames, maxDistance = parseInt(process.env.MAX_BLOCK_FIND_DISTANCE || '32')) => {
+      const positions = [];
+      const pos = bot.entity.position;
+      const scanRadius = Math.min(maxDistance, 16); // Limit scan to prevent performance issues
+      
+      // Scan a cube around the bot
+      const startX = Math.floor(pos.x - scanRadius);
+      const endX = Math.floor(pos.x + scanRadius);
+      const startY = Math.max(0, Math.floor(pos.y - scanRadius));
+      const endY = Math.min(256, Math.floor(pos.y + scanRadius));
+      const startZ = Math.floor(pos.z - scanRadius);
+      const endZ = Math.floor(pos.z + scanRadius);
+      
+      for (let x = startX; x <= endX; x++) {
+        for (let y = startY; y <= endY; y++) {
+          for (let z = startZ; z <= endZ; z++) {
+            try {
+              const block = bot.blockAt(new Vec3(x, y, z));
+              if (block && block.name && blockNames.includes(block.name)) {
+                // Check if this position is not already in our list (avoid duplicates)
+                const alreadyFound = positions.some(p => 
+                  p.x === block.position.x && p.y === block.position.y && p.z === block.position.z
+                );
+                if (!alreadyFound) {
+                  positions.push(block.position);
+                }
+              }
+            } catch (e) {
+              // Ignore blockAt errors for out-of-bounds blocks
+            }
+          }
+        }
+      }
+      
+      // Sort by distance to find closest first
+      positions.sort((a, b) => {
+        const distA = pos.distanceTo(a);
+        const distB = pos.distanceTo(b);
+        return distA - distB;
+      });
+      
+      return positions;
+    };
    
      // Helper to get the wrapper object (the this context)
      const getWrapper = () => {
@@ -102,22 +153,79 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           case 'survival':
           default:
             logger.debug('Auto-gathering survival resources...');
-            const gathered = await this.gatherResources({
-              targetBlocks: ['oak_log', 'cobblestone', 'wheat', 'carrot'],
-              radius: gatherRadius
-            });
             
-            if (!gathered) {
-              logger.debug('No natural resources found nearby - bot can connect and move!');
+            const pos = bot.entity.position;
+            if (pos.y > 70) {
+              logger.debug(`Bot is at height ${pos.y}, descending to ground...`);
+              const groundY = 63;
+              try {
+                await pathfinder.moveTo(new Vec3(pos.x, groundY, pos.z), { 
+                  timeout: 15000,
+                  useJump: false
+                });
+              } catch (e) {}
             }
             
-            logger.debug('Testing basic movement...');
-            const pos = bot.entity.position;
-            try {
-              await pathfinder.moveTo(new Vec3(pos.x + 5, pos.y, pos.z + 5), { timeout: 30000 });
-              logger.debug(`Moved to new position: ${bot.entity.position}`);
-            } catch (moveError) {
-              logger.debug(`[Behaviors] Movement test failed: ${moveError.message}. Continuing...`);
+            let maxCycles = 10;
+            let currentCycle = 0;
+            
+            while (currentCycle < maxCycles) {
+              currentCycle++;
+              
+              if (!bot.isAlive) {
+                logger.debug('Bot is dead, stopping');
+                break;
+              }
+              
+              if (bot.health < 10) {
+                logger.debug('Low health, seeking shelter');
+                break;
+              }
+              
+              logger.debug(`Survival cycle ${currentCycle}/${maxCycles}, health: ${bot.health}`);
+              
+              const gathered = await this.gatherResources({
+                targetBlocks: ['coal_ore', 'oak_log', 'dirt', 'cobblestone', 'iron_ore'],
+                radius: gatherRadius
+              });
+              
+              if (gathered) {
+                logger.debug(`Successfully gathered resources in cycle ${currentCycle}`);
+                break;
+              }
+              
+              logger.debug(`No resources found, exploring...`);
+              const pos = bot.entity.position;
+              
+              const exploreX = pos.x + (Math.random() - 0.5) * 20;
+              const exploreZ = pos.z + (Math.random() - 0.5) * 20;
+              
+              try {
+                await pathfinder.moveTo(new Vec3(exploreX, pos.y, exploreZ), { 
+                  timeout: 20000,
+                  useJump: true
+                });
+                logger.debug(`Explored to: ${bot.entity.position.x.toFixed(1)}, ${bot.entity.position.z.toFixed(1)}`);
+              } catch (moveError) {
+                logger.debug(`Explore move failed: ${moveError.message}, trying different direction...`);
+                
+                const randomX = pos.x + (Math.random() - 0.5) * 30;
+                const randomZ = pos.z + (Math.random() - 0.5) * 30;
+                try {
+                  await pathfinder.moveTo(new Vec3(randomX, pos.y, randomZ), { 
+                    timeout: 15000,
+                    useJump: true
+                  });
+                } catch (retryError) {
+                  logger.debug(`Retry explore also failed: ${retryError.message}`);
+                }
+              }
+              
+              await new Promise(r => setTimeout(r, 500));
+            }
+            
+            if (currentCycle >= maxCycles) {
+              logger.debug('Reached max exploration cycles');
             }
             
             logger.debug('Automatic behavior completed');
@@ -270,30 +378,20 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           
           logger.debug(`Moving to block at ${position.x}, ${position.y}, ${position.z}`);
           
-          // Move to the block with individual error handling
           let reachedBlock = false;
           try {
-            await retryOperation(async () => {
-              await pathfinder.moveTo(position, { timeout: 20000 });
-              
-              // Wait until we reach the block
-              await waitForCondition(() => 
-                bot.entity.position.distanceTo(position) < 1.5, 10000);
-            });
+            await pathfinder.moveTo(position, { timeout: 25000, range: 4 });
             reachedBlock = true;
           } catch (moveError) {
-            logger.debug(`[Behaviors] Cannot reach block at ${position.x}, ${position.y}, ${position.z}: ${moveError.message}`);
-            failCount++;
-            if (evolutionManager) {
-              await evolutionManager.recordExperience({
-                bot_id: bot.__wrapper?.botId || 'unknown',
-                type: 'path',
-                context: { targetPosition: position, currentPosition: bot.entity.position },
-                action: 'move_to',
-                outcome: { success: false, reason: moveError.message }
-              });
+            const dist = bot.entity.position.distanceTo(new Vec3(position.x, position.y, position.z));
+            if (dist < 5) {
+              logger.debug(`Close enough (dist=${dist.toFixed(1)})`);
+              reachedBlock = true;
+            } else {
+              logger.debug(`Cannot reach block: ${moveError.message}, dist=${dist.toFixed(1)}`);
+              failCount++;
+              continue;
             }
-            continue; // Skip to next block
           }
           
           if (!reachedBlock) {
@@ -301,7 +399,6 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             continue;
           }
           
-          // Find the block at our position
           const block = bot.blockAt(position);
           if (!block || !block.name) {
             logger.debug('Block not found at position');
@@ -309,14 +406,23 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             continue;
           }
           
-          // Dig the block with error handling
+          if (!bot.canDigBlock(block)) {
+            logger.debug(`No optimal tool for ${block.name}, attempting anyway`);
+          }
+          
           try {
             await retryOperation(async () => {
-              await bot.dig(block);
+              await bot.dig(block, true);
               
-              // Wait for the block to break
               await waitForCondition(() => 
                 !bot.blockAt(position) || bot.blockAt(position).name === 'air', 10000);
+              
+              await collectNearbyItems(bot, 4);
+              
+              const items = bot.inventory.items();
+              if (items.length > 0) {
+                logger.debug(`Inventory now has ${items.length} items`);
+              }
             });
             
             logger.debug(`Collected ${block.name}`);

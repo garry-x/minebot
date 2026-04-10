@@ -1,4 +1,5 @@
 const logger = require('./logger');
+const BotState = require('../config/models/BotState');
 
 module.exports = function(bot, evolutionManager = null) {
   let lastHealth = bot.health;
@@ -51,41 +52,167 @@ module.exports = function(bot, evolutionManager = null) {
       // Listen for item pickup
       bot.on('itemPickup', (item) => {
         logger.trace(`Picked up item: ${item.name} x${item.count}`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'item_pickup',
+            `Picked up ${item.name} x${item.count}`,
+            {
+              item: item.name,
+              count: item.count,
+              metadata: item.metadata || null
+            }
+          ).catch(err => logger.error(`[Events] Failed to save item pickup event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing item pickup: ${err.message}`);
+        }
       });
       
       // Listen for block break
       bot.on('blockBreak', (block) => {
         logger.trace(`Block broken: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'block_break',
+            `Broke ${block.name} at (${block.position.x.toFixed(1)}, ${block.position.y.toFixed(1)}, ${block.position.z.toFixed(1)})`,
+            {
+              block: block.name,
+              position: {
+                x: block.position.x,
+                y: block.position.y,
+                z: block.position.z
+              },
+              hardness: block.hardness || null
+            }
+          ).catch(err => logger.error(`[Events] Failed to save block break event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing block break: ${err.message}`);
+        }
       });
       
       // Listen for block place
       bot.on('blockPlace', (block) => {
         logger.trace(`Block placed: ${block.name} at (${block.position.x}, ${block.position.y}, ${block.position.z})`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'block_place',
+            `Placed ${block.name} at (${block.position.x.toFixed(1)}, ${block.position.y.toFixed(1)}, ${block.position.z.toFixed(1)})`,
+            {
+              block: block.name,
+              position: {
+                x: block.position.x,
+                y: block.position.y,
+                z: block.position.z
+              },
+              facing: block.face || null
+            }
+          ).catch(err => logger.error(`[Events] Failed to save block place event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing block place: ${err.message}`);
+        }
       });
       
       // Listen for entity hurt (when bot takes damage)
-      bot.on('hurt', () => {
+      bot.on('hurt', (entity) => {
         logger.trace(`Bot took damage! Health: ${bot.health}`);
+        try {
+          const attacker = entity ? entity.name || entity.type : 'unknown';
+          BotState.addEvent(
+            getBotId(),
+            'damage_taken',
+            `Took damage from ${attacker}, health: ${bot.health.toFixed(1)}`,
+            {
+              health: bot.health,
+              attacker: attacker,
+              attacker_type: entity ? (entity.type || 'unknown') : 'unknown'
+            }
+          ).catch(err => logger.error(`[Events] Failed to save damage event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing damage: ${err.message}`);
+        }
       });
       
       // Listen for entity heal
       bot.on('heal', () => {
         logger.trace(`Bot healed! Health: ${bot.health}`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'heal',
+            `Healed to ${bot.health.toFixed(1)} health`,
+            {
+              health: bot.health
+            }
+          ).catch(err => logger.error(`[Events] Failed to save heal event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing heal: ${err.message}`);
+        }
+      });
+
+      // Listen for eating (consuming food)
+      bot.on('consume', (item) => {
+        logger.trace(`Bot consumed: ${item.name}`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'eating',
+            `Ate ${item.name}`,
+            {
+              item: item.name,
+              food_value: item.food || null,
+              saturation: item.saturation || null
+            }
+          ).catch(err => logger.error(`[Events] Failed to save eating event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing eating: ${err.message}`);
+        }
       });
       
       // Listen for sleeping
       bot.on('sleep', () => {
         logger.trace(`Bot went to sleep`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'sleep',
+            'Went to sleep',
+            { timestamp: new Date().toISOString() }
+          ).catch(err => logger.error(`[Events] Failed to save sleep event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing sleep: ${err.message}`);
+        }
       });
       
       // Listen for waking up
       bot.on('wake', () => {
         logger.trace(`Bot woke up`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'wake',
+            'Woke up',
+            { timestamp: new Date().toISOString() }
+          ).catch(err => logger.error(`[Events] Failed to save wake event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing wake: ${err.message}`);
+        }
       });
       
       // Listen for respawn (after death)
       bot.on('respawn', () => {
         logger.trace(`Bot respawned`);
+        try {
+          BotState.addEvent(
+            getBotId(),
+            'respawn',
+            'Respawned after death',
+            { timestamp: new Date().toISOString() }
+          ).catch(err => logger.error(`[Events] Failed to save respawn event: ${err.message}`));
+        } catch (err) {
+          logger.error(`[Events] Error processing respawn: ${err.message}`);
+        }
       });
       
       // Monitor health changes using 'health' event
@@ -133,6 +260,23 @@ module.exports = function(bot, evolutionManager = null) {
           
           if (dist > 1) {
             logger.trace(`[State] Position changed: (${lastPosition.x.toFixed(1)}, ${lastPosition.y.toFixed(1)}, ${lastPosition.z.toFixed(1)}) → (${newPos.x.toFixed(1)}, ${newPos.y.toFixed(1)}, ${newPos.z.toFixed(1)}) [dist: ${dist.toFixed(1)}]`);
+            
+            // Save movement event to database
+            try {
+              BotState.addEvent(
+                getBotId(),
+                'movement',
+                `Moved ${dist.toFixed(1)} blocks`,
+                {
+                  from: lastPosition,
+                  to: { x: newPos.x, y: newPos.y, z: newPos.z },
+                  distance: dist
+                }
+              ).catch(err => logger.error(`[Events] Failed to save movement event: ${err.message}`));
+            } catch (err) {
+              logger.error(`[Events] Error processing movement: ${err.message}`);
+            }
+            
             lastPosition = { x: newPos.x, y: newPos.y, z: newPos.z };
           }
         }
