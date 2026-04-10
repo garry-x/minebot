@@ -1168,23 +1168,39 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     // Get armor information
     const armor = [];
     let armorValue = 0;
+    // Only include actual armor items (not regular blocks/items like dirt)
+    const armorItemNames = [
+      'helmet', 'chestplate', 'leggings', 'boots',
+      'diamond_helmet', 'diamond_chestplate', 'diamond_leggings', 'diamond_boots',
+      'iron_helmet', 'iron_chestplate', 'iron_leggings', 'iron_boots',
+      'gold_helmet', 'gold_chestplate', 'gold_leggings', 'gold_boots',
+      'leather_helmet', 'leather_chestplate', 'leather_leggings', 'leather_boots',
+      'chainmail_helmet', 'chainmail_chestplate', 'chainmail_leggings', 'chainmail_boots',
+      'netherite_helmet', 'netherite_chestplate', 'netherite_leggings', 'netherite_boots',
+      'turtle_helmet', 'iron_chainmail'
+    ];
     if (bot.bot.inventory && bot.bot.inventory.slots) {
       // Armor slots are typically 36-39 in inventory
       for (let i = 36; i <= 39; i++) {
         const slot = bot.bot.inventory.slots[i];
         if (slot) {
-          armor.push({
-            slot: i - 36, // Convert to armor slot index (0-3)
-            name: slot.name,
-            count: slot.count,
-            durability: slot.durability,
-            maxDurability: slot.maxDurability || 0
-          });
-          // Simple armor value calculation based on armor type
-          if (slot.name.includes('diamond')) armorValue += 3;
-          else if (slot.name.includes('iron')) armorValue += 2;
-          else if (slot.name.includes('chainmail') || slot.name.includes('gold')) armorValue += 1.5;
-          else if (slot.name.includes('leather')) armorValue += 1;
+          // Only include items that are actually armor (not dirt, blocks, etc.)
+          const itemName = slot.name.replace('minecraft:', '');
+          const isArmorItem = armorItemNames.some(armorName => itemName.includes(armorName));
+          if (isArmorItem) {
+            armor.push({
+              slot: i - 36, // Convert to armor slot index (0-3)
+              name: slot.name,
+              count: slot.count,
+              durability: slot.durability,
+              maxDurability: slot.maxDurability || 0
+            });
+            // Simple armor value calculation based on armor type
+            if (slot.name.includes('diamond') || slot.name.includes('netherite')) armorValue += 3;
+            else if (slot.name.includes('iron')) armorValue += 2;
+            else if (slot.name.includes('chainmail') || slot.name.includes('gold')) armorValue += 1.5;
+            else if (slot.name.includes('leather') || slot.name.includes('turtle')) armorValue += 1;
+          }
         }
       }
     }

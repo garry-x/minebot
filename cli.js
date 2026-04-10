@@ -920,12 +920,15 @@ botCommand
         if (Object.keys(data.resources.summary).length > 0) {
           console.log(`\n📊 ${useChinese ? '资源统计' : 'Resource Summary'}:`);
           const sortedResources = Object.entries(data.resources.summary)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 10);
+            .sort(([,a], [,b]) => b - a);
           
           sortedResources.forEach(([item, count]) => {
             console.log(`   ${item}: ${count}`);
           });
+          
+          if (sortedResources.length > 20) {
+            console.log(`   ... ${useChinese ? '共' : 'Total'}: ${sortedResources.length} ${useChinese ? '种物品' : 'item types'}`);
+          }
         }
         
         if (data.environment.nearby.entities.length > 0) {

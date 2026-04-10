@@ -118,15 +118,86 @@ module.exports = function(bot, evolutionManager = null) {
       bot.on('hurt', (entity) => {
         logger.trace(`Bot took damage! Health: ${bot.health}`);
         try {
-          const attacker = entity ? entity.name || entity.type : 'unknown';
+          let damageCause = 'unknown';
+          let damageDetails = {};
+          
+          // Detect damage cause based on context
+          if (entity && entity.name && entity.type) {
+            // Entity attack damage
+            damageCause = 'entity_attack';
+            damageDetails = {
+              attacker: entity.name,
+              attackerType: entity.type
+            };
+          } else {
+            // Check for environmental damage causes
+            const pos = bot.entity?.position;
+            if (pos) {
+              // Check block below for void, lava, fire
+              try {
+                const blockBelow = bot.blockAt(pos.offset(0, -1, 0));
+                if (blockBelow) {
+                  const blockName = blockBelow.name;
+                  if (blockName.includes('lava') || blockName.includes('magma')) {
+                    damageCause = 'lava';
+                    damageDetails = { block: blockName };
+                  } else if (blockName.includes('fire')) {
+                    damageCause = 'fire';
+                    damageDetails = { block: blockName };
+                  } else if (blockName === 'air' && pos.y < 0) {
+                    damageCause = 'void';
+                    damageDetails = { y: pos.y };
+                  }
+                }
+                
+                // Check surrounding blocks for water (drowning)
+                const blockAt = bot.blockAt(pos);
+                if (blockAt && blockAt.name.includes('water')) {
+                  damageCause = 'drowning';
+                  damageDetails = { fluid: 'water' };
+                }
+                
+                // Check if in bed (suffocation)
+                if (blockAt && blockAt.name.includes('bed')) {
+                  damageCause = 'suffocation';
+                  damageDetails = { block: blockAt.name };
+                }
+              } catch (e) {
+                logger.trace(`[Events] Error detecting damage cause: ${e.message}`);
+              }
+            }
+            
+            // If still unknown, check for fall damage (need to track velocity)
+            if (damageCause === 'unknown' && bot.velocity) {
+              const vy = bot.velocity.y;
+              if (vy < -3) {
+                damageCause = 'fall';
+                damageDetails = { velocity: vy };
+              }
+            }
+          }
+          
+          const causeMessages = {
+            'entity_attack': (details) => `${details.attacker} 攻击`,
+            'lava': '掉入岩浆',
+            'fire': '火焰伤害',
+            'void': '虚空掉落',
+            'drowning': '水中窒息',
+            'suffocation': '方块窒息',
+            'fall': '摔落伤害',
+            'unknown': '未知原因'
+          };
+          
+          const message = causeMessages[damageCause] ? causeMessages[damageCause](damageDetails) : causeMessages.unknown;
+          
           BotState.addEvent(
             getBotId(),
             'damage_taken',
-            `Took damage from ${attacker}, health: ${bot.health.toFixed(1)}`,
+            `${message} (${bot.health.toFixed(1)}/20❤️)`,
             {
               health: bot.health,
-              attacker: attacker,
-              attacker_type: entity ? (entity.type || 'unknown') : 'unknown'
+              cause: damageCause,
+              ...damageDetails
             }
           ).catch(err => logger.error(`[Events] Failed to save damage event: ${err.message}`));
         } catch (err) {
