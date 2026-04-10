@@ -1,184 +1,1480 @@
-[API] Bot removed: all
-[API] Received request to start bot with username: bot00
+[API] Received request to start bot with username: bot001
 [API] Creating bot instance for host: localhost:25565
 [Bot] Loading bot/index.js module
 [API] Attempting to connect bot...
-[Bot] connect() called, this.botId is: bot_1775806742271_e350onkgs
-[Bot] Creating bot with username: bot00
+[Bot] connect() called, this.botId is: bot_1775829142999_6kjsqz38a
+[Bot] Creating bot with username: bot001
 [Bot] Target server: localhost:25565
 [Bot] Start automatic: true
 [Bot] Setting up event listeners
 [Bot] Bot spawned
 Mineflayer detected that you are using a deprecated event (physicTick)! Please use this event (physicsTick) instead.
 [Bot] Loaded mineflayer-pathfinder plugin
-[Bot] Initializing evolution manager with botId: bot_1775806742271_e350onkgs
+[Bot] Initializing evolution manager with botId: bot_1775829142999_6kjsqz38a
 [Bot] Evolution manager initialized successfully
 [Pathfinder] Using mineflayer-pathfinder plugin
 [Screenshot] Using text-only mode (prismarine-viewer not available in Node.js)
 [Screenshot] Module initialized: 854 x 480 (prismarine: false)
-[Bot] Bot ready with ID: bot_1775806742271_e350onkgs
+[Bot] Bot ready with ID: bot_1775829142999_6kjsqz38a
 [Bot] Starting automatic behavior in survival mode
 [Behaviors] Setting currentMode to: survival
 Starting survival behavior with goal: basic_survival
 [Behaviors] Setting currentMode to: survival
 Starting automatic behavior in survival mode
 Auto-gathering survival resources...
-Bot is at height 72, descending to ground...
-[Pathfinder] Moving to 3.5, 63, -1.5
+Survival cycle 1/10, health: 20
+Gathering resources: ["coal_ore","oak_log","dirt","cobblestone","iron_ore"] within radius 30
+Found 2210 blocks to gather
+[Evolution] Resource weights: {"value":0.3,"proximity":0.3,"safety":0.2,"tool_efficiency":0.2}
+Moving to block at 2, 68, 16
+[Pathfinder] Moving to 2, 68, 16
 [Bot] Screenshot module initialized, starting stream
-[API] Bot started successfully with ID: bot_1775806742271_e350onkgs
+[API] Bot started successfully with ID: bot_1775829142999_6kjsqz38a
+[Pathfinder] Reached target via plugin
+Collected dirt
 [API] Evolution initialized and recorded: 1 experiences
-[API] Auto mode enabled for bot bot_1775806742271_e350onkgs with goal: basic_survival
+[API] Auto mode enabled for bot bot_1775829142999_6kjsqz38a with goal: basic_survival
+Moving to block at 1, 68, 16
+[Pathfinder] Moving to 1, 68, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 68, 17
+[Pathfinder] Moving to 2, 68, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 1, 68, 17
+[Pathfinder] Moving to 1, 68, 17
 [API] Bot state saved successfully
 [Behaviors] Setting currentMode to: survival
 Starting survival behavior with goal: basic_survival
 [Behaviors] Setting currentMode to: survival
 Starting automatic behavior in survival mode
 Auto-gathering survival resources...
-Bot is at height 72, descending to ground...
-[Pathfinder] Moving to 2.346201117367742, 63, -0.34620111736762943
-[API] Automatic behavior started for bot bot_1775806742271_e350onkgs
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 9.15
 Survival cycle 1/10, health: 20
 Gathering resources: ["coal_ore","oak_log","dirt","cobblestone","iron_ore"] within radius 30
-Found 1056 blocks to gather
-[Evolution] Resource weights: {"value":0.294,"proximity":0.294,"safety":0.196,"tool_efficiency":0.196}
-Moving to block at 7, 71, -3
-[Pathfinder] Moving to 7, 71, -3
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 9.00
-Survival cycle 1/10, health: 20
-Gathering resources: ["coal_ore","oak_log","dirt","cobblestone","iron_ore"] within radius 30
-Found 1056 blocks to gather
-[Evolution] Resource weights: {"value":0.294,"proximity":0.294,"safety":0.196,"tool_efficiency":0.196}
-Moving to block at 7, 71, -3
-[Pathfinder] Moving to 7, 71, -3
-[Pathfinder] Close enough after error (5.54)
+Found 2272 blocks to gather
+[Evolution] Resource weights: {"value":null,"proximity":null,"safety":null,"tool_efficiency":null}
+Moving to block at 1, 68, 17
+[Pathfinder] Moving to 1, 68, 17
+[API] Automatic behavior started for bot bot_1775829142999_6kjsqz38a
+[Pathfinder] Close enough after error (3.22)
+[Pathfinder] Reached target via plugin
+Attempt 1 failed, retrying in 1000ms...
+Collected dirt
+Moving to block at 0, 68, 17
+[Pathfinder] Moving to 0, 68, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Collected dirt
+Moving to block at 1, 68, 18
+[Pathfinder] Moving to 1, 68, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 68, 17
+[Pathfinder] Moving to 0, 68, 17
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 2, 68, 18
+[Pathfinder] Moving to 2, 68, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -2, 69, 12
+[Pathfinder] Moving to -2, 69, 12
+Moving to block at 0, 68, 18
+[Pathfinder] Moving to 0, 68, 18
+[Pathfinder] Close enough after error (4.93)
+Collected dirt
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 68, 18
+[Pathfinder] Moving to 2, 68, 18
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -2, 69, 12
+[Pathfinder] Moving to -2, 69, 12
+Moving to block at 1, 68, 18
+[Pathfinder] Moving to 1, 68, 18
+[Pathfinder] Close enough after error (5.59)
+No optimal tool for air, attempting anyway
+Collected air
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 3, 68, 18
+[Pathfinder] Moving to 3, 68, 18
+Moving to block at 3, 68, 18
+[Pathfinder] Moving to 3, 68, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 70, 14
+[Pathfinder] Moving to -3, 70, 14
+Moving to block at -3, 69, 14
+[Pathfinder] Moving to -3, 69, 14
+[Pathfinder] Close enough after error (5.74)
+Collected dirt
+Moving to block at -3, 70, 15
+[Pathfinder] Moving to -3, 70, 15
+[Pathfinder] Close enough after error (5.46)
+Collected dirt
+Moving to block at 0, 68, 18
+[Pathfinder] Moving to 0, 68, 18
+[Pathfinder] Close enough after error (5.32)
+Collected dirt
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 69, 14
+[Pathfinder] Moving to -3, 69, 14
+Moving to block at -3, 70, 14
+[Pathfinder] Moving to -3, 70, 14
+[Pathfinder] Close enough after error (5.65)
+No optimal tool for air, attempting anyway
+Collected air
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 69, 15
+[Pathfinder] Moving to -3, 69, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -3, 69, 15
+[Pathfinder] Moving to -3, 69, 15
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 71, 14
+[Pathfinder] Moving to -3, 71, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -3, 70, 15
+[Pathfinder] Moving to -3, 70, 15
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 71, 15
+[Pathfinder] Moving to -3, 71, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 68, 18
+[Pathfinder] Moving to 4, 68, 18
+Moving to block at -3, 69, 16
+[Pathfinder] Moving to -3, 69, 16
+[Pathfinder] Close enough after error (4.24)
 No optimal tool for dirt, attempting anyway
+Collected dirt
 [Pathfinder] Reached target via plugin
-Attempt 1 failed, retrying in 1000ms...
-Attempt 1 failed, retrying in 1000ms...
 Collected dirt
-Moving to block at 7, 71, -4
-[Pathfinder] Moving to 7, 71, -4
+Moving to block at -3, 71, 14
+[Pathfinder] Moving to -3, 71, 14
 [Pathfinder] Reached target via plugin
-Attempt 2 failed, retrying in 2000ms...
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 4, 68, 18
+[Pathfinder] Moving to 4, 68, 18
+Moving to block at 4, 69, 9
+[Pathfinder] Moving to 4, 69, 9
+[Pathfinder] Close enough after error (3.66)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 1, 68, 19
+[Pathfinder] Moving to 1, 68, 19
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.63
+Cannot reach block: The goal was changed before it could be completed!, dist=6.6
+Moving to block at -3, 69, 16
+[Pathfinder] Moving to -3, 69, 16
+[Pathfinder] Close enough after error (4.40)
+No optimal tool for dirt, attempting anyway
 Collected dirt
-Moving to block at 8, 72, -3
-[Pathfinder] Moving to 8, 72, -3
+Moving to block at 2, 68, 19
+[Pathfinder] Moving to 2, 68, 19
+[Pathfinder] Close enough after error (5.25)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -3, 71, 15
+[Pathfinder] Moving to -3, 71, 15
+[Pathfinder] Close enough after error (3.48)
+Collected dirt
+Moving to block at 0, 68, 19
+[Pathfinder] Moving to 0, 68, 19
+[Pathfinder] Close enough after error (5.55)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 4, 70, 9
+[Pathfinder] Moving to 4, 70, 9
+[Pathfinder] Close enough after error (4.69)
+No optimal tool for dirt, attempting anyway
+Collected dirt
+Moving to block at 3, 68, 19
+[Pathfinder] Moving to 3, 68, 19
+[Pathfinder] Close enough after error (5.41)
+No optimal tool for coal_ore, attempting anyway
+Collected coal_ore
+Moving to block at 2, 68, 19
+[Pathfinder] Moving to 2, 68, 19
+[Pathfinder] Close enough after error (5.18)
+No optimal tool for dirt, attempting anyway
+Collected dirt
 [Pathfinder] Reached target via plugin
-Attempt 1 failed, retrying in 1000ms...
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 4, 69, 19
+[Pathfinder] Moving to 4, 69, 19
+[Pathfinder] Reached target via plugin
 Collected dirt
-Moving to block at 7, 71, -4
-[Pathfinder] Moving to 7, 71, -4
+Moving to block at 1, 68, 19
+[Pathfinder] Moving to 1, 68, 19
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -4, 70, 14
+[Pathfinder] Moving to -4, 70, 14
+Moving to block at 3, 68, 19
+[Pathfinder] Moving to 3, 68, 19
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 7.65
+Cannot reach block: The goal was changed before it could be completed!, dist=7.6
+Moving to block at -4, 70, 15
+[Pathfinder] Moving to -4, 70, 15
+[Pathfinder] Close enough after error (3.13)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at 0, 68, 19
+[Pathfinder] Moving to 0, 68, 19
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.32
+Cannot reach block: The goal was changed before it could be completed!, dist=6.3
+Moving to block at -1, 68, 19
+[Pathfinder] Moving to -1, 68, 19
+[Pathfinder] Close enough after error (4.44)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -4, 69, 14
+[Pathfinder] Moving to -4, 69, 14
+[Pathfinder] Close enough after error (5.02)
+No optimal tool for dirt, attempting anyway
 Collected dirt
-Moving to block at 8, 71, -3
-[Pathfinder] Moving to 8, 71, -3
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-Moving to block at 8, 72, -3
-[Pathfinder] Moving to 8, 72, -3
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-Moving to block at 8, 72, -4
-[Pathfinder] Moving to 8, 72, -4
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-Moving to block at 8, 71, -3
-[Pathfinder] Moving to 8, 71, -3
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-Moving to block at 8, 71, -4
-[Pathfinder] Moving to 8, 71, -4
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-Cannot reach block: The goal was changed before it could be completed!, dist=NaN
+Moving to block at -4, 69, 14
+[Pathfinder] Moving to -4, 69, 14
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.46
+Cannot reach block: The goal was changed before it could be completed!, dist=6.5
+Moving to block at 4, 69, 19
+[Pathfinder] Moving to 4, 69, 19
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.46
+Cannot reach block: The goal was changed before it could be completed!, dist=6.5
+Moving to block at -4, 69, 15
+[Pathfinder] Moving to -4, 69, 15
+[Pathfinder] Close enough after error (3.96)
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -4, 70, 14
+[Pathfinder] Moving to -4, 70, 14
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.33
+Cannot reach block: The goal was changed before it could be completed!, dist=6.3
+Moving to block at -4, 71, 14
+[Pathfinder] Moving to -4, 71, 14
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.49
+Cannot reach block: The goal was changed before it could be completed!, dist=6.5
+Moving to block at 7, 71, 15
+[Pathfinder] Moving to 7, 71, 15
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 6.66
+Cannot reach block: The goal was changed before it could be completed!, dist=6.7
 [Behaviors] Stopping resource gathering after 3 consecutive failures
-[Behaviors] Resource gathering completed. Success: 1, Failures: 3, Success Rate: 0.25
+[Behaviors] Resource gathering completed. Success: 21, Failures: 3, Success Rate: 0.88
 Resource gathering completed
 Successfully gathered resources in cycle 1
 Automatic behavior completed
-[Bot] Bot died
-[Bot] Bot respawned
 [Pathfinder] Reached target via plugin
 Collected dirt
-Moving to block at -1, 66, 0
-[Pathfinder] Moving to -1, 66, 0
-[Bot] Bot died
-[Bot] Bot respawned
-Cannot reach block: Pathfinder timeout, dist: 31.28, dist=31.3
-Moving to block at 9, 72, -3
-[Pathfinder] Moving to 9, 72, -3
-[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 31.28
-[Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 30.31
-Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=30.3
-Moving to block at 9, 71, -3
-[Pathfinder] Moving to 9, 71, -3
-Cannot reach block: Pathfinder timeout, dist: NaN, dist=NaN
+Moving to block at -4, 69, 15
+[Pathfinder] Moving to -4, 69, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 68, 19
+[Pathfinder] Moving to 4, 68, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 70, 15
+[Pathfinder] Moving to -4, 70, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -1, 68, 19
+[Pathfinder] Moving to -1, 68, 19
+[Pathfinder] Reached target via plugin
+No optimal tool for air, attempting anyway
+Collected air
+Moving to block at -4, 71, 14
+[Pathfinder] Moving to -4, 71, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 14
+[Pathfinder] Moving to 7, 72, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 71, 16
+[Pathfinder] Moving to 7, 71, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 69, 16
+[Pathfinder] Moving to -4, 69, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 71, 15
+[Pathfinder] Moving to -4, 71, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 70, 16
+[Pathfinder] Moving to -4, 70, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 15
+[Pathfinder] Moving to 7, 72, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 69, 19
+[Pathfinder] Moving to 5, 69, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 69, 20
+[Pathfinder] Moving to 2, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 1, 69, 20
+[Pathfinder] Moving to 1, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 68, 20
+[Pathfinder] Moving to 2, 68, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 70, 20
+[Pathfinder] Moving to 2, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 1, 68, 20
+[Pathfinder] Moving to 1, 68, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 1, 70, 20
+[Pathfinder] Moving to 1, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 3, 69, 20
+[Pathfinder] Moving to 3, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 71, 16
+[Pathfinder] Moving to -4, 71, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 3, 68, 20
+[Pathfinder] Moving to 3, 68, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 3, 70, 20
+[Pathfinder] Moving to 3, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 16
+[Pathfinder] Moving to 7, 72, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 69, 20
+[Pathfinder] Moving to 0, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -2, 68, 19
+[Pathfinder] Moving to -2, 68, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 71, 17
+[Pathfinder] Moving to 7, 71, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 69, 17
+[Pathfinder] Moving to -4, 69, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 68, 20
+[Pathfinder] Moving to 0, 68, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 71, 14
+[Pathfinder] Moving to 8, 71, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 70, 17
+[Pathfinder] Moving to -4, 70, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 69, 20
+[Pathfinder] Moving to 4, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 70, 14
+[Pathfinder] Moving to -5, 70, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 70, 20
+[Pathfinder] Moving to 4, 70, 20
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 70, 13
+[Pathfinder] Moving to -5, 70, 13
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 69, 15
+[Pathfinder] Moving to -5, 69, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 71, 17
+[Pathfinder] Moving to -4, 71, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -5, 70, 15
+[Pathfinder] Moving to -5, 70, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 70, 19
+[Pathfinder] Moving to 6, 70, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 17
+[Pathfinder] Moving to 7, 72, 17
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -1, 68, 20
+[Pathfinder] Moving to -1, 68, 20
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 72, 14
+[Pathfinder] Moving to 8, 72, 14
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 71, 14
+[Pathfinder] Moving to -5, 71, 14
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 71, 13
+[Pathfinder] Moving to -5, 71, 13
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 69, 16
+[Pathfinder] Moving to -5, 69, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 8, 72, 15
+[Pathfinder] Moving to 8, 72, 15
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 71, 15
+[Pathfinder] Moving to -5, 71, 15
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 71, 19
+[Pathfinder] Moving to 6, 71, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 69, 20
+[Pathfinder] Moving to 5, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 71, 18
+[Pathfinder] Moving to 7, 71, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -4, 69, 18
+[Pathfinder] Moving to -4, 69, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -5, 70, 16
+[Pathfinder] Moving to -5, 70, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 70, 20
+[Pathfinder] Moving to 5, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -4, 70, 18
+[Pathfinder] Moving to -4, 70, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -2, 69, 20
+[Pathfinder] Moving to -2, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 69, 21
+[Pathfinder] Moving to 2, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 1, 69, 21
+[Pathfinder] Moving to 1, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 72, 16
+[Pathfinder] Moving to 8, 72, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -5, 71, 16
+[Pathfinder] Moving to -5, 71, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -5, 72, 13
+[Pathfinder] Moving to -5, 72, 13
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -2, 68, 20
+[Pathfinder] Moving to -2, 68, 20
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 68, 21
+[Pathfinder] Moving to 2, 68, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 2, 70, 21
+[Pathfinder] Moving to 2, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 5, 71, 20
+[Pathfinder] Moving to 5, 71, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 1, 68, 21
+[Pathfinder] Moving to 1, 68, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 1, 70, 21
+[Pathfinder] Moving to 1, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 71, 18
+[Pathfinder] Moving to -4, 71, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 3, 69, 21
+[Pathfinder] Moving to 3, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 72, 19
+[Pathfinder] Moving to 6, 72, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 18
+[Pathfinder] Moving to 7, 72, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 69, 17
+[Pathfinder] Moving to -5, 69, 17
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 66, 11
+[Pathfinder] Moving to 8, 66, 11
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+No optimal tool for iron_ore, attempting anyway
+Collected iron_ore
+Moving to block at 3, 70, 21
+[Pathfinder] Moving to 3, 70, 21
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 69, 21
+[Pathfinder] Moving to 0, 69, 21
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 70, 17
+[Pathfinder] Moving to -5, 70, 17
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 68, 21
+[Pathfinder] Moving to 0, 68, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 0, 70, 21
+[Pathfinder] Moving to 0, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 8, 73, 15
+[Pathfinder] Moving to 8, 73, 15
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 64, 19
+[Pathfinder] Moving to 4, 64, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+No optimal tool for dirt, attempting anyway
+Collected dirt
+Moving to block at 4, 69, 21
+[Pathfinder] Moving to 4, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 70, 20
+[Pathfinder] Moving to 6, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -6, 69, 14
+[Pathfinder] Moving to -6, 69, 14
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 72, 17
+[Pathfinder] Moving to 8, 72, 17
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at 4, 70, 21
+[Pathfinder] Moving to 4, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 71, 17
+[Pathfinder] Moving to -5, 71, 17
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 71, 19
+[Pathfinder] Moving to 7, 71, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 70, 14
+[Pathfinder] Moving to -6, 70, 14
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -4, 69, 19
+[Pathfinder] Moving to -4, 69, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -1, 69, 21
+[Pathfinder] Moving to -1, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 69, 15
+[Pathfinder] Moving to -6, 69, 15
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 73, 16
+[Pathfinder] Moving to 8, 73, 16
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 70, 19
+[Pathfinder] Moving to -4, 70, 19
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+Moving to block at -1, 68, 21
+[Pathfinder] Moving to -1, 68, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -1, 70, 21
+[Pathfinder] Moving to -1, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -3, 69, 20
+[Pathfinder] Moving to -3, 69, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 70, 15
+[Pathfinder] Moving to -6, 70, 15
+Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 64, 18
+[Pathfinder] Moving to 6, 64, 18
+[Pathfinder] Reached target via plugin
+No optimal tool for dirt, attempting anyway
+Collected dirt
+Moving to block at 6, 71, 20
+[Pathfinder] Moving to 6, 71, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 71, 18
+[Pathfinder] Moving to 8, 71, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 9, 72, 14
+[Pathfinder] Moving to 9, 72, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 6, 65, 19
+[Pathfinder] Moving to 6, 65, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 4, 71, 21
+[Pathfinder] Moving to 4, 71, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 65, 18
+[Pathfinder] Moving to 7, 65, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -3, 68, 20
+[Pathfinder] Moving to -3, 68, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -3, 70, 20
+[Pathfinder] Moving to -3, 70, 20
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 8, 65, 11
+[Pathfinder] Moving to 8, 65, 11
+[Pathfinder] Reached target via plugin
+Collected iron_ore
+Moving to block at -6, 71, 14
+[Pathfinder] Moving to -6, 71, 14
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 69, 18
+[Pathfinder] Moving to -5, 69, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 71, 13
+[Pathfinder] Moving to -6, 71, 13
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 64, 19
+[Pathfinder] Moving to 5, 64, 19
+[Pathfinder] Reached target via plugin
+No optimal tool for dirt, attempting anyway
+Collected dirt
+Moving to block at 9, 72, 15
+[Pathfinder] Moving to 9, 72, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 69, 21
+[Pathfinder] Moving to 5, 69, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -5, 70, 18
+[Pathfinder] Moving to -5, 70, 18
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 69, 16
+[Pathfinder] Moving to -6, 69, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -4, 71, 19
+[Pathfinder] Moving to -4, 71, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 71, 15
+[Pathfinder] Moving to -6, 71, 15
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 5, 70, 21
+[Pathfinder] Moving to 5, 70, 21
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 7, 72, 19
+[Pathfinder] Moving to 7, 72, 19
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 70, 16
+[Pathfinder] Moving to -6, 70, 16
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at -6, 71, 12
+[Pathfinder] Moving to -6, 71, 12
+[Pathfinder] Reached target via plugin
+Collected dirt
+Moving to block at 3, 64, 20
+[Pathfinder] Moving to 3, 64, 20
+Cannot reach block: Pathfinder timeout, dist: 8.72, dist=8.7
+Moving to block at 5, 65, 20
+[Pathfinder] Moving to 5, 65, 20
+[Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 8.84
+[Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 9.71
+Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=9.7
+Moving to block at 8, 73, 17
+[Pathfinder] Moving to 8, 73, 17
+Cannot reach block: Pathfinder timeout, dist: 11.00, dist=11.0
 [Behaviors] Stopping resource gathering after 3 consecutive failures
-[Behaviors] Resource gathering completed. Success: 4, Failures: 3, Success Rate: 0.57
+[Behaviors] Resource gathering completed. Success: 144, Failures: 3, Success Rate: 0.98
 Resource gathering completed
 Successfully gathered resources in cycle 1
 Automatic behavior completed
 [Bot] Automatic behavior started with mode: survival
-n 1000ms...
-[2026-04-10T07:39:07.086Z] [DEBUG] [unknown] Collected dirt
-[2026-04-10T07:39:07.592Z] [DEBUG] [unknown] Moving to block at 7, 71, -4
-[2026-04-10T07:39:07.592Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, -4
-[2026-04-10T07:39:07.786Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
-[2026-04-10T07:39:07.786Z] [DEBUG] [behaviors.js:52:19)] Attempt 2 failed, retrying in 2000ms...
-[2026-04-10T07:39:08.538Z] [DEBUG] [task_queues:104:5)] Collected dirt
-[2026-04-10T07:39:09.040Z] [DEBUG] [unknown] Moving to block at 8, 72, -3
-[2026-04-10T07:39:09.040Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -3
-[2026-04-10T07:39:09.042Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
-[2026-04-10T07:39:09.786Z] [DEBUG] [behaviors.js:52:19)] Attempt 1 failed, retrying in 1000ms...
-[2026-04-10T07:39:10.536Z] [DEBUG] [unknown] Collected dirt
-[2026-04-10T07:39:11.040Z] [DEBUG] [unknown] Moving to block at 7, 71, -4
-[2026-04-10T07:39:11.040Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, -4
-[2026-04-10T07:39:14.537Z] [DEBUG] [unknown] Collected dirt
-[2026-04-10T07:39:15.041Z] [DEBUG] [unknown] Moving to block at 8, 71, -3
-[2026-04-10T07:39:15.041Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -3
-[2026-04-10T07:39:15.042Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] Moving to block at 8, 72, -3
-[2026-04-10T07:39:15.042Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -3
-[2026-04-10T07:39:15.044Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] Moving to block at 8, 72, -4
-[2026-04-10T07:39:15.044Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, -4
-[2026-04-10T07:39:15.045Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] Moving to block at 8, 71, -3
-[2026-04-10T07:39:15.045Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -3
-[2026-04-10T07:39:15.046Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] Moving to block at 8, 71, -4
-[2026-04-10T07:39:15.046Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, -4
-[2026-04-10T07:39:15.047Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: NaN
-[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] Cannot reach block: The goal was changed before it could be completed!, dist=NaN
-[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] [Behaviors] Stopping resource gathering after 3 consecutive failures
-[2026-04-10T07:39:15.047Z] [DEBUG] [unknown] [Behaviors] Resource gathering completed. Success: 1, Failures: 3, Success Rate: 0.25
-[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Resource gathering completed
-[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Successfully gathered resources in cycle 1
-[2026-04-10T07:39:15.050Z] [DEBUG] [unknown] Automatic behavior completed
-[2026-04-10T07:39:31.336Z] [INFO] [client.js:85:12)] [Bot] Bot died
-[2026-04-10T07:39:31.380Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
-[2026-04-10T07:39:33.425Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
-[2026-04-10T07:39:34.175Z] [DEBUG] [unknown] Collected dirt
-[2026-04-10T07:39:34.679Z] [DEBUG] [unknown] Moving to block at -1, 66, 0
-[2026-04-10T07:39:34.680Z] [DEBUG] [unknown] [Pathfinder] Moving to -1, 66, 0
-[2026-04-10T07:39:58.735Z] [INFO] [client.js:85:12)] [Bot] Bot died
-[2026-04-10T07:39:58.780Z] [INFO] [client.js:85:12)] [Bot] Bot respawned
-[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: 31.28, dist=31.3
-[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] Moving to block at 9, 72, -3
-[2026-04-10T07:39:59.680Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 72, -3
-[2026-04-10T07:39:59.681Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 31.28
-[2026-04-10T07:39:59.681Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 30.31
-[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=30.3
-[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] Moving to block at 9, 71, -3
-[2026-04-10T07:39:59.681Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 71, -3
-[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: NaN, dist=NaN
-[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] [Behaviors] Stopping resource gathering after 3 consecutive failures
-[2026-04-10T07:40:24.681Z] [DEBUG] [unknown] [Behaviors] Resource gathering completed. Success: 4, Failures: 3, Success Rate: 0.57
-[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Resource gathering completed
-[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Successfully gathered resources in cycle 1
-[2026-04-10T07:40:24.685Z] [DEBUG] [unknown] Automatic behavior completed
-[2026-04-10T07:40:24.685Z] [INFO] [index.js:179:29] [Bot] Automatic behavior started with mode: survival
+[Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 11.18
+, 72, 16
+[2026-04-10T13:53:05.240Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:05.241Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:05.745Z] [DEBUG] [unknown] Moving to block at 0, 69, 20
+[2026-04-10T13:53:05.745Z] [DEBUG] [unknown] [Pathfinder] Moving to 0, 69, 20
+[2026-04-10T13:53:06.292Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:06.293Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:06.795Z] [DEBUG] [unknown] Moving to block at -2, 68, 19
+[2026-04-10T13:53:06.795Z] [DEBUG] [unknown] [Pathfinder] Moving to -2, 68, 19
+[2026-04-10T13:53:07.094Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:07.096Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:07.598Z] [DEBUG] [unknown] Moving to block at 7, 71, 17
+[2026-04-10T13:53:07.598Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, 17
+[2026-04-10T13:53:08.451Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:08.453Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:08.957Z] [DEBUG] [unknown] Moving to block at -4, 69, 17
+[2026-04-10T13:53:08.957Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 69, 17
+[2026-04-10T13:53:10.207Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:10.209Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:10.711Z] [DEBUG] [unknown] Moving to block at 0, 68, 20
+[2026-04-10T13:53:10.711Z] [DEBUG] [unknown] [Pathfinder] Moving to 0, 68, 20
+[2026-04-10T13:53:10.759Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:10.761Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:11.265Z] [DEBUG] [unknown] Moving to block at 8, 71, 14
+[2026-04-10T13:53:11.266Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, 14
+[2026-04-10T13:53:13.166Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:13.168Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:13.671Z] [DEBUG] [unknown] Moving to block at -4, 70, 17
+[2026-04-10T13:53:13.672Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 70, 17
+[2026-04-10T13:53:14.825Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:14.826Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:15.328Z] [DEBUG] [unknown] Moving to block at 4, 69, 20
+[2026-04-10T13:53:15.329Z] [DEBUG] [unknown] [Pathfinder] Moving to 4, 69, 20
+[2026-04-10T13:53:15.631Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:15.633Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:16.135Z] [DEBUG] [unknown] Moving to block at -5, 70, 14
+[2026-04-10T13:53:16.135Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 14
+[2026-04-10T13:53:17.135Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:17.137Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:17.638Z] [DEBUG] [unknown] Moving to block at 4, 70, 20
+[2026-04-10T13:53:17.639Z] [DEBUG] [unknown] [Pathfinder] Moving to 4, 70, 20
+[2026-04-10T13:53:18.025Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:18.562Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:18.563Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:19.065Z] [DEBUG] [unknown] Moving to block at -5, 70, 13
+[2026-04-10T13:53:19.066Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 13
+[2026-04-10T13:53:19.323Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:20.043Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:20.047Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:20.547Z] [DEBUG] [unknown] Moving to block at -5, 69, 15
+[2026-04-10T13:53:20.547Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 69, 15
+[2026-04-10T13:53:20.549Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:20.551Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:21.055Z] [DEBUG] [task_queues:65:5)] Moving to block at -4, 71, 17
+[2026-04-10T13:53:21.056Z] [DEBUG] [task_queues:65:5)] [Pathfinder] Moving to -4, 71, 17
+[2026-04-10T13:53:21.057Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:21.059Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:21.325Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:21.562Z] [DEBUG] [unknown] Moving to block at -5, 70, 15
+[2026-04-10T13:53:21.562Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 15
+[2026-04-10T13:53:21.607Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:21.609Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:22.115Z] [DEBUG] [unknown] Moving to block at 6, 70, 19
+[2026-04-10T13:53:22.115Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 70, 19
+[2026-04-10T13:53:23.327Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:23.749Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:23.751Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:24.253Z] [DEBUG] [unknown] Moving to block at 7, 72, 17
+[2026-04-10T13:53:24.253Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 72, 17
+[2026-04-10T13:53:24.305Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:24.306Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:24.809Z] [DEBUG] [unknown] Moving to block at -1, 68, 20
+[2026-04-10T13:53:24.809Z] [DEBUG] [unknown] [Pathfinder] Moving to -1, 68, 20
+[2026-04-10T13:53:25.330Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:26.003Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:26.004Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:26.508Z] [DEBUG] [unknown] Moving to block at 8, 72, 14
+[2026-04-10T13:53:26.508Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, 14
+[2026-04-10T13:53:27.331Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:27.804Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:27.806Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:28.309Z] [DEBUG] [unknown] Moving to block at -5, 71, 14
+[2026-04-10T13:53:28.309Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 71, 14
+[2026-04-10T13:53:29.332Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:29.800Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:29.801Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:30.303Z] [DEBUG] [task_queues:65:5)] Moving to block at -5, 71, 13
+[2026-04-10T13:53:30.303Z] [DEBUG] [task_queues:65:5)] [Pathfinder] Moving to -5, 71, 13
+[2026-04-10T13:53:30.706Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:30.708Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:31.214Z] [DEBUG] [unknown] Moving to block at -5, 69, 16
+[2026-04-10T13:53:31.215Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 69, 16
+[2026-04-10T13:53:31.261Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:31.263Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:31.334Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:31.769Z] [DEBUG] [unknown] Moving to block at 8, 72, 15
+[2026-04-10T13:53:31.769Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, 15
+[2026-04-10T13:53:33.335Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:33.745Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:33.746Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:34.250Z] [DEBUG] [unknown] Moving to block at -5, 71, 15
+[2026-04-10T13:53:34.251Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 71, 15
+[2026-04-10T13:53:35.338Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:35.793Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:35.794Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:36.301Z] [DEBUG] [unknown] Moving to block at 6, 71, 19
+[2026-04-10T13:53:36.301Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 71, 19
+[2026-04-10T13:53:37.341Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:37.767Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:37.769Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:38.272Z] [DEBUG] [unknown] Moving to block at 5, 69, 20
+[2026-04-10T13:53:38.272Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 69, 20
+[2026-04-10T13:53:38.322Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:38.323Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:38.829Z] [DEBUG] [unknown] Moving to block at 7, 71, 18
+[2026-04-10T13:53:38.829Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, 18
+[2026-04-10T13:53:38.874Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:38.876Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:39.343Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:39.723Z] [DEBUG] [unknown] Moving to block at -4, 69, 18
+[2026-04-10T13:53:39.723Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 69, 18
+[2026-04-10T13:53:40.981Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:40.983Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:41.345Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:41.604Z] [DEBUG] [unknown] Moving to block at -5, 70, 16
+[2026-04-10T13:53:41.604Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 16
+[2026-04-10T13:53:41.957Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:41.959Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:42.461Z] [DEBUG] [unknown] Moving to block at 5, 70, 20
+[2026-04-10T13:53:42.461Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 70, 20
+[2026-04-10T13:53:43.264Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:43.265Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:43.346Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:43.768Z] [DEBUG] [unknown] Moving to block at -4, 70, 18
+[2026-04-10T13:53:43.768Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 70, 18
+[2026-04-10T13:53:43.925Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:43.927Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:44.430Z] [DEBUG] [unknown] Moving to block at -2, 69, 20
+[2026-04-10T13:53:44.430Z] [DEBUG] [unknown] [Pathfinder] Moving to -2, 69, 20
+[2026-04-10T13:53:44.476Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:44.477Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:44.982Z] [DEBUG] [unknown] Moving to block at 2, 69, 21
+[2026-04-10T13:53:44.982Z] [DEBUG] [unknown] [Pathfinder] Moving to 2, 69, 21
+[2026-04-10T13:53:45.031Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:45.032Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:45.349Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:45.725Z] [DEBUG] [unknown] Moving to block at 1, 69, 21
+[2026-04-10T13:53:45.725Z] [DEBUG] [unknown] [Pathfinder] Moving to 1, 69, 21
+[2026-04-10T13:53:45.775Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:45.777Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:46.281Z] [DEBUG] [unknown] Moving to block at 8, 72, 16
+[2026-04-10T13:53:46.281Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, 16
+[2026-04-10T13:53:47.333Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:47.334Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:47.352Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:47.838Z] [DEBUG] [unknown] Moving to block at -5, 71, 16
+[2026-04-10T13:53:47.838Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 71, 16
+[2026-04-10T13:53:49.136Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:49.137Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:49.353Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:49.643Z] [DEBUG] [unknown] Moving to block at -5, 72, 13
+[2026-04-10T13:53:49.643Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 72, 13
+[2026-04-10T13:53:50.034Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:50.036Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:50.541Z] [DEBUG] [unknown] Moving to block at -2, 68, 20
+[2026-04-10T13:53:50.542Z] [DEBUG] [unknown] [Pathfinder] Moving to -2, 68, 20
+[2026-04-10T13:53:51.355Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:51.666Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:51.667Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:52.170Z] [DEBUG] [unknown] Moving to block at 2, 68, 21
+[2026-04-10T13:53:52.170Z] [DEBUG] [unknown] [Pathfinder] Moving to 2, 68, 21
+[2026-04-10T13:53:52.470Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:52.471Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:52.974Z] [DEBUG] [unknown] Moving to block at 2, 70, 21
+[2026-04-10T13:53:52.975Z] [DEBUG] [unknown] [Pathfinder] Moving to 2, 70, 21
+[2026-04-10T13:53:53.022Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:53.024Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:53.356Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:53.619Z] [DEBUG] [unknown] Moving to block at 5, 71, 20
+[2026-04-10T13:53:53.619Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 71, 20
+[2026-04-10T13:53:54.675Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:54.676Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:55.183Z] [DEBUG] [unknown] Moving to block at 1, 68, 21
+[2026-04-10T13:53:55.183Z] [DEBUG] [unknown] [Pathfinder] Moving to 1, 68, 21
+[2026-04-10T13:53:55.226Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:55.227Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:55.357Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:55.745Z] [DEBUG] [unknown] Moving to block at 1, 70, 21
+[2026-04-10T13:53:55.745Z] [DEBUG] [unknown] [Pathfinder] Moving to 1, 70, 21
+[2026-04-10T13:53:55.795Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:55.797Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:56.303Z] [DEBUG] [unknown] Moving to block at -4, 71, 18
+[2026-04-10T13:53:56.303Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 71, 18
+[2026-04-10T13:53:57.099Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:57.100Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:57.360Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:57.621Z] [DEBUG] [unknown] Moving to block at 3, 69, 21
+[2026-04-10T13:53:57.621Z] [DEBUG] [unknown] [Pathfinder] Moving to 3, 69, 21
+[2026-04-10T13:53:58.221Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:58.222Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:53:58.726Z] [DEBUG] [unknown] Moving to block at 6, 72, 19
+[2026-04-10T13:53:58.726Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 72, 19
+[2026-04-10T13:53:59.361Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:53:59.747Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:53:59.748Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:00.251Z] [DEBUG] [unknown] Moving to block at 7, 72, 18
+[2026-04-10T13:54:00.252Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 72, 18
+[2026-04-10T13:54:00.548Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:00.550Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:01.053Z] [DEBUG] [unknown] Moving to block at -5, 69, 17
+[2026-04-10T13:54:01.054Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 69, 17
+[2026-04-10T13:54:01.363Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:02.852Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:02.853Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:03.357Z] [DEBUG] [unknown] Moving to block at 8, 66, 11
+[2026-04-10T13:54:03.358Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 66, 11
+[2026-04-10T13:54:03.365Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:05.366Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:06.613Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:06.613Z] [DEBUG] [unknown] No optimal tool for iron_ore, attempting anyway
+[2026-04-10T13:54:06.614Z] [DEBUG] [unknown] Collected iron_ore
+[2026-04-10T13:54:07.116Z] [DEBUG] [unknown] Moving to block at 3, 70, 21
+[2026-04-10T13:54:07.116Z] [DEBUG] [unknown] [Pathfinder] Moving to 3, 70, 21
+[2026-04-10T13:54:07.368Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:09.370Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:10.621Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:10.623Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:11.127Z] [DEBUG] [unknown] Moving to block at 0, 69, 21
+[2026-04-10T13:54:11.127Z] [DEBUG] [unknown] [Pathfinder] Moving to 0, 69, 21
+[2026-04-10T13:54:11.372Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:11.784Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:11.785Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:12.288Z] [DEBUG] [unknown] Moving to block at -5, 70, 17
+[2026-04-10T13:54:12.288Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 17
+[2026-04-10T13:54:13.372Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:13.622Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:13.623Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:14.138Z] [DEBUG] [unknown] Moving to block at 0, 68, 21
+[2026-04-10T13:54:14.138Z] [DEBUG] [unknown] [Pathfinder] Moving to 0, 68, 21
+[2026-04-10T13:54:14.425Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:14.426Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:14.928Z] [DEBUG] [unknown] Moving to block at 0, 70, 21
+[2026-04-10T13:54:14.928Z] [DEBUG] [unknown] [Pathfinder] Moving to 0, 70, 21
+[2026-04-10T13:54:14.977Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:14.979Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:15.373Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:15.623Z] [DEBUG] [unknown] Moving to block at 8, 73, 15
+[2026-04-10T13:54:15.623Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 73, 15
+[2026-04-10T13:54:17.376Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:17.740Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:17.741Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:18.244Z] [DEBUG] [unknown] Moving to block at 4, 64, 19
+[2026-04-10T13:54:18.244Z] [DEBUG] [unknown] [Pathfinder] Moving to 4, 64, 19
+[2026-04-10T13:54:19.376Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:21.378Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:23.379Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:24.100Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:24.100Z] [DEBUG] [unknown] No optimal tool for dirt, attempting anyway
+[2026-04-10T13:54:24.101Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:24.606Z] [DEBUG] [unknown] Moving to block at 4, 69, 21
+[2026-04-10T13:54:24.606Z] [DEBUG] [unknown] [Pathfinder] Moving to 4, 69, 21
+[2026-04-10T13:54:24.655Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:24.656Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:25.159Z] [DEBUG] [unknown] Moving to block at 6, 70, 20
+[2026-04-10T13:54:25.159Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 70, 20
+[2026-04-10T13:54:25.211Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:25.212Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:25.382Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:25.749Z] [DEBUG] [unknown] Moving to block at -6, 69, 14
+[2026-04-10T13:54:25.749Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 69, 14
+[2026-04-10T13:54:27.382Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:28.753Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:28.755Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:29.259Z] [DEBUG] [unknown] Moving to block at 8, 72, 17
+[2026-04-10T13:54:29.259Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 72, 17
+[2026-04-10T13:54:29.385Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:31.068Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:31.070Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:31.386Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:31.751Z] [DEBUG] [task_queues:65:5)] Moving to block at 4, 70, 21
+[2026-04-10T13:54:31.751Z] [DEBUG] [task_queues:65:5)] [Pathfinder] Moving to 4, 70, 21
+[2026-04-10T13:54:31.853Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:31.854Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:32.358Z] [DEBUG] [unknown] Moving to block at -5, 71, 17
+[2026-04-10T13:54:32.358Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 71, 17
+[2026-04-10T13:54:33.388Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:34.167Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:34.168Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:34.672Z] [DEBUG] [unknown] Moving to block at 7, 71, 19
+[2026-04-10T13:54:34.672Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 71, 19
+[2026-04-10T13:54:35.389Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:36.128Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:36.129Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:36.632Z] [DEBUG] [unknown] Moving to block at -6, 70, 14
+[2026-04-10T13:54:36.633Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 70, 14
+[2026-04-10T13:54:37.391Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:39.185Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:39.186Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:39.391Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:39.693Z] [DEBUG] [unknown] Moving to block at -4, 69, 19
+[2026-04-10T13:54:39.693Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 69, 19
+[2026-04-10T13:54:39.702Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:39.703Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:40.207Z] [DEBUG] [unknown] Moving to block at -1, 69, 21
+[2026-04-10T13:54:40.207Z] [DEBUG] [unknown] [Pathfinder] Moving to -1, 69, 21
+[2026-04-10T13:54:40.859Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:40.861Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:41.365Z] [DEBUG] [unknown] Moving to block at -6, 69, 15
+[2026-04-10T13:54:41.365Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 69, 15
+[2026-04-10T13:54:41.393Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:41.754Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:41.755Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:42.258Z] [DEBUG] [unknown] Moving to block at 8, 73, 16
+[2026-04-10T13:54:42.258Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 73, 16
+[2026-04-10T13:54:43.396Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:44.580Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:44.582Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:45.088Z] [DEBUG] [unknown] Moving to block at -4, 70, 19
+[2026-04-10T13:54:45.088Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 70, 19
+[2026-04-10T13:54:45.397Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:47.136Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:47.137Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:47.400Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:47.660Z] [DEBUG] [task_queues:65:5)] Moving to block at -1, 68, 21
+[2026-04-10T13:54:47.660Z] [DEBUG] [task_queues:65:5)] [Pathfinder] Moving to -1, 68, 21
+[2026-04-10T13:54:47.711Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:47.712Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:48.215Z] [DEBUG] [unknown] Moving to block at -1, 70, 21
+[2026-04-10T13:54:48.216Z] [DEBUG] [unknown] [Pathfinder] Moving to -1, 70, 21
+[2026-04-10T13:54:48.218Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:48.219Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:48.723Z] [DEBUG] [unknown] Moving to block at -3, 69, 20
+[2026-04-10T13:54:48.723Z] [DEBUG] [unknown] [Pathfinder] Moving to -3, 69, 20
+[2026-04-10T13:54:48.775Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:48.776Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:49.281Z] [DEBUG] [unknown] Moving to block at -6, 70, 15
+[2026-04-10T13:54:49.281Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 70, 15
+[2026-04-10T13:54:49.402Z] [WARN] [bot_server.js:1060:16] Chinese translations not available: Cannot find module '../lib/translations'
+Require stack:
+- /data/code/minebot/bot_server.js
+[2026-04-10T13:54:49.658Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:49.659Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:50.162Z] [DEBUG] [unknown] Moving to block at 6, 64, 18
+[2026-04-10T13:54:50.162Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 64, 18
+[2026-04-10T13:54:52.682Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:52.682Z] [DEBUG] [unknown] No optimal tool for dirt, attempting anyway
+[2026-04-10T13:54:52.684Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:53.188Z] [DEBUG] [unknown] Moving to block at 6, 71, 20
+[2026-04-10T13:54:53.188Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 71, 20
+[2026-04-10T13:54:53.634Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:53.635Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:54.142Z] [DEBUG] [unknown] Moving to block at 8, 71, 18
+[2026-04-10T13:54:54.142Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 71, 18
+[2026-04-10T13:54:55.490Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:55.491Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:55.998Z] [DEBUG] [unknown] Moving to block at 9, 72, 14
+[2026-04-10T13:54:55.998Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 72, 14
+[2026-04-10T13:54:56.953Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:56.955Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:57.458Z] [DEBUG] [unknown] Moving to block at 6, 65, 19
+[2026-04-10T13:54:57.458Z] [DEBUG] [unknown] [Pathfinder] Moving to 6, 65, 19
+[2026-04-10T13:54:58.556Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:58.557Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:54:59.060Z] [DEBUG] [unknown] Moving to block at 4, 71, 21
+[2026-04-10T13:54:59.060Z] [DEBUG] [unknown] [Pathfinder] Moving to 4, 71, 21
+[2026-04-10T13:54:59.511Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:54:59.512Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:00.016Z] [DEBUG] [unknown] Moving to block at 7, 65, 18
+[2026-04-10T13:55:00.016Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 65, 18
+[2026-04-10T13:55:00.314Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:00.315Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:00.820Z] [DEBUG] [unknown] Moving to block at -3, 68, 20
+[2026-04-10T13:55:00.820Z] [DEBUG] [unknown] [Pathfinder] Moving to -3, 68, 20
+[2026-04-10T13:55:02.323Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:02.325Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:02.828Z] [DEBUG] [unknown] Moving to block at -3, 70, 20
+[2026-04-10T13:55:02.828Z] [DEBUG] [unknown] [Pathfinder] Moving to -3, 70, 20
+[2026-04-10T13:55:03.077Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:03.079Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:03.582Z] [DEBUG] [unknown] Moving to block at 8, 65, 11
+[2026-04-10T13:55:03.582Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 65, 11
+[2026-04-10T13:55:16.365Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:16.367Z] [DEBUG] [unknown] Collected iron_ore
+[2026-04-10T13:55:16.871Z] [DEBUG] [unknown] Moving to block at -6, 71, 14
+[2026-04-10T13:55:16.871Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 71, 14
+[2026-04-10T13:55:28.874Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:28.875Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:29.379Z] [DEBUG] [unknown] Moving to block at -5, 69, 18
+[2026-04-10T13:55:29.380Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 69, 18
+[2026-04-10T13:55:29.425Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:29.427Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:29.929Z] [DEBUG] [task_queues:65:5)] Moving to block at -6, 71, 13
+[2026-04-10T13:55:29.929Z] [DEBUG] [task_queues:65:5)] [Pathfinder] Moving to -6, 71, 13
+[2026-04-10T13:55:30.833Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:30.834Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:31.338Z] [DEBUG] [unknown] Moving to block at 5, 64, 19
+[2026-04-10T13:55:31.338Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 64, 19
+[2026-04-10T13:55:33.845Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:33.845Z] [DEBUG] [unknown] No optimal tool for dirt, attempting anyway
+[2026-04-10T13:55:33.846Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:34.351Z] [DEBUG] [unknown] Moving to block at 9, 72, 15
+[2026-04-10T13:55:34.351Z] [DEBUG] [unknown] [Pathfinder] Moving to 9, 72, 15
+[2026-04-10T13:55:35.953Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:35.954Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:36.456Z] [DEBUG] [unknown] Moving to block at 5, 69, 21
+[2026-04-10T13:55:36.456Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 69, 21
+[2026-04-10T13:55:37.105Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:37.107Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:37.609Z] [DEBUG] [unknown] Moving to block at -5, 70, 18
+[2026-04-10T13:55:37.609Z] [DEBUG] [unknown] [Pathfinder] Moving to -5, 70, 18
+[2026-04-10T13:55:39.405Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:39.407Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:39.910Z] [DEBUG] [unknown] Moving to block at -6, 69, 16
+[2026-04-10T13:55:39.910Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 69, 16
+[2026-04-10T13:55:40.158Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:40.160Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:40.663Z] [DEBUG] [unknown] Moving to block at -4, 71, 19
+[2026-04-10T13:55:40.663Z] [DEBUG] [unknown] [Pathfinder] Moving to -4, 71, 19
+[2026-04-10T13:55:40.710Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:40.711Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:41.215Z] [DEBUG] [unknown] Moving to block at -6, 71, 15
+[2026-04-10T13:55:41.215Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 71, 15
+[2026-04-10T13:55:41.465Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:41.467Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:41.969Z] [DEBUG] [unknown] Moving to block at 5, 70, 21
+[2026-04-10T13:55:41.969Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 70, 21
+[2026-04-10T13:55:43.424Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:43.426Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:43.928Z] [DEBUG] [unknown] Moving to block at 7, 72, 19
+[2026-04-10T13:55:43.928Z] [DEBUG] [unknown] [Pathfinder] Moving to 7, 72, 19
+[2026-04-10T13:55:44.326Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:44.328Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:44.830Z] [DEBUG] [unknown] Moving to block at -6, 70, 16
+[2026-04-10T13:55:44.830Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 70, 16
+[2026-04-10T13:55:46.783Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:46.785Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:47.287Z] [DEBUG] [unknown] Moving to block at -6, 71, 12
+[2026-04-10T13:55:47.287Z] [DEBUG] [unknown] [Pathfinder] Moving to -6, 71, 12
+[2026-04-10T13:55:48.487Z] [DEBUG] [pathfinder.js:56:18] [Pathfinder] Reached target via plugin
+[2026-04-10T13:55:48.488Z] [DEBUG] [unknown] Collected dirt
+[2026-04-10T13:55:48.989Z] [DEBUG] [unknown] Moving to block at 3, 64, 20
+[2026-04-10T13:55:48.989Z] [DEBUG] [unknown] [Pathfinder] Moving to 3, 64, 20
+[2026-04-10T13:56:13.990Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: 8.72, dist=8.7
+[2026-04-10T13:56:13.990Z] [DEBUG] [unknown] Moving to block at 5, 65, 20
+[2026-04-10T13:56:13.990Z] [DEBUG] [unknown] [Pathfinder] Moving to 5, 65, 20
+[2026-04-10T13:56:13.991Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: The goal was changed before it could be completed!, dist: 8.84
+[2026-04-10T13:56:13.991Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 9.71
+[2026-04-10T13:56:13.991Z] [DEBUG] [unknown] Cannot reach block: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist=9.7
+[2026-04-10T13:56:13.991Z] [DEBUG] [unknown] Moving to block at 8, 73, 17
+[2026-04-10T13:56:13.991Z] [DEBUG] [unknown] [Pathfinder] Moving to 8, 73, 17
+[2026-04-10T13:56:38.992Z] [DEBUG] [unknown] Cannot reach block: Pathfinder timeout, dist: 11.00, dist=11.0
+[2026-04-10T13:56:38.993Z] [DEBUG] [unknown] [Behaviors] Stopping resource gathering after 3 consecutive failures
+[2026-04-10T13:56:38.993Z] [DEBUG] [unknown] [Behaviors] Resource gathering completed. Success: 144, Failures: 3, Success Rate: 0.98
+[2026-04-10T13:56:38.998Z] [DEBUG] [unknown] Resource gathering completed
+[2026-04-10T13:56:38.998Z] [DEBUG] [unknown] Successfully gathered resources in cycle 1
+[2026-04-10T13:56:38.998Z] [DEBUG] [unknown] Automatic behavior completed
+[2026-04-10T13:56:38.998Z] [INFO] [index.js:179:29] [Bot] Automatic behavior started with mode: survival
+[2026-04-10T13:56:42.441Z] [DEBUG] [pathfinder.js:67:18] [Pathfinder] Plugin error: Path was stopped before it could be completed! Thus, the desired goal was not reached., dist: 11.18

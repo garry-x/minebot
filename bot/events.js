@@ -219,7 +219,28 @@ module.exports = function(bot, evolutionManager = null) {
       bot.on('health', async () => {
         if (bot.health !== lastHealth) {
           const change = bot.health - lastHealth;
+          const isDamage = change < 0;
           logger.trace(`[State] Health changed: ${lastHealth.toFixed(1)} → ${bot.health.toFixed(1)} (${change > 0 ? '+' : ''}${change.toFixed(1)})`);
+          
+          // Save health change event to database
+          try {
+            const changeType = isDamage ? '受伤' : '治疗';
+            const changeValue = Math.abs(change).toFixed(1);
+            BotState.addEvent(
+              getBotId(),
+              'health_change',
+              `${changeType} ${changeValue} (${bot.health.toFixed(1)}/${bot.health === 20 ? '❤️' : '💔'})`,
+              {
+                old_health: lastHealth,
+                new_health: bot.health,
+                change: change,
+                cause: isDamage ? 'damage' : 'heal',
+                is_critical: bot.health < 5
+              }
+            ).catch(err => logger.error(`[Events] Failed to save health change event: ${err.message}`));
+          } catch (err) {
+            logger.error(`[Events] Error processing health change: ${err.message}`);
+          }
           
           await recordStateChange('health', lastHealth, bot.health, {
             cause: change < 0 ? 'damage' : 'heal',
@@ -235,7 +256,28 @@ module.exports = function(bot, evolutionManager = null) {
         logger.trace(`[Food] foodChange event: ${food}, lastFood: ${lastFood}`);
         if (food !== lastFood) {
           const change = food - lastFood;
+          const isEating = change > 0;
           logger.trace(`[State] Food changed: ${lastFood} → ${food} (${change > 0 ? '+' : ''}${change})`);
+          
+          // Save food change event to database
+          try {
+            const changeType = isEating ? '进食' : '饥饿';
+            const changeValue = Math.abs(change);
+            BotState.addEvent(
+              getBotId(),
+              'food_change',
+              `${changeType} ${changeValue} (${food}/20)`,
+              {
+                old_food: lastFood,
+                new_food: food,
+                change: change,
+                cause: isEating ? 'eating' : 'consumption',
+                is_low: food < 5
+              }
+            ).catch(err => logger.error(`[Events] Failed to save food change event: ${err.message}`));
+          } catch (err) {
+            logger.error(`[Events] Error processing food change: ${err.message}`);
+          }
           
           await recordStateChange('food', lastFood, food, {
             cause: change < 0 ? 'consumption' : 'eating',
