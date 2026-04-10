@@ -72,8 +72,19 @@ const GoalSystem = require('./bot/goal-system');
 const BotGoal = require('./config/models/BotGoal');
 const StrategyEvolutionManager = require('./bot/evolution/strategy-manager');
 
-const API_CACHE_TTL = parseInt(process.env.API_CACHE_TTL || '1000');
+// Pre-load translation module at startup
+let translate = null;
+try {
+  translate = require('./lib/translations');
+} catch (err) {
+  logger.warn('Chinese translations not available:', err.message);
+}
+
+const API_CACHE_TTL = parseInt(process.env.API_CACHE_TTL || '5000');
 const watchCache = new Map();
+
+const eventsCache = new Map();
+const EVENTS_CACHE_TTL = parseInt(process.env.EVENTS_CACHE_TTL || '2000');
 
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = parseInt(process.env.RATE_LIMIT_WINDOW || '60000');
@@ -106,6 +117,11 @@ setInterval(() => {
   for (const [key, cached] of watchCache.entries()) {
     if (now - cached.timestamp > API_CACHE_TTL * 2) {
       watchCache.delete(key);
+    }
+  }
+  for (const [key, cached] of eventsCache.entries()) {
+    if (now - cached.timestamp > EVENTS_CACHE_TTL * 2) {
+      eventsCache.delete(key);
     }
   }
 }, 30000);
@@ -1051,16 +1067,6 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     
     const pos = bot.bot.entity.position;
     
-    // Load Chinese translations if requested
-    let translate = null;
-    if (useChinese) {
-      try {
-        translate = require('../lib/translations');
-      } catch (err) {
-        logger.warn('Chinese translations not available:', err.message);
-      }
-    }
-    
     // Helper function to apply translations to response data
     const applyTranslations = (data) => {
       if (!translate || !useChinese) return data;
@@ -1183,9 +1189,10 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     // Get inventory/resources
     const inventory = [];
     const resources = {};
+    let inventoryItems = [];
     if (bot.bot.inventory && bot.bot.inventory.items) {
-      const items = bot.bot.inventory.items();
-      items.forEach(item => {
+      inventoryItems = bot.bot.inventory.items();
+      inventoryItems.forEach(item => {
         if (item && item.name) {
           inventory.push({
             name: item.name,
@@ -1291,7 +1298,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     // If no villagers found, check for village structures (chests, beds, crafting tables, furnaces)
     if (nearbyVillagers) {
       nearbyVillages = true;
-    } else if (bot && bot.bot && bot.bot.findBlock) {
+    } else if (bot && bot.bot && bot.bot.findBlocks) {
       try {
         const villageStructures = [
           'chest', 'trapped_chest', 'ender_chest',
@@ -1306,17 +1313,16 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         
         const villageDetectionRadius = parseInt(process.env.VILLAGE_SCAN_RADIUS || '24');
         
-        for (const structure of villageStructures) {
-          const foundStructure = bot.bot.findBlock({
-            point: bot.bot.entity.position,
-            matching: structure,
-            maxDistance: villageDetectionRadius
-          });
-          
-          if (foundStructure) {
-            nearbyVillages = true;
-            break; // Found at least one village structure
-          }
+        // Single scan for all village structure types
+        const foundStructures = bot.bot.findBlocks({
+          point: bot.bot.entity.position,
+          matching: villageStructures,
+          maxDistance: villageDetectionRadius,
+          minCount: 1
+        });
+        
+        if (foundStructures && foundStructures.length > 0) {
+          nearbyVillages = true;
         }
         
       } catch (error) {
@@ -1329,7 +1335,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     // Check for nearby resources (valuable blocks within scanning radius)
     const nearbyResources = [];
     
-    if (bot && bot.bot && bot.bot.findBlock) {
+    if (bot && bot.bot && bot.bot.findBlocks) {
       try {
         // Define valuable resources to scan for
         const valuableResources = [
@@ -1341,28 +1347,35 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         
         // Scan for each resource type within a reasonable radius
         const scanRadius = parseInt(process.env.RESOURCE_SCAN_RADIUS || '16');
-        const foundResources = {};
         
-        for (const resource of valuableResources) {
-          const foundBlock = bot.bot.findBlock({
-            point: bot.bot.entity.position,
-            matching: resource,
-            maxDistance: scanRadius
-          });
+        // Single scan for all resource types
+        const foundBlocks = bot.bot.findBlocks({
+          point: bot.bot.entity.position,
+          matching: valuableResources,
+          maxDistance: scanRadius,
+          minCount: 1
+        });
+        
+        // Find nearest block for each resource type
+        const foundResources = {};
+        const botPos = bot.bot.entity.position;
+        
+        for (const block of foundBlocks) {
+          const resource = block.name;
           
-          if (foundBlock) {
+          if (!foundResources[resource]) {
             const distance = Math.sqrt(
-              Math.pow(foundBlock.position.x - bot.bot.entity.position.x, 2) +
-              Math.pow(foundBlock.position.y - bot.bot.entity.position.y, 2) +
-              Math.pow(foundBlock.position.z - bot.bot.entity.position.z, 2)
+              Math.pow(block.position.x - botPos.x, 2) +
+              Math.pow(block.position.y - botPos.y, 2) +
+              Math.pow(block.position.z - botPos.z, 2)
             );
             
             foundResources[resource] = {
               distance: Math.floor(distance),
               position: {
-                x: Math.floor(foundBlock.position.x),
-                y: Math.floor(foundBlock.position.y),
-                z: Math.floor(foundBlock.position.z)
+                x: Math.floor(block.position.x),
+                y: Math.floor(block.position.y),
+                z: Math.floor(block.position.z)
               }
             };
           }
@@ -1383,7 +1396,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     
     let goalInfo = null;
     if (bot.goalState) {
-      const inventoryItems = bot.bot.inventory.items();
+
       const progress = GoalSystem.calculateProgress(bot.goalState, inventoryItems);
       goalInfo = {
         currentGoal: bot.goalState.currentGoal,
@@ -1393,7 +1406,15 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       };
     }
     
-    const events = await BotState.getEvents(botId, eventLimit);
+    const eventsCacheKey = `${botId}:${eventLimit}`;
+    const cachedEvents = eventsCache.get(eventsCacheKey);
+    let events;
+    if (cachedEvents && Date.now() - cachedEvents.timestamp < EVENTS_CACHE_TTL) {
+      events = cachedEvents.data;
+    } else {
+      events = await BotState.getEvents(botId, eventLimit);
+      eventsCache.set(eventsCacheKey, { data: events, timestamp: Date.now() });
+    }
     
     // Enhanced events with action categories
     const enhancedEvents = events.map(e => {

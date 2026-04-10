@@ -796,7 +796,7 @@ botCommand
 botCommand
   .command('watch <botIdOrName>')
   .description('实时查看机器人状态')
-  .option('-n, --events <number>', '显示最近多少条事件', '50')
+  .option('-n, --events <number>', '显示最近多少条事件', '10')
   .option('-i, --interval <ms>', '刷新间隔(毫秒)', '1000')
   .option('--chinese', '显示中文翻译（物品、生物名称等）')
   .option('--zh', '显示中文翻译（简写）')
@@ -813,7 +813,7 @@ botCommand
     const eventLimit = parseInt(options.events);
     const interval = parseInt(options.interval);
     
-    console.clear();
+    process.stdout.write('\x1b[2J\x1b[H');
     console.log(`\n🔍 正在监控机器人: ${botIdOrName}`);
     console.log(`📊 刷新间隔: ${interval}ms | 显示事件数: ${eventLimit}`);
     console.log(`⏹️  按 Ctrl+C 退出监控\n`);
@@ -839,7 +839,7 @@ botCommand
           return;
         }
 
-        console.clear();
+        process.stdout.write('\x1b[2J\x1b[H');
         
         console.log(`\n${useChinese ? '🤖 机器人' : '🤖 Bot'}: ${data.username} | ID: ${data.botId}`);
         console.log(`${useChinese ? '📡 状态' : '📡 Status'}: ${data.state} | ${useChinese ? '模式' : 'Mode'}: ${data.mode || 'N/A'}`);
@@ -903,12 +903,20 @@ botCommand
             const typeIcon = {
               'status': '📡',
               'health': '❤️',
+              'health_change': '❤️',
               'food': '🍖',
+              'food_change': '🍖',
               'movement': '👣',
               'death': '💀',
               'respawn': '✨',
               'disconnect': '🔌',
-              'connect': '🔗'
+              'connect': '🔗',
+              'damage_taken': '⚔️',
+              'heal': '💚',
+              'eating': '🍽️',
+              'item_pickup': '💎',
+              'block_break': '⛏️',
+              'block_place': '🧱'
             }[event.type] || '📝';
             
             console.log(`  ${typeIcon} [${time}] ${event.message}`);
@@ -934,7 +942,7 @@ botCommand
     
     process.on('SIGINT', () => {
       clearInterval(watchInterval);
-      console.clear();
+      process.stdout.write('\x1b[2J\x1b[H');
       const useChinese = options.chinese || options.zh;
       console.log(`\n👋 ${useChinese ? '监控已退出' : 'Monitoring stopped'}`);
       process.exit(0);
