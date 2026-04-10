@@ -384,26 +384,53 @@ app.post('/api/server/stop', (req, res) => {
   }, 100);
 });
 
-app.get('/api/bots', (req, res) => {
-  const bots = Array.from(activeBots.entries()).map(([botId, bot]) => {
-    if (!bot.bot) return null;
-    
-    return {
-      botId: botId,
-      username: bot.bot.username,
-      connected: bot.isConnected,
-      state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
-      mode: bot.currentMode || null,
-      deadReason: bot.deadReason || null,
-      health: bot.bot.health,
-      maxHealth: 20,
-      food: bot.bot.food,
-      foodSaturation: bot.bot.foodSaturation,
-      position: bot.bot.entity.position,
-      gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
-      joinedAt: bot.botTime || bot.bot.joinTime || null
-    };
-  }).filter(Boolean);
+app.get('/api/bots', async (req, res) => {
+  const showAll = req.query.all === 'true';
+  
+  let bots = [];
+  
+  if (showAll) {
+    try {
+      const dbBots = await BotState.getAllBots();
+      bots = dbBots.map(bot => ({
+        botId: bot.bot_id,
+        username: bot.username,
+        status: bot.status,
+        state: bot.status === 'active' ? 'ALIVE' : 'STOPPED',
+        mode: bot.mode,
+        health: bot.health,
+        food: bot.food,
+        position_x: bot.position_x,
+        position_y: bot.position_y,
+        position_z: bot.position_z,
+        created_at: bot.created_at,
+        updated_at: bot.updated_at
+      }));
+    } catch (err) {
+      logger.error('[API] Error fetching all bots from DB:', err);
+      bots = [];
+    }
+  } else {
+    bots = Array.from(activeBots.entries()).map(([botId, bot]) => {
+      if (!bot.bot) return null;
+      
+      return {
+        botId: botId,
+        username: bot.bot.username,
+        connected: bot.isConnected,
+        state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
+        mode: bot.currentMode || null,
+        deadReason: bot.deadReason || null,
+        health: bot.bot.health,
+        maxHealth: 20,
+        food: bot.bot.food,
+        foodSaturation: bot.bot.foodSaturation,
+        position: bot.bot.entity.position,
+        gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
+        joinedAt: bot.botTime || bot.bot.joinTime || null
+      };
+    }).filter(Boolean);
+  }
   
   res.json({
     count: bots.length,

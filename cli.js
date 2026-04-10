@@ -535,8 +535,10 @@ botCommand
 botCommand
   .command('list')
   .description('列出所有机器人')
-  .action(async () => {
-    console.log('📋 机器人列表...\n');
+  .option('-a, --all', '显示所有机器人（包括已停止的）')
+  .action(async options => {
+    const showAll = options.all || false;
+    console.log(`📋 机器人列表${showAll ? '（包括已停止）' : ''}...\n`);
 
     const botStatus = await getBotServerStatus();
     if (botStatus.status !== 'RUNNING') {
@@ -545,10 +547,11 @@ botCommand
     }
 
     try {
+      const queryParam = showAll ? '?all=true' : '';
       const data = await makeRequest({
         hostname: 'localhost',
         port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-        path: '/api/bots',
+        path: `/api/bots${queryParam}`,
         method: 'GET',
         timeout: 5000
       });
@@ -556,7 +559,7 @@ botCommand
       const bots = Array.isArray(data?.bots) ? data.bots : [];
 
       if (bots.length === 0) {
-        console.log('没有运行的机器人');
+        console.log(showAll ? '没有任何机器人记录' : '没有运行的机器人');
         return;
       }
 
@@ -564,40 +567,58 @@ botCommand
 
       for (const bot of bots) {
         const botId = bot.botId || bot.id || 'Unknown';
+        const isStopped = bot.status === 'stopped' || bot.state === 'STOPPED';
+
         console.log(`🤖 ID: ${botId}`);
         console.log(`  名称: ${bot.username || 'Unknown'}`);
-        console.log(`  状态: ${bot.state || 'UNKNOWN'}`);
+        console.log(`  状态: ${isStopped ? 'STOPPED' : (bot.state || 'UNKNOWN')}`);
 
-        // 获取bot的goal状态
-        try {
-          const goalData = await makeRequest({
-            hostname: 'localhost',
-            port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-            path: `/api/bot/${botId}/goal/status`,
-            method: 'GET',
-            timeout: 3000
-          });
+        // 只有未停止的机器人才能获取goal状态
+        if (!isStopped) {
+          // 获取bot的goal状态
+          try {
+            const goalData = await makeRequest({
+              hostname: 'localhost',
+              port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+              path: `/api/bot/${botId}/goal/status`,
+              method: 'GET',
+              timeout: 3000
+            });
 
-          if (goalData.currentGoal || goalData.goalState) {
-            const goalState = goalData.currentGoal || goalData.goalState;
-            const goalName = goalState.name || goalState.goalId || 'Unknown';
-            const progress = Math.round((goalData.progress || goalState.progress || 0) * 100);
-            const progressBar = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
-            console.log(`  🎯 目标: ${goalName} ${progressBar} ${progress}%`);
-          } else {
-            console.log(`  🎯 目标: 未设置`);
+            if (goalData.currentGoal || goalData.goalState) {
+              const goalState = goalData.currentGoal || goalData.goalState;
+              const goalName = goalState.name || goalState.goalId || 'Unknown';
+              const progress = Math.round((goalData.progress || goalState.progress || 0) * 100);
+              const progressBar = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
+              console.log(`  🎯 目标: ${goalName} ${progressBar} ${progress}%`);
+            } else {
+              console.log(`  🎯 目标: 未设置`);
+            }
+          } catch (goalError) {
+            console.log(`  🎯 目标: 获取失败`);
           }
-        } catch (goalError) {
-          console.log(`  🎯 目标: 获取失败`);
-        }
 
-        if (bot.position) {
-          console.log(
-            `  位置: ${Math.floor(bot.position.x)}, ${Math.floor(bot.position.y)}, ${Math.floor(bot.position.z)}`
-          );
+          if (bot.position) {
+            console.log(
+              `  位置: ${Math.floor(bot.position.x)}, ${Math.floor(bot.position.y)}, ${Math.floor(bot.position.z)}`
+            );
+          }
+          console.log(`  生命值: ${bot.health || 20}/20`);
+          console.log(`  饥饿值: ${bot.food || 20}/20`);
+        } else {
+          console.log(`  🎯 目标: 已停止`);
+          if (bot.position_x) {
+            console.log(
+              `  位置: ${Math.floor(bot.position_x)}, ${Math.floor(bot.position_y)}, ${Math.floor(bot.position_z)}`
+            );
+          }
+          if (bot.created_at) {
+            console.log(`  创建时间: ${bot.created_at}`);
+          }
+          if (bot.updated_at) {
+            console.log(`  更新时间: ${bot.updated_at}`);
+          }
         }
-        console.log(`  生命值: ${bot.health || 20}/20`);
-        console.log(`  饥饿值: ${bot.food || 20}/20`);
         console.log('---');
       }
     } catch (error) {
