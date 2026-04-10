@@ -1353,15 +1353,32 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     
     // Check for nearby resources (valuable blocks within scanning radius)
     const nearbyResources = [];
+    const nearbyDrops = [];
     
     if (bot && bot.bot && bot.bot.findBlocks) {
       try {
-        // Define valuable resources to scan for
+        // Define valuable resources to scan for - expanded list
         const valuableResources = [
+          // Ores
           'diamond_ore', 'iron_ore', 'gold_ore', 'emerald_ore', 'coal_ore',
           'redstone_ore', 'lapis_ore', 'copper_ore', 'ancient_debris',
+          // Blocks
           'diamond_block', 'iron_block', 'gold_block', 'emerald_block',
-          'chest', 'ender_chest', 'spawner', 'anvil'
+          'copper_block', 'raw_copper_block', 'raw_iron_block', 'raw_gold_block',
+          // Containers & Structures
+          'chest', 'trapped_chest', 'ender_chest', 'spawner', 'anvil',
+          'furnace', 'blast_furnace', 'smoker', 'brewing_stand', 'beacon',
+          // Nature & Building
+          'oak_log', 'birch_log', 'spruce_log', 'jungle_log', 'dark_oak_log', 'acacia_log',
+          'oak_leaves', 'birch_leaves', 'spruce_leaves', 'jungle_leaves',
+          'grass_block', 'dirt', 'coarse_dirt', 'podzol',
+          'stone', 'granite', 'diorite', 'andesite', 'cobblestone',
+          'sand', 'red_sand', 'gravel', 'clay',
+          'water', 'lava', 'ice', 'snow_block',
+          'cobweb', 'mushroom_block', 'nether_wart', 'soul_sand', 'soul_soil',
+          // Special
+          'bookshelf', 'cartography_table', 'fletching_table', 'smithing_table',
+          'grindstone', 'loom', 'stonecutter', 'lectern', 'composter'
         ];
         
         // Scan for each resource type within a reasonable radius
@@ -1407,9 +1424,47 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
           position: data.position
         })));
         
+        // Also scan for dropped items (item entities)
+        if (bot.bot.entities) {
+          const entities = Object.values(bot.bot.entities);
+          const botPos = bot.bot.entity.position;
+          const DROP_SCAN_DISTANCE = 16;
+          const DROP_SCAN_DISTANCE_SQ = DROP_SCAN_DISTANCE * DROP_SCAN_DISTANCE;
+          
+          for (const entity of entities) {
+            if (entity.type === 'item' && entity.position) {
+              const dx = entity.position.x - botPos.x;
+              const dy = entity.position.y - botPos.y;
+              const dz = entity.position.z - botPos.z;
+              const distSq = dx*dx + dy*dy + dz*dz;
+              
+              if (distSq < DROP_SCAN_DISTANCE_SQ) {
+                const distance = Math.sqrt(distSq);
+                // Extract item name from entity metadata if available
+                let itemName = entity.name || 'item';
+                if (entity.metadata) {
+                  // Try to get item name from metadata
+                  const item = entity.metadata.find(m => m.key === 5);
+                  if (item && item.value) {
+                    itemName = item.value.name || itemName;
+                  }
+                }
+                nearbyDrops.push({
+                  item: itemName.replace('minecraft:', ''),
+                  distance: Math.round(distance * 10) / 10,
+                  position: {
+                    x: Math.floor(entity.position.x),
+                    y: Math.floor(entity.position.y),
+                    z: Math.floor(entity.position.z)
+                  }
+                });
+              }
+            }
+          }
+        }
+        
       } catch (error) {
         logger.error(`Error scanning nearby resources: ${error.message}`);
-        // Keep empty array if scanning fails
       }
     }
     
@@ -1545,7 +1600,8 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         nearby: {
           entities: nearbyEntities.slice(0, 10),
           hasVillage: nearbyVillages,
-          resources: nearbyResources
+          resources: nearbyResources,
+          drops: nearbyDrops.slice(0, 10)
         }
       },
       

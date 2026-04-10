@@ -933,9 +933,16 @@ botCommand
         
         if (data.environment.nearby.entities.length > 0) {
           console.log(`\n👥 ${useChinese ? '附近实体' : 'Nearby Entities'}:`);
-          data.environment.nearby.entities.forEach(entity => {
+          data.environment.nearby.entities.slice(0, 10).forEach(entity => {
             const categoryIcon = entity.category === 'hostile' ? '👿' : (entity.category === 'friendly' ? '😊' : '😐');
             console.log(`   ${categoryIcon} ${entity.displayName} (${entity.type}) - ${useChinese ? '距离' : 'distance'}: ${entity.distance}`);
+          });
+        }
+        
+        if (data.environment.nearby.drops && data.environment.nearby.drops.length > 0) {
+          console.log(`\n💰 ${useChinese ? '附近掉落物' : 'Nearby Drops'}:`);
+          data.environment.nearby.drops.slice(0, 10).forEach(drop => {
+            console.log(`   📦 ${drop.item} - ${drop.distance}m`);
           });
         }
         
