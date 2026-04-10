@@ -10,3 +10,5 @@ logs/
 bot/*.db
 bot/evolution.db
 bot/bot_config.db
+bot/*.db-shm
+bot/*.db-wal
