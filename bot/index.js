@@ -26,6 +26,8 @@ class MinecraftBot {
     this.screenshotCaptureFn = null;
     this._streamCaptureInterval = null;
     this.evolutionManager = null;
+    this._lastSavedState = null;
+    this._lastDbWriteTime = 0;
   }
 
 async connect(username, accessToken, startAutomatic = false) {
@@ -89,9 +91,37 @@ async connect(username, accessToken, startAutomatic = false) {
         logger.error('[Bot] mcData is null or undefined!');
         throw new Error('Failed to load mcData');
       }
-      // Attach mcData to bot's _client for pathfinder access
       this.bot._client.mcData = mcData;
+      this.bot.mcData = mcData;
       logger.trace('[Bot] mcData attached to _client:', !!this.bot._client.mcData);
+      
+      try {
+        const pf = require('mineflayer-pathfinder');
+        const originalInject = pf.pathfinder;
+        pf.pathfinder = (bot) => {
+          const md = bot.mcData || bot._client?.mcData;
+          if (!md?.blocksByName) {
+            throw new Error('mcData not available for pathfinder');
+          }
+          const Module = require('module');
+          const originalRequire = Module.prototype.require;
+          Module.prototype.require = function(id) {
+            if (id === 'minecraft-data') {
+              return () => md;
+            }
+            return originalRequire.apply(this, arguments);
+          };
+          try {
+            originalInject(bot);
+          } finally {
+            Module.prototype.require = originalRequire;
+          }
+        };
+        this.bot.loadPlugin(pf.pathfinder);
+        logger.info('[Bot] Loaded mineflayer-pathfinder plugin');
+      } catch (pfErr) {
+        logger.warn('[Bot] Could not load mineflayer-pathfinder:', pfErr.message);
+      }
       
       // Wait a bit for bot to fully initialize
       setTimeout(async () => {
@@ -109,7 +139,7 @@ async connect(username, accessToken, startAutomatic = false) {
             logger.error('[Bot] Evolution manager initialization failed:', evoErr.message);
             logger.trace('[Bot] Evolution manager error stack:', evoErr.stack);
           }
-            
+             
              // Initialize modules after bot is ready
              this.pathfinder = new Pathfinder(this.bot);
              this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
@@ -119,11 +149,11 @@ async connect(username, accessToken, startAutomatic = false) {
              this.events.setupListeners();
            
               // Initialize screenshot module and start streaming (non-blocking)
-              this.initializeScreenshot()
+               this.initializeScreenshot()
                 .then((success) => {
                   if (success) {
                     logger.info('[Bot] Screenshot module initialized, starting stream');
-                    const captureFn = this.startScreenshotStream({ fps: 20, quality: 0.8 });
+                    const captureFn = this.startScreenshotStream({ fps: 10, quality: 0.6 });
                     logger.trace('[Bot] Screenshot stream started', captureFn ? 'success' : 'failed');
                   } else {
                     logger.error('[Bot] Screenshot module initialization failed');
@@ -320,10 +350,10 @@ async connect(username, accessToken, startAutomatic = false) {
           }));
         }
         
-        // Start sending periodic status updates
+        // Start sending periodic status updates (reduced from 3s to 10s for performance)
         this.statusInterval = setInterval(() => {
           this.sendStatusUpdate();
-        }, parseInt(process.env.STATUS_UPDATE_INTERVAL || '3000'));
+        }, parseInt(process.env.STATUS_UPDATE_INTERVAL || '10000'));
       });
     
     this.ws.on('message', (data) => {
@@ -403,6 +433,30 @@ default:
     }
   }
 
+    _shouldSaveToDb(currentState) {
+      const now = Date.now();
+      const minWriteInterval = parseInt(process.env.MIN_DB_WRITE_INTERVAL || '30000');
+      
+      if (now - this._lastDbWriteTime < minWriteInterval) {
+        return false;
+      }
+      
+      if (!this._lastSavedState) {
+        return true;
+      }
+      
+      const hasSignificantChange = 
+        Math.abs(currentState.health - this._lastSavedState.health) >= 2 ||
+        Math.abs(currentState.food - this._lastSavedState.food) >= 2 ||
+        Math.sqrt(
+          Math.pow(currentState.position_x - this._lastSavedState.position_x, 2) +
+          Math.pow(currentState.position_y - this._lastSavedState.position_y, 2) +
+          Math.pow(currentState.position_z - this._lastSavedState.position_z, 2)
+        ) >= 5;
+      
+      return hasSignificantChange;
+    }
+
     sendStatusUpdate() {
       if (!this.isConnected || !this.bot || !this.bot.entity || !this.ws) return;
       
@@ -411,14 +465,6 @@ default:
         const health = this.bot.health;
         const food = this.bot.food;
         const experience = this.bot.experience;
-        const inventory = this.bot.inventory ? this.bot.inventory.items().map(item => ({
-          type: item.name,
-          count: item.count,
-          metadata: item.metadata
-        })) : [];
-        
-        // Calculate exploration percentage (simplified)
-        const exploration = Math.min((this.bot.entity.position.distanceTo(new Vec3(0, 64, 0)) / 1000) * 100, 100);
         
         if (this.ws.readyState === WebSocket.OPEN) {
           this.ws.send(JSON.stringify({
@@ -429,17 +475,13 @@ default:
               health,
               food,
               experience,
-              exploration: exploration,
-              inventory,
               message: `Bot at (${Math.floor(position.x)}, ${Math.floor(position.y)}, ${Math.floor(position.z)})`
             }
           }));
         }
         
-        // Save bot state to persistent store
         if (this.botId && this.bot && this.bot.username) {
-          const db = require('../config/models/BotState');
-          db.saveBot(this.botId, {
+          const currentState = {
             username: this.bot.username,
             mode: this.currentMode || 'survival',
             position_x: position.x,
@@ -448,9 +490,16 @@ default:
             health: health,
             food: food,
             status: 'active'
-          }).catch(err => {
-            logger.error(`[Bot] Failed to save state: ${err.message}`);
-          });
+          };
+          
+          if (this._shouldSaveToDb(currentState)) {
+            const db = require('../config/models/BotState');
+            db.saveBot(this.botId, currentState).catch(err => {
+              logger.error(`[Bot] Failed to save state: ${err.message}`);
+            });
+            this._lastSavedState = { ...currentState };
+            this._lastDbWriteTime = Date.now();
+          }
         }
       } catch (err) {
         logger.error('Error sending status update:', err);
@@ -473,7 +522,7 @@ default:
   }
 
   startScreenshotStream(options = {}) {
-    const { fps = 20, quality = 0.8 } = options;
+    const { fps = 10, quality = 0.6 } = options;
     
     if (!this.screenshotModule || !this.screenshotModule.isReady()) {
       logger.error('[Screenshot] Module not ready');

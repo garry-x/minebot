@@ -4,222 +4,106 @@ const logger = require('./logger');
 class Pathfinder {
   constructor(bot) {
     this.bot = bot;
-    logger.debug('[Pathfinder] Using simple pathfinder (no mineflayer-pathfinder)');
+    this.movements = null;
+    
+    if (!bot.pathfinder) {
+      throw new Error('mineflayer-pathfinder plugin not loaded');
+    }
+    
+    const { Movements } = require('mineflayer-pathfinder');
+    const mcData = bot._client?.mcData || bot.mcData;
+    if (!mcData) {
+      throw new Error('mcData not available');
+    }
+    this.movements = new Movements(bot, mcData);
+    bot.pathfinder.setMovements(this.movements);
+    logger.info('[Pathfinder] Using mineflayer-pathfinder plugin');
   }
   
   async moveTo(target, options = {}) {
     const { 
       range = 1, 
-      timeout = parseInt(process.env.PATHFINDER_TIMEOUT || '30000'), // Increased from 10s to 30s to allow more time for movement
-      useSprint = true,
-      useJump = true,
-      useParkour = true,
-      maxRetries = parseInt(process.env.MAX_PATHFIND_RETRIES || '5') // Increased retries for better stuck recovery
+      timeout = parseInt(process.env.PATHFINDER_TIMEOUT || '30000')
     } = options;
+    
+    const targetVec = target instanceof Vec3 ? target : new Vec3(target.x, target.y, target.z);
+    logger.debug(`[Pathfinder] Moving to ${targetVec.x}, ${targetVec.y}, ${targetVec.z}`);
+    
+    return this.moveWithPlugin(targetVec, { range, timeout });
+  }
   
-    logger.debug(`[Pathfinder] Moving to ${target.x}, ${target.y}, ${target.z}`);
+  async moveWithPlugin(target, options = {}) {
+    const { range = 1, timeout = 30000 } = options;
+    
+    const { GoalNear } = require('mineflayer-pathfinder').goals;
+    const goal = new GoalNear(target.x, target.y, target.z, range);
     
     return new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      let retryCount = 0;
-      let lastDist = Infinity;
-      let stuckCounter = 0;
-      
-      const checkArrival = () => {
-        const pos = this.bot.entity.position;
-        const dist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
-        return dist <= range;
-      };
-      
-      // Try to move towards target using basic movement
-      const tryMove = async () => {
-        if (checkArrival()) {
-          this.stop();
-          logger.debug('[Pathfinder] Reached target');
+      const timeoutId = setTimeout(() => {
+        this.bot.pathfinder.stop();
+        const dist = this.bot.entity.position.distanceTo(target);
+        if (dist <= range + 2) {
+          logger.debug(`[Pathfinder] Close enough (${dist.toFixed(2)}), resolving`);
           resolve();
           return;
         }
-        
-        if (Date.now() - startTime > timeout) {
-          this.stop();
-          logger.debug(`[Pathfinder] Timeout reached after ${timeout}ms`);
-          reject(new Error('Movement timeout'));
-          return;
-        }
-        
-        try {
-          // Get direction to target
-          const pos = this.bot.entity.position;
-          const dx = target.x - pos.x;
-          const dz = target.z - pos.z;
-          
-          // Calculate yaw and pitch to face target
-          const yaw = Math.atan2(dx, dz);
-          const pitch = Math.atan2(target.y - pos.y, Math.sqrt(dx*dx + dz*dz));
-          
-          // Look at target
-          this.bot.look(yaw + Math.PI, pitch);
-          
-          // Move forward
-          this.bot.setControlState('forward', true);
-          
-          // Sprint if allowed
-          if (useSprint) {
-            this.bot.setControlState('sprint', true);
-          }
-          
-          // Jump if allowed and bot is on ground
-          if (useJump && this.bot.onGround) {
-            this.bot.setControlState('jump', true);
-            setTimeout(() => this.bot.setControlState('jump', false), 200);
-          }
-          
-          // Check if we've moved closer
-          const currentDist = pos.distanceTo(new Vec3(target.x, target.y, target.z));
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          const newDist = this.bot.entity.position.distanceTo(new Vec3(target.x, target.y, target.z));
-          
-          // Detect if we're stuck - we're stuck if we haven't made progress toward target
-          // Calculate how much closer we got (positive = closer, negative = further)
-          const distChange = currentDist - newDist;
-          
-          // Only count as stuck if we moved further away by more than 0.5 blocks (not just slow movement)
-          // or if we stayed in place (distChange < 0.1 means almost no movement)
-          if (distChange < 0.1 && this.bot.onGround) {
-            stuckCounter++;
-            if (stuckCounter >= 3) {
-              stuckCounter = 0;
-              retryCount++;
-              logger.debug(`[Pathfinder] Stuck, trying to adjust (retry ${retryCount}/${maxRetries})`);
-              
-              // Try jumping and moving sideways
-              this.bot.setControlState('forward', false);
-              this.bot.setControlState('jump', true);
-              await new Promise(resolve => setTimeout(resolve, 300));
-              this.bot.setControlState('jump', false);
-              
-              // Try moving left/right to get unstuck
-              const direction = Math.random() > 0.5 ? 'left' : 'right';
-              this.bot.setControlState(direction, true);
-              await new Promise(resolve => setTimeout(resolve, 500));
-              this.bot.setControlState(direction, false);
-              
-              if (retryCount >= maxRetries) {
-                this.stop();
-                reject(new Error(`Movement stuck after ${maxRetries} retries`));
-                return;
-              }
-            }
-          } else {
-            stuckCounter = 0;
-          }
-          
-          lastDist = newDist;
-          
-          // Continue checking
-          setTimeout(tryMove, 200);
-          
-        } catch (err) {
-          this.stop();
-          logger.error('[Pathfinder] Error during movement:', err);
-          reject(err);
-        }
-      };
+        reject(new Error(`Pathfinder timeout, dist: ${dist.toFixed(2)}`));
+      }, timeout);
       
-      tryMove();
-    });
-  }
-
-  async moveToBlock(blockPosition, options = {}) {
-    return this.moveTo(blockPosition, options);
-  }
-
-  async follow(entity, options = {}) {
-    const { 
-      distance = 2, 
-      timeout = parseInt(process.env.FOLLOW_TIMEOUT || '30000') 
-    } = options;
-    
-    logger.debug(`[Pathfinder] Following entity: ${entity.name}`);
-    
-    return new Promise((resolve, reject) => {
-      const startTime = Date.now();
-      
-      const tryFollow = async () => {
-        if (Date.now() - startTime > timeout) {
-          reject(new Error('Follow timeout'));
-          return;
-        }
-        
-        try {
-          const pos = this.bot.entity.position;
-          const entityPos = entity.position;
-          const dist = pos.distanceTo(entityPos);
-          
-          if (dist <= distance) {
-            logger.debug('[Pathfinder] Caught up to entity');
+      this.bot.pathfinder.goto(goal)
+        .then(() => {
+          clearTimeout(timeoutId);
+          logger.debug('[Pathfinder] Reached target via plugin');
+          resolve();
+        })
+        .catch((err) => {
+          clearTimeout(timeoutId);
+          const dist = this.bot.entity.position.distanceTo(target);
+          if (dist <= range + 2) {
+            logger.debug(`[Pathfinder] Close enough after error (${dist.toFixed(2)})`);
             resolve();
             return;
           }
-          
-          // Face the entity
-          const dx = entityPos.x - pos.x;
-          const dz = entityPos.z - pos.z;
-          const yaw = Math.atan2(dx, dz);
-          const pitch = Math.atan2(entityPos.y - pos.y, Math.sqrt(dx*dx + dz*dz));
-          
-          this.bot.look(yaw + Math.PI, pitch);
-          this.bot.setControlState('forward', true);
-          
-          setTimeout(tryFollow, 300);
-          
-        } catch (err) {
+          logger.debug(`[Pathfinder] Plugin error: ${err.message}, dist: ${dist.toFixed(2)}`);
           reject(err);
-        }
-      };
-      
-      tryFollow();
+        });
     });
   }
-
+  
+  async moveToBlock(blockPosition, options = {}) {
+    return this.moveTo(blockPosition, options);
+  }
+  
+  async follow(entity, options = {}) {
+    const { distance = 2 } = options;
+    
+    const { GoalFollow } = require('mineflayer-pathfinder').goals;
+    const goal = new GoalFollow(entity, distance);
+    return this.bot.pathfinder.goto(goal);
+  }
+  
   stop() {
     this.bot.setControlState('forward', false);
     this.bot.setControlState('sprint', false);
     this.bot.setControlState('jump', false);
+    this.bot.setControlState('left', false);
+    this.bot.setControlState('right', false);
+    
+    try {
+      this.bot.pathfinder.stop();
+    } catch (e) {}
+    
     logger.debug('[Pathfinder] Movement stopped');
   }
-
+  
   isMoving() {
     return this.bot.controlState.forward || 
            this.bot.controlState.sprint || 
            this.bot.controlState.jump;
   }
-
-  setMovementPermissions(allowSprint, allowJump, allowParkour) {
-    // Not applicable for simple pathfinder
-    logger.debug('[Pathfinder] setMovementPermissions not applicable');
-  }
-
+  
   async flyTo(target, speed = 1) {
-    return this.moveTo(target, { 
-      timeout: 60000,
-      useSprint: false,
-      useJump: false
-    });
-  }
-
-  setVelocity(velocity) {
-    if (this.bot.creative) {
-      this.bot.entity.setVelocity(velocity);
-    } else {
-      logger.warn('Cannot set velocity: bot is not in creative mode');
-    }
-  }
-
-  setEvolutionWeights(weights) {
-    logger.debug('[Pathfinder] Evolution weights updated:', weights);
-    this.evolutionWeights = weights;
+    return this.moveTo(target, { timeout: 60000 });
   }
 }
 

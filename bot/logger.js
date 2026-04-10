@@ -59,19 +59,28 @@ function formatMessage(level, message, ...args) {
   return `[${timestamp}] [${level.toUpperCase()}] ${module} ${formattedMessage}\n`;
 }
 
+let logStream = null;
+
+function getLogStream() {
+  if (!logStream) {
+    ensureLogDir();
+    logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
+  }
+  return logStream;
+}
+
 function log(level, message, ...args) {
   if (LEVELS[level] > LEVELS[currentLevel]) {
     return;
   }
   
-  ensureLogDir();
-  
-  const fs = require('fs');
   const logMessage = formatMessage(level, message, ...args);
   
-  const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
-  logStream.write(logMessage);
-  logStream.end();
+  const stream = getLogStream();
+  const canWrite = stream.write(logMessage);
+  if (!canWrite) {
+    stream.once('drain', () => {});
+  }
   
   console[level](message, ...args);
 }
