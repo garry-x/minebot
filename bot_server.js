@@ -1051,8 +1051,9 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       return res.status(404).json({ error: 'Bot not found' });
     }
     
+    // bot.bot must exist for the watch endpoint to work
     if (!bot.bot) {
-      return res.status(404).json({ error: 'Bot fully initialized' });
+      return res.status(404).json({ error: 'Bot not fully initialized' });
     }
     
     const cacheKey = `${botId}:${eventLimit}:${useChinese}`;
@@ -1061,11 +1062,13 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       return res.json(cached.data);
     }
     
-    if (!bot.bot) {
-      return res.status(404).json({ error: 'Bot not fully initialized' });
-    }
+    // Use bot.bot.entity.position.floored() if available
+    let pos = bot.bot.entity && bot.bot.entity.position ? bot.bot.entity.position.floored() : null;
     
-    const pos = bot.bot.entity.position;
+    // Debug: log position source if null
+    if (!pos || pos.x === null) {
+      logger.warn(`[watch] position is null - trying direct entity access`);
+    }
     
     // Helper function to apply translations to response data
     const applyTranslations = (data) => {
@@ -1231,7 +1234,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     const ENTITY_SCAN_DISTANCE = 20;
     const ENTITY_SCAN_DISTANCE_SQ = ENTITY_SCAN_DISTANCE * ENTITY_SCAN_DISTANCE;
     
-    if (bot.bot.entities) {
+    if (bot.bot.entities && pos.x != null && pos.z != null) {
       const posX = pos.x, posY = pos.y, posZ = pos.z;
       const entities = Object.values(bot.bot.entities);
       const maxEntities = 50;
@@ -1502,9 +1505,9 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       // Environment information (requirement 3)
       environment: {
         position: {
-          x: Math.floor(pos.x),
-          y: Math.floor(pos.y),
-          z: Math.floor(pos.z),
+          x: pos.x != null ? Math.floor(pos.x) : 0,
+          y: pos.y != null ? Math.floor(pos.y) : 0,
+          z: pos.z != null ? Math.floor(pos.z) : 0,
           world: 'overworld',
           biome: bot.bot.biome || 'unknown'
         },
