@@ -852,6 +852,24 @@ botCommand
           console.log(`📍 ${useChinese ? '位置' : 'Position'}: (${pos.x}, ${pos.y}, ${pos.z}) - ${pos.world} - ${pos.biome}`);
         }
         
+        if (data.environment.weather) {
+          const weatherIcon = data.environment.weather.isThundering ? '⛈️' : (data.environment.weather.isRaining ? '🌧️' : '☀️');
+          const weatherText = data.environment.weather.isThundering ? 'Thunder' : (data.environment.weather.isRaining ? 'Rain' : 'Clear');
+          console.log(`${weatherIcon} ${useChinese ? '天气' : 'Weather'}: ${weatherText}`);
+        }
+        
+        if (data.environment.time) {
+          const timeIcon = data.environment.time.isDay ? '☀️' : '🌙';
+          const timeText = data.environment.time.formattedTime || (data.environment.time.isDay ? 'Day' : 'Night');
+          console.log(`${timeIcon} ${useChinese ? '时间' : 'Time'}: ${timeText}`);
+        }
+        
+        if (data.environment.conditions) {
+          const cond = data.environment.conditions;
+          const waterIcon = cond.isInWater ? '🌊' : '🏝️';
+          console.log(`${waterIcon} ${useChinese ? '环境' : 'Environment'}: ${cond.dimension} | ${useChinese ? '难度' : 'Difficulty'}: ${cond.difficulty}${cond.isInWater ? ' | ' + (useChinese ? '水中' : 'In Water') : ''}`);
+        }
+        
         console.log(`🎮 ${useChinese ? '游戏模式' : 'Game Mode'}: ${data.gameMode}`);
         
         if (data.goal && data.goal.currentGoal) {
@@ -864,6 +882,13 @@ botCommand
         console.log(`\n📊 ${useChinese ? '经验等级' : 'Experience Level'}: ${data.attributes.experience.level}`);
         console.log(`⭐ ${useChinese ? '经验点数' : 'Experience Points'}: ${data.attributes.experience.points}`);
         
+        if (data.environment.nearby && data.environment.nearby.resources && data.environment.nearby.resources.length > 0) {
+          console.log(`\n💎 ${useChinese ? '附近资源' : 'Nearby Resources'}:`);
+          data.environment.nearby.resources.slice(0, 10).forEach(r => {
+            console.log(`   ${r.resource}: ${r.distance}m away`);
+          });
+        }
+        
         if (data.attributes.armor.pieces.length > 0) {
           console.log(`🛡️  ${useChinese ? '护甲装备' : 'Armor'}:`);
           data.attributes.armor.pieces.forEach(piece => {
@@ -874,16 +899,30 @@ botCommand
         }
         
         if (data.resources.inventory.length > 0) {
-          console.log(`\n📦 ${useChinese ? '资源收集' : 'Resources Collected'}:`);
+          console.log(`\n🎒 ${useChinese ? '背包物品' : 'Inventory'} (${data.resources.inventory.length} ${useChinese ? '物品' : 'items'}):`);
+          const slotWidth = 5;
+          const nameWidth = 30;
+          const countWidth = 6;
+          console.log(`   ${'SLOT'.padEnd(slotWidth)} ${'ITEM'.padEnd(nameWidth)} ${'COUNT'.padEnd(countWidth)}`);
+          console.log(`   ${'─'.repeat(slotWidth)} ${'─'.repeat(nameWidth)} ${'─'.repeat(countWidth)}`);
+          data.resources.inventory.slice(0, 30).forEach(item => {
+            const name = item.name.length > nameWidth ? item.name.substring(0, nameWidth-3) + '...' : item.name;
+            console.log(`   ${String(item.slot || '').padEnd(slotWidth)} ${name.padEnd(nameWidth)} ${String(item.count).padEnd(countWidth)}`);
+          });
+          if (data.resources.inventory.length > 30) {
+            console.log(`   ... ${useChinese ? '还有' : 'and'} ${data.resources.inventory.length - 30} ${useChinese ? '件物品' : 'more items'}`);
+          }
+        }
+        
+        if (Object.keys(data.resources.summary).length > 0) {
+          console.log(`\n📊 ${useChinese ? '资源统计' : 'Resource Summary'}:`);
           const sortedResources = Object.entries(data.resources.summary)
             .sort(([,a], [,b]) => b - a)
-            .slice(0, 15);
+            .slice(0, 10);
           
           sortedResources.forEach(([item, count]) => {
             console.log(`   ${item}: ${count}`);
           });
-          
-          console.log(`${useChinese ? '总计物品' : 'Total Items'}: ${data.resources.totalItems} | ${useChinese ? '唯一物品' : 'Unique Items'}: ${data.resources.uniqueItems}`);
         }
         
         if (data.environment.nearby.entities.length > 0) {
