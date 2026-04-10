@@ -72,6 +72,44 @@ const GoalSystem = require('./bot/goal-system');
 const BotGoal = require('./config/models/BotGoal');
 const StrategyEvolutionManager = require('./bot/evolution/strategy-manager');
 
+const API_CACHE_TTL = parseInt(process.env.API_CACHE_TTL || '1000');
+const watchCache = new Map();
+
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = parseInt(process.env.RATE_LIMIT_WINDOW || '60000');
+const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '100');
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  
+  if (!record || now - record.windowStart > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { windowStart: now, count: 1 });
+    return true;
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitMap.entries()) {
+    if (now - record.windowStart > RATE_LIMIT_WINDOW) {
+      rateLimitMap.delete(ip);
+    }
+  }
+  for (const [key, cached] of watchCache.entries()) {
+    if (now - cached.timestamp > API_CACHE_TTL * 2) {
+      watchCache.delete(key);
+    }
+  }
+}, 30000);
+
 app.use(express.json());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -79,6 +117,14 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
+  }
+  next();
+});
+
+app.use((req, res, next) => {
+  const ip = req.ip || req.connection.remoteAddress || 'unknown';
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ error: 'Too many requests. Please try again later.' });
   }
   next();
 });
@@ -955,10 +1001,21 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
   try {
     const { botId } = req.params;
     const eventLimit = Math.min(parseInt(req.query.events) || 50, 200);
+    const useChinese = req.query.lang === 'zh' || req.query.language === 'zh' || req.query.chinese === 'true';
     
     const bot = activeBots.get(botId);
     if (!bot) {
       return res.status(404).json({ error: 'Bot not found' });
+    }
+    
+    if (!bot.bot) {
+      return res.status(404).json({ error: 'Bot fully initialized' });
+    }
+    
+    const cacheKey = `${botId}:${eventLimit}:${useChinese}`;
+    const cached = watchCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < API_CACHE_TTL) {
+      return res.json(cached.data);
     }
     
     if (!bot.bot) {
@@ -967,50 +1024,491 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     
     const pos = bot.bot.entity.position;
     
+    // Load Chinese translations if requested
+    let translate = null;
+    if (useChinese) {
+      try {
+        translate = require('../lib/translations');
+      } catch (err) {
+        logger.warn('Chinese translations not available:', err.message);
+      }
+    }
+    
+    // Helper function to apply translations to response data
+    const applyTranslations = (data) => {
+      if (!translate || !useChinese) return data;
+      
+      const translated = { ...data };
+      
+      // Translate basic string fields
+      if (translated.state && typeof translated.state === 'string') {
+        translated.state = translate.translateToChinese(translated.state);
+      }
+      if (translated.mode && typeof translated.mode === 'string') {
+        translated.mode = translate.translateToChinese(translated.mode);
+      }
+      if (translated.gameMode && typeof translated.gameMode === 'string') {
+        translated.gameMode = translate.translateToChinese(translated.gameMode);
+      }
+      
+      // Translate attributes
+      if (translated.attributes && translated.attributes.armor && translated.attributes.armor.pieces) {
+        translated.attributes.armor.pieces = translated.attributes.armor.pieces.map(piece => ({
+          ...piece,
+          name: translate.translateToChinese(piece.name)
+        }));
+      }
+      
+      // Translate resources
+      if (translated.resources) {
+        // Translate inventory items
+        if (translated.resources.inventory) {
+          translated.resources.inventory = translated.resources.inventory.map(item => ({
+            ...item,
+            name: translate.translateToChinese(item.name)
+          }));
+        }
+        
+        // Translate resource summary keys
+        if (translated.resources.summary) {
+          const translatedSummary = {};
+          Object.entries(translated.resources.summary).forEach(([key, value]) => {
+            const translatedKey = translate.translateToChinese(key);
+            translatedSummary[translatedKey] = value;
+          });
+          translated.resources.summary = translatedSummary;
+        }
+      }
+      
+      // Translate environment
+      if (translated.environment) {
+        if (translated.environment.position && translated.environment.position.world) {
+          translated.environment.position.world = translate.translateToChinese(translated.environment.position.world);
+        }
+        if (translated.environment.position && translated.environment.position.biome) {
+          translated.environment.position.biome = translate.translateToChinese(translated.environment.position.biome);
+        }
+        if (translated.environment.time && translated.environment.time.formattedTime) {
+          translated.environment.time.formattedTime = translate.translateToChinese(translated.environment.time.formattedTime);
+        }
+        if (translated.environment.conditions && translated.environment.conditions.dimension) {
+          translated.environment.conditions.dimension = translate.translateToChinese(translated.environment.conditions.dimension);
+        }
+        if (translated.environment.conditions && translated.environment.conditions.difficulty) {
+          translated.environment.conditions.difficulty = translate.translateToChinese(translated.environment.conditions.difficulty);
+        }
+        
+        // Translate nearby entities
+        if (translated.environment.nearby && translated.environment.nearby.entities) {
+          translated.environment.nearby.entities = translated.environment.nearby.entities.map(entity => 
+            translate.translateEntity(entity)
+          );
+        }
+      }
+      
+      // Translate goal info
+      if (translated.goal && translated.goal.currentGoal) {
+        translated.goal.currentGoal = translate.translateToChinese(translated.goal.currentGoal);
+      }
+      if (translated.goal && translated.goal.details && translated.goal.details.materials) {
+        const translatedMaterials = {};
+        Object.entries(translated.goal.details.materials).forEach(([key, value]) => {
+          const translatedKey = translate.translateToChinese(key);
+          translatedMaterials[translatedKey] = value;
+        });
+        translated.goal.details.materials = translatedMaterials;
+      }
+      
+      return translated;
+    };
+    
+    // Get bot state attributes
+    const health = bot.bot.health || 0;
+    const food = bot.bot.food || 0;
+    const foodSaturation = bot.bot.foodSaturation || 0;
+    const experience = bot.bot.experience || { level: 0, points: 0, progress: 0 };
+    const gameMode = bot.bot.gameMode === 0 ? 'survival' : 'creative';
+    
+    // Get armor information
+    const armor = [];
+    let armorValue = 0;
+    if (bot.bot.inventory && bot.bot.inventory.slots) {
+      // Armor slots are typically 36-39 in inventory
+      for (let i = 36; i <= 39; i++) {
+        const slot = bot.bot.inventory.slots[i];
+        if (slot) {
+          armor.push({
+            slot: i - 36, // Convert to armor slot index (0-3)
+            name: slot.name,
+            count: slot.count,
+            durability: slot.durability,
+            maxDurability: slot.maxDurability || 0
+          });
+          // Simple armor value calculation based on armor type
+          if (slot.name.includes('diamond')) armorValue += 3;
+          else if (slot.name.includes('iron')) armorValue += 2;
+          else if (slot.name.includes('chainmail') || slot.name.includes('gold')) armorValue += 1.5;
+          else if (slot.name.includes('leather')) armorValue += 1;
+        }
+      }
+    }
+    
+    // Get inventory/resources
+    const inventory = [];
+    const resources = {};
+    if (bot.bot.inventory && bot.bot.inventory.items) {
+      const items = bot.bot.inventory.items();
+      items.forEach(item => {
+        if (item && item.name) {
+          inventory.push({
+            name: item.name,
+            count: item.count,
+            slot: item.slot,
+            metadata: item.metadata
+          });
+          
+          // Track resource counts
+          const resourceName = item.name.split(':').pop(); // Remove 'minecraft:' prefix if present
+          if (!resources[resourceName]) {
+            resources[resourceName] = 0;
+          }
+          resources[resourceName] += item.count;
+        }
+      });
+    }
+    
+    // Get environment information
+    const environment = {
+      timeOfDay: bot.bot.time ? bot.bot.time.timeOfDay || 0 : 0,
+      isDay: bot.bot.time ? (bot.bot.time.timeOfDay || 0) < 13000 : true, // Daytime is 0-12000 ticks
+      isNight: bot.bot.time ? (bot.bot.time.timeOfDay || 0) >= 13000 : false,
+      isRaining: bot.bot.isRaining || false,
+      isThundering: bot.bot.isThundering || false,
+      dimension: bot.bot.game.dimension || 'overworld',
+      difficulty: bot.bot.game.difficulty || 'normal'
+    };
+    
+    // Check if bot is in water
+    const isInWater = bot.bot.entity && bot.bot.entity.isInWater ? bot.bot.entity.isInWater() : false;
+    environment.isInWater = isInWater;
+    
+    // Get nearby entities (limited to 10 for performance)
+    const nearbyEntities = [];
+    const ENTITY_SCAN_DISTANCE = 20;
+    const ENTITY_SCAN_DISTANCE_SQ = ENTITY_SCAN_DISTANCE * ENTITY_SCAN_DISTANCE;
+    
+    if (bot.bot.entities) {
+      const posX = pos.x, posY = pos.y, posZ = pos.z;
+      const entities = Object.values(bot.bot.entities);
+      const maxEntities = 50;
+      const limitedEntities = entities.slice(0, maxEntities);
+      
+      for (const entity of limitedEntities) {
+        if (entity !== bot.bot.entity && entity.position) {
+          const dx = entity.position.x - posX;
+          const dy = entity.position.y - posY;
+          const dz = entity.position.z - posZ;
+          const distSq = dx*dx + dy*dy + dz*dz;
+          
+          if (distSq < ENTITY_SCAN_DISTANCE_SQ) {
+            const distance = Math.sqrt(distSq);
+            const entityInfo = {
+              type: entity.type || entity.name || 'unknown',
+              id: entity.id,
+              displayName: entity.displayName || entity.name || 'unknown',
+              distance: Math.round(distance * 10) / 10,
+              position: {
+                x: Math.floor(entity.position.x),
+                y: Math.floor(entity.position.y),
+                z: Math.floor(entity.position.z)
+              }
+            };
+            
+            // Categorize as friendly or hostile
+            const entityName = entity.name || '';
+            if (entity.type === 'player' || 
+                entityName === 'villager' || 
+                entityName === 'animal' ||
+                entityName.includes('cow') || 
+                entityName.includes('pig') ||
+                entityName.includes('sheep') || 
+                entityName.includes('chicken')) {
+              entityInfo.category = 'friendly';
+            } else if (entityName.includes('zombie') || 
+                      entityName.includes('skeleton') || 
+                      entityName.includes('creeper') ||
+                      entityName.includes('spider') || 
+                      entityName.includes('witch')) {
+              entityInfo.category = 'hostile';
+            } else {
+              entityInfo.category = 'neutral';
+            }
+            
+            nearbyEntities.push(entityInfo);
+          }
+        }
+      }
+      
+      // Sort by distance
+      nearbyEntities.sort((a, b) => a.distance - b.distance);
+    }
+    
+    // Check for nearby villages - look for villagers AND village structures
+    let nearbyVillages = false;
+    
+    // First check for villagers
+    const nearbyVillagers = nearbyEntities.filter(e => 
+      e.type === 'villager' || e.displayName === 'Villager'
+    ).length > 0;
+    
+    // If no villagers found, check for village structures (chests, beds, crafting tables, furnaces)
+    if (nearbyVillagers) {
+      nearbyVillages = true;
+    } else if (bot && bot.bot && bot.bot.findBlock) {
+      try {
+        const villageStructures = [
+          'chest', 'trapped_chest', 'ender_chest',
+          'bed', 'white_bed', 'orange_bed', 'magenta_bed', 'light_blue_bed',
+          'yellow_bed', 'lime_bed', 'pink_bed', 'gray_bed', 'light_gray_bed',
+          'cyan_bed', 'purple_bed', 'blue_bed', 'brown_bed', 'green_bed',
+          'red_bed', 'black_bed',
+          'crafting_table', 'furnace', 'blast_furnace', 'smoker',
+          'loom', 'cartography_table', 'smithing_table', 'grindstone',
+          'stonecutter', 'bell', 'lantern', 'torch'
+        ];
+        
+        const villageDetectionRadius = parseInt(process.env.VILLAGE_SCAN_RADIUS || '24');
+        
+        for (const structure of villageStructures) {
+          const foundStructure = bot.bot.findBlock({
+            point: bot.bot.entity.position,
+            matching: structure,
+            maxDistance: villageDetectionRadius
+          });
+          
+          if (foundStructure) {
+            nearbyVillages = true;
+            break; // Found at least one village structure
+          }
+        }
+        
+      } catch (error) {
+        logger.error(`Error scanning for village structures: ${error.message}`);
+        // Fall back to just villagers check
+        nearbyVillages = false;
+      }
+    }
+    
+    // Check for nearby resources (valuable blocks within scanning radius)
+    const nearbyResources = [];
+    
+    if (bot && bot.bot && bot.bot.findBlock) {
+      try {
+        // Define valuable resources to scan for
+        const valuableResources = [
+          'diamond_ore', 'iron_ore', 'gold_ore', 'emerald_ore', 'coal_ore',
+          'redstone_ore', 'lapis_ore', 'copper_ore', 'ancient_debris',
+          'diamond_block', 'iron_block', 'gold_block', 'emerald_block',
+          'chest', 'ender_chest', 'spawner', 'anvil'
+        ];
+        
+        // Scan for each resource type within a reasonable radius
+        const scanRadius = parseInt(process.env.RESOURCE_SCAN_RADIUS || '16');
+        const foundResources = {};
+        
+        for (const resource of valuableResources) {
+          const foundBlock = bot.bot.findBlock({
+            point: bot.bot.entity.position,
+            matching: resource,
+            maxDistance: scanRadius
+          });
+          
+          if (foundBlock) {
+            const distance = Math.sqrt(
+              Math.pow(foundBlock.position.x - bot.bot.entity.position.x, 2) +
+              Math.pow(foundBlock.position.y - bot.bot.entity.position.y, 2) +
+              Math.pow(foundBlock.position.z - bot.bot.entity.position.z, 2)
+            );
+            
+            foundResources[resource] = {
+              distance: Math.floor(distance),
+              position: {
+                x: Math.floor(foundBlock.position.x),
+                y: Math.floor(foundBlock.position.y),
+                z: Math.floor(foundBlock.position.z)
+              }
+            };
+          }
+        }
+        
+        // Convert to array for response
+        nearbyResources.push(...Object.entries(foundResources).map(([resource, data]) => ({
+          resource,
+          distance: data.distance,
+          position: data.position
+        })));
+        
+      } catch (error) {
+        logger.error(`Error scanning nearby resources: ${error.message}`);
+        // Keep empty array if scanning fails
+      }
+    }
+    
     let goalInfo = null;
     if (bot.goalState) {
-      const inventory = bot.bot.inventory.items();
-      const progress = GoalSystem.calculateProgress(bot.goalState, inventory);
+      const inventoryItems = bot.bot.inventory.items();
+      const progress = GoalSystem.calculateProgress(bot.goalState, inventoryItems);
       goalInfo = {
         currentGoal: bot.goalState.currentGoal,
         progress: progress.progress,
-        details: progress
+        details: progress,
+        materialsCollected: progress.materials || {}
       };
     }
     
     const events = await BotState.getEvents(botId, eventLimit);
     
-    res.json({
+    // Enhanced events with action categories
+    const enhancedEvents = events.map(e => {
+      const eventData = e.data ? JSON.parse(e.data) : null;
+      let category = 'system';
+      
+      // Categorize events
+      if (e.event_type.includes('movement') || e.event_type.includes('position')) {
+        category = 'movement';
+      } else if (e.event_type.includes('health') || e.event_type.includes('damage') || e.event_type.includes('heal')) {
+        category = 'health';
+      } else if (e.event_type.includes('food') || e.event_type.includes('eating')) {
+        category = 'food';
+      } else if (e.event_type.includes('resource') || e.event_type.includes('item') || e.event_type.includes('collection')) {
+        category = 'resource';
+      } else if (e.event_type.includes('attack') || e.event_type.includes('combat')) {
+        category = 'combat';
+      } else if (e.event_type.includes('build') || e.event_type.includes('place') || e.event_type.includes('break')) {
+        category = 'building';
+      } else if (e.event_type.includes('entity') || e.event_type.includes('mob') || e.event_type.includes('creature')) {
+        category = 'entity';
+      } else if (e.event_type.includes('goal') || e.event_type.includes('task') || e.event_type.includes('progress')) {
+        category = 'goal';
+      }
+      
+      // Apply translations if Chinese is requested
+      let translatedMessage = e.message;
+      let translatedType = e.event_type;
+      let translatedCategory = category;
+      
+      if (translate) {
+        translatedMessage = translate.translateToChinese(e.message) || e.message;
+        translatedType = translate.translateToChinese(e.event_type) || e.event_type;
+        translatedCategory = translate.translateToChinese(category) || category;
+      }
+      
+      return {
+        id: e.id,
+        type: translatedType,
+        category: translatedCategory,
+        message: translatedMessage,
+        data: eventData,
+        timestamp: e.created_at,
+        humanReadableTime: new Date(e.created_at).toLocaleTimeString()
+      };
+    });
+    
+    // Build the response object
+    const responseData = {
       success: true,
       botId,
       username: bot.bot.username,
       state: !bot.bot.isAlive ? 'DEAD' : (bot.isConnected ? 'ALIVE' : 'DISCONNECTED'),
       mode: bot.currentMode,
-      health: {
-        current: bot.bot.health,
-        max: 20,
-        food: bot.bot.food,
-        foodSaturation: bot.bot.foodSaturation
+      
+      // Bot state attributes (requirement 1)
+      attributes: {
+        health: {
+          current: health,
+          max: 20,
+          food: food,
+          foodSaturation: foodSaturation
+        },
+        experience: {
+          level: experience.level || 0,
+          points: experience.points || 0,
+          progress: experience.progress || 0,
+          total: experience.total || 0
+        },
+        armor: {
+          pieces: armor,
+          totalValue: Math.round(armorValue * 10) / 10,
+          protectionLevel: Math.min(Math.floor(armorValue), 10)
+        }
       },
-      position: {
-        x: Math.floor(pos.x),
-        y: Math.floor(pos.y),
-        z: Math.floor(pos.z),
-        world: 'overworld'
+      
+      // Collected resources (requirement 2)
+      resources: {
+        inventory: inventory,
+        summary: resources,
+        totalItems: inventory.reduce((sum, item) => sum + item.count, 0),
+        uniqueItems: Object.keys(resources).length
       },
-      gameMode: bot.bot.gameMode === 0 ? 'survival' : 'creative',
+      
+      // Environment information (requirement 3)
+      environment: {
+        position: {
+          x: Math.floor(pos.x),
+          y: Math.floor(pos.y),
+          z: Math.floor(pos.z),
+          world: 'overworld',
+          biome: bot.bot.biome || 'unknown'
+        },
+        time: {
+          timeOfDay: environment.timeOfDay,
+          isDay: environment.isDay,
+          isNight: environment.isNight,
+          formattedTime: environment.isDay ? 'Day' : 'Night'
+        },
+        weather: {
+          isRaining: environment.isRaining,
+          isThundering: environment.isThundering
+        },
+        conditions: {
+          isInWater: environment.isInWater,
+          dimension: environment.dimension,
+          difficulty: environment.difficulty
+        },
+        nearby: {
+          entities: nearbyEntities.slice(0, 10),
+          hasVillage: nearbyVillages,
+          resources: nearbyResources
+        }
+      },
+      
+      // Enhanced events (requirement 4 & 5)
+      events: {
+        list: enhancedEvents,
+        summary: {
+          total: enhancedEvents.length,
+          byCategory: enhancedEvents.reduce((acc, event) => {
+            acc[event.category] = (acc[event.category] || 0) + 1;
+            return acc;
+          }, {}),
+          latestTimestamp: enhancedEvents.length > 0 ? enhancedEvents[0].timestamp : null
+        }
+      },
+      
+      // Additional info
+      gameMode: gameMode,
       goal: goalInfo,
       connected: bot.isConnected,
       deadReason: bot.deadReason,
       joinedAt: bot.botTime || bot.bot.joinTime,
-      events: events.map(e => ({
-        id: e.id,
-        type: e.event_type,
-        message: e.message,
-        data: e.data ? JSON.parse(e.data) : null,
-        timestamp: e.created_at
-      }))
-    });
+      lastUpdated: new Date().toISOString()
+    };
+    
+    // Apply Chinese translations if requested
+    const translatedResponse = applyTranslations(responseData);
+    
+    watchCache.set(cacheKey, { data: translatedResponse, timestamp: Date.now() });
+    res.json(translatedResponse);
   } catch (error) {
     logger.error('Error getting bot watch data:', error);
     res.status(500).json({ error: `Failed to get bot watch data: ${error.message}` });
@@ -1892,6 +2390,9 @@ app.use((req, res) => {
 const shutdown = async () => {
   logger.trace('Received shutdown signal, shutting down gracefully');
   
+  // Force exit after timeout to prevent hanging
+  const FORCE_EXIT_TIMEOUT = 3000; // 3 seconds
+  
   // Update bot server state
   try {
     await BotState.saveServerState('bot_server', {
@@ -1914,7 +2415,18 @@ const shutdown = async () => {
     }
   }
   
+  // Set up force exit timer
+  const forceExitTimer = setTimeout(() => {
+    logger.warn('Shutdown timeout, forcing exit');
+    try {
+      fs.unlinkSync(pidFile);
+    } catch (e) {}
+    process.exit(0);
+  }, FORCE_EXIT_TIMEOUT);
+  
   server.close(async (err) => {
+    clearTimeout(forceExitTimer);
+    
     if (err) {
       logger.error('Error closing server:', err);
       process.exit(1);

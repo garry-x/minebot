@@ -136,7 +136,6 @@ async function getBotServerStatus() {
       console.warn('⚠️  无法获取服务器状态详情，使用默认值');
     }
     
-    // 服务器返回status: 'OK'，我们需要转换为'RUNNING'状态
     return {
       status: healthData.status === 'OK' ? 'RUNNING' : healthData.status,
       uptime: healthData.uptimeSeconds ? formatUptime(healthData.uptimeSeconds) : 'N/A',
@@ -146,7 +145,9 @@ async function getBotServerStatus() {
       timestamp: healthData.timestamp,
       mcServer: healthData.mcServer,
       mcPort: healthData.mcPort,
-      uptimeSeconds: healthData.uptimeSeconds
+      uptimeSeconds: healthData.uptimeSeconds,
+      pid: healthData.pid || loadPid('bot'),
+      port: healthData.port || process.env.PORT || 9500
     };
   } catch (error) {
     return { status: 'NOT_RUNNING' };
@@ -231,6 +232,30 @@ nohup node ${BOT_SERVER_SCRIPT} ${verboseFlag} > ${LOG_FILE} 2>&1 &
       });
     } catch (error) {
       console.error(`❌ 启动失败: ${error.message}`);
+    }
+  });
+
+// 查看服务器状态
+serverCommand
+  .command('status')
+  .description('查看Bot服务器状态')
+  .action(async () => {
+    const status = await getBotServerStatus();
+    
+    if (status.status === 'RUNNING') {
+      console.log('\n🤖 Bot服务器状态');
+      console.log('─'.repeat(40));
+      console.log(`📊 状态: ${status.status}`);
+      console.log(`⏱️  运行时间: ${status.uptime || 'N/A'}`);
+      console.log(`🤖 活跃机器人: ${status.activeBots || 0}`);
+      console.log(`🔌 服务器模式: ${status.serverMode || 'normal'}`);
+      console.log(`📡 端口: ${status.port || 9500}`);
+      if (status.pid) {
+        console.log(`🔧 进程ID: ${status.pid}`);
+      }
+    } else {
+      console.log('❌ Bot服务器未运行');
+      console.log('   运行 "./minebot server start" 启动服务器');
     }
   });
 
@@ -752,6 +777,8 @@ botCommand
   .description('实时查看机器人状态')
   .option('-n, --events <number>', '显示最近多少条事件', '50')
   .option('-i, --interval <ms>', '刷新间隔(毫秒)', '1000')
+  .option('--chinese', '显示中文翻译（物品、生物名称等）')
+  .option('--zh', '显示中文翻译（简写）')
   .action(async (botIdOrName, options) => {
     const resolvedBotId = await resolveBotId(botIdOrName);
     
@@ -772,13 +799,16 @@ botCommand
     console.log('─'.repeat(60));
 
     let isFirst = true;
+    const useChinese = options.chinese || options.zh;
     
-    const showBotStatus = async () => {
+    const showEnhancedBotStatus = async () => {
       try {
+        const langParam = useChinese ? '&lang=zh' : '';
+        
         const data = await makeRequest({
           hostname: 'localhost',
           port: port,
-          path: `/api/bot/${resolvedBotId}/watch?events=${eventLimit}`,
+          path: `/api/bot/${resolvedBotId}/watch?events=${eventLimit}${langParam}`,
           method: 'GET',
           timeout: 5000
         });
@@ -790,29 +820,64 @@ botCommand
 
         console.clear();
         
-        console.log(`\n🤖 机器人: ${data.username} | ID: ${data.botId}`);
-        console.log(`📡 状态: ${data.state} | 模式: ${data.mode || 'N/A'}`);
+        console.log(`\n${useChinese ? '🤖 机器人' : '🤖 Bot'}: ${data.username} | ID: ${data.botId}`);
+        console.log(`${useChinese ? '📡 状态' : '📡 Status'}: ${data.state} | ${useChinese ? '模式' : 'Mode'}: ${data.mode || 'N/A'}`);
         console.log('─'.repeat(60));
         
-        console.log(`❤️  生命值: ${data.health.current}/${data.health.max}  |  🍖 饥饿值: ${data.health.food}/20`);
+        console.log(`❤️  ${useChinese ? '生命值' : 'Health'}: ${data.attributes.health.current}/${data.attributes.health.max}  |  🍖 ${useChinese ? '饥饿值' : 'Hunger'}: ${data.attributes.health.food}/20`);
         
-        if (data.position) {
-          console.log(`📍 位置: (${data.position.x}, ${data.position.y}, ${data.position.z})`);
+        if (data.environment.position) {
+          const pos = data.environment.position;
+          console.log(`📍 ${useChinese ? '位置' : 'Position'}: (${pos.x}, ${pos.y}, ${pos.z}) - ${pos.world} - ${pos.biome}`);
         }
         
-        console.log(`🎮 游戏模式: ${data.gameMode}`);
+        console.log(`🎮 ${useChinese ? '游戏模式' : 'Game Mode'}: ${data.gameMode}`);
         
         if (data.goal && data.goal.currentGoal) {
-          console.log(`\n🎯 当前目标: ${data.goal.currentGoal}`);
-          const progressBar = '█'.repeat(Math.floor(data.goal.progress / 10)) + '░'.repeat(10 - Math.floor(data.goal.progress / 10));
-          console.log(`   进度: ${progressBar} ${Math.round(data.goal.progress)}%`);
+          console.log(`\n🎯 ${useChinese ? '当前目标' : 'Current Goal'}: ${data.goal.currentGoal}`);
+          const progress = data.goal.progress || 0;
+          const progressBar = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
+          console.log(`   ${useChinese ? '进度' : 'Progress'}: ${progressBar} ${Math.round(progress)}%`);
         }
         
-        console.log('\n📜 最近事件:');
-        console.log('─'.repeat(60));
+        console.log(`\n📊 ${useChinese ? '经验等级' : 'Experience Level'}: ${data.attributes.experience.level}`);
+        console.log(`⭐ ${useChinese ? '经验点数' : 'Experience Points'}: ${data.attributes.experience.points}`);
         
-        if (data.events && data.events.length > 0) {
-          data.events.slice(0, eventLimit).forEach(event => {
+        if (data.attributes.armor.pieces.length > 0) {
+          console.log(`🛡️  ${useChinese ? '护甲装备' : 'Armor'}:`);
+          data.attributes.armor.pieces.forEach(piece => {
+            const slotNames = ['头盔', '胸甲', '护腿', '靴子'];
+            const slot = useChinese ? slotNames[piece.slot] : `slot ${piece.slot}`;
+            console.log(`   ${slot}: ${piece.name} (${useChinese ? '防御值' : 'defense'}: ${piece.durability || 'N/A'}/${piece.maxDurability || 'N/A'})`);
+          });
+        }
+        
+        if (data.resources.inventory.length > 0) {
+          console.log(`\n📦 ${useChinese ? '资源收集' : 'Resources Collected'}:`);
+          const sortedResources = Object.entries(data.resources.summary)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 15);
+          
+          sortedResources.forEach(([item, count]) => {
+            console.log(`   ${item}: ${count}`);
+          });
+          
+          console.log(`${useChinese ? '总计物品' : 'Total Items'}: ${data.resources.totalItems} | ${useChinese ? '唯一物品' : 'Unique Items'}: ${data.resources.uniqueItems}`);
+        }
+        
+        if (data.environment.nearby.entities.length > 0) {
+          console.log(`\n👥 ${useChinese ? '附近实体' : 'Nearby Entities'}:`);
+          data.environment.nearby.entities.forEach(entity => {
+            const categoryIcon = entity.category === 'hostile' ? '👿' : (entity.category === 'friendly' ? '😊' : '😐');
+            console.log(`   ${categoryIcon} ${entity.displayName} (${entity.type}) - ${useChinese ? '距离' : 'distance'}: ${entity.distance}`);
+          });
+        }
+        
+        if (data.events.list.length > 0) {
+          console.log(`\n📜 ${useChinese ? '最近事件' : 'Recent Events'}:`);
+          console.log('─'.repeat(60));
+          
+          data.events.list.slice(0, eventLimit).forEach(event => {
             const time = new Date(event.timestamp).toLocaleTimeString();
             const typeIcon = {
               'status': '📡',
@@ -827,31 +892,30 @@ botCommand
             
             console.log(`  ${typeIcon} [${time}] ${event.message}`);
           });
-        } else {
-          console.log('  暂无事件记录');
         }
         
         console.log('\n' + '─'.repeat(60));
-        console.log(`⏰ 最后更新: ${new Date().toLocaleTimeString()}`);
-        console.log('   按 Ctrl+C 退出监控');
+        console.log(`⏰ ${useChinese ? '最后更新' : 'Last Updated'}: ${new Date().toLocaleTimeString()}`);
+        console.log(`   ${useChinese ? '按 Ctrl+C 退出监控' : 'Press Ctrl+C to exit'}`);
         
       } catch (error) {
         if (isFirst) {
-          console.log(`❌ 请求失败: ${error.message}`);
+          console.log(`❌ ${useChinese ? '请求失败' : 'Request Failed'}: ${error.message}`);
           isFirst = false;
         }
       }
     };
 
-    await showBotStatus();
+    await showEnhancedBotStatus();
     isFirst = false;
     
-    const watchInterval = setInterval(showBotStatus, interval);
+    const watchInterval = setInterval(showEnhancedBotStatus, interval);
     
     process.on('SIGINT', () => {
       clearInterval(watchInterval);
       console.clear();
-      console.log('\n👋 监控已退出');
+      const useChinese = options.chinese || options.zh;
+      console.log(`\n👋 ${useChinese ? '监控已退出' : 'Monitoring stopped'}`);
       process.exit(0);
     });
   });
