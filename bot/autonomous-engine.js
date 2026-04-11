@@ -1,5 +1,6 @@
 const Vec3 = require('vec3');
 const logger = require('./logger');
+const GoalSystem = require('./goal-system');
 
 class AutonomousEngine {
   constructor(bot, pathfinder, behaviors) {
@@ -42,11 +43,11 @@ class AutonomousEngine {
       case 'emergency':
         return { action: 'heal_immediate', target: null };
       case 'food':
-        return { action: 'gather', target: ['wheat', 'carrot', 'potato'] };
+        return { action: 'gather', target: GoalSystem.resourceCategories.food.slice(0, 5) };
       case 'heal':
         return { action: 'find_shelter', target: null };
       case 'gather_food':
-        return { action: 'gather', target: ['wheat', 'carrot'] };
+        return { action: 'gather', target: GoalSystem.resourceCategories.food.slice(0, 3) };
       case 'goal_progress':
         return this.decideGoalAction(goalState);
       default:
@@ -55,10 +56,50 @@ class AutonomousEngine {
   }
 
   decideGoalAction(goalState) {
-    if (!goalState || !goalState.currentGoal) {
-      return { action: 'gather', target: ['oak_log', 'cobblestone'] };
+    if (!goalState || !goalState.goalId) {
+      return { action: 'gather', target: ['oak_log', 'cobblestone', 'dirt'] };
     }
-    return { action: 'gather', target: ['oak_log', 'cobblestone'] };
+
+    const goal = GoalSystem.getGoal(goalState.goalId);
+    const inventory = this.bot.inventory.items();
+    const categoryCount = GoalSystem.countItemsByCategory(inventory);
+    
+    for (const task of goalState.subTasks || []) {
+      if (task.completed) continue;
+      
+      if (task.targetCategory) {
+        const current = categoryCount[task.targetCategory] || 0;
+        if (current < task.required) {
+          const items = GoalSystem.getAllItemsInCategory(task.targetCategory);
+          return { 
+            action: 'gather', 
+            target: items,
+            reason: `完成目标: ${task.name} (${current}/${task.required})`
+          };
+        }
+      } else if (task.target && task.type !== 'build') {
+        const item = inventory.find(i => i.name === task.target);
+        if (!item || item.count < task.required) {
+          return { 
+            action: 'gather', 
+            target: [task.target],
+            reason: `完成目标: ${task.name}`
+          };
+        }
+      } else if (task.type === 'build') {
+        return {
+          action: 'build',
+          target: task,
+          reason: `完成目标: ${task.name}`
+        };
+      }
+    }
+    
+    return { 
+      action: 'gather', 
+      target: ['oak_log', 'cobblestone', 'dirt'],
+      reason: '继续收集基础资源'
+    };
   }
 
   async executeAction(action) {
@@ -106,17 +147,24 @@ class AutonomousEngine {
     const action = this.decideAction(priority, goalState);
     
     this.state.priority = priority;
-    this.state.decisionReason = `Health: ${assessment.health}, Food: ${assessment.food}`;
+    this.state.decisionReason = action.reason || `Health: ${assessment.health}, Food: ${assessment.food}`;
     this.state.threatLevel = assessment.nearbyEntities > 3 ? 'medium' : 'low';
     this.state.healthStatus = assessment.health > 15 ? 'safe' : 
                               assessment.health > 10 ? 'warning' : 'critical';
     
     await this.executeAction(action);
     
+    let updatedGoalState = goalState;
+    if (goalState && goalState.goalId) {
+      const inventory = this.bot.inventory.items();
+      updatedGoalState = GoalSystem.updateGoalProgress(goalState, inventory);
+    }
+    
     return {
       state: this.state,
       assessment,
-      action
+      action,
+      goalState: updatedGoalState
     };
   }
 }

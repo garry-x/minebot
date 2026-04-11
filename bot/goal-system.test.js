@@ -118,7 +118,8 @@ describe('GoalSystem', () => {
       });
       const result = GoalSystem.calculateProgress(state, inventory);
       expect(result.progress).toBe(1);
-      expect(result.completedTasks).toBe(4);
+      expect(result.completedTasks).toBe(3);
+      expect(result.totalTasks).toBe(3);
     });
 
     test('should calculate partial progress', () => {
@@ -129,8 +130,9 @@ describe('GoalSystem', () => {
       
       state.subTasks[0].completed = true;
       const result = GoalSystem.calculateProgress(state, inventory);
-      expect(result.progress).toBe(0.25);
+      expect(result.progress).toBe(1/3);
       expect(result.completedTasks).toBe(1);
+      expect(result.totalTasks).toBe(3);
     });
 
     test('should calculate iron_gear progress', () => {
@@ -146,8 +148,9 @@ describe('GoalSystem', () => {
         }
       }
       const result = GoalSystem.calculateProgress(state, inventory);
-      expect(result.completedTasks).toBe(2);
+      expect(result.completedTasks).toBe(3);
       expect(result.totalTasks).toBe(7);
+      expect(result.progress).toBe(3/7);
     });
   });
 
@@ -175,7 +178,7 @@ describe('GoalSystem', () => {
       expect(goal.subTasks[0]).toEqual({
         id: 'gather_wood',
         name: '收集木材',
-        target: 'oak_log',
+        targetCategory: 'wood',
         required: 64
       });
       
@@ -183,7 +186,8 @@ describe('GoalSystem', () => {
         id: 'build_shelter',
         name: '建造庇护所',
         type: 'build',
-        dimensions: '3x3x3'
+        dimensions: '3x3x3',
+        optional: true
       });
     });
 

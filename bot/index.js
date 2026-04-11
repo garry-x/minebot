@@ -1,4 +1,6 @@
 const logger = require('./logger');
+const fs = require('fs');
+const path = require('path');
 
 logger.info('[Bot] Loading bot/index.js module');
 const mineflayer = require('mineflayer');
@@ -78,10 +80,58 @@ async connect(username, accessToken, startAutomatic = false) {
     let connectTimeout = null;
 
     this.bot.once('spawn', () => {
-         // Set up WebSocket connection after bot spawns
+          // Set up WebSocket connection after bot spawns
       this.setupWebSocket();
       logger.info('[Bot] Bot spawned');
       this.isConnected = true;
+      
+      const syncGameMode = (attempt = 1, maxAttempts = 5) => {
+        logger.info(`[Bot] ====== GAME MODE SYNC (attempt ${attempt}/${maxAttempts}) ======`);
+        
+        let serverGamemode = 'survival';
+        try {
+          const serverPropsPath = path.join(process.cwd(), 'resources/java-1.21.11/server.properties');
+          if (fs.existsSync(serverPropsPath)) {
+            const props = fs.readFileSync(serverPropsPath, 'utf8');
+            const match = props.match(/^gamemode=(\S+)/m);
+            if (match) {
+              serverGamemode = match[1].trim().toLowerCase();
+            }
+          }
+        } catch(e) {
+          logger.info('[Bot] Read error:', e.message);
+        }
+        
+        const currentGM = this.bot.gameMode;
+        logger.info(`[Bot] Server GM: ${serverGamemode}, Bot GM: ${currentGM} (${typeof currentGM})`);
+        
+        if (serverGamemode === 'survival' && currentGM === 0) {
+          logger.info('[Bot] Already in survival mode, skipping');
+          return;
+        }
+        
+        if (serverGamemode === 'survival' && currentGM !== 0) {
+          logger.info('[Bot] Sending /gamemode survival command...');
+          this.bot.chat('/gamemode survival');
+          
+          setTimeout(() => {
+            const newGM = this.bot.gameMode;
+            logger.info(`[Bot] After cmd, Bot GM: ${newGM}`);
+            
+            if (newGM !== 0 && attempt < maxAttempts) {
+              logger.info(`[Bot] Game mode not changed, retrying in 2s...`);
+              setTimeout(() => syncGameMode(attempt + 1, maxAttempts), 2000);
+            } else if (newGM === 0) {
+              logger.info('[Bot] Game mode successfully changed to survival');
+            } else {
+              logger.warn(`[Bot] Game mode sync failed after ${maxAttempts} attempts`);
+            }
+          }, 1500);
+        }
+      };
+      
+      setTimeout(syncGameMode, 2500);
+      
       // Set wrapper reference on mineflayer bot for behaviors access
       this.bot.__wrapper = this;
       // Load and attach mcData after bot is ready (pathfinder needs it)

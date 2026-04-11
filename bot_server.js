@@ -573,9 +573,9 @@ app.post('/api/bot/start', async (req, res) => {
             logger.info(`[API] Bot state saved successfully`);
           
           // Start automatic behavior automatically
-          bot.currentMode = 'survival';
+          bot.currentMode = 'autonomous';
           bot.behaviors.automaticBehavior({ 
-            mode: 'survival',
+            mode: 'autonomous',
             initialGoal: 'basic_survival'
           }).catch(err => {
             logger.error(`[API] Error in automatic behavior: ${err.message}`);

@@ -1,6 +1,8 @@
 const Vec3 = require('vec3');
 
 const AutonomousEngine = require('./autonomous-engine');
+const GoalSystem = require('./goal-system');
+const BotGoal = require('../config/models/BotGoal');
 const logger = require('./logger');
 
 const _getBlockValue = (blockName) => {
@@ -606,9 +608,14 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       } = options;
       
       const wrapper = getWrapper();
+      const GoalSystem = require('./goal-system');
+      
       if (wrapper) {
         wrapper.currentMode = mode;
-        logger.debug(`[Behaviors] Setting currentMode to: ${mode}`);
+        if (!wrapper.goalState && initialGoal) {
+          wrapper.goalState = GoalSystem.createGoalState(initialGoal, wrapper.botId || 'unknown');
+        }
+        logger.debug(`[Behaviors] Setting currentMode to: ${mode}, goalState: ${wrapper.goalState?.goalId}`);
       }
       
       logger.debug(`Starting ${mode} behavior with goal: ${initialGoal}`);
@@ -623,7 +630,16 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
           while (isRunning && wrapper.autonomousRunning) {
             try {
               const cycleResult = await engine.runCycle(wrapper.goalState || {});
-              logger.debug(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}`);
+              logger.debug(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}, Goal: ${cycleResult.goalState?.goalId}, Progress: ${(cycleResult.goalState?.progress || 0).toFixed(2)}`);
+              
+              if (cycleResult.goalState && cycleResult.goalState.goalId) {
+                wrapper.goalState = cycleResult.goalState;
+                try {
+                  await BotGoal.saveGoal(wrapper.botId, cycleResult.goalState.goalId, cycleResult.goalState);
+                } catch (saveErr) {
+                  logger.debug(`[Autonomous] Failed to save goal: ${saveErr.message}`);
+                }
+              }
               
               await new Promise(resolve => setTimeout(resolve, 5000));
             } catch (cycleError) {

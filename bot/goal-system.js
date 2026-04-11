@@ -1,4 +1,49 @@
 class GoalSystem {
+  static resourceCategories = {
+    wood: ['oak_log', 'birch_log', 'spruce_log', 'jungle_log', 'acacia_log', 'dark_oak_log', 'crimson_stem', 'warped_stem', 'oak_wood', 'birch_wood', 'spruce_wood', 'jungle_wood', 'acacia_wood', 'dark_oak_wood'],
+    stone: ['cobblestone', 'stone', 'granite', 'diorite', 'andesite', 'deepslate', 'tuff', 'gravel'],
+    coal: ['coal', 'coal_block', 'charcoal'],
+    iron: ['iron_ore', 'raw_iron', 'iron_ingot', 'iron_block'],
+    gold: ['gold_ore', 'raw_gold', 'gold_ingot', 'gold_block'],
+    diamond: ['diamond_ore', 'diamond', 'diamond_block'],
+    emerald: ['emerald_ore', 'emerald', 'emerald_block'],
+    food: ['wheat', 'carrot', 'potato', 'beetroot', 'apple', 'bread', 'cooked_beef', 'cooked_porkchop', 'cooked_chicken', 'sweet_berries', 'honey'],
+    dirt: ['dirt', 'grass_block', 'podzol', 'coarse_dirt', 'rooted_dirt'],
+    sand: ['sand', 'red_sand'],
+    water: ['water_bucket', 'ice', 'packed_ice', 'blue_ice'],
+    flint: ['flint', 'gravel'],
+    obsidian: ['obsidian', 'crying_obsidian'],
+    leather: ['leather', 'rabbit_hide', 'phantom_membrane'],
+    string: ['string', 'cobweb'],
+    wool: ['white_wool', 'orange_wool', 'magenta_wool', 'light_blue_wool', 'yellow_wool', 'lime_wool', 'pink_wool', 'gray_wool', 'light_gray_wool', 'cyan_wool', 'purple_wool', 'blue_wool', 'brown_wool', 'green_wool', 'red_wool', 'black_wool']
+  };
+
+  static getResourceCategory(itemName) {
+    for (const [category, items] of Object.entries(this.resourceCategories)) {
+      if (items.includes(itemName)) {
+        return category;
+      }
+    }
+    return null;
+  }
+
+  static getAllItemsInCategory(category) {
+    return this.resourceCategories[category] || [];
+  }
+
+  static countItemsByCategory(inventory) {
+    const categoryCount = {};
+    
+    for (const item of inventory) {
+      const category = this.getResourceCategory(item.name);
+      if (category) {
+        categoryCount[category] = (categoryCount[category] || 0) + item.count;
+      }
+    }
+    
+    return categoryCount;
+  }
+
   static goals = {
     basic_survival: {
       id: 'basic_survival',
@@ -6,10 +51,10 @@ class GoalSystem {
       description: '收集木材×64，石头×64，食物×10，建造3×3庇护所',
       difficulty: 'beginner',
       subTasks: [
-        { id: 'gather_wood', name: '收集木材', target: 'oak_log', required: 64 },
-        { id: 'gather_stone', name: '收集石头', target: 'cobblestone', required: 64 },
-        { id: 'gather_food', name: '收集食物', target: 'wheat', required: 10 },
-        { id: 'build_shelter', name: '建造庇护所', type: 'build', dimensions: '3x3x3' }
+        { id: 'gather_wood', name: '收集木材', targetCategory: 'wood', required: 64 },
+        { id: 'gather_stone', name: '收集石头', targetCategory: 'stone', required: 64 },
+        { id: 'gather_food', name: '收集食物', targetCategory: 'food', required: 10 },
+        { id: 'build_shelter', name: '建造庇护所', type: 'build', dimensions: '3x3x3', optional: true }
       ],
       rewards: ['wooden_tools', 'basic_shelter']
     },
@@ -20,8 +65,8 @@ class GoalSystem {
       description: '制作全套铁装备（剑、镐、斧、铲、盔甲）',
       difficulty: 'beginner',
       subTasks: [
-        { id: 'gather_iron', name: '收集铁矿石', target: 'iron_ore', required: 24 },
-        { id: 'gather_coal', name: '收集煤炭', target: 'coal', required: 24 },
+        { id: 'gather_iron', name: '收集铁矿石', targetCategory: 'iron', required: 24 },
+        { id: 'gather_coal', name: '收集煤炭', targetCategory: 'coal', required: 24 },
         { id: 'build_furnace', name: '建造熔炉', type: 'build', block: 'furnace' },
         { id: 'smelt_iron', name: '熔炼铁锭', type: 'craft', target: 'iron_ingot', required: 24 },
         { id: 'craft_sword', name: '制作铁剑', type: 'craft', target: 'iron_sword' },
@@ -171,11 +216,20 @@ class GoalSystem {
   static calculateProgress(goalState, inventory) {
     const goal = this.getGoal(goalState.goalId);
     let completedTasks = 0;
+    const totalNonOptional = goalState.subTasks.filter(t => !t.optional).length;
+    const categoryCount = this.countItemsByCategory(inventory);
     
     for (const task of goalState.subTasks) {
-      if (task.completed) {
+      if (task.completed && !task.optional) {
         completedTasks++;
-      } else if (task.target) {
+      } else if (task.targetCategory && !task.optional) {
+        const count = categoryCount[task.targetCategory] || 0;
+        task.progress = Math.min(1, count / task.required);
+        if (task.progress >= 1) {
+          task.completed = true;
+          completedTasks++;
+        }
+      } else if (task.target && task.type !== 'build' && !task.optional) {
         const item = inventory.find(i => i.name === task.target);
         if (item && item.count >= task.required) {
           task.completed = true;
@@ -184,12 +238,47 @@ class GoalSystem {
       }
     }
     
-    const progress = completedTasks / goalState.subTasks.length;
+    const progress = totalNonOptional > 0 ? completedTasks / totalNonOptional : 0;
     return {
       progress,
       completedTasks,
-      totalTasks: goalState.subTasks.length
+      totalTasks: totalNonOptional,
+      categoryCount
     };
+  }
+
+  static updateGoalProgress(goalState, inventory) {
+    const inventoryItems = inventory || [];
+    const categoryCount = this.countItemsByCategory(inventoryItems);
+    const totalNonOptional = goalState.subTasks.filter(t => !t.optional).length;
+    
+    for (const task of goalState.subTasks) {
+      if (task.completed) continue;
+      
+      if (task.targetCategory && !task.optional) {
+        const count = categoryCount[task.targetCategory] || 0;
+        task.progress = Math.min(1, count / task.required);
+        if (task.progress >= 1) {
+          task.completed = true;
+        }
+      } else if (task.target && task.type !== 'build' && !task.optional) {
+        const item = inventoryItems.find(i => i.name === task.target);
+        if (item && item.count >= task.required) {
+          task.completed = true;
+          task.progress = 1;
+        } else {
+          task.progress = item ? Math.min(1, item.count / task.required) : 0;
+        }
+      } else if (task.type === 'build') {
+        task.progress = 0;
+      }
+    }
+    
+    const completedTasks = goalState.subTasks.filter(t => t.completed && !t.optional).length;
+    goalState.progress = totalNonOptional > 0 ? completedTasks / totalNonOptional : 0;
+    goalState.lastUpdated = Date.now();
+    
+    return goalState;
   }
 }
 

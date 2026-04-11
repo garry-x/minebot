@@ -43,6 +43,15 @@ function savePid(pid, type) {
   fs.writeFileSync(type === 'bot' ? BOT_PID_FILE : MINECRAFT_PID_FILE, pid.toString());
 }
 
+function findNodeProcessPid() {
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync("pgrep -f 'node.*bot_server' | head -1", { encoding: 'utf8' }).trim();
+    if (result) return parseInt(result, 10);
+  } catch {}
+  return null;
+}
+
 async function makeRequest(options, postData = null) {
   return new Promise((resolve, reject) => {
     try {
@@ -206,11 +215,18 @@ nohup node ${BOT_SERVER_SCRIPT} ${verboseFlag} > ${LOG_FILE} 2>&1 &
     fs.chmodSync(scriptFile, '755');
 
     try {
-      const child = spawn('bash', [scriptFile], {
+      spawn('bash', [scriptFile], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: true,
         env: process.env
       });
+
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const pid = findNodeProcessPid();
+      if (pid) {
+        savePid(pid, 'bot');
+        console.log(`📝 Bot PID: ${pid}`);
+      }
 
       let output = '';
       child.stdout.on('data', data => (output += data.toString()));
@@ -331,59 +347,56 @@ serverCommand
       console.log('⏳ 停止当前服务器...');
       
       try {
-        // 尝试通过API优雅停止
-        const reqOptions = {
-          hostname: 'localhost',
-          port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
-          path: '/api/server/stop',
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          timeout: 5000
-        };
-
-        const req = http.request(reqOptions);
-        
-        req.on('error', () => {
-          // API调用失败，使用SIGTERM
-          try {
-            process.kill(pid, 'SIGTERM');
-          } catch {}
-        });
-        
-        req.end();
-        
-        // 等待最多5秒让服务器优雅关闭
-        console.log('⏳ 等待服务器优雅关闭...');
-        const maxWaitTime = 5000; // 5秒
-        const checkInterval = 500; // 每500毫秒检查一次
-        let waited = 0;
-        
-        while (waited < maxWaitTime && isProcessRunning(pid)) {
-          await new Promise(resolve => setTimeout(resolve, checkInterval));
-          waited += checkInterval;
-        }
-        
-        // 如果进程还在运行，强制终止
-        if (isProcessRunning(pid)) {
-          console.log('⚠️  服务器未响应，强制停止...');
-          try {
-            process.kill(pid, 'SIGKILL');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch {}
-        }
-        
-        // 清理PID文件
-        try {
-          if (fs.existsSync(BOT_PID_FILE)) {
-            fs.unlinkSync(BOT_PID_FILE);
-          }
-        } catch {}
-        
-        console.log('✅ 服务器已停止');
+        await makeRequest(
+          {
+            hostname: 'localhost',
+            port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+            path: '/api/server/stop',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 5000
+          },
+          JSON.stringify({})
+        );
+        console.log('✅ 发送停止请求成功');
       } catch (error) {
-        console.error(`❌ 停止失败: ${error.message}`);
-        return;
+        console.log(`⚠️  API请求失败: ${error.message}，使用SIGTERM...`);
+        try {
+          process.kill(pid, 'SIGTERM');
+        } catch {}
       }
+      
+      // 等待最多10秒让服务器优雅关闭
+      console.log('⏳ 等待服务器优雅关闭...');
+      const maxWaitTime = 10000;
+      const checkInterval = 500;
+      let waited = 0;
+      
+      while (waited < maxWaitTime && isProcessRunning(pid)) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+        waited += checkInterval;
+        if (waited % 2000 === 0) {
+          console.log(`⏳ 已等待 ${waited/1000}秒...`);
+        }
+      }
+      
+      // 如果进程还在运行，强制终止
+      if (isProcessRunning(pid)) {
+        console.log('⚠️  服务器未响应，强制停止...');
+        try {
+          process.kill(pid, 'SIGKILL');
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch {}
+      }
+      
+      // 清理PID文件
+      try {
+        if (fs.existsSync(BOT_PID_FILE)) {
+          fs.unlinkSync(BOT_PID_FILE);
+        }
+      } catch {}
+      
+      console.log('✅ 服务器已停止');
     } else if (pid) {
       // PID文件存在但进程不运行 - 清理陈旧的PID文件
       try {
@@ -418,30 +431,29 @@ nohup node ${BOT_SERVER_SCRIPT} ${verboseFlag} > ${LOG_FILE} 2>&1 &
     fs.chmodSync(scriptFile, '755');
 
     try {
-      const child = spawn('bash', [scriptFile], {
+      spawn('bash', [scriptFile], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: true,
         env: process.env
       });
 
-      let output = '';
-      child.stdout.on('data', data => (output += data.toString()));
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const pid = findNodeProcessPid();
+      if (pid) {
+        savePid(pid, 'bot');
+        console.log(`📝 Bot PID: ${pid}`);
+      }
 
-      child.on('close', async () => {
-        // 等待服务器启动
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const status = await getBotServerStatus();
-        if (status.status === 'RUNNING') {
-          console.log('✅ Bot服务器重启成功！');
-          console.log(`📊 状态: ${status.status}`);
-          console.log(`⏱️  运行时间: ${status.uptime || '刚刚启动'}`);
-          console.log(`🤖 活跃机器人: ${status.activeBots || 0}`);
-          console.log(`🔌 服务器模式: ${status.serverMode || 'normal'}`);
-        } else {
-          console.log('❌ Bot服务器重启失败');
-        }
-      });
+      const status = await getBotServerStatus();
+      if (status.status === 'RUNNING') {
+        console.log('✅ Bot服务器重启成功！');
+        console.log(`📊 状态: ${status.status}`);
+        console.log(`⏱️  运行时间: ${status.uptime || '刚刚启动'}`);
+        console.log(`🤖 活跃机器人: ${status.activeBots || 0}`);
+        console.log(`🔌 服务器模式: ${status.serverMode || 'normal'}`);
+      } else {
+        console.log('❌ Bot服务器重启失败');
+      }
     } catch (error) {
       console.error(`❌ 启动失败: ${error.message}`);
     }
