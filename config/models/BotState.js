@@ -21,6 +21,7 @@ class BotState {
           health INTEGER DEFAULT 20,
           food INTEGER DEFAULT 20,
           status TEXT DEFAULT 'active',
+          stop_reason TEXT DEFAULT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -71,8 +72,8 @@ class BotState {
     return new Promise((resolve, reject) => {
       const sql = `
         INSERT OR REPLACE INTO bot_states 
-        (bot_id, username, mode, position_x, position_y, position_z, health, food, status, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        (bot_id, username, mode, position_x, position_y, position_z, health, food, status, stop_reason, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
       `;
       
       db.run(sql, [
@@ -84,7 +85,8 @@ class BotState {
         data.position_z || null,
         data.health || 20,
         data.food || 20,
-        data.status || 'active'
+        data.status || 'active',
+        data.stop_reason || null
       ], function(err) {
         if (err) reject(err);
         else resolve(this.changes);
@@ -106,6 +108,16 @@ class BotState {
       db.all('SELECT * FROM bot_states ORDER BY created_at DESC', [], (err, rows) => {
         if (err) reject(err);
         else resolve(rows);
+      });
+    });
+  }
+  
+  static getBotsToAutoRestart() {
+    return new Promise((resolve, reject) => {
+      const sql = `SELECT * FROM bot_states WHERE status = 'stopped' AND stop_reason = 'server_stop'`;
+      db.all(sql, [], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
       });
     });
   }

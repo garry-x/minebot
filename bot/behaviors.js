@@ -3,6 +3,45 @@ const Vec3 = require('vec3');
 const AutonomousEngine = require('./autonomous-engine');
 const logger = require('./logger');
 
+const _getBlockValue = (blockName) => {
+  const values = {
+    diamond_ore: 1.0,
+    emerald_ore: 1.0,
+    gold_ore: 0.8,
+    iron_ore: 0.6,
+    coal_ore: 0.4,
+    lapis_ore: 0.5,
+    redstone_ore: 0.4,
+    copper_ore: 0.3,
+    diamond_block: 1.0,
+    iron_block: 0.7,
+    gold_block: 0.8,
+    emerald_block: 1.0,
+    chest: 0.5,
+    furnace: 0.4,
+    crafting_table: 0.3,
+    cobblestone: 0.1,
+    stone: 0.1,
+    dirt: 0.05,
+    grass_block: 0.05,
+    oak_log: 0.15,
+    coal_block: 0.4
+  };
+  return values[blockName] || 0.2;
+};
+
+const _isBlockSafe = (blockName) => {
+  const safeBlocks = [
+    'dirt', 'grass_block', 'stone', 'cobblestone', 'oak_log', 'coal_ore', 
+    'iron_ore', 'gold_ore', 'diamond_ore', 'emerald_ore', 'chest', 
+    'furnace', 'crafting_table'
+  ];
+  const dangerousBlocks = ['lava', 'water', 'cactus', 'fire', 'bedrock'];
+  
+  if (dangerousBlocks.some(b => blockName.includes(b))) return false;
+  return safeBlocks.some(b => blockName.includes(b)) || true;
+};
+
 module.exports = function(bot, pathfinder, evolutionManager = null) {
   // Helper function to wait for a condition with retry logic
   const waitForCondition = async (conditionFn, timeout = parseInt(process.env.WAIT_FOR_CONDITION_TIMEOUT || '10000'), retryInterval = parseInt(process.env.WAIT_RETRY_INTERVAL || '500')) => {
@@ -351,8 +390,18 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             const weights = evolutionManager.getWeights('resource');
             logger.debug(`[Evolution] Resource weights: ${JSON.stringify(weights)}`);
             
+            const blocksWithData = blockPositions.map(pos => {
+              const block = bot.blockAt(pos);
+              return {
+                position: pos,
+                name: block?.name || 'unknown',
+                value: _getBlockValue(block?.name || 'unknown'),
+                safe: _isBlockSafe(block?.name || 'unknown')
+              };
+            });
+            
             const context = {
-              targetBlocks,
+              targetBlocks: blocksWithData,
               position: bot.entity.position,
               blockCount: blockPositions.length
             };
@@ -365,7 +414,8 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         // Go to each block and break it
         let successCount = 0;
         let failCount = 0;
-        const maxFailures = 3; // Stop after 3 consecutive failures
+        const maxFailures = 3;
+        const gatherStartTime = Date.now();
         
         const positionsToVisit = optimalStrategy.order || blockPositions;
         
@@ -427,27 +477,30 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             
             logger.debug(`Collected ${block.name}`);
             successCount++;
-            failCount = 0; // Reset failure counter on success
+            failCount = 0;
+            
+            const gatherDuration = Date.now() - gatherStartTime;
             
             if (evolutionManager) {
               await evolutionManager.recordExperience({
                 bot_id: bot.__wrapper?.botId || 'unknown',
                 type: 'resource',
-                context: { targetBlock: block.name, position: position },
+                context: { targetBlock: block.name, position: position, safe: _isBlockSafe(block.name) },
                 action: 'gather',
-                outcome: { success: true, block: block.name, count: 1 }
+                outcome: { success: true, block: block.name, count: 1, duration_ms: gatherDuration, resource_gained: 1 }
               });
             }
           } catch (digError) {
             logger.debug(`[Behaviors] Failed to dig block: ${digError.message}`);
             failCount++;
+            const gatherDuration = Date.now() - gatherStartTime;
             if (evolutionManager) {
               await evolutionManager.recordExperience({
                 bot_id: bot.__wrapper?.botId || 'unknown',
                 type: 'resource',
                 context: { targetBlock: block.name, position: position },
                 action: 'gather',
-                outcome: { success: false, reason: digError.message }
+                outcome: { success: false, reason: digError.message, duration_ms: gatherDuration }
               });
             }
           }

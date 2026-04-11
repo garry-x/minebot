@@ -93,6 +93,83 @@ class WeightEngine {
     this.activeWeights = { ...this.initialWeights };
     this.experienceCount = 0;
   }
+
+  getOptimalAction(context) {
+    if (!context || !context.targetBlocks) {
+      return {
+        action: 'default',
+        target: null,
+        confidence: 0.5,
+        reason: 'No context available'
+      };
+    }
+
+    const weights = this.activeWeights;
+    const blocks = context.targetBlocks;
+    
+    if (!blocks || blocks.length === 0) {
+      return {
+        action: 'default',
+        target: null,
+        confidence: 0.5,
+        reason: 'No target blocks'
+      };
+    }
+
+    const scoredBlocks = blocks.map(block => {
+      const score = this._calculateBlockScore(block, weights, context);
+      return { block, score };
+    });
+
+    scoredBlocks.sort((a, b) => b.score - a.score);
+
+    const bestBlock = scoredBlocks[0];
+    const confidence = bestBlock.score;
+
+    return {
+      action: 'prioritized',
+      target: bestBlock.block,
+      order: scoredBlocks.map(sb => sb.block),
+      confidence: Math.min(1, confidence),
+      reason: `Selected based on learned weights: ${JSON.stringify(weights)}`
+    };
+  }
+
+  _calculateBlockScore(block, weights, context) {
+    let score = 0;
+    const botPos = context.position || { x: 0, y: 0, z: 0 };
+    
+    if (block.position) {
+      const dx = block.position.x - botPos.x;
+      const dy = block.position.y - botPos.y;
+      const dz = block.position.z - botPos.z;
+      const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      
+      if (weights.proximity !== undefined) {
+        const proximityScore = Math.max(0, 1 - distance / 50);
+        score += weights.proximity * proximityScore;
+      }
+      if (weights.distance !== undefined) {
+        const distanceScore = Math.max(0, 1 - distance / 50);
+        score += weights.distance * distanceScore;
+      }
+    }
+
+    if (block.value !== undefined && weights.value !== undefined) {
+      score += weights.value * block.value;
+    }
+
+    if (weights.safety !== undefined) {
+      const safetyScore = block.safe !== false ? 1 : 0.1;
+      score += weights.safety * safetyScore;
+    }
+
+    if (weights.tool_efficiency !== undefined && block.toolEfficiency !== undefined) {
+      score += weights.tool_efficiency * block.toolEfficiency;
+    }
+
+    return score;
+  }
 }
 
 module.exports = WeightEngine;

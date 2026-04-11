@@ -471,6 +471,30 @@ app.post('/api/bot/start', async (req, res) => {
       return res.status(400).json({ error: 'Invalid username format (3-16 characters, letters, numbers, underscores)' });
     }
     
+    // Check for bot name uniqueness (including stopped bots)
+    // Check active bots in memory
+    for (const [activeBotId, activeBot] of activeBots) {
+      if (activeBot.username === username) {
+        logger.error(`[API] Error: Bot with username ${username} is already running`);
+        return res.status(409).json({ 
+          error: `Bot "${username}" is already running. Stop it first or use a different name.`,
+          existingBotId: activeBotId
+        });
+      }
+    }
+    
+    // Check bots in database (including stopped)
+    const allDbBots = await BotState.getAllBots();
+    const existingBot = allDbBots.find(b => b.username === username);
+    if (existingBot) {
+      logger.error(`[API] Error: Bot with username ${username} already exists in database`);
+      return res.status(409).json({ 
+        error: `Bot "${username}" already exists (status: ${existingBot.status}). Use a different name or restart the existing bot.`,
+        existingBotId: existingBot.bot_id,
+        status: existingBot.status
+      });
+    }
+    
     const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
       logger.info(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
@@ -718,6 +742,7 @@ app.get('/api/bot/:botId/goal/status', async (req, res) => {
 app.post('/api/bot/:botId/stop', async (req, res) => {
   try {
     const { botId } = req.params;
+    const { reason } = req.body;
     const bot = activeBots.get(botId);
     
     if (!bot) {
@@ -727,16 +752,23 @@ app.post('/api/bot/:botId/stop', async (req, res) => {
     await bot.disconnect();
     activeBots.delete(botId);
     
-    // Update bot status in persistent store
+    const stopReason = reason || 'manual';
+    
     try {
-      await BotState.updateBotStatus(botId, 'stopped');
+      const botData = await BotState.getBot(botId);
+      await BotState.saveBot(botId, {
+        ...botData,
+        status: 'stopped',
+        stop_reason: stopReason
+      });
     } catch (saveErr) {
         logger.error(`[API] Failed to update bot state: ${saveErr.message}`);
     }
     
     res.json({
       success: true,
-      message: 'Bot stopped successfully'
+      message: 'Bot stopped successfully',
+      stop_reason: stopReason
     });
   } catch (error) {
       logger.error('Error stopping bot:', error);
@@ -1062,12 +1094,33 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       return res.json(cached.data);
     }
     
-    // Use bot.bot.entity.position.floored() if available
-    let pos = bot.bot.entity && bot.bot.entity.position ? bot.bot.entity.position.floored() : null;
+    // Get bot position - use direct access to avoid .floored() returning null values
+    let pos = null;
+    let posValid = false;
+    if (bot.bot.entity && bot.bot.entity.position) {
+      const rawPos = bot.bot.entity.position;
+      const x = rawPos.x;
+      const y = rawPos.y;
+      const z = rawPos.z;
+      
+      // Check if position is valid (not null, not NaN)
+      posValid = (x != null && !isNaN(x)) && 
+                 (y != null && !isNaN(y)) && 
+                 (z != null && !isNaN(z));
+      
+      if (posValid) {
+        pos = {
+          x: Math.floor(x),
+          y: Math.floor(y),
+          z: Math.floor(z)
+        };
+      }
+    }
     
-    // Debug: log position source if null
-    if (!pos || pos.x === null) {
-      logger.warn(`[watch] position is null - trying direct entity access`);
+    // Debug: log position source if null or invalid
+    if (!posValid) {
+      logger.warn(`[watch] position is null or invalid - using 0,0,0 for entity scanning`);
+      pos = { x: 0, y: 0, z: 0 };
     }
     
     // Helper function to apply translations to response data
@@ -1250,7 +1303,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     const ENTITY_SCAN_DISTANCE = 20;
     const ENTITY_SCAN_DISTANCE_SQ = ENTITY_SCAN_DISTANCE * ENTITY_SCAN_DISTANCE;
     
-    if (bot.bot.entities && pos.x != null && pos.z != null) {
+    if (bot.bot.entities && pos) {
       const posX = pos.x, posY = pos.y, posZ = pos.z;
       const entities = Object.values(bot.bot.entities);
       const maxEntities = 50;
@@ -1265,10 +1318,16 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
           
           if (distSq < ENTITY_SCAN_DISTANCE_SQ) {
             const distance = Math.sqrt(distSq);
+            
+            // In Mineflion: entity.name is the entity type (e.g., "spider", "zombie"), 
+            // entity.displayName is the display name, entity.type is the category (hostile, passive, etc.)
+            const entityName = entity.name || 'unknown';
+            const entityDisplayName = entity.displayName || entityName;
+            
             const entityInfo = {
-              type: entity.type || entity.name || 'unknown',
+              type: entityName,  // Use entity.name as the type (spider, zombie, etc.)
               id: entity.id,
-              displayName: entity.displayName || entity.name || 'unknown',
+              displayName: entityDisplayName,  // Use displayName for human-readable name
               distance: Math.round(distance * 10) / 10,
               position: {
                 x: Math.floor(entity.position.x),
@@ -1277,24 +1336,105 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
               }
             };
             
-            // Categorize as friendly or hostile
-            const entityName = entity.name || '';
-            if (entity.type === 'player' || 
-                entityName === 'villager' || 
-                entityName === 'animal' ||
-                entityName.includes('cow') || 
-                entityName.includes('pig') ||
-                entityName.includes('sheep') || 
-                entityName.includes('chicken')) {
+            // Categorize based on entity name (more reliable than entity.type)
+            // Check for players first
+            if (entity.type === 'player' || entityName === 'player') {
+              entityInfo.category = 'player';
+            }
+            // Friendly/passive animals
+            else if (entityName.includes('cow') || 
+                     entityName.includes('pig') ||
+                     entityName.includes('sheep') || 
+                     entityName.includes('chicken') ||
+                     entityName.includes('villager') ||
+                     entityName.includes('horse') ||
+                     entityName.includes('donkey') ||
+                     entityName.includes('mule') ||
+                     entityName.includes('llama') ||
+                     entityName.includes('rabbit') ||
+                     entityName.includes('parrot') ||
+                     entityName.includes('cat') ||
+                     entityName.includes('wolf') ||
+                     entityName.includes('ocelot') ||
+                     entityName.includes('panda') ||
+                     entityName.includes('fox') ||
+                     entityName.includes('bee') ||
+                     entityName.includes('squid') ||
+                     entityName.includes('turtle') ||
+                     entityName.includes('dolphin') ||
+                     entityName.includes('mooshroom') ||
+                     entityName.includes('strider') ||
+                     entityName.includes('axolotl') ||
+                     entityName.includes('goat') ||
+                     entityName.includes('sniffer')) {
               entityInfo.category = 'friendly';
-            } else if (entityName.includes('zombie') || 
-                      entityName.includes('skeleton') || 
-                      entityName.includes('creeper') ||
-                      entityName.includes('spider') || 
-                      entityName.includes('witch')) {
+            }
+            // Hostile mobs
+            else if (entityName.includes('zombie') || 
+                     entityName.includes('skeleton') || 
+                     entityName.includes('creeper') ||
+                     entityName.includes('spider') || 
+                     entityName.includes('witch') ||
+                     entityName.includes('enderman') ||
+                     entityName.includes('slime') ||
+                     entityName.includes('magma') ||
+                     entityName.includes('blaze') ||
+                     entityName.includes('ghast') ||
+                     entityName.includes('wither') ||
+                     entityName.includes('phantom') ||
+                     entityName.includes('pillager') ||
+                     entityName.includes('vindicator') ||
+                     entityName.includes('evoker') ||
+                     entityName.includes('vex') ||
+                     entityName.includes('ravager') ||
+                     entityName.includes('hoglin') ||
+                     entityName.includes('zoglin') ||
+                     entityName.includes('piglin') ||
+                     entityName.includes('drowned') ||
+                     entityName.includes('husk') ||
+                     entityName.includes('stray') ||
+                     entityName.includes('guardian') ||
+                     entityName.includes('shulker') ||
+                     entityName.includes('elder')) {
               entityInfo.category = 'hostile';
-            } else {
+            }
+            // Ambient mobs (bats)
+            else if (entityName.includes('bat')) {
+              entityInfo.category = 'ambient';
+            }
+            // Water mobs
+            else if (entityName.includes('squid') ||
+                     entityName.includes('glow_squid') ||
+                     entityName.includes('dolphin') ||
+                     entityName.includes('axolotl') ||
+                     entityName.includes('fish') ||
+                     entityName.includes('puffer') ||
+                     entityName.includes('salmon') ||
+                     entityName.includes('tropical')) {
+              entityInfo.category = 'water';
+            }
+            // Neutral mobs (iron golem, snow golem, wolf when not tamed, etc.)
+            else if (                     entityName.includes('iron_golem') ||
+                     entityName.includes('snow_golem') ||
+                     entityName.includes('wolf') ||
+                     entityName.includes('polar_bear')) {
               entityInfo.category = 'neutral';
+            }
+            // Item entities (dropped items)
+            else if (entityName === 'item' || entityName === 'dropped_item') {
+              entityInfo.category = 'item';
+            }
+            // Vehicle entities
+            else if (entityName.includes('minecart') || 
+                     entityName.includes('boat') ||
+                     entityName.includes('horse') ||
+                     entityName.includes('donkey') ||
+                     entityName.includes('mule')) {
+              entityInfo.category = 'vehicle';
+            }
+            else {
+              // Use the entity.type category if available
+              entityInfo.category = entity.type || 'neutral';
             }
             
             nearbyEntities.push(entityInfo);
@@ -1432,7 +1572,9 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
           const DROP_SCAN_DISTANCE_SQ = DROP_SCAN_DISTANCE * DROP_SCAN_DISTANCE;
           
           for (const entity of entities) {
-            if (entity.type === 'item' && entity.position) {
+            // Use entity.name to detect item entities (not entity.type which is the category)
+            const entityName = entity.name || '';
+            if ((entityName === 'item' || entityName === 'dropped_item') && entity.position) {
               const dx = entity.position.x - botPos.x;
               const dy = entity.position.y - botPos.y;
               const dz = entity.position.z - botPos.z;
@@ -1441,7 +1583,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
               if (distSq < DROP_SCAN_DISTANCE_SQ) {
                 const distance = Math.sqrt(distSq);
                 // Extract item name from entity metadata if available
-                let itemName = entity.name || 'item';
+                let itemName = 'item';
                 if (entity.metadata) {
                   // Try to get item name from metadata
                   const item = entity.metadata.find(m => m.key === 5);
@@ -1857,17 +1999,20 @@ const wss = new WebSocketServer({ server });
 
 let serverStarted = false;
 
-// Auto-reconnect saved bots
+// Auto-reconnect saved bots (only those stopped due to server shutdown)
 async function autoReconnectBots() {
   logger.trace('[Server] Loading saved bots for auto-reconnect...');
-  const savedBots = await BotState.getActiveBots();
+  const savedBots = await BotState.getBotsToAutoRestart();
   
   if (savedBots.length === 0) {
-    logger.trace('[Server] No active bots to reconnect');
+    logger.trace('[Server] No bots to auto-restart (server_stop)');
     return;
   }
   
+  logger.trace(`[Server] Found ${savedBots.length} bots to auto-restart`);
+  
   for (const savedBot of savedBots) {
+    logger.trace(`[Server] Auto-restarting bot: ${savedBot.username} (${savedBot.bot_id})`);
     await attemptBotReconnect(savedBot);
   }
 }
@@ -1892,6 +2037,14 @@ async function attemptBotReconnect(savedBot) {
     
     const botId = savedBot.bot_id;
     activeBots.set(botId, bot);
+    
+    // Clear stop_reason and set status to active after successful reconnect
+    await BotState.saveBot(botId, {
+      username: savedBot.username,
+      mode: savedBot.mode,
+      status: 'active',
+      stop_reason: null
+    });
     
     logger.trace(`[Server] Bot reconnected successfully: ${botId}`);
   } catch (err) {
@@ -2529,10 +2682,15 @@ const shutdown = async () => {
     logger.error(`[Server] Failed to save bot server state: ${err.message}`);
   }
   
-  // Mark all active bots as stopped
+  // Mark all active bots as stopped (due to server shutdown)
   for (const [botId, bot] of activeBots.entries()) {
     try {
-      await BotState.updateBotStatus(botId, 'stopped');
+      const botData = await BotState.getBot(botId);
+      await BotState.saveBot(botId, {
+        ...botData,
+        status: 'stopped',
+        stop_reason: 'server_stop'
+      });
     } catch (err) {
       logger.error(`[Server] Failed to update bot ${botId} status: ${err.message}`);
     }
