@@ -410,15 +410,38 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       return nearestHostile;
     },
     
+    getMobStrategy: function(mobName) {
+      const strategies = {
+        creeper: { type: 'explosive', danger: 'high', retreatDist: 8, attackRange: 3, action: 'keep_distance' },
+        skeleton: { type: 'ranged', danger: 'high', retreatDist: 5, attackRange: 4, action: 'close_distance' },
+        zombie: { type: 'melee', danger: 'medium', retreatDist: 3, attackRange: 3, action: 'aggressive' },
+        spider: { type: 'melee', danger: 'medium', retreatDist: 3, attackRange: 3, action: 'aggressive' },
+        enderman: { type: 'teleport', danger: 'high', retreatDist: 6, attackRange: 4, action: 'cautious' },
+        piglin: { type: 'melee', danger: 'medium', retreatDist: 3, attackRange: 3, action: 'aggressive' },
+        hoglin: { type: 'charge', danger: 'high', retreatDist: 8, attackRange: 4, action: 'keep_distance' },
+        zombified_piglin: { type: 'melee', danger: 'medium', retreatDist: 3, attackRange: 3, action: 'aggressive' },
+        drowned: { type: 'ranged', danger: 'medium', retreatDist: 5, attackRange: 4, action: 'close_distance' },
+        witch: { type: 'ranged', danger: 'high', retreatDist: 8, attackRange: 4, action: 'close_distance' },
+        ravager: { type: 'charge', danger: 'high', retreatDist: 10, attackRange: 5, action: 'keep_distance' },
+        vex: { type: 'phase', danger: 'high', retreatDist: 6, attackRange: 3, action: 'cautious' },
+        pillager: { type: 'ranged', danger: 'medium', retreatDist: 6, attackRange: 4, action: 'close_distance' },
+        blaze: { type: 'ranged', danger: 'high', retreatDist: 8, attackRange: 5, action: 'keep_distance' },
+        ghast: { type: 'flying', danger: 'high', retreatDist: 10, attackRange: 5, action: 'keep_distance' },
+        magmacube: { type: 'area', danger: 'medium', retreatDist: 4, attackRange: 3, action: 'keep_distance' },
+        shulker: { type: 'ranged', danger: 'high', retreatDist: 6, attackRange: 4, action: 'cautious' }
+      };
+      return strategies[mobName] || { type: 'melee', danger: 'low', retreatDist: 3, attackRange: 3, action: 'aggressive' };
+    },
+    
     combatMode: async function(options = {}) {
       const { aggressive = true, retreatHealth = 6 } = options;
       const health = bot.health || 20;
       
       if (health <= retreatHealth && retreatHealth > 0) {
         const fleePos = new Vec3(
-          bot.entity.position.x + 10,
+          bot.entity.position.x + 15,
           bot.entity.position.y,
-          bot.entity.position.z + 10
+          bot.entity.position.z + 15
         );
         try {
           await pathfinder.moveTo(fleePos, { timeout: 8000, range: 2 });
@@ -427,11 +450,51 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         return { action: 'retreat', reason: 'low health' };
       }
       
-      const target = this.findNearestHostile(16);
+      const target = this.findNearestHostile(20);
       if (target) {
-        logger.debug(`[Combat] Found hostile: ${target.name} at distance ${bot.entity.position.distanceTo(target.position).toFixed(1)}`);
-        const attacked = await this.attackEntity({ targetEntity: target, followRange: 8 });
-        return { action: attacked ? 'attacking' : 'approaching', target: target.name };
+        const strategy = this.getMobStrategy(target.name);
+        const dist = bot.entity.position.distanceTo(target.position);
+        
+        logger.debug(`[Combat] ${target.name} (strategy: ${strategy.action}, dist: ${dist.toFixed(1)})`);
+        
+        if (target.name === 'creeper' && dist < strategy.retreatDist) {
+          const fleeDir = new Vec3(
+            bot.entity.position.x - target.position.x,
+            0,
+            bot.entity.position.z - target.position.z
+          ).norm();
+          const fleePos = bot.entity.position.plus(fleeDir.scale(12));
+          try {
+            await pathfinder.moveTo(fleePos, { timeout: 5000, range: 2 });
+            logger.debug('[Combat] Creeper detected! Fleeing...');
+          } catch {}
+          return { action: 'flee', target: 'creeper' };
+        }
+        
+        if (strategy.action === 'keep_distance') {
+          if (dist > strategy.retreatDist) {
+            return { action: 'idle', target: target.name, reason: 'maintain_distance' };
+          } else if (dist < strategy.attackRange) {
+            await this.attackEntity({ targetEntity: target, followRange: strategy.retreatDist });
+            return { action: 'attack', target: target.name };
+          } else {
+            const approachPos = target.position.minus(bot.entity.position).norm().scale(strategy.retreatDist - 1);
+            const targetPos = bot.entity.position.plus(approachPos);
+            try {
+              await pathfinder.moveTo(targetPos, { timeout: 5000, range: 2 });
+            } catch {}
+            return { action: 'positioning', target: target.name };
+          }
+        } else if (strategy.action === 'close_distance') {
+          if (dist > strategy.attackRange) {
+            await pathfinder.moveTo(target.position, { timeout: 5000, range: strategy.attackRange });
+          }
+          await this.attackEntity({ targetEntity: target, followRange: strategy.attackRange });
+          return { action: 'attack', target: target.name };
+        } else {
+          const attacked = await this.attackEntity({ targetEntity: target, followRange: 3 });
+          return { action: attacked ? 'attacking' : 'approaching', target: target.name };
+        }
       }
       
       return { action: 'idle', reason: 'no targets' };
