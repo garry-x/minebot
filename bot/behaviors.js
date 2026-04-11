@@ -366,28 +366,43 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       logger.debug(`Gathering resources: ${JSON.stringify(targetBlocks)} within radius ${radius}`);
       
       try {
-        // Find target blocks nearby
-        const blockPositions = findBlocks(targetBlocks, radius);
+        let currentRadius = radius;
+        let blockPositions = findBlocks(targetBlocks, currentRadius);
+        
+        while (blockPositions.length < 5 && currentRadius < 64) {
+          currentRadius = Math.min(currentRadius * 2, 64);
+          blockPositions = findBlocks(targetBlocks, currentRadius);
+        }
         
         if (blockPositions.length === 0) {
-          logger.debug('No target blocks found nearby');
-          if (evolutionManager) {
-            await evolutionManager.recordExperience({
-              bot_id: bot.__wrapper?.botId || 'unknown',
-              type: 'resource',
-              context: { targetBlocks, radius, position: bot.entity.position },
-              action: 'search',
-              outcome: { success: false, reason: 'no_blocks_found', blocksFound: 0 }
-            });
-          }
+          const angle = Math.random() * Math.PI * 2;
+          const explorePos = new Vec3(
+            bot.entity.position.x + Math.cos(angle) * 20,
+            bot.entity.position.y,
+            bot.entity.position.z + Math.sin(angle) * 20
+          );
+          try {
+            await pathfinder.moveTo(explorePos, { timeout: 15000, range: 2 });
+          } catch {}
+          blockPositions = findBlocks(targetBlocks, 32);
+        }
+        
+        if (blockPositions.length === 0) {
           return false;
         }
         
-        logger.debug(`Found ${blockPositions.length} blocks to gather`);
+        logger.debug(`Found ${blockPositions.length} blocks to gather (radius: ${currentRadius})`);
         
-        // Use evolution to determine optimal gathering strategy
         let optimalStrategy = { action: 'linear', order: blockPositions };
-        if (evolutionManager) {
+        
+        if (!evolutionManager) {
+          const botPos = bot.entity.position;
+          optimalStrategy.order = [...blockPositions].sort((a, b) => {
+            const distA = Math.sqrt(Math.pow(a.x - botPos.x, 2) + Math.pow(a.z - botPos.z, 2));
+            const distB = Math.sqrt(Math.pow(b.x - botPos.x, 2) + Math.pow(b.z - botPos.z, 2));
+            return distA - distB;
+          });
+        } else if (evolutionManager) {
           try {
             const weights = evolutionManager.getWeights('resource');
             logger.debug(`[Evolution] Resource weights: ${JSON.stringify(weights)}`);
@@ -416,7 +431,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         // Go to each block and break it
         let successCount = 0;
         let failCount = 0;
-        const maxFailures = 3;
+        const maxFailures = 10;
         const gatherStartTime = Date.now();
         
         const positionsToVisit = optimalStrategy.order || blockPositions;
@@ -641,7 +656,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
                 }
               }
               
-              await new Promise(resolve => setTimeout(resolve, 5000));
+              await new Promise(resolve => setTimeout(resolve, 2000));
             } catch (cycleError) {
               logger.error(`[Autonomous] Cycle error: ${cycleError.message}`);
               await new Promise(resolve => setTimeout(resolve, 10000));
