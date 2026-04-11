@@ -359,6 +359,98 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       }
     },
     
+    attackEntity: async function(options) {
+      const { targetEntity, followRange = 10 } = options;
+      
+      if (!targetEntity) {
+        return false;
+      }
+      
+      try {
+        const targetPos = targetEntity.position;
+        const distance = bot.entity.position.distanceTo(targetPos);
+        
+        if (distance > followRange) {
+          await pathfinder.moveTo(targetPos, { timeout: 10000, range: 2 });
+        }
+        
+        if (distance <= 3) {
+          bot.attack(targetEntity);
+          logger.debug(`Attacked entity: ${targetEntity.name}`);
+          return true;
+        }
+        
+        return false;
+      } catch (error) {
+        logger.debug(`Attack failed: ${error.message}`);
+        return false;
+      }
+    },
+    
+    findNearestHostile: function(radius = 16) {
+      const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager'];
+      const players = Object.values(bot.entities).filter(e => e.type === 'player' && e.username !== bot.username);
+      
+      let nearestHostile = null;
+      let nearestDist = Infinity;
+      
+      for (const entity of Object.values(bot.entities)) {
+        if (!entity.position || !entity.type) continue;
+        
+        const isHostile = hostileMobs.includes(entity.name) || entity.name?.includes('zombie') || entity.name?.includes('skeleton') || entity.name?.includes('creeper');
+        if (!isHostile && entity.type !== 'player') continue;
+        
+        const dist = bot.entity.position.distanceTo(entity.position);
+        if (dist < nearestDist && dist <= radius) {
+          nearestDist = dist;
+          nearestHostile = entity;
+        }
+      }
+      
+      return nearestHostile;
+    },
+    
+    combatMode: async function(options = {}) {
+      const { aggressive = true, retreatHealth = 6 } = options;
+      const health = bot.health || 20;
+      
+      if (health <= retreatHealth && retreatHealth > 0) {
+        const fleePos = new Vec3(
+          bot.entity.position.x + 10,
+          bot.entity.position.y,
+          bot.entity.position.z + 10
+        );
+        try {
+          await pathfinder.moveTo(fleePos, { timeout: 8000, range: 2 });
+          logger.debug('[Combat] Low health, retreating');
+        } catch {}
+        return { action: 'retreat', reason: 'low health' };
+      }
+      
+      const target = this.findNearestHostile(16);
+      if (target) {
+        logger.debug(`[Combat] Found hostile: ${target.name} at distance ${bot.entity.position.distanceTo(target.position).toFixed(1)}`);
+        const attacked = await this.attackEntity({ targetEntity: target, followRange: 8 });
+        return { action: attacked ? 'attacking' : 'approaching', target: target.name };
+      }
+      
+      return { action: 'idle', reason: 'no targets' };
+    },
+    
+    autoBuild: async function(options) {
+      const { blockType = 'cobblestone', width = 3, length = 3, height = 3 } = options;
+      
+      const neededBlocks = width * length * height;
+      const inventoryBlocks = bot.inventory.items().filter(i => i.name === blockType).reduce((sum, i) => sum + i.count, 0);
+      
+      if (inventoryBlocks < neededBlocks) {
+        logger.debug(`Need ${neededBlocks} ${blockType}, have ${inventoryBlocks}, gathering...`);
+        await this.gatherResources({ targetBlocks: [blockType], radius: 32 });
+      }
+      
+      return this.buildStructure({ width, length, height, blockType });
+    },
+    
     // Resource gathering behaviors
     gatherResources: async function(options) {
       const { targetBlocks, radius = 20 } = options;

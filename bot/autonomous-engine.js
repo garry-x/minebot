@@ -21,20 +21,30 @@ class AutonomousEngine {
     const food = this.bot.food || 20;
     const inventory = this.bot.inventory.items();
     
+    const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager'];
+    let nearbyHostiles = 0;
+    for (const entity of Object.values(this.bot.entities || {})) {
+      if (entity.name && hostileMobs.includes(entity.name)) {
+        nearbyHostiles++;
+      }
+    }
+    
     return {
       health,
       food,
       inventoryCount: inventory.length,
       isDaytime: this.bot.time.timeOfDay < parseInt(process.env.MINECRAFT_DAYTIME_THRESHOLD || '13000'),
-      nearbyEntities: this.bot.entities.length
+      nearbyEntities: this.bot.entities.length,
+      nearbyHostiles
     };
   }
-
+  
   calculatePriority(assessment) {
     if (assessment.health < 8) return 'emergency';
     if (assessment.food < 6) return 'food';
     if (assessment.health < 12) return 'heal';
     if (assessment.food < 12) return 'gather_food';
+    if (assessment.nearbyHostiles > 0) return 'combat';
     return 'goal_progress';
   }
 
@@ -48,6 +58,8 @@ class AutonomousEngine {
         return { action: 'find_shelter', target: null };
       case 'gather_food':
         return { action: 'gather', target: GoalSystem.resourceCategories.food.slice(0, 3) };
+      case 'combat':
+        return { action: 'combat', target: null };
       case 'goal_progress':
         return this.decideGoalAction(goalState);
       default:
@@ -133,6 +145,10 @@ class AutonomousEngine {
           } catch (moveError) {
             logger.debug(`[AutonomousEngine] Could not find shelter: ${moveError.message}`);
           }
+          break;
+        case 'combat':
+          const combatResult = await this.behaviors.combatMode({ aggressive: true, retreatHealth: 6 });
+          this.state.decisionReason = `Combat: ${combatResult.action} ${combatResult.target || ''}`;
           break;
       }
     } catch (error) {
