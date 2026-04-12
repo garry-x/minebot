@@ -831,6 +831,7 @@ botCommand
     process.stdout.write('\x1b[2J\x1b[H');
     console.log(`\n🔍 正在监控机器人: ${botIdOrName}`);
     console.log(`📊 刷新间隔: ${interval}ms | 显示事件数: ${eventLimit}`);
+    console.log(`🌐 Web端: http://localhost:${port}/watch/${resolvedBotId}`);
     console.log(`⏹️  按 Ctrl+C 退出监控\n`);
     console.log('─'.repeat(60));
 
