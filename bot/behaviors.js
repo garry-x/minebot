@@ -359,6 +359,129 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       }
     },
     
+    craftItem: async function(targetItem, count = 1) {
+      const recipes = {
+        wooden_pickaxe: { type: 'wooden_pickaxe', count: 1, materials: { oak_planks: 3, stick: 2 } },
+        stone_pickaxe: { type: 'stone_pickaxe', count: 1, materials: { cobblestone: 3, stick: 2 } },
+        iron_pickaxe: { type: 'iron_pickaxe', count: 1, materials: { iron_ingot: 3, stick: 2 } },
+        diamond_pickaxe: { type: 'diamond_pickaxe', count: 1, materials: { diamond: 3, stick: 2 } },
+        wooden_sword: { type: 'wooden_sword', count: 1, materials: { oak_planks: 2, stick: 1 } },
+        stone_sword: { type: 'stone_sword', count: 1, materials: { cobblestone: 2, stick: 1 } },
+        iron_sword: { type: 'iron_sword', count: 1, materials: { iron_ingot: 2, stick: 1 } },
+        diamond_sword: { type: 'diamond_sword', count: 1, materials: { diamond: 2, stick: 1 } },
+        wooden_axe: { type: 'wooden_axe', count: 1, materials: { oak_planks: 3, stick: 2 } },
+        stone_axe: { type: 'stone_axe', count: 1, materials: { cobblestone: 3, stick: 2 } },
+        iron_axe: { type: 'iron_axe', count: 1, materials: { iron_ingot: 3, stick: 2 } },
+        diamond_axe: { type: 'diamond_axe', count: 1, materials: { diamond: 3, stick: 2 } },
+        wooden_shovel: { type: 'wooden_shovel', count: 1, materials: { oak_planks: 1, stick: 2 } },
+        stone_shovel: { type: 'stone_shovel', count: 1, materials: { cobblestone: 1, stick: 2 } },
+        iron_shovel: { type: 'iron_shovel', count: 1, materials: { iron_ingot: 1, stick: 2 } },
+        diamond_shovel: { type: 'diamond_shovel', count: 1, materials: { diamond: 1, stick: 2 } },
+        bow: { type: 'bow', count: 1, materials: { stick: 3, string: 3 } },
+        arrow: { type: 'arrow', count: 4, materials: { stick: 1, cobblestone: 1, feather: 1 } },
+        shield: { type: 'shield', count: 1, materials: { oak_planks: 6, iron_ingot: 1 } },
+        chest: { type: 'chest', count: 1, materials: { oak_planks: 8 } },
+        crafting_table: { type: 'crafting_table', count: 1, materials: { oak_planks: 4 } },
+        furnace: { type: 'furnace', count: 1, materials: { cobblestone: 8 } },
+        torch: { type: 'torch', count: 4, materials: { stick: 1, coal: 1 } },
+        bucket: { type: 'bucket', count: 1, materials: { iron_ingot: 3 } },
+        water_bucket: { type: 'water_bucket', count: 1, materials: { bucket: 1 } },
+        iron_helmet: { type: 'iron_helmet', count: 1, materials: { iron_ingot: 5 } },
+        iron_chestplate: { type: 'iron_chestplate', count: 1, materials: { iron_ingot: 8 } },
+        iron_leggings: { type: 'iron_leggings', count: 1, materials: { iron_ingot: 7 } },
+        iron_boots: { type: 'iron_boots', count: 1, materials: { iron_ingot: 4 } },
+        diamond_helmet: { type: 'diamond_helmet', count: 1, materials: { diamond: 5 } },
+        diamond_chestplate: { type: 'diamond_chestplate', count: 1, materials: { diamond: 8 } },
+        diamond_leggings: { type: 'diamond_leggings', count: 1, materials: { diamond: 7 } },
+        diamond_boots: { type: 'diamond_boots', count: 1, materials: { diamond: 4 } },
+        oak_planks: { type: 'oak_planks', count: 4, materials: { oak_log: 1 } },
+        stick: { type: 'stick', count: 4, materials: { oak_planks: 2 } }
+      };
+      
+      const recipe = recipes[targetItem];
+      if (!recipe) {
+        logger.debug(`Unknown recipe: ${targetItem}`);
+        return false;
+      }
+      
+      const craftingTableNearby = bot.findBlock({
+        matching: (block) => block.name === 'crafting_table',
+        maxDistance: 5
+      });
+      
+      if (!craftingTableNearby) {
+        logger.debug('[Craft] Need crafting table, placing one...');
+        await this.buildStructure({
+          width: 1, length: 1, height: 1,
+          blockType: 'crafting_table',
+          offsetX: 1, offsetY: 0, offsetZ: 0
+        });
+      }
+      
+      await new Promise(r => setTimeout(r, 500));
+      
+      try {
+        const recipeObj = bot.recipesFor(targetItem);
+        if (recipeObj && recipeObj.length > 0) {
+          await bot.craft(recipeObj[0], count);
+          logger.debug(`[Craft] Crafted ${count}x ${targetItem}`);
+          return true;
+        }
+      } catch (craftError) {
+        logger.debug(`[Craft] Failed to craft ${targetItem}: ${craftError.message}`);
+      }
+      
+      return false;
+    },
+    
+    buildHouse: async function(options = {}) {
+      const { style = 'basic', material = 'cobblestone' } = options;
+      
+      const materials = {
+        basic: { width: 5, length: 5, height: 3, door: true, windows: true },
+        small: { width: 3, length: 3, height: 2, door: true, windows: false },
+        large: { width: 7, length: 7, height: 4, door: true, windows: true },
+        tower: { width: 3, length: 3, height: 10, door: true, windows: false }
+      };
+      
+      const house = materials[style] || materials.basic;
+      
+      logger.debug(`[House] Building ${style} house: ${house.width}x${house.length}x${house.height}`);
+      
+      const inventoryBlocks = bot.inventory.items().filter(i => i.name === material).reduce((sum, i) => sum + i.count, 0);
+      const neededBlocks = house.width * house.length * house.height;
+      
+      if (inventoryBlocks < neededBlocks) {
+        logger.debug(`[House] Need ${neededBlocks} ${material}, have ${inventoryBlocks}, gathering...`);
+        await this.gatherResources({ targetBlocks: [material], radius: 32 });
+      }
+      
+      await this.buildStructure({
+        width: house.width,
+        length: house.length,
+        height: house.height,
+        blockType: material,
+        offsetX: 3, offsetY: 0, offsetZ: 0
+      });
+      
+      if (house.door) {
+        const doorPos = {
+          x: Math.floor(bot.entity.position.x) + 3 + Math.floor(house.width / 2),
+          y: Math.floor(bot.entity.position.y) + 1,
+          z: Math.floor(bot.entity.position.z)
+        };
+        try {
+          const doorBlock = bot.blockAt(doorPos);
+          if (doorBlock && doorBlock.name !== 'air') {
+            await bot.dig(doorBlock, true);
+          }
+        } catch {}
+      }
+      
+      logger.debug(`[House] House building completed!`);
+      return true;
+    },
+    
     attackEntity: async function(options) {
       const { targetEntity, followRange = 10 } = options;
       

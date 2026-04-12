@@ -104,6 +104,12 @@ class AutonomousEngine {
           target: task,
           reason: `完成目标: ${task.name}`
         };
+      } else if (task.type === 'craft') {
+        return {
+          action: 'craft',
+          target: task.target,
+          reason: `制作: ${task.name}`
+        };
       }
     }
     
@@ -149,6 +155,16 @@ class AutonomousEngine {
         case 'combat':
           const combatResult = await this.behaviors.combatMode({ aggressive: true, retreatHealth: 6 });
           this.state.decisionReason = `Combat: ${combatResult.action} ${combatResult.target || ''}`;
+          break;
+        case 'craft':
+          await this.behaviors.craftItem(action.target);
+          break;
+        case 'build':
+          if (action.target.id === 'build_shelter') {
+            await this.behaviors.buildHouse({ style: 'basic', material: 'cobblestone' });
+          } else {
+            await this.behaviors.autoBuild({ blockType: 'cobblestone', width: 3, length: 3, height: 3 });
+          }
           break;
       }
     } catch (error) {
