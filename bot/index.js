@@ -346,38 +346,58 @@ async connect(username, accessToken, startAutomatic = false) {
       }
     });
 
-    // Handle end/disconnect
-    this.bot.on('end', () => {
-      logger.info('[Bot] End event triggered - connection closed');
+    this.bot.on('end', (reason) => {
+      logger.info(`[Bot] End event triggered: ${reason || 'unknown'}`);
       this.isConnected = false;
       if (!this.deadReason) {
-        this.deadReason = 'Disconnected';
+        this.deadReason = reason || 'Disconnected';
       }
       
-      // Update bot state to stopped on disconnect
-      if (this.botId) {
-        const db = require('../config/models/BotState');
-        db.updateBotStatus(this.botId, 'stopped').catch(err => {
-          logger.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
-        });
-      }
-      
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify({
-          type: 'status_update',
-          data: {
-            connected: this.isConnected,
-            message: this.deadReason,
-            position: null
-          }
-        }));
-      }
-      
-      // Clear status interval
       if (this.statusInterval) {
         clearInterval(this.statusInterval);
         this.statusInterval = null;
       }
+      
+      const attemptReconnect = async (attempt = 1, maxAttempts = 10) => {
+        if (attempt > maxAttempts) {
+          logger.info('[Bot] Reconnect failed, giving up');
+          return;
+        }
+        
+        logger.info(`[Bot] Reconnecting... attempt ${attempt}/${maxAttempts}`);
+        await new Promise(resolve => setTimeout(resolve, 5000 * attempt));
+        
+        if (!this.shouldReconnect) {
+          return;
+        }
+        
+        try {
+          await this.bot.connect(this.options);
+          logger.info('[Bot] Reconnected successfully!');
+          this.isConnected = true;
+          this.deadReason = null;
+          
+          if (this.botId) {
+            const db = require('../config/models/BotState');
+            db.updateBotStatus(this.botId, 'active').catch(err => {});
+          }
+          
+          if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+            this.setupWebSocket();
+          }
+          
+          if (this.autonomousRunning) {
+            this.behaviors.automaticBehavior({ mode: 'autonomous', initialGoal: 'basic_survival', goalState: this.goalState });
+          }
+          
+        } catch (err) {
+          logger.info(`[Bot] Reconnect failed: ${err.message}`);
+          attemptReconnect(attempt + 1, maxAttempts);
+        }
+      };
+      
+      this.shouldReconnect = true;
+      attemptReconnect();
     });
   }
 
@@ -602,6 +622,7 @@ default:
   }
 
   async disconnect() {
+    this.shouldReconnect = false;
     this.stopScreenshotStream();
     
     if (this._streamCaptureInterval) {
@@ -614,12 +635,9 @@ default:
       this.screenshotModule = null;
     }
     
-    // Update bot state to stopped
     if (this.botId) {
       const db = require('../config/models/BotState');
-      db.updateBotStatus(this.botId, 'stopped').catch(err => {
-        logger.error(`[Bot] Failed to update state on disconnect: ${err.message}`);
-      });
+      db.updateBotStatus(this.botId, 'stopped').catch(err => {});
     }
     
     if (this.bot) {
