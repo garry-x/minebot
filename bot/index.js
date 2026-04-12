@@ -417,6 +417,7 @@ async connect(username, accessToken, startAutomatic = false) {
     
     this.ws.on('close', () => {
       logger.trace('WebSocket disconnected from backend');
+      this.isConnected = false;
       if (this.statusInterval) {
         clearInterval(this.statusInterval);
         this.statusInterval = null;
