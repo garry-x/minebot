@@ -828,14 +828,6 @@ botCommand
     const eventLimit = parseInt(options.events);
     const interval = parseInt(options.interval);
     
-    process.stdout.write('\x1b[2J\x1b[H');
-    console.log(`\n🔍 正在监控机器人: ${botIdOrName}`);
-    console.log(`📊 刷新间隔: ${interval}ms | 显示事件数: ${eventLimit}`);
-    console.log(`🌐 Web端: http://localhost:${port}/watch/${resolvedBotId}`);
-    console.log(`⏹️  按 Ctrl+C 退出监控\n`);
-    console.log('─'.repeat(60));
-
-    let isFirst = true;
     const useChinese = options.chinese || options.zh;
     
     const showEnhancedBotStatus = async () => {
@@ -857,8 +849,12 @@ botCommand
 
         process.stdout.write('\x1b[2J\x1b[H');
         
-        console.log(`\n${useChinese ? '🤖 机器人' : '🤖 Bot'}: ${data.username} | ID: ${data.botId}`);
-        console.log(`${useChinese ? '📡 状态' : '📡 Status'}: ${data.state} | ${useChinese ? '模式' : 'Mode'}: ${data.mode || 'N/A'}`);
+        console.log(`\n🔍 监控: ${data.username} | 🌐 Web: http://localhost:${port}/watch/${data.botId}`);
+        console.log(`📊 刷新: ${interval}ms | ⏹️ Ctrl+C 退出`);
+        console.log('─'.repeat(60));
+        
+        console.log(`\n🤖 Bot: ${data.username} | ID: ${data.botId}`);
+        console.log(`📡 Status: ${data.state} | Mode: ${data.mode || 'N/A'}`);
         console.log('─'.repeat(60));
         
         console.log(`❤️  ${useChinese ? '生命值' : 'Health'}: ${data.attributes.health.current}/${data.attributes.health.max}  |  🍖 ${useChinese ? '饥饿值' : 'Hunger'}: ${data.attributes.health.food}/20`);
