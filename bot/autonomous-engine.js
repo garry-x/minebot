@@ -12,7 +12,8 @@ class AutonomousEngine {
       currentAction: 'idle',
       decisionReason: '',
       threatLevel: 'low',
-      healthStatus: 'safe'
+      healthStatus: 'safe',
+      combatCooldownUntil: 0
     };
   }
 
@@ -23,9 +24,25 @@ class AutonomousEngine {
     
     const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager'];
     let nearbyHostiles = 0;
+    let nearbyHostilesEngageable = 0;
+    
     for (const entity of Object.values(this.bot.entities || {})) {
-      if (entity.name && hostileMobs.includes(entity.name)) {
+      if (!entity.position || !entity.type) continue;
+      if (entity.type !== 'hostile' && entity.type !== 'mob') continue;
+      if (!entity.name) continue;
+      
+      const isHostile = hostileMobs.includes(entity.name) || 
+                       entity.name.includes('zombie') || 
+                       entity.name.includes('skeleton') || 
+                       entity.name.includes('creeper') ||
+                       entity.name.includes('spider');
+      
+      if (isHostile) {
         nearbyHostiles++;
+        const dist = this.bot.entity.position.distanceTo(entity.position);
+        if (dist >= 4 && dist <= 16) {
+          nearbyHostilesEngageable++;
+        }
       }
     }
     
@@ -35,7 +52,8 @@ class AutonomousEngine {
       inventoryCount: inventory.length,
       isDaytime: this.bot.time.timeOfDay < parseInt(process.env.MINECRAFT_DAYTIME_THRESHOLD || '13000'),
       nearbyEntities: this.bot.entities.length,
-      nearbyHostiles
+      nearbyHostiles,
+      nearbyHostilesEngageable
     };
   }
   
@@ -44,7 +62,12 @@ class AutonomousEngine {
     if (assessment.food < 6) return 'food';
     if (assessment.health < 12) return 'heal';
     if (assessment.food < 12) return 'gather_food';
-    if (assessment.nearbyHostiles > 0) return 'combat';
+    if (assessment.nearbyHostilesEngageable > 0) {
+      if (this.state.combatCooldownUntil > Date.now()) {
+        return 'goal_progress';
+      }
+      return 'combat';
+    }
     return 'goal_progress';
   }
 
@@ -155,6 +178,7 @@ class AutonomousEngine {
         case 'combat':
           const combatResult = await this.behaviors.combatMode({ aggressive: true, retreatHealth: 6 });
           this.state.decisionReason = `Combat: ${combatResult.action} ${combatResult.target || ''}`;
+          this.state.combatCooldownUntil = Date.now() + 5000;
           break;
         case 'craft':
           await this.behaviors.craftItem(action.target);
@@ -185,6 +209,10 @@ class AutonomousEngine {
                               assessment.health > 10 ? 'warning' : 'critical';
     
     await this.executeAction(action);
+    
+    if (action.action === 'gather' || action.action === 'explore' || action.action === 'build') {
+      this.state.combatCooldownUntil = 0;
+    }
     
     let updatedGoalState = goalState;
     if (goalState && goalState.goalId) {

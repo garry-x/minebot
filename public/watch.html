@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minebot Watch - <span id="botName">Loading...</span></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', monospace; background: #1a1a2e; color: #eee; min-height: 100vh; }
+    .header { background: linear-gradient(135deg, #16213e, #0f3460); padding: 20px; border-bottom: 2px solid #e94560; }
+    .header h1 { font-size: 24px; color: #e94560; }
+    .header .bot-id { color: #888; font-size: 14px; margin-top: 5px; }
+    .container { display: grid; grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; height: calc(100vh - 80px); }
+    .info-panel { background: #16213e; border-radius: 10px; padding: 15px; overflow-y: auto; }
+    .info-section { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+    .info-section:last-child { border-bottom: none; }
+    .info-section h3 { color: #e94560; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
+    .info-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 13px; }
+    .info-label { color: #888; }
+    .info-value { color: #4ecca3; font-weight: bold; }
+    .health-bar { width: 100px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+    .health-fill { height: 100%; background: linear-gradient(90deg, #e94560, #4ecca3); transition: width 0.3s; }
+    .progress-bar { width: 100px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #4ecca3; transition: width 0.3s; }
+    .screenshot-panel { background: #16213e; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+    .screenshot-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #0f0f0f; border-radius: 8px; overflow: hidden; position: relative; }
+    .screenshot-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .screenshot-container .loading { color: #888; position: absolute; }
+    .refresh-indicator { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 12px; color: #4ecca3; }
+    .inventory-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-top: 5px; }
+    .inv-item { background: #222; padding: 5px; border-radius: 4px; text-align: center; font-size: 11px; }
+    .inv-item .count { color: #4ecca3; font-weight: bold; }
+    .inv-item.empty { background: #1a1a1a; color: #444; }
+    .entity-list { max-height: 150px; overflow-y: auto; font-size: 12px; }
+    .entity-item { padding: 2px 0; color: #888; }
+    .entity-item.hostile { color: #e94560; }
+    .entity-item.friendly { color: #4ecca3; }
+    .event-list { max-height: 200px; overflow-y: auto; font-size: 11px; }
+    .event-item { padding: 3px 0; color: #666; border-left: 2px solid #333; padding-left: 8px; margin-left: 5px; }
+    .event-item.recent { border-left-color: #4ecca3; }
+    @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🤖 Minebot Watch</h1>
+    <div class="bot-id" id="botId">Loading...</div>
+  </div>
+  <div class="container">
+    <div class="info-panel" id="infoPanel">
+      <div class="info-section">
+        <h3>📡 Status</h3>
+        <div class="info-row"><span class="info-label">State:</span><span class="info-value" id="state">-</span></div>
+        <div class="info-row"><span class="info-label">Mode:</span><span class="info-value" id="mode">-</span></div>
+      </div>
+      <div class="info-section">
+        <h3>❤️ Health & Food</h3>
+        <div class="info-row"><span class="info-label">Health:</span><span class="info-value"><span id="health">-</span>/20 <div class="health-bar"><div class="health-fill" id="healthBar"></div></div></span></div>
+        <div class="info-row"><span class="info-label">Food:</span><span class="info-value"><span id="food">-</span>/20</span></div>
+      </div>
+      <div class="info-section">
+        <h3>📍 Position</h3>
+        <div class="info-row"><span class="info-label">Coords:</span><span class="info-value" id="position">-</span></div>
+        <div class="info-row"><span class="info-label">World:</span><span class="info-value" id="world">-</span></div>
+        <div class="info-row"><span class="info-label">Biome:</span><span class="info-value" id="biome">-</span></div>
+      </div>
+      <div class="info-section">
+        <h3>🌤️ Environment</h3>
+        <div class="info-row"><span class="info-label">Weather:</span><span class="info-value" id="weather">-</span></div>
+        <div class="info-row"><span class="info-label">Time:</span><span class="info-value" id="time">-</span></div>
+        <div class="info-row"><span class="info-label">Difficulty:</span><span class="info-value" id="difficulty">-</span></div>
+        <div class="info-row"><span class="info-label">Game Mode:</span><span class="info-value" id="gameMode">-</span></div>
+      </div>
+      <div class="info-section">
+        <h3>⭐ Experience</h3>
+        <div class="info-row"><span class="info-label">Level:</span><span class="info-value" id="expLevel">-</span></div>
+        <div class="info-row"><span class="info-label">Points:</span><span class="info-value" id="expPoints">-</span></div>
+      </div>
+      <div class="info-section">
+        <h3>🎯 Goal Progress</h3>
+        <div class="info-row"><span class="info-label">Goal:</span><span class="info-value" id="goalName">-</span></div>
+        <div class="info-row"><span class="info-label">Progress:</span><span class="info-value"><span id="goalProgress">-</span>% <div class="progress-bar"><div class="progress-fill" id="goalProgressBar"></div></div></span></div>
+      </div>
+      <div class="info-section">
+        <h3>🎒 Inventory</h3>
+        <div class="inventory-grid" id="inventory"></div>
+      </div>
+      <div class="info-section">
+        <h3>👾 Nearby Entities</h3>
+        <div class="entity-list" id="entities"></div>
+      </div>
+      <div class="info-section">
+        <h3>📝 Recent Events</h3>
+        <div class="event-list" id="events"></div>
+      </div>
+    </div>
+    <div class="screenshot-panel">
+      <div class="screenshot-container">
+        <div class="loading" id="screenshotLoading">Loading screenshot...</div>
+        <img id="screenshot" style="display:none" alt="Bot View">
+        <div class="refresh-indicator">🔄 Auto-refresh: 2s</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const BOT_ID = window.location.pathname.split('/').pop();
+    document.getElementById('botId').textContent = BOT_ID;
+    document.getElementById('botName').textContent = BOT_ID;
+
+    function formatPosition(pos) {
+      if (!pos) return '-';
+      return `(${pos.x}, ${pos.y}, ${pos.z})`;
+    }
+
+    function getTimeOfDay(time) {
+      if (!time) return '-';
+      const t = time.timeOfDay % 24000;
+      if (t < 6000) return '☀️ Day';
+      if (t < 12000) return '☀️ Day';
+      if (t < 18000) return '🌙 Night';
+      return '🌙 Night';
+    }
+
+    function renderInventory(inv) {
+      if (!inv || inv.length === 0) return '<div class="inv-item empty">Empty</div>';
+      return inv.slice(0, 18).map(item => 
+        `<div class="inv-item">${item.name.split('_').pop()}<div class="count">${item.count}</div></div>`
+      ).join('') + (inv.length > 18 ? `<div class="inv-item">+${inv.length - 18}</div>` : '');
+    }
+
+    function renderEntities(entities) {
+      if (!entities || entities.length === 0) return '<div class="entity-item">None</div>';
+      return entities.slice(0, 10).map(e => 
+        `<div class="entity-item ${e.type === 'hostile' ? 'hostile' : 'friendly'}">${e.name} (${e.distance?.toFixed(1)}m)</div>`
+      ).join('');
+    }
+
+    function renderEvents(events) {
+      if (!events || events.length === 0) return '<div class="event-item">No events</div>';
+      return events.slice(0, 15).map((e, i) => 
+        `<div class="event-item ${i < 3 ? 'recent' : ''}">[${e.time || ''}] ${e.message || e.type || 'event'}</div>`
+      ).join('');
+    }
+
+    async function updateData() {
+      try {
+        const res = await fetch(`/api/bot/${BOT_ID}/watch`);
+        if (!res.ok) throw new Error('Bot not found');
+        const data = await res.json();
+
+        document.getElementById('state').textContent = data.state || '-';
+        document.getElementById('mode').textContent = data.mode || '-';
+        document.getElementById('health').textContent = data.health?.toFixed(1) || '-';
+        document.getElementById('healthBar').style.width = `${(data.health / 20) * 100}%`;
+        document.getElementById('food').textContent = data.food || '-';
+        document.getElementById('position').textContent = formatPosition(data.position);
+        document.getElementById('world').textContent = data.world || '-';
+        document.getElementById('biome').textContent = data.biome || '-';
+        document.getElementById('weather').textContent = data.weather || '-';
+        document.getElementById('time').textContent = getTimeOfDay(data.time);
+        document.getElementById('difficulty').textContent = data.difficulty || '-';
+        document.getElementById('gameMode').textContent = data.gameMode || '-';
+        document.getElementById('expLevel').textContent = data.experienceLevel || 0;
+        document.getElementById('expPoints').textContent = data.experiencePoints || 0;
+        document.getElementById('goalName').textContent = data.goal?.name || data.goal?.goalId || '-';
+        const prog = data.goal?.progress || 0;
+        document.getElementById('goalProgress').textContent = prog.toFixed(1);
+        document.getElementById('goalProgressBar').style.width = `${prog}%`;
+        document.getElementById('inventory').innerHTML = renderInventory(data.inventory);
+        document.getElementById('entities').innerHTML = renderEntities(data.nearbyEntities);
+        document.getElementById('events').innerHTML = renderEvents(data.recentEvents);
+      } catch (err) {
+        console.error('Failed to fetch bot data:', err);
+      }
+    }
+
+    async function updateScreenshot() {
+      try {
+        const res = await fetch(`/api/stream/${BOT_ID}/screenshot?t=${Date.now()}`);
+        if (!res.ok) throw new Error('Screenshot not available');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const img = document.getElementById('screenshot');
+        const loading = document.getElementById('screenshotLoading');
+        img.src = url;
+        img.style.display = 'block';
+        loading.style.display = 'none';
+        img.onload = () => URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Screenshot error:', err);
+      }
+    }
+
+    updateData();
+    updateScreenshot();
+    setInterval(updateData, 2000);
+    setInterval(updateScreenshot, 2000);
+  </script>
+</body>
+</html>

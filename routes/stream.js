@@ -126,6 +126,39 @@ module.exports = function(activeBots) {
     }
   });
 
+  // Single screenshot endpoint (JPEG)
+  router.get('/stream/:botId/screenshot', async (req, res) => {
+    try {
+      const { botId } = req.params;
+      const { width = 854, height = 480, quality = 0.8 } = req.query;
+      
+      const bot = activeBots.get(botId);
+      if (!bot) {
+        return res.status(404).send('Bot not found');
+      }
+
+      if (!bot.getScreenshotFn || !bot.getScreenshotFn()) {
+        return res.status(500).send('Screenshot not available');
+      }
+
+      const screenshotFn = bot.getScreenshotFn();
+      const buffer = await screenshotFn({
+        width: parseInt(width),
+        height: parseInt(height),
+        quality: parseFloat(quality)
+      });
+
+      res.set('Content-Type', 'image/jpeg');
+      res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.send(buffer);
+    } catch (err) {
+      console.error(`[Stream] Screenshot error: ${err.message}`);
+      if (!res.headersSent) {
+        res.status(500).send('Screenshot error');
+      }
+    }
+  });
+
   router.get('/stats', (req, res) => {
     try {
       const stats = streamManager.getOverallStats();

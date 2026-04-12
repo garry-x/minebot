@@ -145,6 +145,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve static files for web UI
+app.use(express.static(path.join(__dirname, 'public')));
+
 // CLI only mode - no frontend routes
 
 const activeBots = new Map();
@@ -2652,6 +2655,11 @@ app.post('/api/llm/strategy', async (req, res) => {
     logger.error('Error in LLM endpoint:', error);
     res.status(500).json({ error: 'Failed to generate LLM advice' });
   }
+});
+
+// Web watch page
+app.get('/watch/:botId', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'watch.html'));
 });
 
 // 404 handler

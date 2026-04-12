@@ -510,21 +510,27 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       }
     },
     
-    findNearestHostile: function(radius = 16) {
+    findNearestHostile: function(radius = 16, minEngageDistance = 4) {
       const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager'];
-      const players = Object.values(bot.entities).filter(e => e.type === 'player' && e.username !== bot.username);
       
       let nearestHostile = null;
       let nearestDist = Infinity;
       
       for (const entity of Object.values(bot.entities)) {
         if (!entity.position || !entity.type) continue;
+        if (entity.type !== 'hostile' && entity.type !== 'mob') continue;
+        if (!entity.name) continue;
         
-        const isHostile = hostileMobs.includes(entity.name) || entity.name?.includes('zombie') || entity.name?.includes('skeleton') || entity.name?.includes('creeper');
-        if (!isHostile && entity.type !== 'player') continue;
+        const isHostile = hostileMobs.includes(entity.name) || 
+                         entity.name.includes('zombie') || 
+                         entity.name.includes('skeleton') || 
+                         entity.name.includes('creeper') ||
+                         entity.name.includes('spider');
+        
+        if (!isHostile) continue;
         
         const dist = bot.entity.position.distanceTo(entity.position);
-        if (dist < nearestDist && dist <= radius) {
+        if (dist < nearestDist && dist <= radius && dist >= minEngageDistance) {
           nearestDist = dist;
           nearestHostile = entity;
         }
@@ -581,12 +587,14 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         logger.debug(`[Combat] ${target.name} (strategy: ${strategy.action}, dist: ${dist.toFixed(1)})`);
         
         if (target.name === 'creeper' && dist < strategy.retreatDist) {
-          const fleeDir = new Vec3(
-            bot.entity.position.x - target.position.x,
-            0,
-            bot.entity.position.z - target.position.z
-          ).norm();
-          const fleePos = bot.entity.position.plus(fleeDir.scale(12));
+          const dx = bot.entity.position.x - target.position.x;
+          const dz = bot.entity.position.z - target.position.z;
+          const len = Math.sqrt(dx * dx + dz * dz) || 1;
+          const fleePos = new Vec3(
+            bot.entity.position.x + (dx / len) * 12,
+            bot.entity.position.y,
+            bot.entity.position.z + (dz / len) * 12
+          );
           try {
             await pathfinder.moveTo(fleePos, { timeout: 5000, range: 2 });
             logger.debug('[Combat] Creeper detected! Fleeing...');
@@ -601,7 +609,15 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             await this.attackEntity({ targetEntity: target, followRange: strategy.retreatDist });
             return { action: 'attack', target: target.name };
           } else {
-            const approachPos = target.position.minus(bot.entity.position).norm().scale(strategy.retreatDist - 1);
+            const dx = target.position.x - bot.entity.position.x;
+            const dy = target.position.y - bot.entity.position.y;
+            const dz = target.position.z - bot.entity.position.z;
+            const len = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+            const approachPos = new Vec3(
+              (dx / len) * (strategy.retreatDist - 1),
+              (dy / len) * (strategy.retreatDist - 1),
+              (dz / len) * (strategy.retreatDist - 1)
+            );
             const targetPos = bot.entity.position.plus(approachPos);
             try {
               await pathfinder.moveTo(targetPos, { timeout: 5000, range: 2 });
@@ -714,7 +730,17 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         
         const positionsToVisit = optimalStrategy.order || blockPositions;
         
-        for (const position of positionsToVisit) {
+        for (const posItem of positionsToVisit) {
+          // Handle both direct position objects and wrapped objects with .position property
+          const position = posItem.position || posItem;
+          
+          // Skip if position is still invalid
+          if (!position || position.x === undefined || position.y === undefined || position.z === undefined) {
+            logger.debug(`[Behaviors] Skipping invalid position: ${JSON.stringify(posItem)}`);
+            failCount++;
+            continue;
+          }
+          
           // Stop if we've had too many consecutive failures
           if (failCount >= maxFailures) {
             logger.debug(`[Behaviors] Stopping resource gathering after ${failCount} consecutive failures`);
@@ -728,6 +754,11 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             await pathfinder.moveTo(position, { timeout: 25000, range: 4 });
             reachedBlock = true;
           } catch (moveError) {
+            const errorMsg = moveError.message || '';
+            if (errorMsg.includes('goal was changed') || errorMsg.includes('goal') || errorMsg.includes('Path was stopped')) {
+              logger.debug(`[Behaviors] Path changed during movement, continuing to next block`);
+              continue;
+            }
             const dist = bot.entity.position.distanceTo(new Vec3(position.x, position.y, position.z));
             if (dist < 5) {
               logger.debug(`Close enough (dist=${dist.toFixed(1)})`);
@@ -786,6 +817,11 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
               });
             }
           } catch (digError) {
+            const errorMsg = digError.message || '';
+            if (errorMsg.includes('Digging aborted') || errorMsg.includes('goal')) {
+              logger.debug(`[Behaviors] Digging interrupted, continuing to next block`);
+              continue;
+            }
             logger.debug(`[Behaviors] Failed to dig block: ${digError.message}`);
             failCount++;
             const gatherDuration = Date.now() - gatherStartTime;
