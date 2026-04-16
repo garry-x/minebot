@@ -149,9 +149,10 @@
 
         document.getElementById('state').textContent = data.state || '-';
         document.getElementById('mode').textContent = data.mode || '-';
-        document.getElementById('health').textContent = data.health?.toFixed(1) || '-';
-        document.getElementById('healthBar').style.width = `${(data.health / 20) * 100}%`;
-        document.getElementById('food').textContent = data.food || '-';
+        const health = data.attributes?.health?.current;
+        document.getElementById('health').textContent = health?.toFixed(1) || '-';
+        document.getElementById('healthBar').style.width = `${(health / 20) * 100}%`;
+        document.getElementById('food').textContent = data.attributes?.health?.food || '-';
         document.getElementById('position').textContent = formatPosition(data.position);
         document.getElementById('world').textContent = data.world || '-';
         document.getElementById('biome').textContent = data.biome || '-';
