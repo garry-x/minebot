@@ -22801,5 +22801,2970 @@
       }
     ],
     "timestamp": "2026-04-07T15:01:31.587Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-11T07:35:11.787Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-11T07:35:11.793Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-11T08:28:17.674Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-11T08:28:17.678Z"
+  },
+  {
+    "botId": "bot_1775898919957_ypmcb5k91",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.499999046325684,
+          "timestamp": "2026-04-11T09:17:07.456Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:17:07.786Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": 70,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166668891906738,
+          "new_value": 13.333335876464844,
+          "timestamp": "2026-04-11T09:17:42.148Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166668891906738,
+          "new_value": 13.333335876464844,
+          "timestamp": "2026-04-11T09:17:42.524Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166668891906738,
+          "new_value": 11.333335876464844,
+          "timestamp": "2026-04-11T09:17:42.524Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:17:42.542Z"
+  },
+  {
+    "botId": "bot_1775899067300_uupin1vai",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 7.333334922790527,
+          "new_value": 2.3333349227905273,
+          "timestamp": "2026-04-11T09:18:02.649Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:03.345Z"
+  },
+  {
+    "botId": "bot_1775899067300_uupin1vai",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.3333349227905273,
+          "new_value": 0.33333492279052734,
+          "timestamp": "2026-04-11T09:18:03.678Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:04.341Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.83333396911621,
+          "timestamp": "2026-04-11T09:18:11.153Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 14.833333969116211,
+          "timestamp": "2026-04-11T09:18:11.153Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 14.833333969116211,
+          "new_value": 15.000000953674316,
+          "timestamp": "2026-04-11T09:18:11.652Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:11.661Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.000000953674316,
+          "new_value": 15.166667938232422,
+          "timestamp": "2026-04-11T09:18:12.188Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.000000953674316,
+          "new_value": 13.166667938232422,
+          "timestamp": "2026-04-11T09:18:12.188Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166667938232422,
+          "new_value": 13.333334922790527,
+          "timestamp": "2026-04-11T09:18:12.687Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166667938232422,
+          "new_value": 13.333334922790527,
+          "timestamp": "2026-04-11T09:18:12.689Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:12.697Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.333334922790527,
+          "new_value": 7.333334922790527,
+          "timestamp": "2026-04-11T09:18:15.178Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:15.680Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 7.333334922790527,
+          "new_value": 5.333334922790527,
+          "timestamp": "2026-04-11T09:18:16.171Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 5.333334922790527,
+          "new_value": 6.333334922790527,
+          "timestamp": "2026-04-11T09:18:16.668Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 5.333334922790527,
+          "new_value": 6.333334922790527,
+          "timestamp": "2026-04-11T09:18:16.668Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:16.675Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.166666984558105,
+          "timestamp": "2026-04-11T09:18:25.665Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.333333969116211,
+          "timestamp": "2026-04-11T09:18:26.329Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.333333969116211,
+          "timestamp": "2026-04-11T09:18:26.329Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 13.333333969116211,
+          "timestamp": "2026-04-11T09:18:26.330Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:26.336Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.333333969116211,
+          "new_value": 11.333333969116211,
+          "timestamp": "2026-04-11T09:18:26.998Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:27.662Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 9.333333969116211,
+          "new_value": 7.333333969116211,
+          "timestamp": "2026-04-11T09:18:30.038Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 9.333333969116211,
+          "new_value": 8.333333969116211,
+          "timestamp": "2026-04-11T09:18:30.038Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 9.333333969116211,
+          "new_value": 8.333333969116211,
+          "timestamp": "2026-04-11T09:18:30.038Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:30.539Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 8.333333969116211,
+          "new_value": 6.333333969116211,
+          "timestamp": "2026-04-11T09:18:31.033Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:31.569Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.333333969116211,
+          "new_value": 0.33333396911621094,
+          "timestamp": "2026-04-11T09:18:33.928Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.333333969116211,
+          "new_value": 1.333333969116211,
+          "timestamp": "2026-04-11T09:18:33.928Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.333333969116211,
+          "new_value": 1.333333969116211,
+          "timestamp": "2026-04-11T09:18:33.928Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.333333969116211,
+          "new_value": 1.333333969116211,
+          "timestamp": "2026-04-11T09:18:33.928Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:34.373Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 14.833333969116211,
+          "timestamp": "2026-04-11T09:18:44.152Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.000000953674316,
+          "timestamp": "2026-04-11T09:18:44.153Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.000000953674316,
+          "new_value": 15.166667938232422,
+          "timestamp": "2026-04-11T09:18:44.664Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:44.672Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.166667938232422,
+          "new_value": 13.166667938232422,
+          "timestamp": "2026-04-11T09:18:45.162Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.166667938232422,
+          "new_value": 13.333334922790527,
+          "timestamp": "2026-04-11T09:18:45.163Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:45.535Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.333334922790527,
+          "new_value": 7.333334922790527,
+          "timestamp": "2026-04-11T09:18:48.086Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:48.591Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.3333349227905273,
+          "new_value": 0,
+          "timestamp": "2026-04-11T09:18:52.746Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 0,
+          "new_value": 20,
+          "timestamp": "2026-04-11T09:18:53.463Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:18:53.504Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.83333396911621,
+          "timestamp": "2026-04-11T09:19:02.106Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 14.833333969116211,
+          "timestamp": "2026-04-11T09:19:02.106Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 14.833333969116211,
+          "new_value": 15.000000953674316,
+          "timestamp": "2026-04-11T09:19:02.487Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:02.865Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": null,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.000000953674316,
+          "new_value": 15.166667938232422,
+          "timestamp": "2026-04-11T09:19:03.212Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.000000953674316,
+          "new_value": 13.166667938232422,
+          "timestamp": "2026-04-11T09:19:03.212Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:03.587Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.166667938232422,
+          "new_value": 9.333334922790527,
+          "timestamp": "2026-04-11T09:19:05.103Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:05.441Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 2.3333349227905273,
+          "new_value": 0.33333492279052734,
+          "timestamp": "2026-04-11T09:19:10.159Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:10.497Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 0.33333492279052734,
+          "new_value": 0,
+          "timestamp": "2026-04-11T09:19:11.173Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 0.33333492279052734,
+          "new_value": 20,
+          "timestamp": "2026-04-11T09:19:11.343Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:11.530Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 18.33333396911621,
+          "timestamp": "2026-04-11T09:19:16.570Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.33333396911621,
+          "timestamp": "2026-04-11T09:19:16.570Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.33333396911621,
+          "new_value": 16.666667938232422,
+          "timestamp": "2026-04-11T09:19:16.939Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:16.944Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": 73,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.666667938232422,
+          "new_value": 16.83333396911621,
+          "timestamp": "2026-04-11T09:19:17.276Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.83333396911621,
+          "new_value": 14.833333969116211,
+          "timestamp": "2026-04-11T09:19:17.612Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:17.618Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 14.833333969116211,
+          "new_value": 11.333334922790527,
+          "timestamp": "2026-04-11T09:19:19.619Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:19.957Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 7.333334922790527,
+          "new_value": 1.3333349227905273,
+          "timestamp": "2026-04-11T09:19:33.025Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:19:33.374Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.500000953674316,
+          "new_value": 13.666667938232422,
+          "timestamp": "2026-04-11T09:21:12.889Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666667938232422,
+          "new_value": 10.666667938232422,
+          "timestamp": "2026-04-11T09:21:13.058Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:21:13.227Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.333333969116211,
+          "new_value": 13.666666984558105,
+          "timestamp": "2026-04-11T09:21:36.471Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:21:36.808Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 11.000000953674316,
+          "timestamp": "2026-04-11T09:21:37.483Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:21:37.854Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 8.166667938232422,
+          "new_value": 5.166667938232422,
+          "timestamp": "2026-04-11T09:21:39.033Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:21:39.369Z"
+  },
+  {
+    "botId": "bot_1775898919957_ypmcb5k91",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": 0.3,
+            "y": 68.53584062504456,
+            "z": 2.3
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.666667938232422,
+          "timestamp": "2026-04-11T09:32:52.186Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:32:52.524Z"
+  },
+  {
+    "botId": "bot_1775898919957_ypmcb5k91",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.666667938232422,
+          "new_value": 11.833334922790527,
+          "timestamp": "2026-04-11T09:32:52.859Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 11.833334922790527,
+          "new_value": 12.000001907348633,
+          "timestamp": "2026-04-11T09:32:53.192Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:32:53.196Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.5,
+          "timestamp": "2026-04-11T09:37:04.032Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:04.205Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16,
+          "timestamp": "2026-04-11T09:37:04.202Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:04.377Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16,
+          "new_value": 16.33333396911621,
+          "timestamp": "2026-04-11T09:37:04.545Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:04.715Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.33333396911621,
+          "new_value": 16.666667938232422,
+          "timestamp": "2026-04-11T09:37:05.555Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:05.725Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.33333396911621,
+          "new_value": 10.833333969116211,
+          "timestamp": "2026-04-11T09:37:05.894Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16.33333396911621,
+          "new_value": 11.000000953674316,
+          "timestamp": "2026-04-11T09:37:06.062Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:06.064Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 13.833333969116211,
+          "timestamp": "2026-04-11T09:37:26.964Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.833333969116211,
+          "new_value": 10.833333969116211,
+          "timestamp": "2026-04-11T09:37:27.293Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:27.659Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 5.333334922790527,
+          "new_value": 2.3333349227905273,
+          "timestamp": "2026-04-11T09:37:30.675Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:30.866Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.5,
+          "new_value": 16.33333396911621,
+          "timestamp": "2026-04-11T09:37:55.687Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.5,
+          "new_value": 13.333333969116211,
+          "timestamp": "2026-04-11T09:37:55.687Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:56.019Z"
+  },
+  {
+    "botId": "bot_1775898697480_9021mntja",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898697480_9021mntja",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.333333015441895,
+          "new_value": 15.666666030883789,
+          "timestamp": "2026-04-11T09:37:56.024Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:56.357Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 13.833333969116211,
+          "timestamp": "2026-04-11T09:37:56.695Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 10.833333969116211,
+          "timestamp": "2026-04-11T09:37:56.695Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:57.027Z"
+  },
+  {
+    "botId": "bot_1775898697480_9021mntja",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898697480_9021mntja",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 9.833333015441895,
+          "new_value": 10,
+          "timestamp": "2026-04-11T09:37:57.032Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:37:57.354Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-11T09:47:57.869Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-11T09:47:57.875Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-11T09:48:29.040Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-11T09:48:29.046Z"
+  },
+  {
+    "botId": "test-integration-bot",
+    "domain": "path",
+    "experiences": [
+      {
+        "bot_id": "test-integration-bot",
+        "type": "path",
+        "context": {
+          "bot_position": {
+            "x": 0,
+            "y": 64,
+            "z": 0
+          },
+          "bot_health": 20,
+          "bot_food": 20,
+          "inventory_summary": {},
+          "current_goal": null,
+          "time_of_day": 0,
+          "nearby_threats": 0,
+          "active_weights": {}
+        },
+        "action": "move",
+        "outcome": {
+          "success": true,
+          "duration_ms": 1000,
+          "resource_cost": 0,
+          "health_change": 0,
+          "error_message": null
+        },
+        "timestamp": "2026-04-11T09:53:43.916Z",
+        "fitness_score": 0.99
+      }
+    ],
+    "timestamp": "2026-04-11T09:53:43.920Z"
+  },
+  {
+    "botId": "bot_1775899067300_uupin1vai",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 11.000000953674316,
+          "timestamp": "2026-04-11T09:56:59.699Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:57:00.035Z"
+  },
+  {
+    "botId": "bot_1775899067300_uupin1vai",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 8.000000953674316,
+          "timestamp": "2026-04-11T09:57:00.365Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.666666984558105,
+          "new_value": 8.166667938232422,
+          "timestamp": "2026-04-11T09:57:00.365Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 8.166667938232422,
+          "new_value": 8.333334922790527,
+          "timestamp": "2026-04-11T09:57:00.697Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:57:00.701Z"
+  },
+  {
+    "botId": "bot_1775899067300_uupin1vai",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899067300_uupin1vai",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": true,
+          "state_type": "health",
+          "old_value": 8.333334922790527,
+          "new_value": 2.3333349227905273,
+          "timestamp": "2026-04-11T09:57:01.570Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T09:57:01.740Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15,
+          "timestamp": "2026-04-11T10:44:33.634Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:44:33.805Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 17,
+          "new_value": 11.833334922790527,
+          "timestamp": "2026-04-11T10:48:23.599Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:48:23.603Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 12.833333969116211,
+          "new_value": 13.000000953674316,
+          "timestamp": "2026-04-11T10:48:51.318Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:48:51.511Z"
+  },
+  {
+    "botId": "bot_1775895851173_15t0r9jez",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775895851173_15t0r9jez",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": 69,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      }
+    ],
+    "timestamp": "2026-04-11T10:49:43.369Z"
+  },
+  {
+    "botId": "bot_1775898697480_9021mntja",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898697480_9021mntja",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.833333015441895,
+          "new_value": 17.33333396911621,
+          "timestamp": "2026-04-11T10:50:59.360Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:50:59.449Z"
+  },
+  {
+    "botId": "bot_1775898057181_w79do5nbb",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898057181_w79do5nbb",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.333332061767578,
+          "new_value": 20,
+          "timestamp": "2026-04-11T10:50:59.446Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898057181_w79do5nbb",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.333332061767578,
+          "new_value": 20,
+          "timestamp": "2026-04-11T10:50:59.446Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:50:59.540Z"
+  },
+  {
+    "botId": "bot_1775897846001_tags0c4de",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775897846001_tags0c4de",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 15.666666030883789,
+          "timestamp": "2026-04-11T10:56:09.833Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:56:10.169Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.833333015441895,
+          "new_value": 11.166666984558105,
+          "timestamp": "2026-04-11T10:57:06.724Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:57:06.727Z"
+  },
+  {
+    "botId": "bot_1775898561005_7aazt5qga",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898561005_7aazt5qga",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": 71,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775898561005_7aazt5qga",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.33333396911621,
+          "timestamp": "2026-04-11T10:57:29.830Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898561005_7aazt5qga",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 16.666667938232422,
+          "timestamp": "2026-04-11T10:57:30.162Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:57:30.166Z"
+  },
+  {
+    "botId": "bot_1775899244198_ha31s3ozg",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 14.833333015441895,
+          "new_value": 15,
+          "timestamp": "2026-04-11T10:57:30.164Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899244198_ha31s3ozg",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15,
+          "new_value": 15.166666984558105,
+          "timestamp": "2026-04-11T10:57:30.334Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:57:30.502Z"
+  },
+  {
+    "botId": "bot_1775898057181_w79do5nbb",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898057181_w79do5nbb",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 8,
+          "timestamp": "2026-04-11T10:57:56.646Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898057181_w79do5nbb",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 8.333333015441895,
+          "timestamp": "2026-04-11T10:57:56.647Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:57:56.857Z"
+  },
+  {
+    "botId": "bot_1775898697480_9021mntja",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898697480_9021mntja",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 12.333334922790527,
+          "new_value": 13.333334922790527,
+          "timestamp": "2026-04-11T10:58:48.537Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898697480_9021mntja",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 12.333334922790527,
+          "new_value": 13.333334922790527,
+          "timestamp": "2026-04-11T10:58:48.538Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:58:49.197Z"
+  },
+  {
+    "botId": "bot_1775898057181_w79do5nbb",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898057181_w79do5nbb",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 7.833332538604736,
+          "new_value": 7.999999046325684,
+          "timestamp": "2026-04-11T10:59:01.460Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T10:59:01.630Z"
+  },
+  {
+    "botId": "bot_1775898333160_262y2y9jp",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898333160_262y2y9jp",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 16,
+          "new_value": 13.666666984558105,
+          "timestamp": "2026-04-11T11:19:02.372Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:02.518Z"
+  },
+  {
+    "botId": "bot_1775898919957_ypmcb5k91",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.33333396911621,
+          "new_value": 19.666667938232422,
+          "timestamp": "2026-04-11T11:19:12.630Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.666667938232422,
+          "new_value": 19.83333396911621,
+          "timestamp": "2026-04-11T11:19:12.962Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:12.965Z"
+  },
+  {
+    "botId": "bot_1775898919957_ypmcb5k91",
+    "domain": "resource",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "resource",
+        "context": {
+          "targetBlocks": [
+            "oak_log",
+            "birch_log",
+            "spruce_log",
+            "jungle_log",
+            "acacia_log",
+            "dark_oak_log",
+            "crimson_stem",
+            "warped_stem",
+            "oak_wood",
+            "birch_wood",
+            "spruce_wood",
+            "jungle_wood",
+            "acacia_wood",
+            "dark_oak_wood"
+          ],
+          "radius": 30,
+          "position": {
+            "x": null,
+            "y": 70,
+            "z": null
+          }
+        },
+        "action": "search",
+        "outcome": {
+          "success": false,
+          "reason": "no_blocks_found",
+          "blocksFound": 0
+        },
+        "fitness_score": 0.1
+      },
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.83333396911621,
+          "new_value": 15.833333969116211,
+          "timestamp": "2026-04-11T11:19:13.455Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775898919957_ypmcb5k91",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 19.83333396911621,
+          "new_value": 16,
+          "timestamp": "2026-04-11T11:19:13.455Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:13.790Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 20,
+          "new_value": 13.833333969116211,
+          "timestamp": "2026-04-11T11:19:13.786Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.833333969116211,
+          "new_value": 10.833333969116211,
+          "timestamp": "2026-04-11T11:19:14.120Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 13.833333969116211,
+          "new_value": 11.000000953674316,
+          "timestamp": "2026-04-11T11:19:14.120Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:14.124Z"
+  },
+  {
+    "botId": "bot_1775899109502_xjpa32dql",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "heal",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 11.000000953674316,
+          "new_value": 11.166667938232422,
+          "timestamp": "2026-04-11T11:19:14.719Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      },
+      {
+        "bot_id": "bot_1775899109502_xjpa32dql",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 11.166667938232422,
+          "new_value": 8.166667938232422,
+          "timestamp": "2026-04-11T11:19:14.878Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:14.881Z"
+  },
+  {
+    "botId": "bot_1775898455621_s7p9phdj3",
+    "domain": "state",
+    "experiences": [
+      {
+        "bot_id": "bot_1775898455621_s7p9phdj3",
+        "type": "state",
+        "context": {
+          "cause": "damage",
+          "is_critical": false,
+          "state_type": "health",
+          "old_value": 15.500000953674316,
+          "new_value": 10.833333015441895,
+          "timestamp": "2026-04-11T11:19:54.735Z"
+        },
+        "action": "state_change",
+        "outcome": {
+          "success": true,
+          "state_changed": "health",
+          "value_changed": true
+        },
+        "fitness_score": 0.5
+      }
+    ],
+    "timestamp": "2026-04-11T11:19:55.068Z"
   }
 ]

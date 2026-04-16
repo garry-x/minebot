@@ -13,10 +13,7 @@ class ScreenshotModule {
     this.canvas = createCanvas(width, height);
     this.ctx = this.canvas.getContext('2d');
     
-    // prismarine-viewer requires browser DOM environment, not available in Node.js
-    // Always use text-only mode for bot screenshots
-    this.usePrismarine = false;
-    logger.debug('[Screenshot] Using text-only mode (prismarine-viewer not available in Node.js)');
+    this.usePrismarine = true;
     
     this.isInitialized = true;
     logger.debug(`[Screenshot] Module initialized: ${width} x ${height} (prismarine: ${this.usePrismarine})`);

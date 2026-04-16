@@ -1097,32 +1097,24 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       return res.json(cached.data);
     }
     
-    // Get bot position - use direct access to avoid .floored() returning null values
     let pos = null;
     let posValid = false;
-    if (bot.bot.entity && bot.bot.entity.position) {
-      const rawPos = bot.bot.entity.position;
-      const x = rawPos.x;
-      const y = rawPos.y;
-      const z = rawPos.z;
-      
-      // Check if position is valid (not null, not NaN)
-      posValid = (x != null && !isNaN(x)) && 
-                 (y != null && !isNaN(y)) && 
-                 (z != null && !isNaN(z));
-      
-      if (posValid) {
-        pos = {
-          x: Math.floor(x),
-          y: Math.floor(y),
-          z: Math.floor(z)
-        };
-      }
-    }
     
-    // Debug: log position source if null or invalid
+    const extractPosition = (rawPos) => {
+      if (!rawPos) return null;
+      const x = rawPos.x, y = rawPos.y, z = rawPos.z;
+      if (x != null && y != null && z != null && 
+          !isNaN(x) && !isNaN(y) && !isNaN(z)) {
+        return { x: Math.floor(x), y: Math.floor(y), z: Math.floor(z) };
+      }
+      return null;
+    };
+    
+    pos = extractPosition(bot.bot.position) || extractPosition(bot.bot.entity?.position) || null;
+    posValid = pos !== null;
+    
     if (!posValid) {
-      logger.warn(`[watch] position is null or invalid - using 0,0,0 for entity scanning`);
+      logger.warn(`[watch] position detection failed - bot.position: ${!!bot.bot.position}, entity.position: ${!!bot.bot.entity?.position}`);
       pos = { x: 0, y: 0, z: 0 };
     }
     

@@ -129,16 +129,19 @@
 
     function renderEntities(entities) {
       if (!entities || entities.length === 0) return '<div class="entity-item">None</div>';
-      return entities.slice(0, 10).map(e => 
-        `<div class="entity-item ${e.type === 'hostile' ? 'hostile' : 'friendly'}">${e.name} (${e.distance?.toFixed(1)}m)</div>`
-      ).join('');
+      return entities.slice(0, 10).map(e => {
+        const isHostile = e.category === 'hostile';
+        const name = e.displayName || e.type || 'unknown';
+        return `<div class="entity-item ${isHostile ? 'hostile' : 'friendly'}">${name} (${e.distance?.toFixed(1)}m)</div>`;
+      }).join('');
     }
 
     function renderEvents(events) {
       if (!events || events.length === 0) return '<div class="event-item">No events</div>';
-      return events.slice(0, 15).map((e, i) => 
-        `<div class="event-item ${i < 3 ? 'recent' : ''}">[${e.time || ''}] ${e.message || e.type || 'event'}</div>`
-      ).join('');
+      return events.slice(0, 15).map((e, i) => {
+        const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString() : '';
+        return `<div class="event-item ${i < 3 ? 'recent' : ''}">[${time}] ${e.message || e.type || 'event'}</div>`;
+      }).join('');
     }
 
     async function updateData() {
@@ -147,28 +150,53 @@
         if (!res.ok) throw new Error('Bot not found');
         const data = await res.json();
 
+        // Status
         document.getElementById('state').textContent = data.state || '-';
         document.getElementById('mode').textContent = data.mode || '-';
+        
+        // Health & Food
         const health = data.attributes?.health?.current;
-        document.getElementById('health').textContent = health?.toFixed(1) || '-';
-        document.getElementById('healthBar').style.width = `${(health / 20) * 100}%`;
-        document.getElementById('food').textContent = data.attributes?.health?.food || '-';
-        document.getElementById('position').textContent = formatPosition(data.position);
-        document.getElementById('world').textContent = data.world || '-';
-        document.getElementById('biome').textContent = data.biome || '-';
-        document.getElementById('weather').textContent = data.weather || '-';
-        document.getElementById('time').textContent = getTimeOfDay(data.time);
-        document.getElementById('difficulty').textContent = data.difficulty || '-';
+        document.getElementById('health').textContent = health != null ? health.toFixed(1) : '-';
+        document.getElementById('healthBar').style.width = health != null ? `${(health / 20) * 100}%` : '0%';
+        document.getElementById('food').textContent = data.attributes?.health?.food ?? '-';
+        
+        // Position
+        const pos = data.environment?.position;
+        document.getElementById('position').textContent = formatPosition(pos);
+        document.getElementById('world').textContent = pos?.world || '-';
+        document.getElementById('biome').textContent = pos?.biome || '-';
+        
+        // Environment
+        const weather = data.environment?.weather;
+        document.getElementById('weather').textContent = weather?.isThundering ? 'Thunder' : (weather?.isRaining ? 'Rain' : 'Clear');
+        const time = data.environment?.time;
+        document.getElementById('time').textContent = time?.isDay ? '☀️ Day' : '🌙 Night';
+        const conditions = data.environment?.conditions;
+        document.getElementById('difficulty').textContent = conditions?.difficulty || '-';
         document.getElementById('gameMode').textContent = data.gameMode || '-';
-        document.getElementById('expLevel').textContent = data.experienceLevel || 0;
-        document.getElementById('expPoints').textContent = data.experiencePoints || 0;
-        document.getElementById('goalName').textContent = data.goal?.name || data.goal?.goalId || '-';
+        
+        // Experience
+        const exp = data.attributes?.experience || {};
+        document.getElementById('expLevel').textContent = exp.level ?? 0;
+        document.getElementById('expPoints').textContent = exp.points ?? 0;
+        
+        // Goal
+        document.getElementById('goalName').textContent = data.goal?.currentGoal || '-';
         const prog = data.goal?.progress || 0;
         document.getElementById('goalProgress').textContent = prog.toFixed(1);
         document.getElementById('goalProgressBar').style.width = `${prog}%`;
-        document.getElementById('inventory').innerHTML = renderInventory(data.inventory);
-        document.getElementById('entities').innerHTML = renderEntities(data.nearbyEntities);
-        document.getElementById('events').innerHTML = renderEvents(data.recentEvents);
+        
+        // Inventory
+        const inventory = data.resources?.inventory || [];
+        document.getElementById('inventory').innerHTML = renderInventory(inventory);
+        
+        // Nearby Entities
+        const entities = data.environment?.nearby?.entities || [];
+        document.getElementById('entities').innerHTML = renderEntities(entities);
+        
+        // Recent Events
+        const events = data.events?.list || [];
+        document.getElementById('events').innerHTML = renderEvents(events);
       } catch (err) {
         console.error('Failed to fetch bot data:', err);
       }

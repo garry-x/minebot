@@ -87,10 +87,12 @@ async function makeRequest(options, postData = null) {
 }
 
 // 根据 botId 或 botName 获取 botId
-async function resolveBotId(botIdOrName) {
+async function resolveBotId(botIdOrName, customHost = null, customPort = null) {
+  const host = customHost || 'localhost';
+  const port = customPort || process.env.BOT_SERVER_PORT || process.env.PORT || 9500;
   const data = await makeRequest({
-    hostname: 'localhost',
-    port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+    hostname: host,
+    port: port,
     path: '/api/bots',
     method: 'GET',
     timeout: 5000
@@ -119,12 +121,14 @@ function formatUptime(seconds) {
   return `${minutes}m`;
 }
 
-async function getBotServerStatus() {
+async function getBotServerStatus(customHost = null, customPort = null) {
+  const host = customHost || 'localhost';
+  const port = customPort || process.env.BOT_SERVER_PORT || process.env.PORT || 9500;
   try {
     // 首先检查健康状态
     const healthData = await makeRequest({
-      hostname: 'localhost',
-      port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+      hostname: host,
+      port: port,
       path: '/api/health',
       method: 'GET',
       timeout: 2000
@@ -134,8 +138,8 @@ async function getBotServerStatus() {
     let serverStatusData = { activeBots: 0 };
     try {
       serverStatusData = await makeRequest({
-        hostname: 'localhost',
-        port: process.env.BOT_SERVER_PORT || process.env.PORT || 9500,
+        hostname: host,
+        port: port,
         path: '/api/server/status',
         method: 'GET',
         timeout: 2000
@@ -215,7 +219,7 @@ nohup node ${BOT_SERVER_SCRIPT} ${verboseFlag} > ${LOG_FILE} 2>&1 &
     fs.chmodSync(scriptFile, '755');
 
     try {
-      spawn('bash', [scriptFile], {
+      const child = spawn('bash', [scriptFile], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: true,
         env: process.env
@@ -815,27 +819,45 @@ botCommand
   .option('-i, --interval <ms>', '刷新间隔(毫秒)', '1000')
   .option('--chinese', '显示中文翻译（物品、生物名称等）')
   .option('--zh', '显示中文翻译（简写）')
+  .option('-h, --host <address>', 'Bot服务器地址', 'localhost')
+  .option('-p, --port <port>', 'Bot服务器端口', '9500')
   .action(async (botIdOrName, options) => {
-    const resolvedBotId = await resolveBotId(botIdOrName);
+    const host = options.host;
+    const port = parseInt(options.port);
     
-    const botStatus = await getBotServerStatus();
+    let resolvedBotId;
+    try {
+      resolvedBotId = await resolveBotId(botIdOrName, host, port);
+    } catch (error) {
+      console.log(`❌ 无法连接到Bot服务器 (${host}:${port}): ${error.message}`);
+      return;
+    }
+    
+    let botStatus;
+    try {
+      botStatus = await getBotServerStatus(host, port);
+    } catch (error) {
+      console.log(`❌ 无法连接到Bot服务器 (${host}:${port}): ${error.message}`);
+      return;
+    }
+    
     if (botStatus.status !== 'RUNNING') {
       console.log('❌ Bot服务器未运行');
       return;
     }
 
-    const port = process.env.BOT_SERVER_PORT || process.env.PORT || 9500;
     const eventLimit = parseInt(options.events);
     const interval = parseInt(options.interval);
     
     const useChinese = options.chinese || options.zh;
+    let isFirst = true;
     
     const showEnhancedBotStatus = async () => {
       try {
         const langParam = useChinese ? '&lang=zh' : '';
         
         const data = await makeRequest({
-          hostname: 'localhost',
+          hostname: host,
           port: port,
           path: `/api/bot/${resolvedBotId}/watch?events=${eventLimit}${langParam}`,
           method: 'GET',
@@ -849,7 +871,7 @@ botCommand
 
         process.stdout.write('\x1b[2J\x1b[H');
         
-        console.log(`\n🔍 监控: ${data.username} | 🌐 Web: http://localhost:${port}/watch/${data.botId}`);
+        console.log(`\n🔍 监控: ${data.username} | 🌐 Web: http://${host}:${port}/watch/${data.botId}`);
         console.log(`📊 刷新: ${interval}ms | ⏹️ Ctrl+C 退出`);
         console.log('─'.repeat(60));
         
