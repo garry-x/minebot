@@ -1,14 +1,31 @@
+# Dependencies
 node_modules/
 .worktrees/
 dist/
-resources/
 coverage/
+
+# Resources (Minecraft server files)
+resources/
+
+# Logs
 logs/
+
+# OS files
 .DS_Store
+
+# Environment
 .env
+
+# Scripts (custom shell scripts)
 *.sh
-bot/*.db
-bot/evolution.db
-bot/bot_config.db
-bot/*.db-shm
-bot/*.db-wal
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+
+# Test files
+*.test.ts
+*.spec.ts
+tests/
+__tests__/
