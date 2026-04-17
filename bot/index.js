@@ -191,10 +191,11 @@ async connect(username, accessToken, startAutomatic = false) {
           }
              
              // Initialize modules after bot is ready
-             this.pathfinder = new Pathfinder(this.bot);
-             this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
-             this.autonomousRunning = false;
-             this.goalState = null;
+              this.pathfinder = new Pathfinder(this.bot);
+              this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
+              this.autonomousRunning = false;
+              this.autonomousEngine = null;  // Store reference to autonomous engine for API access
+              this.goalState = null;
              this.events = require('./events')(this.bot, this.evolutionManager);
              this.events.setupListeners();
            
@@ -291,10 +292,20 @@ async connect(username, accessToken, startAutomatic = false) {
       logger.info('[Bot] Bot died');
       this.deadReason = 'Bot died';
       
-      // Update bot state to stopped
+      setTimeout(() => {
+        if (this.bot && !this.bot.isAlive) {
+          logger.info('[Bot] Auto-respawning...');
+          try {
+            this.bot.respawn();
+          } catch (err) {
+            logger.error(`[Bot] Auto-respawn failed: ${err.message}`);
+          }
+        }
+      }, 1000);
+      
       if (this.botId) {
         const db = require('../config/models/BotState');
-        db.updateBotStatus(this.botId, 'stopped').catch(err => {
+        db.updateBotStatus(this.botId, 'dead').catch(err => {
           logger.error(`[Bot] Failed to update state on death: ${err.message}`);
         });
       }
@@ -304,7 +315,7 @@ async connect(username, accessToken, startAutomatic = false) {
           type: 'status_update',
           data: {
             connected: this.isConnected,
-            message: 'Bot died',
+            message: 'Bot died - auto-respawning...',
             position: null
           }
         }));

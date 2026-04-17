@@ -913,6 +913,28 @@ botCommand
           console.log(`   ${useChinese ? '进度' : 'Progress'}: ${progressBar} ${Math.round(progress)}%`);
         }
         
+        if (data.autonomousState && data.autonomousState.currentAction && data.autonomousState.currentAction !== 'idle') {
+          const actionIcons = {
+            'gather': '⛏️',
+            'combat': '⚔️',
+            'build': '🏗️',
+            'craft': '🔨',
+            'heal_immediate': '❤️',
+            'find_shelter': '🏠',
+            'explore': '🧭'
+          };
+          const icon = actionIcons[data.autonomousState.currentAction] || '🤖';
+          console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}:`);
+          console.log(`   ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
+          if (data.autonomousState.decisionReason) {
+            console.log(`   ${useChinese ? '原因' : 'Reason'}: ${data.autonomousState.decisionReason}`);
+          }
+          console.log(`   ${useChinese ? '优先级' : 'Priority'}: ${data.autonomousState.priority}`);
+          if (data.autonomousState.healthStatus) {
+            console.log(`   ${useChinese ? '状态' : 'Status'}: ${data.autonomousState.healthStatus}`);
+          }
+        }
+        
         console.log(`\n📊 ${useChinese ? '经验等级' : 'Experience Level'}: ${data.attributes.experience.level}`);
         console.log(`⭐ ${useChinese ? '经验点数' : 'Experience Points'}: ${data.attributes.experience.points}`);
         

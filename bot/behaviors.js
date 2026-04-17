@@ -952,6 +952,7 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       try {
         if (mode === 'autonomous') {
           const engine = new AutonomousEngine(bot, pathfinder, this);
+          wrapper.autonomousEngine = engine;  // Store for API access
           
           let isRunning = true;
           wrapper.autonomousRunning = true;
@@ -985,6 +986,102 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
       } catch (error) {
         logger.error('Error in automatic behavior:', error);
         throw new Error(`Automatic behavior failed: ${error.message}`);
+      }
+    },
+    
+    findSafeRetreat: async function() {
+      const wrapper = getWrapper();
+      const botPos = bot.entity.position;
+      
+      const safeBlocks = ['water', 'cave_air'];
+      const shelterBlocks = ['oak_log', 'birch_log', 'spruce_log', 'cobblestone', 'stone'];
+      
+      logger.info('[Behaviors] Finding safe retreat position...');
+      
+      try {
+        const waterPos = bot.findBlocks({
+          point: botPos,
+          matching: 'water',
+          maxDistance: 16,
+          minCount: 1
+        });
+        
+        if (waterPos && waterPos.length > 0) {
+          logger.info('[Behaviors] Found water, diving in...');
+          await pathfinder.moveTo(waterPos[0], { timeout: 15000 });
+          return true;
+        }
+        
+        const caveBlocks = bot.findBlocks({
+          point: botPos,
+          matching: ['cave_air', 'stone', 'dirt', 'granite'],
+          maxDistance: 12,
+          minCount: 20
+        });
+        
+        if (caveBlocks && caveBlocks.length > 10) {
+          const cavePos = caveBlocks[Math.floor(caveBlocks.length / 2)];
+          logger.info('[Behaviors] Found cave, taking shelter...');
+          await pathfinder.moveTo(cavePos, { timeout: 15000 });
+          return true;
+        }
+        
+        const treeBlocks = bot.findBlocks({
+          point: botPos,
+          matching: ['oak_log', 'birch_log', 'spruce_log', 'jungle_log'],
+          maxDistance: 20,
+          minCount: 1
+        });
+        
+        if (treeBlocks && treeBlocks.length > 0) {
+          const treePos = treeBlocks[0];
+          logger.info('[Behaviors] Found tree, climbing for safety...');
+          await pathfinder.moveTo(new Vec3(treePos.x, treePos.y + 5, treePos.z), { timeout: 15000 });
+          return true;
+        }
+        
+        let fleeDir = new Vec3(0, 0, 0);
+        const hostiles = [];
+        
+        for (const entity of Object.values(bot.entities || {})) {
+          if (!entity.position || !entity.type) continue;
+          const isHostile = ['zombie', 'skeleton', 'spider', 'creeper', 'pillager', 'witch'].some(m => entity.name?.includes(m));
+          if (isHostile && entity.position.distanceTo(botPos) < 20) {
+            hostiles.push(entity);
+          }
+        }
+        
+        if (hostiles.length > 0) {
+          let sumX = 0, sumZ = 0;
+          for (const h of hostiles) {
+            sumX += h.position.x - botPos.x;
+            sumZ += h.position.z - botPos.z;
+          }
+          const avgX = sumX / hostiles.length;
+          const avgZ = sumZ / hostiles.length;
+          
+          const fleePos = new Vec3(
+            botPos.x - avgX * 1.5 + (Math.random() - 0.5) * 10,
+            botPos.y,
+            botPos.z - avgZ * 1.5 + (Math.random() - 0.5) * 10
+          );
+          
+          logger.info(`[Behaviors] Fleeing from ${hostiles.length} hostiles...`);
+          await pathfinder.moveTo(fleePos, { timeout: 20000 });
+          return true;
+        }
+        
+        const randomPos = new Vec3(
+          botPos.x + (Math.random() - 0.5) * 30,
+          botPos.y,
+          botPos.z + (Math.random() - 0.5) * 30
+        );
+        await pathfinder.moveTo(randomPos, { timeout: 20000 });
+        return true;
+        
+      } catch (err) {
+        logger.error(`[Behaviors] Retreat failed: ${err.message}`);
+        return false;
       }
     }
   };

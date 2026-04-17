@@ -651,7 +651,7 @@ app.post('/api/bot/automatic', async (req, res) => {
     
     // Start automatic behavior
     bot.behaviors.automaticBehavior({ 
-      mode: 'auto',
+      mode: 'autonomous',
       initialGoal: initialGoal || 'basic_survival'
     }).catch(err => {
       logger.error('Error in automatic behavior:', err);
@@ -1203,6 +1203,25 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         translated.goal.details.materials = translatedMaterials;
       }
       
+      // Translate autonomous state
+      if (translated.autonomousState) {
+        if (translated.autonomousState.currentAction) {
+          translated.autonomousState.currentAction = translate.translateToChinese(translated.autonomousState.currentAction);
+        }
+        if (translated.autonomousState.decisionReason) {
+          translated.autonomousState.decisionReason = translate.translateToChinese(translated.autonomousState.decisionReason);
+        }
+        if (translated.autonomousState.priority) {
+          translated.autonomousState.priority = translate.translateToChinese(translated.autonomousState.priority);
+        }
+        if (translated.autonomousState.healthStatus) {
+          translated.autonomousState.healthStatus = translate.translateToChinese(translated.autonomousState.healthStatus);
+        }
+        if (translated.autonomousState.threatLevel) {
+          translated.autonomousState.threatLevel = translate.translateToChinese(translated.autonomousState.threatLevel);
+        }
+      }
+      
       return translated;
     };
     
@@ -1617,6 +1636,18 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       };
     }
     
+    let autonomousState = null;
+    if (bot.autonomousEngine && bot.autonomousRunning) {
+      const engineState = bot.autonomousEngine.state;
+      autonomousState = {
+        currentAction: engineState.currentAction,
+        decisionReason: engineState.decisionReason,
+        priority: engineState.priority,
+        healthStatus: engineState.healthStatus,
+        threatLevel: engineState.threatLevel
+      };
+    }
+    
     const eventsCacheKey = `${botId}:${eventLimit}`;
     const cachedEvents = eventsCache.get(eventsCacheKey);
     let events;
@@ -1758,6 +1789,7 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
       // Additional info
       gameMode: gameMode,
       goal: goalInfo,
+      autonomousState: autonomousState,
       connected: bot.isConnected,
       deadReason: bot.deadReason,
       joinedAt: bot.botTime || bot.bot.joinTime,

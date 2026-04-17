@@ -7,13 +7,16 @@ class AutonomousEngine {
     this.bot = bot;
     this.pathfinder = pathfinder;
     this.behaviors = behaviors;
+    this.lastDamageTime = 0;
     this.state = {
       priority: 'survival',
       currentAction: 'idle',
       decisionReason: '',
       threatLevel: 'low',
       healthStatus: 'safe',
-      combatCooldownUntil: 0
+      combatCooldownUntil: 0,
+      isOverwhelmed: false,
+      threatScore: 0
     };
   }
 
@@ -22,9 +25,13 @@ class AutonomousEngine {
     const food = this.bot.food || 20;
     const inventory = this.bot.inventory.items();
     
-    const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager'];
+    const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager', 'blaze', 'ghast', 'magma_cube', 'slime', 'wither_skeleton', 'husk', 'stray', 'polar_bear'];
+    const dangerousMobs = ['creeper', 'blaze', 'ghast', 'ravager', 'wither_skeleton'];
+    
     let nearbyHostiles = 0;
     let nearbyHostilesEngageable = 0;
+    let threatScore = 0;
+    let nearestHostileDist = 999;
     
     for (const entity of Object.values(this.bot.entities || {})) {
       if (!entity.position || !entity.type) continue;
@@ -38,13 +45,24 @@ class AutonomousEngine {
                        entity.name.includes('spider');
       
       if (isHostile) {
-        nearbyHostiles++;
         const dist = this.bot.entity.position.distanceTo(entity.position);
-        if (dist >= 4 && dist <= 16) {
-          nearbyHostilesEngageable++;
+        if (dist < nearestHostileDist) {
+          nearestHostileDist = dist;
+        }
+        
+        let mobThreat = 1;
+        if (dangerousMobs.some(m => entity.name.includes(m))) mobThreat = 2;
+        if (dist <= 16) {
+          nearbyHostiles++;
+          if (dist >= 4 && dist <= 16) {
+            nearbyHostilesEngageable++;
+          }
+          threatScore += mobThreat * (1 / (dist / 8 + 0.5));
         }
       }
     }
+    
+    const isOverwhelmed = nearbyHostiles >= 3 || threatScore > 12;
     
     return {
       health,
@@ -53,12 +71,17 @@ class AutonomousEngine {
       isDaytime: this.bot.time.timeOfDay < parseInt(process.env.MINECRAFT_DAYTIME_THRESHOLD || '13000'),
       nearbyEntities: this.bot.entities.length,
       nearbyHostiles,
-      nearbyHostilesEngageable
+      nearbyHostilesEngageable,
+      threatScore: Math.round(threatScore * 10) / 10,
+      isOverwhelmed,
+      nearestHostileDist,
+      damageRecent: Date.now() - this.lastDamageTime < 10000
     };
   }
   
   calculatePriority(assessment) {
-    if (assessment.health < 8) return 'emergency';
+    if (assessment.health < 8 || (assessment.health < 12 && assessment.damageRecent)) return 'emergency';
+    if (assessment.isOverwhelmed || assessment.threatScore > 15) return 'survival';
     if (assessment.food < 6) return 'food';
     if (assessment.health < 12) return 'heal';
     if (assessment.food < 12) return 'gather_food';
@@ -71,10 +94,16 @@ class AutonomousEngine {
     return 'goal_progress';
   }
 
-  decideAction(priority, goalState) {
+  decideAction(priority, goalState, assessment = {}) {
     switch (priority) {
       case 'emergency':
         return { action: 'heal_immediate', target: null };
+      case 'survival':
+        return { 
+          action: 'retreat', 
+          target: { isOverwhelmed: assessment.isOverwhelmed, threatScore: assessment.threatScore },
+          reason: `生存模式: 威胁得分 ${assessment.threatScore}`
+        };
       case 'food':
         return { action: 'gather', target: GoalSystem.resourceCategories.food.slice(0, 5) };
       case 'heal':
@@ -82,7 +111,7 @@ class AutonomousEngine {
       case 'gather_food':
         return { action: 'gather', target: GoalSystem.resourceCategories.food.slice(0, 3) };
       case 'combat':
-        return { action: 'combat', target: null };
+        return { action: 'combat', target: { retreatHealth: assessment.threatScore > 8 ? 10 : 6 } };
       case 'goal_progress':
         return this.decideGoalAction(goalState);
       default:
@@ -176,9 +205,18 @@ class AutonomousEngine {
           }
           break;
         case 'combat':
-          const combatResult = await this.behaviors.combatMode({ aggressive: true, retreatHealth: 6 });
+          const retreatHealth = action.target?.retreatHealth || 6;
+          const combatResult = await this.behaviors.combatMode({ 
+            aggressive: false, 
+            retreatHealth: retreatHealth,
+            isOverwhelmed: action.target?.isOverwhelmed || false
+          });
           this.state.decisionReason = `Combat: ${combatResult.action} ${combatResult.target || ''}`;
           this.state.combatCooldownUntil = Date.now() + 5000;
+          break;
+        case 'retreat':
+          this.state.threatLevel = 'high';
+          await this.behaviors.findSafeRetreat();
           break;
         case 'craft':
           await this.behaviors.craftItem(action.target);
@@ -200,11 +238,15 @@ class AutonomousEngine {
   async runCycle(goalState) {
     const assessment = this.assessState();
     const priority = this.calculatePriority(assessment);
-    const action = this.decideAction(priority, goalState);
+    const action = this.decideAction(priority, goalState, assessment);
     
     this.state.priority = priority;
-    this.state.decisionReason = action.reason || `Health: ${assessment.health}, Food: ${assessment.food}`;
-    this.state.threatLevel = assessment.nearbyEntities > 3 ? 'medium' : 'low';
+    this.state.isOverwhelmed = assessment.isOverwhelmed || false;
+    this.state.threatScore = assessment.threatScore || 0;
+    this.state.decisionReason = action.reason || `Health: ${assessment.health}, Food: ${assessment.food}, Threat: ${assessment.threatScore}`;
+    this.state.threatLevel = assessment.threatScore > 15 ? 'critical' : 
+                             assessment.threatScore > 8 ? 'high' :
+                             assessment.nearbyEntities > 3 ? 'medium' : 'low';
     this.state.healthStatus = assessment.health > 15 ? 'safe' : 
                               assessment.health > 10 ? 'warning' : 'critical';
     
