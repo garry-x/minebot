@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+# 提交消息格式检查
+COMMIT_MSG=$(cat "$1")
+
+# 检查提交消息格式
+if ! echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|style|refactor|test|chore|perf|build|ci|revert)(\(.+\))?:.+"; then
+  echo "❌ 提交消息格式错误！"
+  echo ""
+  echo "正确的格式：<类型>(<范围>): <描述>"
+  echo ""
+  echo "类型：feat, fix, docs, style, refactor, test, chore, perf, build, ci, revert"
+  echo "示例："
+  echo "  feat(auth): 添加用户登录功能"
+  echo "  fix(api): 修复数据查询错误"
+  echo "  docs(readme): 更新安装说明"
+  echo ""
+  exit 1
+fi
+
+echo "✅ 提交消息格式正确"

@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 运行代码检查..."
+
+# 1. 运行ESLint检查
+echo "📋 ESLint检查..."
+npx eslint . --ext .js --fix --quiet
+
+# 2. 运行Prettier格式化
+echo "💅 Prettier格式化..."
+npx prettier --write "**/*.{js,json,md}" --ignore-unknown
+
+# 3. 运行测试
+echo "🧪 运行测试..."
+npm test -- --silent
+
+# 4. 检查是否有未暂存的变化
+git diff --quiet
+if [ $? -ne 0 ]; then
+  echo "📝 检测到格式化后的变化，正在重新暂存..."
+  git add -A
+fi
+
+echo "✅ 预提交检查完成"

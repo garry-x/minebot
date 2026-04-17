@@ -5,6 +5,13 @@ import { WebSocketServer, WebSocket } from 'ws';
 import * as fs from 'fs';
 import * as path from 'path';
 
+const logger = require('./bot/logger');
+const BotConfig = require('./config/models/BotConfig').default || require('./config/models/BotConfig');
+const BotState = require('./config/models/BotState').default || require('./config/models/BotState');
+const GoalSystem = require('./bot/goal-system').default || require('./bot/goal-system');
+const BotGoal = require('./config/models/BotGoal').default || require('./config/models/BotGoal');
+const streamRoutesModule = require('./routes/stream');
+
 // ============================================
 // Type Definitions
 // ============================================
@@ -88,8 +95,6 @@ const app: Express = express();
 const HOST: string = process.env.HOST || '0.0.0.0';
 const PORT: number = parseInt(process.env.PORT || '9500');
 
-const logger = require('./bot/logger');
-
 // Parse verbose flag
 const verbose = process.argv.includes('--verbose');
 
@@ -146,10 +151,6 @@ try {
 // Frontend removed, CLI only mode
 
 require('./config/db');
-const BotConfig = require('./config/models/BotConfig');
-const BotState = require('./config/models/BotState');
-const GoalSystem = require('./bot/goal-system');
-const BotGoal = require('./config/models/BotGoal');
 
 // Pre-load translation module at startup
 let translate = null;
@@ -269,8 +270,8 @@ function resolveBot(req, res, next) {
 }
 
 // Initialize streaming routes (needs access to activeBots)
-const streamRoutes = require('./routes/stream')(activeBots);
-app.use('/api', streamRoutes);
+const streamRoutes = require('./routes/stream');
+app.use('/api', streamRoutesModule.streamRoutes(activeBots));
 
 // Initialize database tables (async - will be awaited in server.listen)
 

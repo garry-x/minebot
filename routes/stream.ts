@@ -192,3 +192,5 @@ export function streamRoutes(activeBots: Map<string, Bot>): Router {
 }
 
 export { streamManager };
+export default (activeBots: Map<string, Bot>) => streamRoutes(activeBots);
+module.exports = { streamRoutes, streamManager };

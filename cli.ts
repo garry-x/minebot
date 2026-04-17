@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-require('dotenv').config();
+import 'dotenv/config';
 
 import { Command } from 'commander';
 import * as fs from 'fs';
@@ -8,6 +8,12 @@ import * as http from 'http';
 import * as net from 'net';
 import { spawn } from 'child_process';
 import * as readline from 'readline';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const program = new Command();
 
@@ -142,7 +148,7 @@ type ProcessType = 'bot' | 'minecraft';
 const LOG_DIR = path.join(__dirname, 'logs');
 const BOT_PID_FILE = path.join(LOG_DIR, 'bot_server.pid');
 const MINECRAFT_PID_FILE = path.join(LOG_DIR, 'minecraft_server.pid');
-const BOT_SERVER_SCRIPT = path.join(__dirname, 'bot_server.js');
+const BOT_SERVER_SCRIPT = path.join(__dirname, 'bot_server');
 const MINECRAFT_SERVER_DIR = path.join(__dirname, process.env.MINECRAFT_SERVER_DIR || 'resources');
 const MINECRAFT_JAR_FILENAME = process.env.MINECRAFT_JAR_PATH || 'minecraft_server.1.21.11.jar';
 const MINECRAFT_SERVER_JAR = path.join(MINECRAFT_SERVER_DIR, MINECRAFT_JAR_FILENAME);
@@ -180,7 +186,6 @@ function savePid(pid: number, type: ProcessType): void {
 
 function findNodeProcessPid(): number | null {
   try {
-    const { execSync } = require('child_process');
     const result = execSync("pgrep -f 'node.*bot_server' | head -1", { encoding: 'utf8' }).trim();
     if (result) return parseInt(result, 10);
   } catch { /* empty */ }
@@ -351,7 +356,7 @@ serverCommand
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm use 24.14.1 > /dev/null 2>&1
-nohup node ${BOT_SERVER_SCRIPT} ${verboseFlag} > ${LOG_FILE} 2>&1 &
+nohup npx tsx ${BOT_SERVER_SCRIPT}.ts ${verboseFlag} > ${LOG_FILE} 2>&1 &
 `;
 
     const scriptFile = '/tmp/start_bot_server.sh';
@@ -554,7 +559,7 @@ serverCommand
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 nvm use 24.14.1 > /dev/null 2>&1
-nohup node ${BOT_SERVER_SCRIPT} > ${LOG_FILE} 2>&1 &
+nohup npx tsx ${BOT_SERVER_SCRIPT}.ts > ${LOG_FILE} 2>&1 &
 `;
 
     const scriptFile = '/tmp/restart_bot_server.sh';

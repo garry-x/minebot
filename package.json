@@ -2,9 +2,9 @@
   "name": "minecraft-ai-robot",
   "version": "1.0.0",
   "description": "AI Robot System for Minecraft Java Server",
-  "main": "bot_server.js",
+  "main": "bot_server.ts",
   "bin": {
-    "minebot": "./cli.js"
+    "minebot": "./cli.ts"
   },
   "scripts": {
     "build": "tsc",
