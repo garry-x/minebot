@@ -27,7 +27,6 @@ class MinecraftBot {
     this.screenshotModule = null;
     this.screenshotCaptureFn = null;
     this._streamCaptureInterval = null;
-    this.evolutionManager = null;
     this._lastSavedState = null;
     this._lastDbWriteTime = 0;
   }
@@ -178,25 +177,12 @@ async connect(username, accessToken, startAutomatic = false) {
         try {
           logger.trace('[Bot] Bot version:', this.bot.version);
           
-          // Initialize evolution manager
-          try {
-            logger.info('[Bot] Initializing evolution manager with botId:', this.botId);
-            const StrategyEvolutionManager = require('./evolution/strategy-manager');
-            this.evolutionManager = new StrategyEvolutionManager(this.botId);
-            await this.evolutionManager.connect();
-            logger.info('[Bot] Evolution manager initialized successfully');
-          } catch (evoErr) {
-            logger.error('[Bot] Evolution manager initialization failed:', evoErr.message);
-            logger.trace('[Bot] Evolution manager error stack:', evoErr.stack);
-          }
-             
-             // Initialize modules after bot is ready
-              this.pathfinder = new Pathfinder(this.bot);
-              this.behaviors = require('./behaviors')(this.bot, this.pathfinder, this.evolutionManager);
-              this.autonomousRunning = false;
-              this.autonomousEngine = null;  // Store reference to autonomous engine for API access
-              this.goalState = null;
-             this.events = require('./events')(this.bot, this.evolutionManager);
+          this.pathfinder = new Pathfinder(this.bot);
+          this.behaviors = require('./behaviors')(this.bot, this.pathfinder);
+          this.autonomousRunning = false;
+          this.autonomousEngine = null;
+          this.goalState = null;
+          this.events = require('./events')(this.bot);
              this.events.setupListeners();
            
               // Initialize screenshot module and start streaming (non-blocking)

@@ -1,7 +1,7 @@
 const logger = require('./logger');
 const BotState = require('../config/models/BotState');
 
-module.exports = function(bot, evolutionManager = null) {
+module.exports = function(bot) {
   let lastHealth = bot.health;
   let lastFood = bot.food;
   let lastPosition = { x: bot.entity?.position?.x, y: bot.entity?.position?.y, z: bot.entity?.position?.z };
@@ -9,34 +9,6 @@ module.exports = function(bot, evolutionManager = null) {
   const getBotId = () => {
     const wrapper = bot.__wrapper;
     return wrapper?.botId || 'unknown';
-  };
-  
-  const recordStateChange = async (stateType, oldValue, newValue, context = {}) => {
-    if (!evolutionManager) {
-      return;
-    }
-    
-    try {
-      await evolutionManager.recordExperience({
-        bot_id: getBotId(),
-        type: 'state',
-        context: {
-          ...context,
-          state_type: stateType,
-          old_value: oldValue,
-          new_value: newValue,
-          timestamp: new Date().toISOString()
-        },
-        action: 'state_change',
-        outcome: {
-          success: true,
-          state_changed: stateType,
-          value_changed: newValue !== oldValue
-        }
-      });
-    } catch (err) {
-      logger.error(`[Events] Failed to record state change: ${err.message}`);
-    }
   };
   
   return {
@@ -313,11 +285,6 @@ module.exports = function(bot, evolutionManager = null) {
             logger.error(`[Events] Error processing health change: ${err.message}`);
           }
           
-          await recordStateChange('health', lastHealth, bot.health, {
-            cause: change < 0 ? 'damage' : 'heal',
-            is_critical: bot.health < 5
-          });
-          
           lastHealth = bot.health;
         }
       });
@@ -349,11 +316,6 @@ module.exports = function(bot, evolutionManager = null) {
           } catch (err) {
             logger.error(`[Events] Error processing food change: ${err.message}`);
           }
-          
-          await recordStateChange('food', lastFood, food, {
-            cause: change < 0 ? 'consumption' : 'eating',
-            is_low: food < 5
-          });
           
           lastFood = food;
         }

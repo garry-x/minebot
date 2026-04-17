@@ -44,7 +44,7 @@ const _isBlockSafe = (blockName) => {
   return safeBlocks.some(b => blockName.includes(b)) || true;
 };
 
-module.exports = function(bot, pathfinder, evolutionManager = null) {
+module.exports = function(bot, pathfinder) {
   // Helper function to wait for a condition with retry logic
   const waitForCondition = async (conditionFn, timeout = parseInt(process.env.WAIT_FOR_CONDITION_TIMEOUT || '10000'), retryInterval = parseInt(process.env.WAIT_RETRY_INTERVAL || '500')) => {
     const startTime = Date.now();
@@ -689,38 +689,12 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         
         let optimalStrategy = { action: 'linear', order: blockPositions };
         
-        if (!evolutionManager) {
-          const botPos = bot.entity.position;
-          optimalStrategy.order = [...blockPositions].sort((a, b) => {
-            const distA = Math.sqrt(Math.pow(a.x - botPos.x, 2) + Math.pow(a.z - botPos.z, 2));
-            const distB = Math.sqrt(Math.pow(b.x - botPos.x, 2) + Math.pow(b.z - botPos.z, 2));
-            return distA - distB;
-          });
-        } else if (evolutionManager) {
-          try {
-            const weights = evolutionManager.getWeights('resource');
-            logger.debug(`[Evolution] Resource weights: ${JSON.stringify(weights)}`);
-            
-            const blocksWithData = blockPositions.map(pos => {
-              const block = bot.blockAt(pos);
-              return {
-                position: pos,
-                name: block?.name || 'unknown',
-                value: _getBlockValue(block?.name || 'unknown'),
-                safe: _isBlockSafe(block?.name || 'unknown')
-              };
-            });
-            
-            const context = {
-              targetBlocks: blocksWithData,
-              position: bot.entity.position,
-              blockCount: blockPositions.length
-            };
-            optimalStrategy = evolutionManager.getOptimalAction('resource', context);
-          } catch (e) {
-            logger.debug(`[Evolution] Could not get optimal action: ${e.message}`);
-          }
-        }
+        const botPos = bot.entity.position;
+        optimalStrategy.order = [...blockPositions].sort((a, b) => {
+          const distA = Math.sqrt(Math.pow(a.x - botPos.x, 2) + Math.pow(a.z - botPos.z, 2));
+          const distB = Math.sqrt(Math.pow(b.x - botPos.x, 2) + Math.pow(b.z - botPos.z, 2));
+          return distA - distB;
+        });
         
         // Go to each block and break it
         let successCount = 0;
@@ -804,18 +778,6 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             logger.debug(`Collected ${block.name}`);
             successCount++;
             failCount = 0;
-            
-            const gatherDuration = Date.now() - gatherStartTime;
-            
-            if (evolutionManager) {
-              await evolutionManager.recordExperience({
-                bot_id: bot.__wrapper?.botId || 'unknown',
-                type: 'resource',
-                context: { targetBlock: block.name, position: position, safe: _isBlockSafe(block.name) },
-                action: 'gather',
-                outcome: { success: true, block: block.name, count: 1, duration_ms: gatherDuration, resource_gained: 1 }
-              });
-            }
           } catch (digError) {
             const errorMsg = digError.message || '';
             if (errorMsg.includes('Digging aborted') || errorMsg.includes('goal')) {
@@ -824,16 +786,6 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
             }
             logger.debug(`[Behaviors] Failed to dig block: ${digError.message}`);
             failCount++;
-            const gatherDuration = Date.now() - gatherStartTime;
-            if (evolutionManager) {
-              await evolutionManager.recordExperience({
-                bot_id: bot.__wrapper?.botId || 'unknown',
-                type: 'resource',
-                context: { targetBlock: block.name, position: position },
-                action: 'gather',
-                outcome: { success: false, reason: digError.message, duration_ms: gatherDuration }
-              });
-            }
           }
           
           // Small delay between blocks
@@ -842,16 +794,6 @@ module.exports = function(bot, pathfinder, evolutionManager = null) {
         
         const successRate = successCount / (successCount + failCount) || 0;
         logger.debug(`[Behaviors] Resource gathering completed. Success: ${successCount}, Failures: ${failCount}, Success Rate: ${successRate.toFixed(2)}`);
-        
-        if (evolutionManager) {
-          await evolutionManager.recordExperience({
-            bot_id: bot.__wrapper?.botId || 'unknown',
-            type: 'resource',
-            context: { targetBlocks, totalBlocks: blockPositions.length, positions: positionsToVisit },
-            action: 'complete',
-            outcome: { success: successCount > 0, totalCollected: successCount, successRate }
-          });
-        }
         
         logger.debug('Resource gathering completed');
         return true;

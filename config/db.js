@@ -27,19 +27,4 @@ BotGoal.createTable();
 const BotState = require('./models/BotState');
 BotState.createTable();
 
-// Initialize evolution tables
-const EvolutionStorage = require('../bot/evolution/evolution-storage');
-const evolutionStorage = new EvolutionStorage();
-evolutionStorage.connect()
-  .then(() => {
-    logger.trace('[Evolution] Connecting to evolution database...');
-    return evolutionStorage.initialize();
-  })
-  .then(() => {
-    logger.trace('[Evolution] Evolution tables initialized successfully');
-  })
-  .catch((err) => {
-    logger.error('[Evolution] Failed to initialize evolution tables:', err.message);
-  });
-
 module.exports = db;

@@ -70,7 +70,6 @@ const BotConfig = require('./config/models/BotConfig');
 const BotState = require('./config/models/BotState');
 const GoalSystem = require('./bot/goal-system');
 const BotGoal = require('./config/models/BotGoal');
-const StrategyEvolutionManager = require('./bot/evolution/strategy-manager');
 
 // Pre-load translation module at startup
 let translate = null;
@@ -521,23 +520,6 @@ app.post('/api/bot/start', async (req, res) => {
     activeBots.set(botId, bot);
     
       logger.info(`[API] Bot started successfully with ID: ${botId}`);
-    
-    // Record evolution state on bot creation
-    if (bot.evolutionManager) {
-      try {
-        await bot.evolutionManager.recordExperience({
-          bot_id: botId,
-          type: 'resource',
-          context: 'bot_creation',
-          action: 'bot_initialized',
-          outcome: 1.0,
-          metrics: { evolutions_initialized: 3 }
-        });
-          logger.info(`[API] Evolution initialized and recorded: ${bot.evolutionManager.experienceCount} experiences`);
-      } catch (evoErr) {
-          logger.error(`[API] Failed to record evolution: ${evoErr.message}`);
-      }
-    }
     
     // 自动开启自动目标模式
     try {
@@ -1001,28 +983,6 @@ app.get('/api/bot/:botId/inspect', async (req, res) => {
       currentAction: bot.behaviors?.currentAction || null
     };
     
-    // Get evolution stats if available
-    let evolutionData = null;
-    if (bot.evolutionManager) {
-      try {
-        const stats = await bot.evolutionManager.getEvolutionStats();
-        evolutionData = {
-          enabled: true,
-          experienceCount: stats.totalExperiences,
-          baselineFitness: stats.baselineFitness,
-          recentFitness: stats.recentFitness.slice(-5),
-          domains: stats.domains
-        };
-      } catch (e) {
-        evolutionData = {
-          enabled: true,
-          error: e.message
-        };
-      }
-    } else {
-      evolutionData = { enabled: false };
-    }
-    
     res.json({
       success: true,
       bot: botData,
@@ -1032,8 +992,7 @@ app.get('/api/bot/:botId/inspect', async (req, res) => {
         itemCount: Object.values(inventoryBreakdown).reduce((sum, v) => sum + v.count, 0)
       },
       movement: movementState,
-      behavior: behaviorState,
-      evolution: evolutionData
+      behavior: behaviorState
     });
   } catch (error) {
     logger.error('Error getting bot inspect data:', error);
@@ -1804,145 +1763,6 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
   } catch (error) {
     logger.error('Error getting bot watch data:', error);
     res.status(500).json({ error: `Failed to get bot watch data: ${error.message}` });
-  }
-});
-
-// ===================== EVOLUTION API ENDPOINTS =====================
-
-// GET /api/bot/:botId/evolution/stats - Get evolution statistics
-app.get('/api/bot/:botId/evolution/stats', async (req, res) => {
-  try {
-    const { botId } = req.params;
-    const bot = activeBots.get(botId);
-    
-    if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
-    }
-    
-    if (!bot.evolutionManager) {
-      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
-    }
-    
-    const stats = await bot.evolutionManager.getEvolutionStats();
-    res.json({ success: true, stats });
-  } catch (error) {
-    logger.error('Error getting evolution stats:', error);
-    res.status(500).json({ error: `Failed to get evolution stats: ${error.message}` });
-  }
-});
-
-// POST /api/bot/:botId/evolution/record - Record a new experience
-app.post('/api/bot/:botId/evolution/record', async (req, res) => {
-  try {
-    const { botId } = req.params;
-    const { type, context, action, outcome } = req.body;
-    
-    const bot = activeBots.get(botId);
-    
-    if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
-    }
-    
-    if (!bot.evolutionManager) {
-      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
-    }
-    
-    if (!type || !context || !action || outcome === undefined) {
-      return res.status(400).json({ error: 'type, context, action, and outcome are required' });
-    }
-    
-    const experience = {
-      bot_id: botId,
-      type,
-      context,
-      action,
-      outcome
-    };
-    
-    const result = await bot.evolutionManager.recordExperience(experience);
-    res.json({ success: true, ...result });
-  } catch (error) {
-    logger.error('Error recording experience:', error);
-    res.status(500).json({ error: `Failed to record experience: ${error.message}` });
-  }
-});
-
-// POST /api/bot/:botId/evolution/rollback - Rollback to a specific snapshot
-app.post('/api/bot/:botId/evolution/rollback', async (req, res) => {
-  try {
-    const { botId } = req.params;
-    const { snapshotId } = req.body;
-    
-    const bot = activeBots.get(botId);
-    
-    if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
-    }
-    
-    if (!bot.evolutionManager) {
-      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
-    }
-    
-    if (!snapshotId) {
-      return res.status(400).json({ error: 'snapshotId is required' });
-    }
-    
-    const result = await bot.evolutionManager.rollbackToSnapshot(snapshotId);
-    res.json({ success: true, ...result });
-  } catch (error) {
-    logger.error('Error rolling back:', error);
-    res.status(500).json({ error: `Failed to rollback: ${error.message}` });
-  }
-});
-
-// GET /api/bot/:botId/evolution/history - Get weight history
-app.get('/api/bot/:botId/evolution/history', async (req, res) => {
-  try {
-    const { botId } = req.params;
-    const { domain, limit = 10 } = req.query;
-    
-    const bot = activeBots.get(botId);
-    
-    if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
-    }
-    
-    if (!bot.evolutionManager) {
-      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
-    }
-    
-    if (!domain) {
-      return res.status(400).json({ error: 'domain is required' });
-    }
-    
-    const history = await bot.evolutionManager.storage.getWeightHistory(botId, domain, parseInt(limit));
-    res.json({ success: true, history });
-  } catch (error) {
-    logger.error('Error getting weight history:', error);
-    res.status(500).json({ error: `Failed to get weight history: ${error.message}` });
-  }
-});
-
-// POST /api/bot/:botId/evolution/reset - Reset evolution data
-app.post('/api/bot/:botId/evolution/reset', async (req, res) => {
-  try {
-    const { botId } = req.params;
-    
-    const bot = activeBots.get(botId);
-    
-    if (!bot) {
-      return res.status(404).json({ error: 'Bot not found' });
-    }
-    
-    if (!bot.evolutionManager) {
-      return res.status(404).json({ error: 'Evolution manager not initialized for this bot' });
-    }
-    
-    await bot.evolutionManager.reset();
-    res.json({ success: true, message: 'Evolution data reset successfully' });
-  } catch (error) {
-    logger.error('Error resetting evolution:', error);
-    res.status(500).json({ error: `Failed to reset evolution: ${error.message}` });
   }
 });
 
