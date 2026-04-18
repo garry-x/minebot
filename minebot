@@ -1,4 +1,7 @@
 #!/bin/bash
+# 消除 ESM 警告同时保持模块兼容性
+export NODE_NO_WARNINGS=1
+
 # 使用 Node.js 原生 TypeScript 支持 (Node 18+)
 # 如果不支持则回退到 tsx
 if node --experimental-strip-types -e "import('fs')" 2>/dev/null; then
