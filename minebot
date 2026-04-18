@@ -1,2 +1,2 @@
 #!/bin/bash
-exec node /data/code/minebot/cli.js "$@"
+exec npx tsx /data/code/minebot/cli.ts "$@"
