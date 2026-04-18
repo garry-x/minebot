@@ -1,2 +1,10 @@
 #!/bin/bash
-exec npx tsx /data/code/minebot/cli.ts "$@"
+# 使用 Node.js 原生 TypeScript 支持 (Node 18+)
+# 如果不支持则回退到 tsx
+if node --experimental-strip-types -e "import('fs')" 2>/dev/null; then
+  exec node --experimental-strip-types /data/code/minebot/cli.ts "$@"
+elif [ -f "/data/code/minebot/node_modules/.bin/tsx" ]; then
+  exec node_modules/.bin/tsx /data/code/minebot/cli.ts "$@"
+else
+  exec npx tsx /data/code/minebot/cli.ts "$@"
+fi
