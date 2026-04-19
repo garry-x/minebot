@@ -2,6 +2,21 @@
 
 import { Bot } from 'mineflayer';
 
+// Re-export types from goal-system for consistency
+export type GoalDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
+export interface SubTaskData {
+  id: string;
+  name: string;
+  completed: boolean;
+  progress?: number;
+  targetCategory?: string;
+  target?: string;
+  required?: number | string;
+  type?: 'build' | 'craft' | 'explore';
+  optional?: boolean;
+}
+
 export interface BotState {
   health: number;
   food: number;
@@ -11,6 +26,8 @@ export interface BotState {
   inventory: Array<{ name: string; count: number }>;
   nearbyThreats: string[];
   nearbyResources: string[];
+  nearbyEntities: string[];
+  nearbyBlocks: string[];
   isDaytime: boolean;
 }
 
@@ -19,7 +36,10 @@ export interface GoalStateData {
   goalName: string;
   goalDescription: string;
   progress: number;
-  subTasks?: Array<{ id: string; name: string; completed: boolean; progress?: number }>;
+  difficulty?: GoalDifficulty;
+  subTasks?: SubTaskData[];
+  materials?: Record<string, number>;
+  rewards?: string[];
 }
 
 export interface DecisionTarget {
@@ -96,68 +116,72 @@ class LLMBrain {
       ? botState.nearbyResources.join(', ')
       : 'none';
 
-    return `You are an AI controlling a Minecraft bot.
+    const entitiesStr = botState.nearbyEntities.length > 0
+      ? botState.nearbyEntities.join(', ')
+      : 'none';
 
-Current State:
-- Health: ${botState.health}/20
-- Food: ${botState.food}/20
-- Position: (${botState.position.x.toFixed(1)}, ${botState.position.y.toFixed(1)}, ${botState.position.z.toFixed(1)})
-- Biome: ${botState.biome}
-- Time: ${this.getTimeOfDayDescription(botState.timeOfDay)}
-- Inventory: ${inventoryStr}
+    const blocksStr = botState.nearbyBlocks.length > 0
+      ? botState.nearbyBlocks.join(', ')
+      : 'none';
 
-Nearby Threats: ${threatsStr}
-Nearby Resources: ${resourcesStr}
+    const subTasksSection = this.buildSubTasksSection(goalState.subTasks);
+    const materialsSection = this.buildMaterialsSection(goalState.materials, botState.inventory);
+    const goalContextSection = this.buildGoalContextSection(goalState.difficulty, goalState.rewards);
 
-Current Goal: ${goalState.goalName} - ${goalState.goalDescription}
-Goal Progress: ${goalState.progress}%
+    const sections: string[] = [
+      `You are an AI controlling a Minecraft bot.`,
+      ``,
+      `Current State:`,
+      `- Health: ${botState.health}/20`,
+      `- Food: ${botState.food}/20`,
+      `- Position: (${botState.position.x.toFixed(1)}, ${botState.position.y.toFixed(1)}, ${botState.position.z.toFixed(1)})`,
+      `- Biome: ${botState.biome}`,
+      `- Time: ${this.getTimeOfDayDescription(botState.timeOfDay)}`,
+      `- Inventory: ${inventoryStr}`,
+      ``,
+      `Nearby Threats: ${threatsStr}`,
+      `Nearby Resources: ${resourcesStr}`,
+      `Nearby Entities: ${entitiesStr}`,
+      `Nearby Blocks: ${blocksStr}`,
+      ``,
+      `Current Goal: ${goalState.goalName} - ${goalState.goalDescription}`,
+      `Goal Progress: ${goalState.progress}%`,
+      subTasksSection,
+      materialsSection
+    ];
 
-Decide the best action. Return in JSON format:
-{
-  "reasoning": "why you chose this action",
-  "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle",
-  "target": {
-    "type": "block|entity|position|item",
-    "value": "specific target"
-  },
-  "urgency": "high|medium|low",
-  "strategy": "brief strategy explanation"
-}`;
+    if (goalContextSection) {
+      sections.push(goalContextSection);
+    }
+
+    sections.push(
+      ``,
+      `Decide the best action. Return in JSON format:`,
+      `{`,
+      `  "reasoning": "why you chose this action",`,
+      `  "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle",`,
+      `  "target": {`,
+      `    "type": "block|entity|position|item",`,
+      `    "value": "specific target"`,
+      `  },`,
+      `  "urgency": "high|medium|low",`,
+      `  "strategy": "brief strategy explanation"`,
+      `}`
+    );
+
+    return sections.join('\n');
   }
 
   parseResponse(response: string): BrainDecision | null {
     try {
-      const jsonMatch = response.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
+      const jsonStr = this.extractJsonFromResponse(response);
+      if (!jsonStr) {
         console.warn('[LLMBrain] No valid JSON found in response');
         return null;
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
-
-      if (!parsed.primary_action || !parsed.target || !parsed.urgency) {
-        console.warn('[LLMBrain] Missing required fields in response');
-        return null;
-      }
-
-      const validActions = ['gather', 'combat', 'build', 'craft', 'explore', 'heal', 'retreat', 'idle'];
-      if (!validActions.includes(parsed.primary_action)) {
-        console.warn('[LLMBrain] Invalid primary_action:', parsed.primary_action);
-        return null;
-      }
-
-      const validUrgencies = ['high', 'medium', 'low'];
-      if (!validUrgencies.includes(parsed.urgency)) {
-        parsed.urgency = 'medium';
-      }
-
-      return {
-        reasoning: parsed.reasoning || 'No reasoning provided',
-        primary_action: parsed.primary_action,
-        target: { type: parsed.target.type || 'item', value: parsed.target.value || '' },
-        urgency: parsed.urgency,
-        strategy: parsed.strategy || ''
-      };
+      const parsed = JSON.parse(jsonStr);
+      return this.validateBrainDecision(parsed);
     } catch (error) {
       console.error('[LLMBrain] Failed to parse response:', (error as Error).message);
       return null;
@@ -227,14 +251,133 @@ Decide the best action. Return in JSON format:
   }
 
   private getTimeOfDayDescription(timeOfDay: number): string {
-    // 0 = sunrise, 6000 = noon, 12000 = sunset, 18000 = midnight
     if (timeOfDay < 6000) return 'morning (daytime)';
     if (timeOfDay < 12000) return 'afternoon (daytime)';
     if (timeOfDay < 18000) return 'evening (twilight)';
     return 'night';
   }
 
-  static extractBotState(bot: Bot, nearbyThreats: string[] = [], nearbyResources: string[] = []): BotState {
+  private buildSubTasksSection(subTasks?: SubTaskData[]): string {
+    if (!subTasks || subTasks.length === 0) {
+      return 'Sub-tasks: none';
+    }
+
+    const taskLines = subTasks.map(task => {
+      const status = task.completed ? '✓' : '○';
+      const progress = task.progress !== undefined ? ` (${task.progress}%)` : '';
+      const optional = task.optional ? ' [OPTIONAL]' : '';
+      return `  - ${status} ${task.name}${progress}${optional}`;
+    });
+
+    return `Sub-tasks:\n${taskLines.join('\n')}`;
+  }
+
+  private buildMaterialsSection(
+    materials: Record<string, number> | undefined,
+    inventory: Array<{ name: string; count: number }>
+  ): string {
+    if (!materials || Object.keys(materials).length === 0) {
+      return 'Materials needed: none specified';
+    }
+
+    const inventoryMap = new Map<string, number>();
+    for (const item of inventory) {
+      inventoryMap.set(item.name, (inventoryMap.get(item.name) || 0) + item.count);
+    }
+
+    const materialLines: string[] = [];
+    for (const [material, needed] of Object.entries(materials)) {
+      const have = inventoryMap.get(material) || 0;
+      const status = have >= needed ? '✓' : '✗';
+      materialLines.push(`  - ${material}: ${have}/${needed} ${status}`);
+    }
+
+    return `Materials needed vs inventory:\n${materialLines.join('\n')}`;
+  }
+
+  private buildGoalContextSection(
+    difficulty: GoalDifficulty | undefined,
+    rewards: string[] | undefined
+  ): string {
+    const parts: string[] = [];
+
+    if (difficulty) {
+      const difficultyEmoji = {
+        beginner: '★☆☆',
+        intermediate: '★★☆',
+        advanced: '★★★',
+        expert: '★★'
+      };
+      parts.push(`Difficulty: ${difficultyEmoji[difficulty]} (${difficulty})`);
+    }
+
+    if (rewards && rewards.length > 0) {
+      parts.push(`Rewards: ${rewards.join(', ')}`);
+    }
+
+    return parts.length > 0 ? parts.join('\n') : '';
+  }
+
+  private validateBrainDecision(decision: Partial<BrainDecision>): BrainDecision | null {
+    const validActions = ['gather', 'combat', 'build', 'craft', 'explore', 'heal', 'retreat', 'idle'];
+    const validUrgencies = ['high', 'medium', 'low'];
+    const validTargetTypes = ['block', 'entity', 'position', 'item'];
+
+    if (!decision.primary_action || !validActions.includes(decision.primary_action)) {
+      console.warn('[LLMBrain] Invalid primary_action:', decision.primary_action);
+      return null;
+    }
+
+    if (!decision.target || !decision.target.value) {
+      console.warn('[LLMBrain] Missing target value');
+      return null;
+    }
+
+    if (decision.target.type && !validTargetTypes.includes(decision.target.type)) {
+      decision.target.type = 'item';
+    }
+
+    if (!decision.urgency || !validUrgencies.includes(decision.urgency)) {
+      decision.urgency = 'medium';
+    }
+
+    return {
+      reasoning: decision.reasoning || 'No reasoning provided',
+      primary_action: decision.primary_action,
+      target: {
+        type: decision.target.type || 'item',
+        value: decision.target.value
+      },
+      urgency: decision.urgency,
+      strategy: decision.strategy || ''
+    };
+  }
+
+  private extractJsonFromResponse(response: string): string | null {
+    const trimmed = response.trim();
+
+    const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      return null;
+    }
+
+    let jsonStr = jsonMatch[0];
+
+    const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      jsonStr = codeBlockMatch[1].trim();
+    }
+
+    return jsonStr;
+  }
+
+  static extractBotState(
+    bot: Bot,
+    nearbyThreats: string[] = [],
+    nearbyResources: string[] = [],
+    nearbyEntities: string[] = [],
+    nearbyBlocks: string[] = []
+  ): BotState {
     const pos = bot.entity?.position;
 
     let biome = 'unknown';
@@ -269,6 +412,8 @@ Decide the best action. Return in JSON format:
       inventory,
       nearbyThreats,
       nearbyResources,
+      nearbyEntities,
+      nearbyBlocks,
       isDaytime: (bot.time?.timeOfDay || 0) < 13000
     };
   }

@@ -3,7 +3,10 @@ import { Vec3 } from 'vec3';
 import logger = require('./logger');
 import GoalSystem, { GoalStateData } from './goal-system';
 
-// Import LLM Brain (Strategy module)
+// Import LLM Brain classes
+import LLMBrain from '../llm/brain';
+import type { BotState, GoalStateData as LLMGoalStateData } from '../llm/brain';
+// Keep Strategy for fallback
 import Strategy from '../llm/strategy';
 import type { SuggestedAction } from '../llm/strategy';
 
@@ -148,7 +151,7 @@ class AutonomousEngine {
   private behaviors: Behaviors;
   private lastDamageTime: number;
   private state: AutonomousState;
-  private llmBrain: Strategy | null;
+  private llmBrain: LLMBrain | null;
   private llmAvailable: boolean;
 
   constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors) {
@@ -176,7 +179,7 @@ class AutonomousEngine {
 
   private initializeLLMBrain(): void {
     try {
-      this.llmBrain = new Strategy();
+      this.llmBrain = new LLMBrain();
       this.llmAvailable = true;
       logger.debug(`[AutonomousEngine] LLM Brain initialized with VLLM_URL: ${VLLM_URL}`);
     } catch (error) {
@@ -304,60 +307,71 @@ class AutonomousEngine {
   }
 
   private async getLLMDecision(priority: Priority, goalState: GoalState | null, assessment: AssessmentResult): Promise<LLMDecision | null> {
-    const inventory: InventoryItem[] = this.bot.inventory.items()
-      .filter(i => typeof i.name === 'string')
-      .map(i => ({ name: i.name!, count: i.count }));
+    const nearbyThreats: string[] = [];
+    const nearbyResources: string[] = [];
+    const nearbyEntities: string[] = [];
+    const nearbyBlocks: string[] = [];
 
-    const context: LLMContext = {
-      health: assessment.health || 20,
-      food: assessment.food || 20,
-      inventory,
-      nearbyHostiles: assessment.nearbyHostiles || 0,
-      threatScore: assessment.threatScore || 0,
-      isOverwhelmed: assessment.isOverwhelmed || false,
-      isDaytime: assessment.isDaytime !== false,
-      currentGoal: goalState?.goalId,
-      goalProgress: goalState?.progress
-    };
-
-    let goal = `Priority: ${priority}`;
-    if (goalState?.goalId) {
-      goal += `, Goal: ${goalState.goalId}`;
+    if (assessment.nearbyHostiles && assessment.nearbyHostiles > 0) {
+      const entities = this.bot.entities || {};
+      for (const entity of Object.values(entities)) {
+        if (entity.type === 'hostile' || entity.type === 'mob') {
+          nearbyThreats.push(entity.name || 'unknown');
+        }
+        if (entity.name && entity.type !== 'player') {
+          nearbyEntities.push(entity.name);
+        }
+      }
     }
 
-    const contextStr = `Health: ${context.health}, Food: ${context.food}, Hostiles: ${context.nearbyHostiles}, Threat: ${context.threatScore}, Overwhelmed: ${context.isOverwhelmed}, Inventory: ${inventory.length} items`;
+    const botState = LLMBrain.extractBotState(this.bot, nearbyThreats, nearbyResources, nearbyEntities, nearbyBlocks);
+
+    let goalStateData: LLMGoalStateData;
+    if (goalState?.goalId) {
+      const goal = GoalSystem.getGoal(goalState.goalId);
+      goalStateData = {
+        goalId: goalState.goalId,
+        goalName: goal?.name || goalState.goalId,
+        goalDescription: goal?.description || '',
+        progress: goalState.progress || 0,
+        difficulty: goal?.difficulty,
+        subTasks: goalState.subTasks?.map(st => ({
+          id: st.id,
+          name: st.name || '',
+          completed: st.completed || false,
+          progress: st.progress,
+          targetCategory: st.targetCategory,
+          target: st.target,
+          required: st.required,
+          type: st.type,
+          optional: st.optional
+        })),
+        materials: goalState.materials,
+        rewards: goal?.rewards
+      };
+    } else {
+      goalStateData = {
+        goalId: 'none',
+        goalName: 'No active goal',
+        goalDescription: 'Bot is operating without a specific goal',
+        progress: 0,
+        subTasks: []
+      };
+    }
 
     try {
-      const result = await this.llmBrain!.getStrategy(contextStr, goal, context);
+      const result = await this.llmBrain!.decide(botState, goalStateData);
 
-      const suggestedAction = result.suggested_actions?.[0];
-      if (!suggestedAction) {
+      if (!result) {
         return null;
       }
 
-      let primaryAction: ActionType = 'idle';
-      const actionType = suggestedAction.type?.toLowerCase() || '';
-
-      if (actionType.includes('gather') || actionType.includes('collect')) {
-        primaryAction = 'gather';
-      } else if (actionType.includes('build') || actionType.includes('construct')) {
-        primaryAction = 'build';
-      } else if (actionType.includes('combat') || actionType.includes('attack')) {
-        primaryAction = 'combat';
-      } else if (actionType.includes('retreat') || actionType.includes('flee')) {
-        primaryAction = 'retreat';
-      } else if (actionType.includes('craft')) {
-        primaryAction = 'craft';
-      } else if (actionType.includes('explore') || actionType.includes('move')) {
-        primaryAction = 'explore';
-      }
-
       return {
-        reasoning: result.advice || 'Using LLM strategy',
-        primary_action: primaryAction,
-        target: suggestedAction.data || null,
-        urgency: priority === 'emergency' || priority === 'survival' ? 'high' : priority === 'food' || priority === 'heal' ? 'medium' : 'low',
-        strategy: result.usedFallback ? 'fallback' : 'vllm'
+        reasoning: result.reasoning,
+        primary_action: result.primary_action === 'heal' ? 'heal_immediate' : result.primary_action,
+        target: result.target,
+        urgency: result.urgency,
+        strategy: result.strategy || 'vllm'
       };
     } catch (error) {
       logger.debug(`[AutonomousEngine] LLM query error: ${(error as Error).message}`);
