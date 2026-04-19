@@ -1173,14 +1173,22 @@ botCommand
             'explore': '🧭'
           };
           const icon = actionIcons[data.autonomousState.currentAction] || '🤖';
-          console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}:`);
+          const llmIndicator = data.autonomousState.usedLLM ? ' 🧠' : '';
+          console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}${llmIndicator}:`);
           console.log(`   ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
           if (data.autonomousState.decisionReason) {
-            console.log(`   ${useChinese ? '原因' : 'Reason'}: ${data.autonomousState.decisionReason}`);
+            const reason = data.autonomousState.decisionReason.length > 50 
+              ? data.autonomousState.decisionReason.substring(0, 47) + '...'
+              : data.autonomousState.decisionReason;
+            console.log(`   ${useChinese ? '原因' : 'Reason'}: ${reason}`);
           }
           console.log(`   ${useChinese ? '优先级' : 'Priority'}: ${data.autonomousState.priority}`);
           if (data.autonomousState.healthStatus) {
             console.log(`   ${useChinese ? '状态' : 'Status'}: ${data.autonomousState.healthStatus}`);
+          }
+          if (data.autonomousState.llmStats) {
+            const stats = data.autonomousState.llmStats;
+            console.log(`   🧠 LLM Cache: ${stats.hits} hits, ${stats.misses} misses, ${(stats.hitRate * 100).toFixed(1)}% hit rate`);
           }
         }
 

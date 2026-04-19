@@ -1846,6 +1846,12 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         healthStatus: engineState.healthStatus,
         threatLevel: engineState.threatLevel
       };
+      if (typeof bot.autonomousEngine.isUsingLLM === 'function') {
+        (autonomousState as any).usedLLM = bot.autonomousEngine.isUsingLLM();
+      }
+      if (typeof bot.autonomousEngine.getLLMBrainStats === 'function') {
+        (autonomousState as any).llmStats = bot.autonomousEngine.getLLMBrainStats();
+      }
     }
     
     const eventsCacheKey = `${botId}:${eventLimit}`;

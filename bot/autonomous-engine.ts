@@ -153,6 +153,7 @@ class AutonomousEngine {
   private state: AutonomousState;
   private llmBrain: LLMBrain | null;
   private llmAvailable: boolean;
+  private lastDecisionFromLLM: boolean = false;
 
   constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors, enableLLM = USE_LLM) {
     this.bot = bot;
@@ -175,6 +176,17 @@ class AutonomousEngine {
     if (enableLLM) {
       this.initializeLLMBrain();
     }
+  }
+
+  isUsingLLM(): boolean {
+    return this.lastDecisionFromLLM;
+  }
+
+  getLLMBrainStats(): { hits: number; misses: number; hitRate: number } | null {
+    if (this.llmBrain && typeof (this.llmBrain as any).getCacheStats === 'function') {
+      return (this.llmBrain as any).getCacheStats();
+    }
+    return null;
   }
 
   private initializeLLMBrain(): void {
@@ -273,6 +285,7 @@ class AutonomousEngine {
         const llmDecision = await this.getLLMDecision(priority, goalState, assessment);
         if (llmDecision) {
           logger.debug(`[AutonomousEngine] LLM decision: ${llmDecision.primary_action} - ${llmDecision.reasoning}`);
+          this.lastDecisionFromLLM = true;
           return {
             action: llmDecision.primary_action,
             target: llmDecision.target,
@@ -280,6 +293,9 @@ class AutonomousEngine {
             usedLLMBrain: true
           };
         } else {
+          this.lastDecisionFromLLM = false;
+        }
+        if (!llmDecision) {
           logger.debug(`[AutonomousEngine] LLM returned null decision`);
         }
       } catch (error) {
@@ -287,6 +303,7 @@ class AutonomousEngine {
       }
     } else {
       logger.debug(`[AutonomousEngine] Skipping LLM: isLLMAvailable=${this.isLLMAvailable()}, usedLLM=${usedLLM}`);
+      this.lastDecisionFromLLM = false;
     }
 
     switch (priority) {
