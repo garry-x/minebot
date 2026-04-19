@@ -365,8 +365,8 @@ class MinecraftBot {
       }, 1000);
       
       if (this.botId) {
-        const db = require('../config/models/BotState');
-        db.updateBotStatus(this.botId, 'dead').catch(err => {
+        const BotState = require('../config/models/BotState').default || require('../config/models/BotState');
+        BotState.updateBotStatus(this.botId, 'dead').catch(err => {
           logger.error(`[Bot] Failed to update state on death: ${err.message}`);
         });
       }
@@ -400,8 +400,8 @@ class MinecraftBot {
       
       // Update bot state to stopped on error
       if (this.botId) {
-        const db = require('../config/models/BotState');
-        db.updateBotStatus(this.botId, 'stopped').catch(err => {
+        const BotState = require('../config/models/BotState').default || require('../config/models/BotState');
+        BotState.updateBotStatus(this.botId, 'stopped').catch(err => {
           logger.error(`[Bot] Failed to update state on error: ${err.message}`);
         });
       }
@@ -450,8 +450,8 @@ class MinecraftBot {
           this.deadReason = null;
           
           if (this.botId) {
-            const db = require('../config/models/BotState');
-            db.updateBotStatus(this.botId, 'active').catch(err => {});
+            const BotState = require('../config/models/BotState').default || require('../config/models/BotState');
+            BotState.updateBotStatus(this.botId, 'active').catch(err => {});
           }
           
           if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
@@ -647,8 +647,8 @@ class MinecraftBot {
         };
         
         if (this._shouldSaveToDb(currentState)) {
-          const db = require('../config/models/BotState');
-          db.saveBot(this.botId, currentState).catch(err => {
+          const BotState = require('../config/models/BotState').default || require('../config/models/BotState');
+          BotState.saveBot(this.botId, currentState).catch(err => {
             logger.error(`[Bot] Failed to save state: ${err.message}`);
           });
           this._lastSavedState = { ...currentState };
@@ -725,8 +725,8 @@ class MinecraftBot {
     }
     
     if (this.botId) {
-      const db = require('../config/models/BotState');
-      db.updateBotStatus(this.botId, 'stopped').catch(err => {});
+      const BotState = require('../config/models/BotState').default || require('../config/models/BotState');
+      BotState.updateBotStatus(this.botId, 'stopped').catch(err => {});
     }
     
     if (this.bot) {
