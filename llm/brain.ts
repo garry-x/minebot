@@ -186,6 +186,10 @@ class LLMBrain {
   private model: string;
   private timeout: number;
   private cache: LLMResponseCache;
+  private maxRetries: number;
+  private retryDelay: number;
+  private history: Array<{timestamp: number; decision: BrainDecision; botState: BotState; goalState: GoalStateData}> = [];
+  private historySize: number;
 
   constructor() {
     this.vllmUrl = process.env.VLLM_URL || 'http://localhost:8000';
@@ -193,7 +197,49 @@ class LLMBrain {
     this.model = process.env.LLM_MODEL || 'llama2';
     this.timeout = parseInt(process.env.LLM_TIMEOUT || '30000', 10);
     this.cache = new LLMResponseCache();
+    this.maxRetries = parseInt(process.env.LLM_MAX_RETRIES || '3', 10);
+    this.retryDelay = parseInt(process.env.LLM_RETRY_DELAY || '1000', 10);
+    this.historySize = parseInt(process.env.LLM_HISTORY_SIZE || '10', 10);
   }
+
+  private async retryWithBackoff<T>(fn: () => Promise<T>): Promise<T> {
+    let lastError: Error | null = null;
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        return await fn();
+      } catch (error) {
+        lastError = error as Error;
+        const status = (error as any).status;
+        if (status && status >= 400 && status < 500 && status !== 429) break;
+        if (attempt < this.maxRetries) {
+          const delay = this.retryDelay * Math.pow(2, attempt);
+          console.log(`[LLMBrain] Retry ${attempt + 1}/${this.maxRetries} after ${delay}ms`);
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+    }
+    throw lastError;
+  }
+
+  private addToHistory(decision: BrainDecision, botState: BotState, goalState: GoalStateData): void {
+    this.history.push({ timestamp: Date.now(), decision, botState, goalState });
+    while (this.history.length > this.historySize) this.history.shift();
+  }
+
+  getRecentDecisions(count = 5): Array<{timestamp: number; decision: BrainDecision}> {
+    return this.history.slice(-count).map(h => ({ timestamp: h.timestamp, decision: h.decision }));
+  }
+
+  getDecisionPatterns(): Record<string, number> {
+    const patterns: Record<string, number> = {};
+    for (const h of this.history) {
+      const key = `${h.decision.primary_action}:${h.decision.target?.value || 'none'}`;
+      patterns[key] = (patterns[key] || 0) + 1;
+    }
+    return patterns;
+  }
+
+  getHistorySize(): number { return this.history.length; }
 
   isEnabled(): boolean {
     return this.enabled;
@@ -332,26 +378,32 @@ class LLMBrain {
     const prompt = this.buildPrompt(botState, goalState);
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-
-      const response = await fetch(`${this.vllmUrl}/v1/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: this.model,
-          prompt,
-          max_tokens: 300,
-          temperature: 0.7
-        } as VLLMCompletionRequest),
-        signal: controller.signal
+      const response = await this.retryWithBackoff(async () => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+        try {
+          const res = await fetch(`${this.vllmUrl}/v1/completions`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model: this.model,
+              prompt,
+              max_tokens: 300,
+              temperature: 0.7
+            } as VLLMCompletionRequest),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (!res.ok) {
+            const err = new Error(`VLLM request failed with status ${res.status}`);
+            (err as any).status = res.status;
+            throw err;
+          }
+          return res;
+        } finally {
+          clearTimeout(timeoutId);
+        }
       });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`VLLM request failed with status ${response.status}`);
-      }
 
       const data = await response.json() as VLLMCompletionResponse;
       const responseText = data.choices[0]?.text?.trim();
@@ -369,6 +421,7 @@ class LLMBrain {
           const cacheKey = this.cache.hashState(botState, goalState);
           this.cache.set(cacheKey, decision);
         }
+        this.addToHistory(decision, botState, goalState);
       }
 
       return decision;
