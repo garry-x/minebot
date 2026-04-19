@@ -266,20 +266,27 @@ class AutonomousEngine {
   }
 
   async decideAction(priority: Priority, goalState: GoalState | null, assessment: AssessmentResult = {} as AssessmentResult, usedLLM: boolean = false): Promise<ActionDecision & { usedLLMBrain?: boolean }> {
+    logger.debug(`[AutonomousEngine] decideAction: isLLMAvailable=${this.isLLMAvailable()}, usedLLM=${usedLLM}, priority=${priority}`);
     if (this.isLLMAvailable() && !usedLLM) {
+      logger.debug(`[AutonomousEngine] Attempting LLM decision...`);
       try {
         const llmDecision = await this.getLLMDecision(priority, goalState, assessment);
         if (llmDecision) {
+          logger.debug(`[AutonomousEngine] LLM decision: ${llmDecision.primary_action} - ${llmDecision.reasoning}`);
           return {
             action: llmDecision.primary_action,
             target: llmDecision.target,
             reason: `[LLM] ${llmDecision.reasoning}`,
             usedLLMBrain: true
           };
+        } else {
+          logger.debug(`[AutonomousEngine] LLM returned null decision`);
         }
       } catch (error) {
         logger.debug(`[AutonomousEngine] LLM decision failed, falling back to cerebellum: ${(error as Error).message}`);
       }
+    } else {
+      logger.debug(`[AutonomousEngine] Skipping LLM: isLLMAvailable=${this.isLLMAvailable()}, usedLLM=${usedLLM}`);
     }
 
     switch (priority) {
