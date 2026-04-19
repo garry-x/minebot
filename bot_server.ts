@@ -458,6 +458,161 @@ app.put('/api/server/config/database', async (req, res) => {
   }
 });
 
+app.get('/api/llm/status', async (req, res) => {
+  try {
+    const vllmUrl = process.env.VLLM_URL || process.env.LLM_SERVICE_URL || 'http://localhost:8000';
+    const enabled = process.env.USE_FALLBACK === 'true' ? false : true;
+    
+    let available = false;
+    let model = null;
+    
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      
+      const response = await fetch(`${vllmUrl}/v1/models`, {
+        signal: controller.signal,
+        headers: { 'Accept': 'application/json' }
+      });
+      clearTimeout(timeoutId);
+      
+      if (response.ok) {
+        const data = await response.json() as { data?: { id: string }[] };
+        available = true;
+        model = data.data && data.data[0] ? data.data[0].id : null;
+      }
+    } catch (err) {
+      logger.debug(`[LLM] Service availability check failed: ${err.message}`);
+    }
+    
+    res.json({ enabled, vllmUrl, available, model });
+  } catch (err) {
+    logger.error(`[API] Failed to get LLM status: ${err.message}`);
+    res.status(500).json({ error: 'Failed to get LLM status' });
+  }
+});
+
+app.post('/api/llm/config', async (req, res) => {
+  try {
+    const { enabled, vllmUrl } = req.body;
+    
+    if (enabled !== undefined && typeof enabled !== 'boolean') {
+      return res.status(400).json({ error: 'enabled must be a boolean' });
+    }
+    
+    if (vllmUrl !== undefined && typeof vllmUrl !== 'string') {
+      return res.status(400).json({ error: 'vllmUrl must be a string' });
+    }
+    
+    const envPath = path.join(__dirname, '.env');
+    let envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
+    
+    if (vllmUrl !== undefined) {
+      const keyRegex = /^VLLM_URL\s*=/m;
+      if (keyRegex.test(envContent)) {
+        envContent = envContent.replace(/^VLLM_URL\s*=.*$/m, `VLLM_URL=${vllmUrl}`);
+      } else {
+        envContent += (envContent.endsWith('\n') ? '' : '\n') + `VLLM_URL=${vllmUrl}\n`;
+      }
+      
+      const serviceUrlRegex = /^LLM_SERVICE_URL\s*=/m;
+      if (serviceUrlRegex.test(envContent)) {
+        envContent = envContent.replace(/^LLM_SERVICE_URL\s*=.*$/m, `LLM_SERVICE_URL=${vllmUrl}`);
+      } else {
+        envContent += `LLM_SERVICE_URL=${vllmUrl}\n`;
+      }
+    }
+    
+    if (enabled !== undefined) {
+      const fallbackValue = enabled ? 'false' : 'true';
+      const fallbackRegex = /^USE_FALLBACK\s*=/m;
+      if (fallbackRegex.test(envContent)) {
+        envContent = envContent.replace(/^USE_FALLBACK\s*=.*$/m, `USE_FALLBACK=${fallbackValue}`);
+      } else {
+        envContent += `USE_FALLBACK=${fallbackValue}\n`;
+      }
+    }
+    
+    fs.writeFileSync(envPath, envContent, 'utf8');
+    
+    const newVllmUrl = vllmUrl || process.env.VLLM_URL || 'http://localhost:8000';
+    const newEnabled = enabled !== undefined ? enabled : (process.env.USE_FALLBACK !== 'true');
+    
+    res.json({
+      success: true,
+      config: { enabled: newEnabled, vllmUrl: newVllmUrl },
+      message: 'LLM configuration updated. Server restart may be required for changes to take effect.'
+    });
+  } catch (err) {
+    logger.error(`[API] Failed to update LLM config: ${err.message}`);
+    res.status(500).json({ error: 'Failed to update LLM configuration' });
+  }
+});
+
+app.post('/api/llm/test', async (req, res) => {
+  const startTime = Date.now();
+  
+  try {
+    const vllmUrl = process.env.VLLM_URL || process.env.LLM_SERVICE_URL || 'http://localhost:8000';
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(`${vllmUrl}/v1/models`, {
+      signal: controller.signal,
+      headers: { 'Accept': 'application/json' }
+    });
+    clearTimeout(timeoutId);
+    
+    const latency = Date.now() - startTime;
+    
+    if (response.ok) {
+      res.json({ success: true, latency, error: null });
+    } else {
+      res.json({ success: false, latency, error: `HTTP ${response.status}: ${response.statusText}` });
+    }
+  } catch (err) {
+    const latency = Date.now() - startTime;
+    let errorMessage = err.message;
+    
+    if (err.name === 'AbortError') {
+      errorMessage = 'Connection timeout';
+    } else if (err.cause && err.cause.code === 'ECONNREFUSED') {
+      errorMessage = 'Connection refused - is the vLLM service running?';
+    } else if (err.cause) {
+      errorMessage = err.cause.message;
+    }
+    
+    res.json({ success: false, latency, error: errorMessage });
+  }
+});
+
+app.get('/api/llm/models', async (req, res) => {
+  try {
+    const vllmUrl = process.env.VLLM_URL || process.env.LLM_SERVICE_URL || 'http://localhost:8000';
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    
+    const response = await fetch(`${vllmUrl}/v1/models`, {
+      signal: controller.signal,
+      headers: { 'Accept': 'application/json' }
+    });
+    clearTimeout(timeoutId);
+    
+    if (response.ok) {
+      const data = await response.json() as { data?: { id: string }[] };
+      const models = data.data ? data.data.map(m => m.id) : [];
+      res.json({ models });
+    } else {
+      res.status(502).json({ error: `Failed to fetch models: HTTP ${response.status}` });
+    }
+  } catch (err) {
+    logger.error(`[API] Failed to get LLM models: ${err.message}`);
+    res.status(500).json({ error: `Failed to connect to LLM service: ${err.message}` });
+  }
+});
+
 // GET /api/server/status - Get server runtime status
 app.get('/api/server/status', (req, res) => {
   const uptimeSeconds = Math.floor((Date.now() - botServerStartTime) / 1000);

@@ -3,6 +3,36 @@ import { Vec3 } from 'vec3';
 import logger = require('./logger');
 import GoalSystem, { GoalStateData } from './goal-system';
 
+// Import LLM Brain (Strategy module)
+import Strategy from '../llm/strategy';
+import type { SuggestedAction } from '../llm/strategy';
+
+// LLM Brain configuration
+const USE_LLM = process.env.USE_LLM === 'true';
+const VLLM_URL = process.env.VLLM_URL || 'http://localhost:8000';
+
+// LLM Brain types
+interface LLMDecision {
+  reasoning: string;
+  primary_action: ActionType;
+  target: any;
+  urgency: 'high' | 'medium' | 'low';
+  strategy: string;
+}
+
+interface LLMContext {
+  health: number;
+  food: number;
+  inventory: Array<{ name: string; count: number }>;
+  nearbyHostiles: number;
+  threatScore: number;
+  isOverwhelmed: boolean;
+  isDaytime: boolean;
+  currentGoal?: string;
+  goalProgress?: number;
+  [key: string]: unknown;
+}
+
 interface InventoryItem {
   name: string;
   count: number;
@@ -118,12 +148,16 @@ class AutonomousEngine {
   private behaviors: Behaviors;
   private lastDamageTime: number;
   private state: AutonomousState;
+  private llmBrain: Strategy | null;
+  private llmAvailable: boolean;
 
   constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors) {
     this.bot = bot;
     this.pathfinder = pathfinder;
     this.behaviors = behaviors;
     this.lastDamageTime = 0;
+    this.llmBrain = null;
+    this.llmAvailable = false;
     this.state = {
       priority: 'survival',
       currentAction: 'idle',
@@ -134,6 +168,26 @@ class AutonomousEngine {
       isOverwhelmed: false,
       threatScore: 0
     };
+
+    if (USE_LLM) {
+      this.initializeLLMBrain();
+    }
+  }
+
+  private initializeLLMBrain(): void {
+    try {
+      this.llmBrain = new Strategy();
+      this.llmAvailable = true;
+      logger.debug(`[AutonomousEngine] LLM Brain initialized with VLLM_URL: ${VLLM_URL}`);
+    } catch (error) {
+      logger.debug(`[AutonomousEngine] Failed to initialize LLM Brain: ${(error as Error).message}`);
+      this.llmBrain = null;
+      this.llmAvailable = false;
+    }
+  }
+
+  isLLMAvailable(): boolean {
+    return this.llmAvailable && this.llmBrain !== null;
   }
 
   assessState(): AssessmentResult {
@@ -208,7 +262,23 @@ class AutonomousEngine {
     return 'goal_progress';
   }
 
-  decideAction(priority: Priority, goalState: GoalState | null, assessment: AssessmentResult = {} as AssessmentResult): ActionDecision {
+  async decideAction(priority: Priority, goalState: GoalState | null, assessment: AssessmentResult = {} as AssessmentResult, usedLLM: boolean = false): Promise<ActionDecision & { usedLLMBrain?: boolean }> {
+    if (this.isLLMAvailable() && !usedLLM) {
+      try {
+        const llmDecision = await this.getLLMDecision(priority, goalState, assessment);
+        if (llmDecision) {
+          return {
+            action: llmDecision.primary_action,
+            target: llmDecision.target,
+            reason: `[LLM] ${llmDecision.reasoning}`,
+            usedLLMBrain: true
+          };
+        }
+      } catch (error) {
+        logger.debug(`[AutonomousEngine] LLM decision failed, falling back to cerebellum: ${(error as Error).message}`);
+      }
+    }
+
     switch (priority) {
       case 'emergency':
         return { action: 'heal_immediate', target: null };
@@ -230,6 +300,68 @@ class AutonomousEngine {
         return this.decideGoalAction(goalState);
       default:
         return { action: 'explore', target: null };
+    }
+  }
+
+  private async getLLMDecision(priority: Priority, goalState: GoalState | null, assessment: AssessmentResult): Promise<LLMDecision | null> {
+    const inventory: InventoryItem[] = this.bot.inventory.items()
+      .filter(i => typeof i.name === 'string')
+      .map(i => ({ name: i.name!, count: i.count }));
+
+    const context: LLMContext = {
+      health: assessment.health || 20,
+      food: assessment.food || 20,
+      inventory,
+      nearbyHostiles: assessment.nearbyHostiles || 0,
+      threatScore: assessment.threatScore || 0,
+      isOverwhelmed: assessment.isOverwhelmed || false,
+      isDaytime: assessment.isDaytime !== false,
+      currentGoal: goalState?.goalId,
+      goalProgress: goalState?.progress
+    };
+
+    let goal = `Priority: ${priority}`;
+    if (goalState?.goalId) {
+      goal += `, Goal: ${goalState.goalId}`;
+    }
+
+    const contextStr = `Health: ${context.health}, Food: ${context.food}, Hostiles: ${context.nearbyHostiles}, Threat: ${context.threatScore}, Overwhelmed: ${context.isOverwhelmed}, Inventory: ${inventory.length} items`;
+
+    try {
+      const result = await this.llmBrain!.getStrategy(contextStr, goal, context);
+
+      const suggestedAction = result.suggested_actions?.[0];
+      if (!suggestedAction) {
+        return null;
+      }
+
+      let primaryAction: ActionType = 'idle';
+      const actionType = suggestedAction.type?.toLowerCase() || '';
+
+      if (actionType.includes('gather') || actionType.includes('collect')) {
+        primaryAction = 'gather';
+      } else if (actionType.includes('build') || actionType.includes('construct')) {
+        primaryAction = 'build';
+      } else if (actionType.includes('combat') || actionType.includes('attack')) {
+        primaryAction = 'combat';
+      } else if (actionType.includes('retreat') || actionType.includes('flee')) {
+        primaryAction = 'retreat';
+      } else if (actionType.includes('craft')) {
+        primaryAction = 'craft';
+      } else if (actionType.includes('explore') || actionType.includes('move')) {
+        primaryAction = 'explore';
+      }
+
+      return {
+        reasoning: result.advice || 'Using LLM strategy',
+        primary_action: primaryAction,
+        target: suggestedAction.data || null,
+        urgency: priority === 'emergency' || priority === 'survival' ? 'high' : priority === 'food' || priority === 'heal' ? 'medium' : 'low',
+        strategy: result.usedFallback ? 'fallback' : 'vllm'
+      };
+    } catch (error) {
+      logger.debug(`[AutonomousEngine] LLM query error: ${(error as Error).message}`);
+      return null;
     }
   }
 
@@ -362,10 +494,18 @@ class AutonomousEngine {
     assessment: AssessmentResult;
     action: ActionDecision;
     goalState: GoalState | null;
+    usedLLM: boolean;
   }> {
     const assessment = this.assessState();
     const priority = this.calculatePriority(assessment);
-    const action = this.decideAction(priority, goalState, assessment);
+    const actionDecision = await this.decideAction(priority, goalState, assessment);
+
+    const usedLLM = actionDecision.usedLLMBrain === true;
+    const action: ActionDecision = {
+      action: actionDecision.action,
+      target: actionDecision.target,
+      reason: actionDecision.reason
+    };
 
     this.state.priority = priority;
     this.state.isOverwhelmed = assessment.isOverwhelmed || false;
@@ -395,7 +535,8 @@ class AutonomousEngine {
       state: this.state,
       assessment,
       action,
-      goalState: updatedGoalState
+      goalState: updatedGoalState,
+      usedLLM
     };
   }
 }

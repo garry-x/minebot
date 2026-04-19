@@ -326,6 +326,135 @@ async function getMinecraftServerStatus(): Promise<MinecraftServerStatus> {
   });
 }
 
+// ============== LLM Configuration Functions ==============
+
+const ENV_FILE = path.join(__dirname, '.env');
+
+function readEnvFile(): Record<string, string> {
+  const envVars: Record<string, string> = {};
+  try {
+    if (fs.existsSync(ENV_FILE)) {
+      const content = fs.readFileSync(ENV_FILE, 'utf8');
+      const lines = content.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#')) {
+          const equalIndex = trimmed.indexOf('=');
+          if (equalIndex > 0) {
+            const key = trimmed.substring(0, equalIndex).trim();
+            const value = trimmed.substring(equalIndex + 1).trim();
+            envVars[key] = value;
+          }
+        }
+      }
+    }
+  } catch (error: any) {
+    console.error(`⚠️  读取.env文件失败: ${error.message}`);
+  }
+  return envVars;
+}
+
+function writeEnvFile(envVars: Record<string, string>): boolean {
+  try {
+    const lines: string[] = [];
+    lines.push('# Bot Server Configuration');
+    if (envVars.HOST) lines.push(`HOST=${envVars.HOST}`);
+    if (envVars.PORT) lines.push(`PORT=${envVars.PORT}`);
+    if (envVars.LOG_DIR) lines.push(`LOG_DIR=${envVars.LOG_DIR}`);
+    if (envVars.BOT_PID_FILE) lines.push(`BOT_PID_FILE=${envVars.BOT_PID_FILE}`);
+    if (envVars.BOT_LOG_FILE) lines.push(`BOT_LOG_FILE=${envVars.BOT_LOG_FILE}`);
+
+    lines.push('');
+    lines.push('# Minecraft Server Configuration');
+    if (envVars.MINECRAFT_SERVER_HOST) lines.push(`MINECRAFT_SERVER_HOST=${envVars.MINECRAFT_SERVER_HOST}`);
+    if (envVars.MINECRAFT_SERVER_PORT) lines.push(`MINECRAFT_SERVER_PORT=${envVars.MINECRAFT_SERVER_PORT}`);
+    if (envVars.MINECRAFT_SERVER_DIR) lines.push(`MINECRAFT_SERVER_DIR=${envVars.MINECRAFT_SERVER_DIR}`);
+    if (envVars.MINECRAFT_JAR_PATH) lines.push(`MINECRAFT_JAR_PATH=${envVars.MINECRAFT_JAR_PATH}`);
+    if (envVars.MINECRAFT_PID_FILE) lines.push(`MINECRAFT_PID_FILE=${envVars.MINECRAFT_PID_FILE}`);
+    if (envVars.MINECRAFT_MAX_MEMORY) lines.push(`MINECRAFT_MAX_MEMORY=${envVars.MINECRAFT_MAX_MEMORY}`);
+    if (envVars.MINECRAFT_SERVER_ARGS) lines.push(`MINECRAFT_SERVER_ARGS=${envVars.MINECRAFT_SERVER_ARGS}`);
+
+    lines.push('');
+    lines.push('# Bot Server Connection (for cli and other services)');
+    if (envVars.BOT_SERVER_HOST) lines.push(`BOT_SERVER_HOST=${envVars.BOT_SERVER_HOST}`);
+    if (envVars.BOT_SERVER_PORT) lines.push(`BOT_SERVER_PORT=${envVars.BOT_SERVER_PORT}`);
+
+    lines.push('');
+    lines.push('# LLM / AI Configuration');
+    if (envVars.VLLM_URL) lines.push(`VLLM_URL=${envVars.VLLM_URL}`);
+    if (envVars.LLM_SERVICE_URL) lines.push(`LLM_SERVICE_URL=${envVars.LLM_SERVICE_URL}`);
+    if (envVars.USE_LLM !== undefined) lines.push(`USE_LLM=${envVars.USE_LLM}`);
+    if (envVars.USE_FALLBACK !== undefined) lines.push(`USE_FALLBACK=${envVars.USE_FALLBACK}`);
+
+    lines.push('');
+    lines.push('# Frontend Configuration');
+    if (envVars.FRONTEND_PORT) lines.push(`FRONTEND_PORT=${envVars.FRONTEND_PORT}`);
+    if (envVars.API_TARGET) lines.push(`API_TARGET=${envVars.API_TARGET}`);
+
+    // Keep any other existing variables that weren't explicitly handled
+    const existingContent = fs.readFileSync(ENV_FILE, 'utf8');
+    const existingLines = existingContent.split('\n');
+    const handledKeys = new Set([
+      'HOST', 'PORT', 'LOG_DIR', 'BOT_PID_FILE', 'BOT_LOG_FILE',
+      'MINECRAFT_SERVER_HOST', 'MINECRAFT_SERVER_PORT', 'MINECRAFT_SERVER_DIR',
+      'MINECRAFT_JAR_PATH', 'MINECRAFT_PID_FILE', 'MINECRAFT_MAX_MEMORY', 'MINECRAFT_SERVER_ARGS',
+      'BOT_SERVER_HOST', 'BOT_SERVER_PORT',
+      'VLLM_URL', 'LLM_SERVICE_URL', 'USE_LLM', 'USE_FALLBACK',
+      'FRONTEND_PORT', 'API_TARGET'
+    ]);
+    for (const line of existingLines) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const equalIndex = trimmed.indexOf('=');
+        if (equalIndex > 0) {
+          const key = trimmed.substring(0, equalIndex).trim();
+          if (!handledKeys.has(key) && envVars[key] !== undefined) {
+            lines.push(`${key}=${envVars[key]}`);
+          }
+        }
+      }
+    }
+
+    fs.writeFileSync(ENV_FILE, lines.join('\n') + '\n');
+    return true;
+  } catch (error: any) {
+    console.error(`⚠️  写入.env文件失败: ${error.message}`);
+    return false;
+  }
+}
+
+function updateEnvVar(key: string, value: string): boolean {
+  const envVars = readEnvFile();
+  envVars[key] = value;
+  return writeEnvFile(envVars);
+}
+
+function getEnvVar(key: string): string | null {
+  const envVars = readEnvFile();
+  return envVars[key] || null;
+}
+
+async function testVllmConnection(vllmUrl: string): Promise<{ available: boolean; models?: string[]; error?: string }> {
+  try {
+    const url = new URL(vllmUrl);
+    const modelsResponse = await makeRequest({
+      hostname: url.hostname,
+      port: parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
+      path: '/v1/models',
+      method: 'GET',
+      timeout: 5000
+    });
+
+    if (modelsResponse && Array.isArray(modelsResponse.data)) {
+      const modelNames = modelsResponse.data.map((m: any) => m.id || m.name || 'unknown');
+      return { available: true, models: modelNames };
+    }
+    return { available: true, models: [] };
+  } catch (error: any) {
+    return { available: false, error: error.message };
+  }
+}
+
 // ============== Commander Program Setup ==============
 
 program
@@ -1690,6 +1819,149 @@ program
       console.log(`  🌍 世界: ${mcStatus.world}`);
     } else {
       console.log(`  ❌ 状态: ${mcStatus.status}`);
+    }
+  });
+
+const llmCommand = program.command('llm').description('LLM Brain管理');
+
+llmCommand
+  .command('enable')
+  .description('启用LLM Brain')
+  .action(async () => {
+    console.log('🧠 启用LLM Brain...');
+
+    if (updateEnvVar('USE_LLM', 'true')) {
+      console.log('✅ LLM Brain已启用');
+      const vllmUrl = getEnvVar('VLLM_URL') || process.env.VLLM_URL || 'http://localhost:8000';
+      console.log(`📡 vLLM URL: ${vllmUrl}`);
+      console.log('ℹ️  使用 "minebot llm status" 查看服务状态');
+    } else {
+      console.log('❌ 启用失败');
+    }
+  });
+
+llmCommand
+  .command('disable')
+  .description('禁用LLM Brain')
+  .action(async () => {
+    console.log('🧠 禁用LLM Brain...');
+
+    if (updateEnvVar('USE_LLM', 'false')) {
+      console.log('✅ LLM Brain已禁用');
+    } else {
+      console.log('❌ 禁用失败');
+    }
+  });
+
+llmCommand
+  .command('config')
+  .description('配置LLM设置')
+  .option('--url <url>', '设置vLLM服务URL')
+  .option('--enable', '启用LLM')
+  .option('--disable', '禁用LLM')
+  .action(async (options: any) => {
+    console.log('⚙️  配置LLM设置...');
+
+    let hasChanges = false;
+
+    if (options.url) {
+      if (updateEnvVar('VLLM_URL', options.url)) {
+        console.log(`✅ vLLM URL已设置为: ${options.url}`);
+        hasChanges = true;
+      }
+    }
+
+    if (options.enable) {
+      if (updateEnvVar('USE_LLM', 'true')) {
+        console.log('✅ LLM已启用');
+        hasChanges = true;
+      }
+    }
+
+    if (options.disable) {
+      if (updateEnvVar('USE_LLM', 'false')) {
+        console.log('✅ LLM已禁用');
+        hasChanges = true;
+      }
+    }
+
+    if (!hasChanges) {
+      const currentUrl = getEnvVar('VLLM_URL') || process.env.VLLM_URL || 'http://localhost:8000';
+      const useLlm = getEnvVar('USE_LLM') || process.env.USE_LLM || 'false';
+      console.log('📋 当前配置:');
+      console.log(`   vLLM URL: ${currentUrl}`);
+      console.log(`   LLM启用: ${useLlm === 'true' ? '是' : '否'}`);
+      console.log('\n用法:');
+      console.log('   minebot llm config --url <url>');
+      console.log('   minebot llm config --enable');
+      console.log('   minebot llm config --disable');
+    }
+  });
+
+llmCommand
+  .command('status')
+  .description('查看LLM状态')
+  .action(async () => {
+    console.log('📊 检查LLM状态...\n');
+
+    const useLlm = getEnvVar('USE_LLM') || process.env.USE_LLM || 'false';
+    const vllmUrl = getEnvVar('VLLM_URL') || process.env.VLLM_URL || 'http://localhost:8000';
+
+    console.log('🧠 LLM Brain状态:');
+    console.log(`   启用: ${useLlm === 'true' ? '✅ 是' : '❌ 否'}`);
+    console.log(`   vLLM URL: ${vllmUrl}`);
+
+    console.log('\n🔗 测试vLLM服务连接...');
+    const testResult = await testVllmConnection(vllmUrl);
+
+    if (testResult.available) {
+      console.log('   服务状态: ✅ 可用');
+      if (testResult.models && testResult.models.length > 0) {
+        console.log(`   可用模型: ${testResult.models.length}个`);
+        testResult.models.slice(0, 5).forEach((model, index) => {
+          console.log(`      ${index + 1}. ${model}`);
+        });
+        if (testResult.models.length > 5) {
+          console.log(`      ... 还有 ${testResult.models.length - 5}个模型`);
+        }
+      } else {
+        console.log('   可用模型: 未找到模型');
+      }
+    } else {
+      console.log('   服务状态: ❌ 不可用');
+      console.log(`   错误: ${testResult.error || '未知错误'}`);
+      console.log('\n💡 提示:');
+      console.log('   - 确保vLLM服务正在运行');
+      console.log('   - 检查URL是否正确');
+      console.log('   - 使用 "minebot llm config --url <url>" 设置正确的URL');
+    }
+  });
+
+llmCommand
+  .command('models')
+  .description('列出可用模型')
+  .action(async () => {
+    console.log('📋 获取可用模型列表...\n');
+
+    const vllmUrl = getEnvVar('VLLM_URL') || process.env.VLLM_URL || 'http://localhost:8000';
+    console.log(`🔗 连接: ${vllmUrl}`);
+
+    const testResult = await testVllmConnection(vllmUrl);
+
+    if (testResult.available && testResult.models) {
+      if (testResult.models.length === 0) {
+        console.log('❌ 未找到可用模型');
+      } else {
+        console.log(`\n✅ 可用模型 (${testResult.models.length}个):\n`);
+        testResult.models.forEach((model, index) => {
+          console.log(`   ${index + 1}. ${model}`);
+        });
+      }
+    } else {
+      console.log(`❌ 无法连接到vLLM服务`);
+      console.log(`   错误: ${testResult.error || '未知错误'}`);
+      console.log('\n💡 确保vLLM服务正在运行:');
+      console.log('   vllm serve --model <model_name>');
     }
   });
 
