@@ -194,7 +194,7 @@ class LLMBrain {
   constructor() {
     this.vllmUrl = process.env.VLLM_URL || 'http://localhost:8000';
     this.enabled = process.env.USE_LLM === 'true' || false;
-    this.model = process.env.LLM_MODEL || 'llama2';
+    this.model = process.env.LLM_MODEL || 'Qwen/Qwen3.6-35B-A3B-FP8';
     this.timeout = parseInt(process.env.LLM_TIMEOUT || '30000', 10);
     this.cache = new LLMResponseCache();
     this.maxRetries = parseInt(process.env.LLM_MAX_RETRIES || '3', 10);
@@ -322,17 +322,10 @@ class LLMBrain {
 
     sections.push(
       ``,
-      `Decide the best action. Return in JSON format:`,
-      `{`,
-      `  "reasoning": "why you chose this action",`,
-      `  "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle",`,
-      `  "target": {`,
-      `    "type": "block|entity|position|item",`,
-      `    "value": "specific target"`,
-      `  },`,
-      `  "urgency": "high|medium|low",`,
-      `  "strategy": "brief strategy explanation"`,
-      `}`
+      `IMPORTANT: Respond ONLY with valid JSON, no other text. Format:`,
+      `{"reasoning": "brief reason", "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle", "target": {"type": "block|entity|position|item", "value": "target"}, "urgency": "high|medium|low", "strategy": "brief"}`,
+      ``,
+      `Choose the best action based on current state and goal progress.`
     );
 
     return sections.join('\n');
@@ -342,16 +335,33 @@ class LLMBrain {
     try {
       const jsonStr = this.extractJsonFromResponse(response);
       if (!jsonStr) {
-        console.warn('[LLMBrain] No valid JSON found in response');
-        return null;
+        console.warn('[LLMBrain] No valid JSON, trying fallback parsing');
+        return this.parseFallbackResponse(response);
       }
 
       const parsed = JSON.parse(jsonStr);
       return this.validateBrainDecision(parsed);
     } catch (error) {
-      console.error('[LLMBrain] Failed to parse response:', (error as Error).message);
-      return null;
+      console.warn('[LLMBrain] JSON parse failed, using fallback:', (error as Error).message);
+      return this.parseFallbackResponse(response);
     }
+  }
+
+  private parseFallbackResponse(response: string): BrainDecision | null {
+    const text = response.toLowerCase();
+    const actions = ['gather', 'combat', 'build', 'craft', 'explore', 'heal', 'retreat', 'idle'];
+    let action = 'idle';
+    for (const a of actions) {
+      if (text.includes(a)) { action = a; break; }
+    }
+    const urgency = text.includes('high') ? 'high' : text.includes('low') ? 'low' : 'medium';
+    return {
+      reasoning: response.substring(0, 100),
+      primary_action: action as BrainDecision['primary_action'],
+      target: { type: 'item', value: 'unknown' },
+      urgency,
+      strategy: 'fallback from text'
+    };
   }
 
   async decide(botState: BotState, goalState: GoalStateData): Promise<BrainDecision | null> {
