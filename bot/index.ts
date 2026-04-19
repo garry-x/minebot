@@ -9,6 +9,7 @@ interface BotOptions {
   botServerPort?: number;
   host?: string;
   port?: number;
+  enableLLM?: boolean;
 }
 
 interface BotStateData {
@@ -66,6 +67,7 @@ class MinecraftBot {
   private autonomousRunning: boolean;
   private autonomousEngine: unknown;
   private goalState: unknown;
+  public enableLLM: boolean;
 
   constructor(options: BotOptions = {}) {
     this.options = options;
@@ -91,6 +93,7 @@ class MinecraftBot {
     this.autonomousRunning = false;
     this.autonomousEngine = null;
     this.goalState = null;
+    this.enableLLM = this.options.enableLLM || false;
   }
 
   async connect(username: string, accessToken?: string, startAutomatic = false): Promise<void> {

@@ -154,7 +154,7 @@ class AutonomousEngine {
   private llmBrain: LLMBrain | null;
   private llmAvailable: boolean;
 
-  constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors) {
+  constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors, enableLLM = USE_LLM) {
     this.bot = bot;
     this.pathfinder = pathfinder;
     this.behaviors = behaviors;
@@ -172,7 +172,7 @@ class AutonomousEngine {
       threatScore: 0
     };
 
-    if (USE_LLM) {
+    if (enableLLM) {
       this.initializeLLMBrain();
     }
   }

@@ -146,6 +146,7 @@ interface BotWrapper {
   autonomousEngine?: any
   autonomousRunning?: boolean
   botId?: string
+  enableLLM?: boolean
 }
 
 interface Pathfinder {
@@ -1004,7 +1005,8 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
         if (mode === 'autonomous') {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const AutonomousEngine = require('./autonomous-engine')
-          const engine = new AutonomousEngine(bot, pathfinder, this)
+          const enableLLM = wrapper.enableLLM || false;
+          const engine = new AutonomousEngine(bot, pathfinder, this, enableLLM)
           wrapper.autonomousEngine = engine
 
           let isRunning = true

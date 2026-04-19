@@ -695,7 +695,7 @@ app.get('/api/bots', async (req, res) => {
 
 app.post('/api/bot/start', async (req, res) => {
   try {
-    const { username } = req.body;
+    const { username, enableLLM } = req.body;
     
     logger.info(`[API] Received request to start bot with username: ${username}`);
     
@@ -743,7 +743,8 @@ app.post('/api/bot/start', async (req, res) => {
       host: mcHost, 
       port: mcPort,
       botServerHost: process.env.HOST || 'localhost',
-      botServerPort: process.env.PORT || 9500
+      botServerPort: process.env.PORT || 9500,
+      enableLLM: enableLLM || false
     });
     
       logger.trace('[API] Bot instance created, botId from constructor:', bot.botId);

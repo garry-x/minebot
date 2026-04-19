@@ -732,6 +732,7 @@ botCommand
   .option('-h, --host <host>', 'Minecraft服务器地址', 'localhost')
   .option('-p, --port <port>', 'Minecraft服务器端口', '25565')
   .option('--version <version>', 'Minecraft版本', '1.21.11')
+  .option('--llm', '启用LLM Brain决策支持')
   .action(async (botName: string, options: any) => {
     console.log(`🤖 启动机器人 "${botName}"...`);
 
@@ -739,6 +740,10 @@ botCommand
     if (botStatus.status !== 'RUNNING') {
       console.log('❌ Bot服务器未运行，请先运行 "minebot server start"');
       return;
+    }
+
+    if (options.llm) {
+      console.log('🧠 LLM Brain决策支持: 已启用');
     }
 
     try {
@@ -755,7 +760,8 @@ botCommand
           username: botName,
           host: options.host,
           port: parseInt(options.port, 10),
-          version: options.version
+          version: options.version,
+          enableLLM: options.llm || false
         })
       ) as any;
 
