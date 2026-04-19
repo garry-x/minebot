@@ -295,7 +295,7 @@ class LLMBrain {
     const goalContextSection = this.buildGoalContextSection(goalState.difficulty, goalState.rewards);
 
     const sections: string[] = [
-      `You are an AI controlling a Minecraft bot.`,
+      `You are a Minecraft bot AI. Analyze state and respond ONLY with valid JSON.`,
       ``,
       `Current State:`,
       `- Health: ${botState.health}/20`,
@@ -322,10 +322,10 @@ class LLMBrain {
 
     sections.push(
       ``,
-      `IMPORTANT: Respond ONLY with valid JSON, no other text. Format:`,
+      `Respond with ONLY valid JSON (no explanations, no thinking):`,
       `{"reasoning": "brief reason", "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle", "target": {"type": "block|entity|position|item", "value": "target"}, "urgency": "high|medium|low", "strategy": "brief"}`,
       ``,
-      `Choose the best action based on current state and goal progress.`
+      `Choose the best action for goal progress. Respond with JSON only.`
     );
 
     return sections.join('\n');
@@ -398,8 +398,9 @@ class LLMBrain {
             body: JSON.stringify({
               model: this.model,
               prompt,
-              max_tokens: 300,
-              temperature: 0.7
+              max_tokens: parseInt(process.env.LLM_MAX_TOKENS || '200', 10),
+              temperature: parseFloat(process.env.LLM_TEMPERATURE || '0.3'),
+              stop: ['</think>', '\n\n\n']
             } as VLLMCompletionRequest),
             signal: controller.signal
           });
@@ -551,17 +552,22 @@ class LLMBrain {
 
   private extractJsonFromResponse(response: string): string | null {
     const trimmed = response.trim();
+    let clean = trimmed.replace(/<think>[\s\S]*?</think>/gi, '');
+    clean = clean.replace(/<[\s\S]*?>/gi, '');
 
-    const jsonMatch = trimmed.match(/\{[\s\S]*\}/);
+    const jsonMatch = clean.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return null;
     }
 
     let jsonStr = jsonMatch[0];
-
     const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (codeBlockMatch) {
       jsonStr = codeBlockMatch[1].trim();
+    }
+
+    if (!jsonStr.includes('"primary_action"') || !jsonStr.includes('"reasoning"')) {
+      return null;
     }
 
     return jsonStr;
