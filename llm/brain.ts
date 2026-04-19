@@ -1,6 +1,7 @@
 // LLMBrain - High-level strategic decision making via vLLM service
 
 import { Bot } from 'mineflayer';
+import crypto from 'crypto';
 
 // Re-export types from goal-system for consistency
 export type GoalDifficulty = 'beginner' | 'intermediate' | 'advanced' | 'expert';
@@ -66,21 +67,140 @@ interface VLLMCompletionResponse {
   choices: Array<{ text: string }>;
 }
 
+interface CacheEntry {
+  decision: BrainDecision;
+  timestamp: number;
+}
+
+interface CacheStats {
+  hits: number;
+  misses: number;
+  hitRate: number;
+}
+
+class LLMResponseCache {
+  private cache: Map<string, CacheEntry> = new Map();
+  private maxSize: number;
+  private ttl: number;
+  private enabled: boolean;
+  private stats: CacheStats = { hits: 0, misses: 0, hitRate: 0 };
+
+  constructor() {
+    this.enabled = process.env.USE_LLM_CACHE !== 'false';
+    this.maxSize = parseInt(process.env.LLM_CACHE_MAX || '50', 10);
+    this.ttl = parseInt(process.env.LLM_CACHE_TTL || '30000', 10);
+
+    if (this.enabled) {
+      console.log(`[LLMResponseCache] Enabled - maxSize: ${this.maxSize}, ttl: ${this.ttl}ms`);
+    }
+  }
+
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  get(key: string): BrainDecision | null {
+    if (!this.enabled) return null;
+
+    const entry = this.cache.get(key);
+    if (!entry) {
+      this.stats.misses++;
+      this.updateHitRate();
+      return null;
+    }
+
+    const now = Date.now();
+    if (now - entry.timestamp > this.ttl) {
+      this.cache.delete(key);
+      this.stats.misses++;
+      this.updateHitRate();
+      return null;
+    }
+
+    this.stats.hits++;
+    this.updateHitRate();
+    console.log(`[LLMResponseCache] Cache hit for key: ${key.substring(0, 16)}...`);
+    return entry.decision;
+  }
+
+  set(key: string, decision: BrainDecision): void {
+    if (!this.enabled) return;
+
+    if (this.cache.size >= this.maxSize) {
+      const oldestKey = this.findOldestKey();
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+        console.log(`[LLMResponseCache] Evicted oldest entry: ${oldestKey.substring(0, 16)}...`);
+      }
+    }
+
+    this.cache.set(key, {
+      decision,
+      timestamp: Date.now()
+    });
+  }
+
+  hashState(botState: BotState, goalState: GoalStateData): string {
+    const decisionKey = {
+      health: botState.health,
+      food: botState.food,
+      x: Math.floor(botState.position.x),
+      y: Math.floor(botState.position.y),
+      z: Math.floor(botState.position.z),
+      goalId: goalState.goalId,
+      goalName: goalState.goalName,
+      progress: goalState.progress
+    };
+
+    const hashInput = JSON.stringify(decisionKey);
+    return crypto.createHash('sha256').update(hashInput).digest('hex');
+  }
+
+  getStats(): CacheStats {
+    return { ...this.stats };
+  }
+
+  private findOldestKey(): string | null {
+    let oldestKey: string | null = null;
+    let oldestTime = Infinity;
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.timestamp < oldestTime) {
+        oldestTime = entry.timestamp;
+        oldestKey = key;
+      }
+    }
+
+    return oldestKey;
+  }
+
+  private updateHitRate(): void {
+    const total = this.stats.hits + this.stats.misses;
+    this.stats.hitRate = total > 0 ? this.stats.hits / total : 0;
+  }
+}
+
 class LLMBrain {
   private vllmUrl: string;
   private enabled: boolean;
   private model: string;
   private timeout: number;
+  private cache: LLMResponseCache;
 
   constructor() {
     this.vllmUrl = process.env.VLLM_URL || 'http://localhost:8000';
     this.enabled = process.env.USE_LLM === 'true' || false;
     this.model = process.env.LLM_MODEL || 'llama2';
     this.timeout = parseInt(process.env.LLM_TIMEOUT || '30000', 10);
+    this.cache = new LLMResponseCache();
   }
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  getCacheStats(): CacheStats {
+    return this.cache.getStats();
   }
 
   async isAvailable(): Promise<boolean> {
@@ -200,6 +320,15 @@ class LLMBrain {
       return null;
     }
 
+    if (this.cache.isEnabled()) {
+      const cacheKey = this.cache.hashState(botState, goalState);
+      const cachedDecision = this.cache.get(cacheKey);
+      if (cachedDecision) {
+        console.log('[LLMBrain] Using cached decision');
+        return cachedDecision;
+      }
+    }
+
     const prompt = this.buildPrompt(botState, goalState);
 
     try {
@@ -236,6 +365,10 @@ class LLMBrain {
 
       if (decision) {
         console.log(`[LLMBrain] Decision: ${decision.primary_action} (${decision.urgency}) - ${decision.reasoning}`);
+        if (this.cache.isEnabled()) {
+          const cacheKey = this.cache.hashState(botState, goalState);
+          this.cache.set(cacheKey, decision);
+        }
       }
 
       return decision;
