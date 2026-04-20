@@ -811,6 +811,116 @@ botCommand
   });
 
 botCommand
+  .command('status <botIdOrName>')
+  .description('查看机器人详细状态')
+  .option('-i, --interval <ms>', '自动刷新间隔(毫秒)', '3000')
+  .option('--once', '仅显示一次后退出')
+  .action(async (botIdOrName: string, options: any) => {
+    const botStatus = await getBotServerStatus();
+    if (botStatus.status !== 'RUNNING') {
+      console.log('❌ Bot服务器未运行');
+      return;
+    }
+
+    const resolvedBotId = await resolveBotId(botIdOrName);
+
+    const showStatus = async () => {
+      try {
+        const data = await makeRequest({
+          hostname: 'localhost',
+          port: parseInt(process.env.BOT_SERVER_PORT || process.env.PORT || '9500', 10),
+          path: `/api/bot/${resolvedBotId}/watch`,
+          method: 'GET',
+          timeout: 5000
+        }) as any;
+
+        if (!data.success) {
+          console.log(`❌ 获取状态失败: ${data.error}`);
+          return false;
+        }
+
+        console.log(`\n🤖 ${data.username} [${data.botId}]`);
+        console.log(`📡 状态: ${data.state} | 模式: ${data.mode}`);
+        console.log('─'.repeat(60));
+
+        if (data.attributes?.health) {
+          const h = data.attributes.health;
+          const hpPercent = Math.round((h.current / h.max) * 100);
+          const hpBar = '█'.repeat(Math.floor(hpPercent / 10)) + '░'.repeat(10 - Math.floor(hpPercent / 10));
+          console.log(`❤️  生命: ${hpBar} ${h.current}/${h.max} (${hpPercent}%)`);
+        }
+        if (data.attributes?.hunger) {
+          const hunger = data.attributes.hunger;
+          console.log(`🍖 饥饿: ${hunger.current}/20`);
+        }
+
+        if (data.environment?.position) {
+          const pos = data.environment.position;
+          console.log(`📍 位置: (${pos.x}, ${pos.y}, ${pos.z}) - ${pos.biome}`);
+        }
+        if (data.environment?.weather) {
+          const w = data.environment.weather;
+          console.log(`☀️  天气: ${w.isRaining ? '下雨' : '晴朗'} | ${w.isThundering ? '⛈️ 雷暴' : ''}`);
+        }
+        if (data.environment?.time) {
+          console.log(`🌙 时间: ${data.environment.time.isDay ? '☀️ 白天' : '🌙 夜晚'} (${data.environment.time.formattedTime || ''})`);
+        }
+
+        if (data.goal?.currentGoal) {
+          const progress = data.goal.progress || 0;
+          const bar = '█'.repeat(Math.floor(progress / 10)) + '░'.repeat(10 - Math.floor(progress / 10));
+          console.log(`\n🎯 目标: ${data.goal.currentGoal}`);
+          console.log(`   进度: ${bar} ${Math.round(progress)}%`);
+        }
+
+        if (data.autonomousState?.currentAction && data.autonomousState.currentAction !== 'idle') {
+          const icons: Record<string, string> = {
+            'gather': '⛏️', 'combat': '⚔️', 'build': '🏗️', 'craft': '🔨',
+            'heal_immediate': '❤️', 'find_shelter': '🏠', 'explore': '🧭'
+          };
+          const icon = icons[data.autonomousState.currentAction] || '🤖';
+          const llmIcon = data.autonomousState.usedLLM ? ' 🧠' : '';
+          console.log(`\n${icon} 当前行为: ${data.autonomousState.currentAction}${llmIcon}`);
+          if (data.autonomousState.decisionReason) {
+            const reason = data.autonomousState.decisionReason.substring(0, 80);
+            console.log(`   决策: ${reason}${data.autonomousState.decisionReason.length > 80 ? '...' : ''}`);
+          }
+          console.log(`   优先级: ${data.autonomousState.priority}`);
+
+          if (data.autonomousState.llmStats) {
+            const s = data.autonomousState.llmStats;
+            console.log(`   🧠 LLM: ${s.hits}次命中, ${s.misses}次未命中, ${(s.hitRate * 100).toFixed(1)}%命中率`);
+          }
+        }
+
+        if (data.attributes?.experience) {
+          console.log(`\n⭐ 经验: Lv.${data.attributes.experience.level} (${data.attributes.experience.points}pts)`);
+        }
+
+        return true;
+      } catch (err: any) {
+        console.log(`❌ 请求失败: ${err.message}`);
+        return false;
+      }
+    };
+
+    await showStatus();
+
+    if (options.once) {
+      return;
+    }
+
+    const interval = parseInt(options.interval, 10);
+    console.log(`\n⏹️  Ctrl+C 退出 | 刷新: ${interval}ms\n`);
+
+    try {
+      setInterval(async () => {
+        await showStatus();
+      }, interval);
+    } catch { }
+  });
+
+botCommand
   .command('list')
   .description('列出所有机器人')
   .option('-a, --all', '显示所有机器人（包括已停止的）')
