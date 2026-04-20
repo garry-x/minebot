@@ -1618,6 +1618,8 @@ mcCommand
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
 
+    const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
+
     try {
       const child = spawn(
         'java',
@@ -1631,20 +1633,26 @@ mcCommand
       );
 
       savePid(child.pid!, 'minecraft');
-      console.log(`✅ Minecraft服务器启动成功！PID: ${child.pid}`);
 
       child.stdout?.on('data', (data: Buffer) => {
         const output = data.toString().trim();
-        if (output) console.log(`[MC] ${output}`);
+        if (output) {
+          console.log(`[MC] ${output}`);
+          logStream.write(`[MC] ${output}\n`);
+        }
       });
 
       child.stderr?.on('data', (data: Buffer) => {
         const error = data.toString().trim();
-        if (error) console.error(`[MC Error] ${error}`);
+        if (error) {
+          console.error(`[MC Error] ${error}`);
+          logStream.write(`[MC Error] ${error}\n`);
+        }
       });
 
       child.on('close', (code) => {
         console.log(`🛑 Minecraft服务器已退出，代码: ${code}`);
+        logStream.end();
         try {
           if (fs.existsSync(MINECRAFT_PID_FILE)) {
             fs.unlinkSync(MINECRAFT_PID_FILE);
@@ -1652,13 +1660,10 @@ mcCommand
         } catch { /* empty */ }
       });
 
+      console.log(`✅ Minecraft服务器启动成功！PID: ${child.pid}`);
       console.log(`📝 日志文件: ${LOG_FILE}`);
       console.log('ℹ️  使用 "minebot mc status" 检查服务器状态');
       console.log('ℹ️  使用 "minebot mc end" 停止服务器');
-
-      const logStream = fs.createWriteStream(LOG_FILE, { flags: 'a' });
-      child.stdout?.pipe(logStream);
-      child.stderr?.pipe(logStream);
     } catch (error: any) {
       console.error(`❌ 启动失败: ${error.message}`);
     }

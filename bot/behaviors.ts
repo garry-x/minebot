@@ -1020,8 +1020,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
               if (cycleResult.goalState && cycleResult.goalState.goalId) {
                 wrapper.goalState = cycleResult.goalState
                 try {
-                  // eslint-disable-next-line @typescript-eslint/no-var-requires
-                  const BotGoal = require('../config/models/BotGoal')
+                  const BotGoal = require('../config/models/BotGoal').default || require('../config/models/BotGoal');
                   await BotGoal.saveGoal(wrapper.botId, cycleResult.goalState.goalId, cycleResult.goalState)
                 } catch (saveErr: any) {
                   logger.debug(`[Autonomous] Failed to save goal: ${saveErr.message}`)
