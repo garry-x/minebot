@@ -993,6 +993,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     },
 
     automaticBehavior: async function(options: AutomaticBehaviorOptions = {}): Promise<boolean> {
+      console.log('[Behaviors automaticBehavior] Received options:', JSON.stringify(options));
       const {
         mode = 'autonomous',
         initialGoal = 'basic_survival',
