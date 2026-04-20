@@ -292,6 +292,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       const w = (bot as any).__wrapper || null;
       if (w) {
         w.enableLLM = true;
+        w.autonomousRunning = true;
       }
       return w;
     }
