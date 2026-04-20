@@ -1845,7 +1845,11 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         decisionReason: engineState.decisionReason,
         priority: engineState.priority,
         healthStatus: engineState.healthStatus,
-        threatLevel: engineState.threatLevel
+        threatLevel: engineState.threatLevel,
+        llmReasoning: engineState.llmReasoning,
+        llmTarget: engineState.llmTarget,
+        llmUrgency: engineState.llmUrgency,
+        llmStrategy: engineState.llmStrategy
       };
       if (typeof bot.autonomousEngine.isUsingLLM === 'function') {
         (autonomousState as any).usedLLM = bot.autonomousEngine.isUsingLLM();

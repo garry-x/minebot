@@ -131,6 +131,12 @@ interface WatchResponse {
     decisionReason?: string;
     priority?: number;
     healthStatus?: string;
+    usedLLM?: boolean;
+    llmReasoning?: string;
+    llmTarget?: any;
+    llmUrgency?: string;
+    llmStrategy?: string;
+    llmStats?: { hits: number; misses: number; hitRate: number };
   };
   resources?: {
     inventory: Array<{ slot?: number; name: string; count: number }>;
@@ -878,9 +884,23 @@ botCommand
         const icon = icons[data.autonomousState.currentAction] || '🤖';
         const llmIcon = data.autonomousState.usedLLM ? ' 🧠' : '';
         console.log(`\n${icon} 当前行为: ${data.autonomousState.currentAction}${llmIcon}`);
-        if (data.autonomousState.decisionReason) {
-          const reason = data.autonomousState.decisionReason.substring(0, 80);
-          console.log(`   决策: ${reason}${data.autonomousState.decisionReason.length > 80 ? '...' : ''}`);
+        if (data.autonomousState.usedLLM && data.autonomousState.llmReasoning) {
+          console.log(`   Reasoning: ${data.autonomousState.llmReasoning}`);
+          if (data.autonomousState.llmTarget) {
+            const targetStr = typeof data.autonomousState.llmTarget === 'object'
+              ? JSON.stringify(data.autonomousState.llmTarget)
+              : data.autonomousState.llmTarget;
+            console.log(`   Target: ${targetStr}`);
+          }
+          if (data.autonomousState.llmUrgency) {
+            console.log(`   Urgency: ${data.autonomousState.llmUrgency}`);
+          }
+          if (data.autonomousState.llmStrategy) {
+            console.log(`   Strategy: ${data.autonomousState.llmStrategy}`);
+          }
+        } else if (data.autonomousState.decisionReason) {
+          const reason = data.autonomousState.decisionReason.substring(0, 200);
+          console.log(`   决策: ${reason}${data.autonomousState.decisionReason.length > 200 ? '...' : ''}`);
         }
         console.log(`   优先级: ${data.autonomousState.priority}`);
 
@@ -1263,9 +1283,23 @@ botCommand
           const llmIndicator = data.autonomousState.usedLLM ? ' 🧠' : '';
           console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}${llmIndicator}:`);
           console.log(`   ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
-          if (data.autonomousState.decisionReason) {
-            const reason = data.autonomousState.decisionReason.length > 50 
-              ? data.autonomousState.decisionReason.substring(0, 47) + '...'
+          if (data.autonomousState.usedLLM && data.autonomousState.llmReasoning) {
+            console.log(`   ${useChinese ? '推理' : 'Reasoning'}: ${data.autonomousState.llmReasoning}`);
+            if (data.autonomousState.llmTarget) {
+              const targetStr = typeof data.autonomousState.llmTarget === 'object'
+                ? JSON.stringify(data.autonomousState.llmTarget)
+                : data.autonomousState.llmTarget;
+              console.log(`   ${useChinese ? '目标' : 'Target'}: ${targetStr}`);
+            }
+            if (data.autonomousState.llmUrgency) {
+              console.log(`   ${useChinese ? '紧急度' : 'Urgency'}: ${data.autonomousState.llmUrgency}`);
+            }
+            if (data.autonomousState.llmStrategy) {
+              console.log(`   ${useChinese ? '策略' : 'Strategy'}: ${data.autonomousState.llmStrategy}`);
+            }
+          } else if (data.autonomousState.decisionReason) {
+            const reason = data.autonomousState.decisionReason.length > 80
+              ? data.autonomousState.decisionReason.substring(0, 77) + '...'
               : data.autonomousState.decisionReason;
             console.log(`   ${useChinese ? '原因' : 'Reason'}: ${reason}`);
           }

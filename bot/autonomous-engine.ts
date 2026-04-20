@@ -101,6 +101,10 @@ interface AutonomousState {
   combatCooldownUntil: number;
   isOverwhelmed: boolean;
   threatScore: number;
+  llmReasoning?: string;
+  llmTarget?: any;
+  llmUrgency?: string;
+  llmStrategy?: string;
 }
 
 interface AssessmentResult {
@@ -121,6 +125,12 @@ interface ActionDecision {
   action: ActionType;
   target: any;
   reason?: string;
+  llmDetails?: {
+    reasoning: string;
+    target: any;
+    urgency: string;
+    strategy: string;
+  };
 }
 
 interface GoalSubTask {
@@ -170,7 +180,11 @@ class AutonomousEngine {
       healthStatus: 'safe',
       combatCooldownUntil: 0,
       isOverwhelmed: false,
-      threatScore: 0
+      threatScore: 0,
+      llmReasoning: undefined,
+      llmTarget: undefined,
+      llmUrgency: undefined,
+      llmStrategy: undefined
     };
 
     if (enableLLM) {
@@ -290,7 +304,13 @@ class AutonomousEngine {
             action: llmDecision.primary_action,
             target: llmDecision.target,
             reason: `[LLM] ${llmDecision.reasoning}`,
-            usedLLMBrain: true
+            usedLLMBrain: true,
+            llmDetails: {
+              reasoning: llmDecision.reasoning,
+              target: llmDecision.target,
+              urgency: llmDecision.urgency,
+              strategy: llmDecision.strategy
+            }
           };
         } else {
           this.lastDecisionFromLLM = false;
@@ -542,7 +562,8 @@ class AutonomousEngine {
     const action: ActionDecision = {
       action: actionDecision.action,
       target: actionDecision.target,
-      reason: actionDecision.reason
+      reason: actionDecision.reason,
+      llmDetails: actionDecision.llmDetails
     };
 
     this.state.priority = priority;
@@ -551,9 +572,22 @@ class AutonomousEngine {
     this.state.decisionReason = action.reason || `Health: ${assessment.health}, Food: ${assessment.food}, Threat: ${assessment.threatScore}`;
     this.state.threatLevel = assessment.threatScore > 15 ? 'critical' :
       assessment.threatScore > 8 ? 'high' :
-        assessment.nearbyEntities > 3 ? 'medium' : 'low';
+        (assessment as any).nearbyEntities > 3 ? 'medium' : 'low';
     this.state.healthStatus = assessment.health > 15 ? 'safe' :
       assessment.health > 10 ? 'warning' : 'critical';
+
+    if (usedLLM && (actionDecision as any).llmDetails) {
+      const llmDetails = (actionDecision as any).llmDetails;
+      this.state.llmReasoning = llmDetails.reasoning;
+      this.state.llmTarget = llmDetails.target;
+      this.state.llmUrgency = llmDetails.urgency;
+      this.state.llmStrategy = llmDetails.strategy;
+    } else if (!usedLLM) {
+      this.state.llmReasoning = undefined;
+      this.state.llmTarget = undefined;
+      this.state.llmUrgency = undefined;
+      this.state.llmStrategy = undefined;
+    }
 
     await this.executeAction(action);
 
