@@ -282,10 +282,9 @@ class MinecraftBot {
             
             // Start automatic behavior if requested
             if (this.startAutomatic) {
-              const automaticMode = 'survival';
-              logger.info(`[Bot] Starting automatic behavior in ${automaticMode} mode`);
+              logger.info(`[Bot] Starting automatic behavior in autonomous mode`);
               // Start automatic behavior in the background without blocking
-              (this.behaviors as { automaticBehavior: (options: { mode: string }) => Promise<void> }).automaticBehavior({ mode: automaticMode })
+              (this.behaviors as { automaticBehavior: (options: { mode: string; initialGoal: string }) => Promise<void> }).automaticBehavior({ mode: 'autonomous', initialGoal: 'basic_survival' })
                 .then(() => {
                   logger.info(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
                 })
