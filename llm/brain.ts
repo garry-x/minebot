@@ -545,7 +545,7 @@ class LLMBrain {
   private validateBrainDecision(decision: Partial<BrainDecision>): BrainDecision | null {
     const validActions = ['gather', 'combat', 'build', 'craft', 'explore', 'heal', 'retreat', 'idle'];
     const validUrgencies = ['high', 'medium', 'low'];
-    const validTargetTypes = ['block', 'entity', 'position', 'item'];
+    const targetTypeList = ['block', 'entity', 'position', 'item'];
 
     if (!decision.primary_action || !validActions.includes(decision.primary_action)) {
       console.warn('[LLMBrain] Invalid primary_action:', decision.primary_action);
@@ -557,10 +557,15 @@ class LLMBrain {
       return null;
     }
 
-    const targetValue = String(decision.target.value).toLowerCase();
+    let targetValue = String(decision.target.value).toLowerCase();
     if (targetValue === 'unknown' || targetValue === '' || !targetValue) {
       console.warn('[LLMBrain] Invalid target value, using default');
-      decision.target.value = 'oak_log';
+      targetValue = 'oak_log';
+      decision.target.value = targetValue;
+    }
+
+    if (!decision.target.type || !targetTypeList.includes(decision.target.type)) {
+      decision.target.type = 'block';
     }
 
     if (decision.target.type && !validTargetTypes.includes(decision.target.type)) {
@@ -585,10 +590,12 @@ class LLMBrain {
 
   private extractJsonFromResponse(response: string): string | null {
     const trimmed = response.trim();
-    const startToken = '<think>';
-    const endToken = '</think>';
-    let clean = trimmed.split(startToken).join('').split(endToken).join('');
-    clean = clean.replace(/<[\s\S]*?>/gi, '');
+    let clean = trimmed
+      .replace(/<think>[\s\S]*?</think>/gi, '')
+      .replace(/<thinking>[\s\S]*?<\/thinking>/gi, '')
+      .replace(/<[\s\S]*?>/gi, '')
+      .replace(/```[\s\S]*?```/g, '')
+      .trim();
 
     const jsonMatch = clean.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
