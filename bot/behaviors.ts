@@ -1013,7 +1013,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       }
 
       logger.debug(`Starting ${mode} behavior with goal: ${initialGoal}`)
-      console.log('[Behaviors] mode from options:', mode, 'initialGoal:', initialGoal);
+      console.log('[Behaviors] *** ENTERED automaticBehavior, mode:', mode, 'initialGoal:', initialGoal, 'wrapper:', !!wrapper);
 
       try {
         console.log('[Behaviors] checking mode === autonomous, mode=', mode, 'result:', mode === 'autonomous');
