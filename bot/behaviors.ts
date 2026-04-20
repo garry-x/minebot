@@ -298,6 +298,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     }
 
   const originalAutomaticBehavior = async function(this: Behaviors, options: AutomaticBehaviorOptions = {}): Promise<boolean> {
+    console.log('[Behaviors] originalAutomaticBehavior called with mode:', options.mode);
     const {
       mode = 'survival',
       targetBlockType = 'oak_log',
