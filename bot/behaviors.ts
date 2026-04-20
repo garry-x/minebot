@@ -1019,7 +1019,9 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
           const enableLLM = wrapper.enableLLM !== undefined ? wrapper.enableLLM : true;
           console.log('[Behaviors] Creating AutonomousEngine with enableLLM=', enableLLM);
           const engine = new AutonomousEngine(bot, pathfinder, this, enableLLM)
-          wrapper.autonomousEngine = engine
+          wrapper.autonomousEngine = engine;
+          (bot as any).autonomousEngine = engine;
+          (bot as any).autonomousRunning = true;
 
           let isRunning = true
           wrapper.autonomousRunning = true
