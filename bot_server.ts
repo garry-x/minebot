@@ -1842,10 +1842,14 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     }
     
     let autonomousState = null;
-    console.log('[Watch] bot.autonomousEngine:', !!bot.autonomousEngine, 'bot.autonomousRunning:', bot.autonomousRunning);
-    if (bot.autonomousEngine && bot.autonomousRunning) {
+    const hasEngine = !!(bot.autonomousEngine || (bot.bot && (bot.bot as any).autonomousEngine));
+    const hasRunning = bot.autonomousRunning || (bot.bot && (bot.bot as any).autonomousRunning);
+    console.log('[Watch] bot.autonomousEngine:', hasEngine, 'bot.autonomousRunning:', hasRunning);
+    const engine = bot.autonomousEngine || (bot.bot ? (bot.bot as any).autonomousEngine : null);
+    const isRunning = bot.autonomousRunning || (bot.bot ? (bot.bot as any).autonomousRunning : null);
+    if (engine && isRunning) {
       console.log('[Watch] Getting engine state...');
-      const engineState = bot.autonomousEngine.state;
+      const engineState = engine.state;
       autonomousState = {
         currentAction: engineState.currentAction,
         decisionReason: engineState.decisionReason,
