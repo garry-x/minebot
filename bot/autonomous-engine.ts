@@ -58,6 +58,7 @@ interface Behaviors {
   craftItem(target: string): Promise<void>;
   buildHouse(options: BuildHouseOptions): Promise<void>;
   autoBuild(options: AutoBuildOptions): Promise<void>;
+  explore(options?: { radius?: number; timeout?: number }): Promise<boolean>;
 }
 
 interface GatherOptions {
@@ -540,6 +541,9 @@ class AutonomousEngine {
           } else {
             await this.behaviors.autoBuild({ blockType: 'cobblestone', width: 3, length: 3, height: 3 });
           }
+          break;
+        case 'explore':
+          await this.behaviors.explore({ radius: 32, timeout: 30000 });
           break;
       }
     } catch (error) {

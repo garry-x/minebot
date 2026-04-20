@@ -1167,7 +1167,7 @@ botCommand
 botCommand
   .command('watch <botIdOrName>')
   .description('实时查看机器人状态')
-  .option('-n, --events <number>', '显示最近多少条事件', '10')
+  .option('-n, --events <number>', '显示最近多少条事件', '3')
   .option('-i, --interval <ms>', '刷新间隔(毫秒)', '1000')
   .option('--chinese', '显示中文翻译（物品、生物名称等）')
   .option('--zh', '显示中文翻译（简写）')
@@ -1280,24 +1280,26 @@ botCommand
             'explore': '🧭'
           };
           const icon = actionIcons[data.autonomousState.currentAction] || '🤖';
-          const llmIndicator = data.autonomousState.usedLLM ? ' 🧠' : '';
-          console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}${llmIndicator}:`);
-          console.log(`   ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
-          if (data.autonomousState.usedLLM && data.autonomousState.llmReasoning) {
-            console.log(`   ${useChinese ? '推理' : 'Reasoning'}: ${data.autonomousState.llmReasoning}`);
+          const isLLM = data.autonomousState.usedLLM === true;
+          const llmBadge = isLLM ? ' 🧠' : '';
+
+          if (isLLM && data.autonomousState.llmReasoning) {
+            console.log(`\n🤖 ${useChinese ? 'LLM决策' : 'LLM Decision'}${llmBadge}:`);
+            console.log(`   📋 ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
+            console.log(`   💭 ${useChinese ? '推理' : 'Reasoning'}: ${data.autonomousState.llmReasoning}`);
             if (data.autonomousState.llmTarget) {
-              const targetStr = typeof data.autonomousState.llmTarget === 'object'
-                ? JSON.stringify(data.autonomousState.llmTarget)
-                : data.autonomousState.llmTarget;
-              console.log(`   ${useChinese ? '目标' : 'Target'}: ${targetStr}`);
+              const targetVal = data.autonomousState.llmTarget?.value || data.autonomousState.llmTarget;
+              console.log(`   🎯 ${useChinese ? '目标' : 'Target'}: ${targetVal}`);
             }
             if (data.autonomousState.llmUrgency) {
-              console.log(`   ${useChinese ? '紧急度' : 'Urgency'}: ${data.autonomousState.llmUrgency}`);
+              console.log(`   ⚡ ${useChinese ? '紧急度' : 'Urgency'}: ${data.autonomousState.llmUrgency}`);
             }
-            if (data.autonomousState.llmStrategy) {
-              console.log(`   ${useChinese ? '策略' : 'Strategy'}: ${data.autonomousState.llmStrategy}`);
-            }
-          } else if (data.autonomousState.decisionReason) {
+          } else {
+            console.log(`\n${icon} ${useChinese ? '自动决策' : 'Auto Decision'}${llmBadge}:`);
+            console.log(`   ${useChinese ? '动作' : 'Action'}: ${data.autonomousState.currentAction}`);
+          }
+
+          if (!isLLM && data.autonomousState.decisionReason) {
             const reason = data.autonomousState.decisionReason.length > 80
               ? data.autonomousState.decisionReason.substring(0, 77) + '...'
               : data.autonomousState.decisionReason;

@@ -140,6 +140,11 @@ interface AutomaticBehaviorOptions {
   }
 }
 
+interface ExploreOptions {
+  radius?: number
+  timeout?: number
+}
+
 interface BotWrapper {
   currentMode?: string
   goalState?: any
@@ -173,6 +178,7 @@ interface Behaviors {
   sprint(state?: boolean): void
   automaticBehavior(options?: AutomaticBehaviorOptions): Promise<boolean>
   findSafeRetreat(): Promise<boolean>
+  explore(options?: ExploreOptions): Promise<boolean>
 }
 
 function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
@@ -1136,6 +1142,31 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       } catch (err: any) {
         logger.error(`[Behaviors] Retreat failed: ${err.message}`)
         return false
+      }
+    },
+
+    explore: async function(options: ExploreOptions = {}): Promise<boolean> {
+      const radius = options.radius || 32;
+      const timeout = options.timeout || 30000;
+
+      logger.debug(`[Behaviors] Exploring radius ${radius}...`);
+
+      try {
+        const botPos = bot.entity.position;
+        const angle = Math.random() * Math.PI * 2;
+        const explorePos = new Vec3(
+          botPos.x + Math.cos(angle) * radius,
+          botPos.y,
+          botPos.z + Math.sin(angle) * radius
+        );
+
+        logger.debug(`[Behaviors] Moving to explore position: ${explorePos.x.toFixed(1)}, ${explorePos.y.toFixed(1)}, ${explorePos.z.toFixed(1)}`);
+        await pathfinder.moveTo(explorePos, { timeout, range: 2 });
+        logger.debug('[Behaviors] Explore move completed');
+        return true;
+      } catch (err: any) {
+        logger.debug(`[Behaviors] Explore failed: ${err.message}`);
+        return false;
       }
     }
   }

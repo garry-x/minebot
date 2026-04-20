@@ -294,22 +294,41 @@ class LLMBrain {
     const materialsSection = this.buildMaterialsSection(goalState.materials, botState.inventory);
     const goalContextSection = this.buildGoalContextSection(goalState.difficulty, goalState.rewards);
 
+    const healthStatus = botState.health < 8 ? 'CRITICAL' : botState.health < 12 ? 'WARNING' : 'SAFE';
+    const foodStatus = botState.food < 6 ? 'CRITICAL' : botState.food < 12 ? 'WARNING' : 'SAFE';
+
     const sections: string[] = [
-      `You are a Minecraft bot AI. Analyze state and respond ONLY with valid JSON.`,
+      `You are a Minecraft bot AI. Your #1 PRIORITY is SURVIVAL. Decision hierarchy:`,
+      `1. CRITICAL: Health < 8 OR Food < 6 → heal or find food immediately (ignore goal)`,
+      `2. HIGH: Hostile mobs nearby → combat or retreat`,
+      `3. MEDIUM: Safe → work on goal progress`,
+      `4. LOW: Nothing urgent → explore or idle`,
       ``,
-      `Current State:`,
-      `- Health: ${botState.health}/20`,
-      `- Food: ${botState.food}/20`,
+      `=== SURVIVAL STATUS ===`,
+      `- Health: ${botState.health}/20 (${healthStatus})`,
+      `- Food: ${botState.food}/20 (${foodStatus})`,
+      `- Nearby Threats: ${threatsStr}`,
+      ``,
+      `=== CURRENT STATE ===`,
       `- Position: (${botState.position.x.toFixed(1)}, ${botState.position.y.toFixed(1)}, ${botState.position.z.toFixed(1)})`,
       `- Biome: ${botState.biome}`,
       `- Time: ${this.getTimeOfDayDescription(botState.timeOfDay)}`,
       `- Inventory: ${inventoryStr}`,
       ``,
-      `Nearby Threats: ${threatsStr}`,
+      `=== ENVIRONMENT ===`,
+      `Nearby Blocks: ${blocksStr}`,
       `Nearby Resources: ${resourcesStr}`,
       `Nearby Entities: ${entitiesStr}`,
-      `Nearby Blocks: ${blocksStr}`,
       ``,
+      `=== RESOURCE CATEGORIES (collect ANY item in category) ===`,
+      `- wood: oak_log, birch_log, spruce_log, jungle_log, acacia_log, dark_oak_log`,
+      `- stone: cobblestone, granite, diorite, andesite`,
+      `- dirt: dirt, grass_block, coarse_dirt`,
+      `- coal: coal_ore, coal`,
+      `- iron: iron_ore, raw_iron`,
+      `- food: wheat, carrot, potato, apple, bread, cooked_beef`,
+      ``,
+      `=== GOAL (only when safe) ===`,
       `Current Goal: ${goalState.goalName} - ${goalState.goalDescription}`,
       `Goal Progress: ${goalState.progress}%`,
       subTasksSection,
@@ -322,10 +341,18 @@ class LLMBrain {
 
     sections.push(
       ``,
-      `Respond with ONLY valid JSON (no explanations, no thinking):`,
-      `{"reasoning": "brief reason", "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle", "target": {"type": "block|entity|position|item", "value": "target"}, "urgency": "high|medium|low", "strategy": "brief"}`,
+      `=== DECISION RULES ===`,
+      `- If health/food CRITICAL → ignore goal, prioritize healing/food`,
+      `- If hostile mobs nearby (threats) → retreat or combat`,
+      `- If need materials AND see them nearby → gather`,
+      `- If need materials but NOTHING nearby → explore (move to new area)`,
+      `- If have enough materials for build/craft → build or craft`,
+      `- If safe and have resources → build/craft for progress`,
       ``,
-      `Choose the best action for goal progress. Respond with JSON only.`
+      `Respond with ONLY valid JSON (no markdown, no explanations):`,
+      `{"reasoning": "brief reason", "primary_action": "gather|combat|build|craft|explore|heal|retreat|idle", "target": {"type": "block", "value": "actual_block_name_or_category"}, "urgency": "high|medium|low", "strategy": "brief"}`,
+      ``,
+      `Example: {"reasoning": "Low food, need bread", "primary_action": "gather", "target": {"type": "block", "value": "wheat"}, "urgency": "high"}`
     );
 
     return sections.join('\n');
@@ -530,8 +557,14 @@ class LLMBrain {
       return null;
     }
 
+    const targetValue = String(decision.target.value).toLowerCase();
+    if (targetValue === 'unknown' || targetValue === '' || !targetValue) {
+      console.warn('[LLMBrain] Invalid target value, using default');
+      decision.target.value = 'oak_log';
+    }
+
     if (decision.target.type && !validTargetTypes.includes(decision.target.type)) {
-      decision.target.type = 'item';
+      decision.target.type = 'block';
     }
 
     if (!decision.urgency || !validUrgencies.includes(decision.urgency)) {
