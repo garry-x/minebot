@@ -1,6 +1,7 @@
 import { Bot, Entity } from 'mineflayer';
 import { Vec3 } from 'vec3';
-import logger = require('./logger');
+import * as loggerModule from './logger';
+const logger = loggerModule;
 
 interface MoveOptions {
   range?: number;

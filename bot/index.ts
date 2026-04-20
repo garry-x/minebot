@@ -742,4 +742,4 @@ class MinecraftBot {
   }
 }
 
-export = MinecraftBot;
+export default MinecraftBot;

@@ -1003,8 +1003,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
       try {
         if (mode === 'autonomous') {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const AutonomousEngine = require('./autonomous-engine')
+          const AutonomousEngine = (await import('./autonomous-engine')).default;
           const enableLLM = wrapper.enableLLM || false;
           const engine = new AutonomousEngine(bot, pathfinder, this, enableLLM)
           wrapper.autonomousEngine = engine
@@ -1142,4 +1141,4 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
   }
 }
 
-export = behaviors
+export default behaviors;
