@@ -739,7 +739,7 @@ app.post('/api/bot/start', async (req, res) => {
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
       logger.info(`[API] Creating bot instance for host: ${mcHost}:${mcPort}`);
       logger.trace('[API] Loading bot/index.js from:', require.resolve('./bot/index'));
-    const MinecraftBot = require('./bot/index');
+    const MinecraftBot = require('./bot/index').default;
     const bot = new MinecraftBot({ 
       host: mcHost, 
       port: mcPort,
@@ -1016,7 +1016,7 @@ app.post('/api/bot/:botId/restart', async (req, res) => {
     
     const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
-    const MinecraftBot = require('./bot/index');
+    const MinecraftBot = require('./bot/index').default;
     const bot = new MinecraftBot({ 
       host: mcHost, 
       port: mcPort,
@@ -2122,7 +2122,7 @@ async function attemptBotReconnect(savedBot) {
   try {
     const mcHost = process.env.MINECRAFT_SERVER_HOST || 'localhost';
     const mcPort = parseInt(process.env.MINECRAFT_SERVER_PORT || '25565');
-    const MinecraftBot = require('./bot/index');
+    const MinecraftBot = require('./bot/index').default;
     const bot = new MinecraftBot({ 
       host: mcHost, 
       port: mcPort,

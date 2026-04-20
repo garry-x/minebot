@@ -248,7 +248,7 @@ class MinecraftBot {
             logger.trace('[Bot] Bot version:', this.bot!.version);
             
             this.pathfinder = new Pathfinder(this.bot!);
-            this.behaviors = require('./behaviors')(this.bot!, this.pathfinder);
+            this.behaviors = require('./behaviors').default(this.bot!, this.pathfinder);
             this.autonomousRunning = false;
             this.autonomousEngine = null;
             this.goalState = null;
