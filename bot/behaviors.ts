@@ -290,10 +290,13 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
     const getWrapper = (): BotWrapper | null => {
       const w = (bot as any).__wrapper || null;
+      console.log('[Behaviors getWrapper] __wrapper:', !!w, 'enableLLM before:', w?.enableLLM);
       if (w) {
         w.enableLLM = true;
         w.autonomousRunning = true;
+        (bot as any).autonomousRunning = true;
       }
+      console.log('[Behaviors getWrapper] enableLLM after:', w?.enableLLM, 'autonomousRunning:', w?.autonomousRunning);
       return w;
     }
 
