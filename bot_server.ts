@@ -1842,13 +1842,13 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     }
     
     let autonomousState = null;
-    const hasEngine = !!(bot.autonomousEngine || (bot.bot && (bot.bot as any).autonomousEngine));
-    const hasRunning = bot.autonomousRunning || (bot.bot && (bot.bot as any).autonomousRunning);
-    console.log('[Watch] bot.autonomousEngine:', hasEngine, 'bot.autonomousRunning:', hasRunning);
-    const engine = bot.autonomousEngine || (bot.bot ? (bot.bot as any).autonomousEngine : null);
-    const isRunning = bot.autonomousRunning || (bot.bot ? (bot.bot as any).autonomousRunning : null);
+    const mineflayerBot = bot.bot;
+    console.log('[Watch] bot type:', typeof bot, 'bot.bot type:', typeof mineflayerBot);
+    console.log('[Watch] Checking engine on bot:', (bot as any).autonomousEngine, 'on bot.bot:', mineflayerBot ? (mineflayerBot as any).autonomousEngine : null);
+    const engine = (bot as any).autonomousEngine || (mineflayerBot ? (mineflayerBot as any).autonomousEngine : null);
+    const isRunning = (bot as any).autonomousRunning || (mineflayerBot ? (mineflayerBot as any).autonomousRunning : null);
     if (engine && isRunning) {
-      console.log('[Watch] Getting engine state...');
+      console.log('[Watch] Getting engine state, engine exists:', !!engine, 'isRunning:', isRunning);
       const engineState = engine.state;
       autonomousState = {
         currentAction: engineState.currentAction,
