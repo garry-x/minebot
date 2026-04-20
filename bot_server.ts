@@ -798,10 +798,14 @@ app.post('/api/bot/start', async (req, res) => {
           
           // Start automatic behavior automatically
           bot.currentMode = 'autonomous';
+          console.log('[API] Calling automaticBehavior for', botId);
           bot.behaviors.automaticBehavior({ 
             mode: 'autonomous',
             initialGoal: 'basic_survival'
+          }).then(() => {
+            console.log('[API] automaticBehavior completed for', botId);
           }).catch(err => {
+            console.error('[API] Error in automatic behavior:', err.message, err.stack);
             logger.error(`[API] Error in automatic behavior: ${err.message}`);
           });
             logger.info(`[API] Automatic behavior started for bot ${botId}`);
