@@ -1013,8 +1013,10 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
       try {
         if (mode === 'autonomous') {
+          console.log('[Behaviors] Starting autonomous mode, enableLLM=', wrapper.enableLLM);
           const AutonomousEngine = (await import('./autonomous-engine')).default;
-          const enableLLM = wrapper.enableLLM || false;
+          const enableLLM = wrapper.enableLLM !== undefined ? wrapper.enableLLM : true;
+          console.log('[Behaviors] Creating AutonomousEngine with enableLLM=', enableLLM);
           const engine = new AutonomousEngine(bot, pathfinder, this, enableLLM)
           wrapper.autonomousEngine = engine
 
