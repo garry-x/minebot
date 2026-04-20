@@ -167,7 +167,7 @@ class AutonomousEngine {
   private llmAvailable: boolean;
   private lastDecisionFromLLM: boolean = false;
 
-  constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors, enableLLM = USE_LLM) {
+  constructor(bot: Bot, pathfinder: Pathfinder, behaviors: Behaviors, enableLLM?: boolean) {
     this.bot = bot;
     this.pathfinder = pathfinder;
     this.behaviors = behaviors;
@@ -189,8 +189,12 @@ class AutonomousEngine {
       llmStrategy: undefined
     };
 
-    if (enableLLM) {
+    const shouldEnableLLM = enableLLM !== undefined ? enableLLM : (process.env.USE_LLM === 'true');
+    if (shouldEnableLLM) {
+      console.log('[AutonomousEngine] Initializing LLM Brain (USE_LLM=true)');
       this.initializeLLMBrain();
+    } else {
+      console.log('[AutonomousEngine] LLM disabled, enableLLM=' + enableLLM + ', USE_LLM=' + process.env.USE_LLM);
     }
   }
 
