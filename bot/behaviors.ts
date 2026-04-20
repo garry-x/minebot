@@ -1012,8 +1012,10 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       }
 
       logger.debug(`Starting ${mode} behavior with goal: ${initialGoal}`)
+      console.log('[Behaviors] mode from options:', mode, 'initialGoal:', initialGoal);
 
       try {
+        console.log('[Behaviors] checking mode === autonomous, mode=', mode, 'result:', mode === 'autonomous');
         if (mode === 'autonomous') {
           console.log('[Behaviors] Starting autonomous mode, enableLLM=', wrapper.enableLLM);
           const AutonomousEngine = (await import('./autonomous-engine')).default;
