@@ -695,7 +695,8 @@ app.get('/api/bots', async (req, res) => {
 
 app.post('/api/bot/start', async (req, res) => {
   try {
-    const { username, enableLLM } = req.body;
+    const { username } = req.body;
+    const enableLLM = process.env.USE_LLM === 'true';
     
     logger.info(`[API] Received request to start bot with username: ${username}`);
     

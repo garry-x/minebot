@@ -732,7 +732,6 @@ botCommand
   .option('-h, --host <host>', 'Minecraft服务器地址', 'localhost')
   .option('-p, --port <port>', 'Minecraft服务器端口', '25565')
   .option('--version <version>', 'Minecraft版本', '1.21.11')
-  .option('--llm', '启用LLM Brain决策支持')
   .action(async (botName: string, options: any) => {
     console.log(`🤖 启动机器人 "${botName}"...`);
 
@@ -742,8 +741,9 @@ botCommand
       return;
     }
 
-    if (options.llm) {
-      console.log('🧠 LLM Brain决策支持: 已启用');
+    const useLlm = getEnvVar('USE_LLM') || process.env.USE_LLM || 'false';
+    if (useLlm === 'true') {
+      console.log('🧠 LLM Brain决策支持: 已启用 (全局)');
     }
 
     try {
@@ -760,8 +760,7 @@ botCommand
           username: botName,
           host: options.host,
           port: parseInt(options.port, 10),
-          version: options.version,
-          enableLLM: options.llm || false
+          version: options.version
         })
       ) as any;
 
