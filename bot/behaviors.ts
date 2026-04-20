@@ -288,9 +288,13 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     return positions
   }
 
-  const getWrapper = (): BotWrapper | null => {
-    return (bot as any).__wrapper || null
-  }
+    const getWrapper = (): BotWrapper | null => {
+      const w = (bot as any).__wrapper || null;
+      if (w) {
+        w.enableLLM = true;
+      }
+      return w;
+    }
 
   const originalAutomaticBehavior = async function(this: Behaviors, options: AutomaticBehaviorOptions = {}): Promise<boolean> {
     const {
@@ -1020,7 +1024,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
           while (isRunning && wrapper.autonomousRunning) {
             try {
               const cycleResult = await engine.runCycle(wrapper.goalState || {})
-              logger.debug(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}, Goal: ${cycleResult.goalState?.goalId}, Progress: ${(cycleResult.goalState?.progress || 0).toFixed(2)}`)
+              console.log(`[Autonomous] Cycle: ${cycleResult.state.currentAction}, Priority: ${cycleResult.state.priority}, usedLLM=${cycleResult.usedLLM}`)
 
               if (cycleResult.goalState && cycleResult.goalState.goalId) {
                 wrapper.goalState = cycleResult.goalState
