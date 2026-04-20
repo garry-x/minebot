@@ -1020,11 +1020,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
       // Force autonomous mode for basic_survival goal
       const effectiveMode = (initialGoal === 'basic_survival') ? 'autonomous' : (mode || 'survival');
-      console.log('[Behaviors] effectiveMode (basic_survival forced):', effectiveMode);
+      console.log('[Behaviors] *** EFFECTIVE MODE:', effectiveMode, 'mode:', mode, 'initialGoal:', initialGoal);
 
       try {
+        console.log('[Behaviors] About to check effectiveMode === autonomous, effectiveMode:', effectiveMode);
         if (effectiveMode === 'autonomous') {
-          console.log('[Behaviors] Starting autonomous mode, enableLLM=', wrapper.enableLLM);
+          console.log('[Behaviors] *** ENTERING AUTONOMOUS BRANCH, wrapper:', !!wrapper);
           const AutonomousEngine = (await import('./autonomous-engine')).default;
           const enableLLM = wrapper.enableLLM !== undefined ? wrapper.enableLLM : true;
           console.log('[Behaviors] Creating AutonomousEngine with enableLLM=', enableLLM);
