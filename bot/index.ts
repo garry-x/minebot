@@ -65,9 +65,13 @@ class MinecraftBot {
   private shouldReconnect: boolean;
   private startAutomatic: boolean;
   private autonomousRunning: boolean;
-  private autonomousEngine: unknown;
+  private _autonomousEngine: unknown;
   private goalState: unknown;
   public enableLLM: boolean;
+
+  get autonomousEngine(): unknown {
+    return this._autonomousEngine;
+  }
 
   constructor(options: BotOptions = {}) {
     this.options = options;
@@ -91,7 +95,7 @@ class MinecraftBot {
     this.shouldReconnect = false;
     this.startAutomatic = false;
     this.autonomousRunning = false;
-    this.autonomousEngine = null;
+    this._autonomousEngine = null;
     this.goalState = null;
     this.enableLLM = this.options.enableLLM || false;
   }
@@ -250,7 +254,7 @@ class MinecraftBot {
             this.pathfinder = new Pathfinder(this.bot!);
             this.behaviors = require('./behaviors').default(this.bot!, this.pathfinder);
             this.autonomousRunning = false;
-            this.autonomousEngine = null;
+            this._autonomousEngine = null;
             this.goalState = null;
             this.events = require('./events')(this.bot!);
             this.events.setupListeners();

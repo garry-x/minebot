@@ -1866,11 +1866,11 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
         llmUrgency: engineState.llmUrgency,
         llmStrategy: engineState.llmStrategy
       };
-      if (typeof bot.autonomousEngine.isUsingLLM === 'function') {
-        (autonomousState as any).usedLLM = bot.autonomousEngine.isUsingLLM();
+      if (typeof engine.isUsingLLM === 'function') {
+        (autonomousState as any).usedLLM = engine.isUsingLLM();
       }
-      if (typeof bot.autonomousEngine.getLLMBrainStats === 'function') {
-        (autonomousState as any).llmStats = bot.autonomousEngine.getLLMBrainStats();
+      if (typeof engine.getLLMBrainStats === 'function') {
+        (autonomousState as any).llmStats = engine.getLLMBrainStats();
       }
     }
     
