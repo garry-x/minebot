@@ -48,7 +48,7 @@ class ScreenshotModule {
     this.usePrismarine = true;
 
     this.isInitialized = true;
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     logger.debug(`[Screenshot] Module initialized: ${width} x ${height} (prismarine: ${this.usePrismarine})`);
     return true;
   }
@@ -69,7 +69,7 @@ class ScreenshotModule {
     this.ctx!.fillStyle = '#000000';
     this.ctx!.fillRect(0, 0, width, height);
 
-    const logger = require('./logger');
+    const logger = require('./logger').default;
 
     if (this.usePrismarine && this.bot && this.bot.entity && this.bot.entity.position) {
       try {

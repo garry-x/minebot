@@ -5,7 +5,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const logger = require('./bot/logger');
+const logger = require('./bot/logger').default;
 const BotConfig = require('./config/models/BotConfig').default || require('./config/models/BotConfig');
 const BotState = require('./config/models/BotState').default || require('./config/models/BotState');
 const GoalSystem = require('./bot/goal-system').default || require('./bot/goal-system');

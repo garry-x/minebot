@@ -127,4 +127,4 @@ const logger: Logger = {
   getLevel: (): LogLevel => currentLevel
 };
 
-export = logger;
+export default logger;

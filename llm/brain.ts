@@ -568,10 +568,6 @@ class LLMBrain {
       decision.target.type = 'block';
     }
 
-    if (decision.target.type && !validTargetTypes.includes(decision.target.type)) {
-      decision.target.type = 'block';
-    }
-
     if (!decision.urgency || !validUrgencies.includes(decision.urgency)) {
       decision.urgency = 'medium';
     }

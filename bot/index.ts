@@ -101,13 +101,13 @@ class MinecraftBot {
   }
 
   async connect(username: string, accessToken?: string, startAutomatic = false): Promise<void> {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     const fs = require('fs');
     const path = require('path');
     const mineflayer = require('mineflayer');
     const WebSocket = require('ws');
-    const Pathfinder = require('./pathfinder');
-    const ScreenshotModule = require('./ScreenshotModule');
+    const Pathfinder = require('./pathfinder').default;
+    const ScreenshotModule = require('./ScreenshotModule').default;
 
     logger.info('[Bot] connect() called, this.botId is:', this.botId);
     return new Promise((resolve, reject) => {
@@ -256,7 +256,7 @@ class MinecraftBot {
             this.autonomousRunning = false;
             this._autonomousEngine = null;
             this.goalState = null;
-            this.events = require('./events')(this.bot!);
+            this.events = require('./events').default(this.bot!);
             this.events.setupListeners();
           
             // Initialize screenshot module and start streaming (non-blocking)
@@ -330,7 +330,7 @@ class MinecraftBot {
   }
 
   private setupEventListeners(): void {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     const WebSocket = require('ws');
 
     if (!this.bot) return;
@@ -478,7 +478,7 @@ class MinecraftBot {
   }
 
   private setupWebSocket(): void {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     const WebSocket = require('ws');
 
     // Connect to the backend WebSocket server
@@ -529,7 +529,7 @@ class MinecraftBot {
   }
 
   private handleWebSocketMessage(message: WebSocketMessage): void {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     
     switch (message.type) {
       case 'command':
@@ -562,7 +562,7 @@ class MinecraftBot {
   }
 
   private executeCommand(commandData: CommandData): void {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     
     switch (commandData.action) {
       case 'move':
@@ -612,7 +612,7 @@ class MinecraftBot {
   }
 
   private sendStatusUpdate(): void {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     const WebSocket = require('ws');
     
     if (!this.isConnected || !this.bot || !this.bot.entity || !this.ws) return;
@@ -664,9 +664,8 @@ class MinecraftBot {
   }
 
   async initializeScreenshot(): Promise<boolean> {
-    const logger = require('./logger');
-    const ScreenshotModule = require('./ScreenshotModule');
-    
+    const logger = require('./logger').default;
+    const ScreenshotModule = require('./ScreenshotModule').default;
     if (this.screenshotModule) {
       (this.screenshotModule as { destroy: () => void }).destroy();
     }
@@ -682,7 +681,7 @@ class MinecraftBot {
   }
 
   startScreenshotStream(options: ScreenshotOptions = {}): (() => Promise<Buffer>) | null {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     const { fps = 10, quality = 0.6 } = options;
     
     if (!this.screenshotModule || !(this.screenshotModule as { isReady: () => boolean }).isReady()) {
@@ -712,7 +711,7 @@ class MinecraftBot {
   }
 
   async disconnect(): Promise<void> {
-    const logger = require('./logger');
+    const logger = require('./logger').default;
     
     this.shouldReconnect = false;
     this.stopScreenshotStream();

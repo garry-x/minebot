@@ -27,7 +27,7 @@ interface EventListeners {
   setupListeners: () => void;
 }
 
-export = function(bot: Bot): EventListeners {
+export default function(bot: Bot): EventListeners {
   let lastHealth: number = bot.health;
   let lastFood: number = bot.food;
   let lastPosition: Position = {

@@ -1,7 +1,6 @@
 import { Bot, Item, Entity } from 'mineflayer';
 import { Vec3 } from 'vec3';
-import * as loggerModule from './logger';
-const logger = loggerModule;
+import logger from './logger';
 import GoalSystem, { GoalStateData } from './goal-system';
 
 // Import LLM Brain classes
