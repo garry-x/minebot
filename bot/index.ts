@@ -653,6 +653,7 @@ class MinecraftBot {
     
     try {
       const position = this.bot.entity.position;
+      if (!position || !isFinite(position.x) || !isFinite(position.z)) return;
       const health = this.bot.health;
       const food = this.bot.food;
       const experience = this.bot.experience;

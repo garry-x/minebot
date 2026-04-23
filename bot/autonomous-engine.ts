@@ -225,6 +225,11 @@ class AutonomousEngine {
   }
 
   assessState(): AssessmentResult {
+    const botPos = this.bot.entity?.position;
+    if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+      return { health: 0, food: 0, threatScore: 0, nearbyHostiles: 0, inventory: [] };
+    }
+
     const health = this.bot.health || 20;
     const food = this.bot.food || 20;
     const inventory = this.bot.inventory.items();
@@ -247,7 +252,7 @@ class AutonomousEngine {
         entity.name.includes('spider');
 
       if (isHostile) {
-        const dist = this.bot.entity.position.distanceTo(entity.position);
+        const dist = botPos.distanceTo(entity.position);
         if (dist < nearestHostileDist) {
           nearestHostileDist = dist;
         }
@@ -516,9 +521,9 @@ class AutonomousEngine {
         }
         case 'find_shelter': {
           const safePos = new Vec3(
-            this.bot.entity.position.x + 10,
-            this.bot.entity.position.y,
-            this.bot.entity.position.z + 10
+            botPos.x + 10,
+            botPos.y,
+            botPos.z + 10
           );
           try {
             await this.pathfinder.moveTo(safePos, { timeout: 30000 });
