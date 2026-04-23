@@ -68,6 +68,8 @@ class MinecraftBot {
   private _autonomousEngine: unknown;
   private goalState: unknown;
   public enableLLM: boolean;
+  private username: string | null;
+  private accessToken: string | null;
 
   get autonomousEngine(): unknown {
     return this._autonomousEngine;
@@ -98,6 +100,8 @@ class MinecraftBot {
     this._autonomousEngine = null;
     this.goalState = null;
     this.enableLLM = this.options.enableLLM || false;
+    this.username = null;
+    this.accessToken = null;
   }
 
   async connect(username: string, accessToken?: string, startAutomatic = false): Promise<void> {
@@ -131,6 +135,8 @@ class MinecraftBot {
       
       this.bot = mineflayer.createBot(botOptions);
       this.startAutomatic = startAutomatic;
+      this.username = username;
+      this.accessToken = accessToken || null;
       
       logger.trace('[Bot] After createBot, this.botId is:', this.botId);
 
@@ -177,29 +183,41 @@ class MinecraftBot {
             logger.info('[Bot] Read error:', (e as Error).message);
           }
           
-          const currentGM = this.bot!.gameMode;
-          logger.info(`[Bot] Server GM: ${serverGamemode}, Bot GM: ${currentGM} (${typeof currentGM})`);
+          const normalizeGameMode = (gm: any): string => {
+            if (gm === 0 || gm === 'survival' || gm === 's') return 'survival';
+            if (gm === 1 || gm === 'creative' || gm === 'c') return 'creative';
+            if (gm === 2 || gm === 'adventure' || gm === 'a') return 'adventure';
+            if (gm === 3 || gm === 'spectator' || gm === 'sp') return 'spectator';
+            return String(gm);
+          };
           
-          if (serverGamemode === 'survival' && currentGM === 0) {
+          const gameMode = (this.bot! as any).game?.gameMode;
+          const currentGM = gameMode !== undefined ? gameMode : (this.bot! as any).gameMode;
+          const normalizedGM = normalizeGameMode(currentGM);
+          logger.info(`[Bot] Server GM: ${serverGamemode}, Bot GM: ${normalizedGM} (${typeof currentGM})`);
+          
+          if (serverGamemode === 'survival' && normalizedGM === 'survival') {
             logger.info('[Bot] Already in survival mode, skipping');
             return;
           }
           
-          if (serverGamemode === 'survival' && currentGM !== 0) {
-            logger.info('[Bot] Sending /gamemode survival command...');
+          if (serverGamemode === 'survival' && normalizedGM !== 'survival') {
+            logger.info(`[Bot] Bot is in ${normalizedGM} mode, sending /gamemode survival command...`);
             this.bot!.chat('/gamemode survival');
             
             setTimeout(() => {
-              const newGM = this.bot!.gameMode;
-              logger.info(`[Bot] After cmd, Bot GM: ${newGM}`);
+              const checkGame = (this.bot! as any).game?.gameMode;
+              const newGM = checkGame !== undefined ? checkGame : (this.bot! as any).gameMode;
+              const normalizedNewGM = normalizeGameMode(newGM);
+              logger.info(`[Bot] After cmd, Bot GM: ${normalizedNewGM}`);
               
-              if (newGM !== 0 && attempt < maxAttempts) {
+              if (normalizedNewGM !== 'survival' && attempt < maxAttempts) {
                 logger.info(`[Bot] Game mode not changed, retrying in 2s...`);
                 setTimeout(() => syncGameMode(attempt + 1, maxAttempts), 2000);
-              } else if (newGM === 0) {
+              } else if (normalizedNewGM === 'survival') {
                 logger.info('[Bot] Game mode successfully changed to survival');
               } else {
-                logger.warn(`[Bot] Game mode sync failed after ${maxAttempts} attempts`);
+                logger.debug(`[Bot] Game mode sync failed after ${maxAttempts} attempts (bot may already be in correct mode)`);
               }
             }, 1500);
           }
@@ -447,7 +465,23 @@ class MinecraftBot {
         }
         
         try {
-          await this.bot!.connect(this.options);
+          // Clean up old bot instance before reconnecting
+          if (this.bot) {
+            try {
+              this.bot.removeAllListeners();
+              this.bot.end();
+            } catch (e) {
+              // Ignore cleanup errors
+            }
+            this.bot = null;
+          }
+          
+          if (!this.username) {
+            logger.error('[Bot] Cannot reconnect: username not saved');
+            return;
+          }
+          
+          await this.connect(this.username, this.accessToken || undefined, this.startAutomatic);
           logger.info('[Bot] Reconnected successfully!');
           this.isConnected = true;
           this.deadReason = null;

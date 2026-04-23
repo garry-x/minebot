@@ -447,7 +447,8 @@ class LLMBrain {
       const responseText = data.choices[0]?.text?.trim();
 
       if (!responseText) {
-        throw new Error('Empty response from vLLM');
+        console.warn('[LLMBrain] Empty response from vLLM, returning null for fallback');
+        return null;
       }
 
       console.log('[LLMBrain] Received decision from vLLM');

@@ -250,6 +250,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
   ): Vec3[] => {
     const positions: Vec3[] = []
     const pos = bot.entity.position
+
+    if (!pos || !isFinite(pos.x) || !isFinite(pos.z)) {
+      logger.warn(`[Behaviors] findBlocks: bot position is invalid (${pos?.x}, ${pos?.y}, ${pos?.z})`)
+      return positions
+    }
+
     const scanRadius = Math.min(maxDistance, 16)
 
     const startX = Math.floor(pos.x - scanRadius)
@@ -442,7 +448,15 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       logger.debug(`At offset: ${offsetX}, ${offsetY}, ${offsetZ}`)
 
       try {
-        const isCreativeMode = bot.gameMode === 1 || bot.gameMode === 'creative'
+        const getGameMode = (): number => {
+          const gm = (bot as any).game?.gameMode;
+          if (gm !== undefined && typeof gm === 'number') return gm;
+          const legacyGM = (bot as any).gameMode;
+          if (legacyGM === 'creative') return 1;
+          if (legacyGM === 'survival') return 0;
+          return typeof legacyGM === 'number' ? legacyGM : 0;
+        };
+        const isCreativeMode = getGameMode() === 1;
 
         for (let y = 0; y < height; y++) {
           for (let x = 0; x < width; x++) {
@@ -800,6 +814,23 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     gatherResources: async function(options: GatherResourcesOptions): Promise<boolean> {
       const { targetBlocks, radius = 20 } = options
 
+      // Validate bot entity position before proceeding, with retry
+      const maxRetries = 10
+      let retryCount = 0
+      let botPos = bot.entity?.position
+      
+      while ((!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) && retryCount < maxRetries) {
+        retryCount++
+        logger.debug(`[Behaviors] Bot position invalid (${botPos?.x}, ${botPos?.y}, ${botPos?.z}), waiting... (attempt ${retryCount}/${maxRetries})`)
+        await new Promise(resolve => setTimeout(resolve, 500))
+        botPos = bot.entity?.position
+      }
+      
+      if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+        logger.warn(`[Behaviors] Skipping resource gathering: bot position is still invalid after ${maxRetries} attempts (${botPos?.x}, ${botPos?.y}, ${botPos?.z})`)
+        return false
+      }
+
       logger.debug(`Gathering resources: ${JSON.stringify(targetBlocks)} within radius ${radius}`)
 
       try {
@@ -812,11 +843,16 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
         }
 
         if (blockPositions.length === 0) {
+          const botPos = bot.entity?.position
+          if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+            logger.warn(`[Behaviors] Cannot explore: bot position is invalid (${botPos?.x}, ${botPos?.y}, ${botPos?.z})`)
+            return false
+          }
           const angle = Math.random() * Math.PI * 2
           const explorePos = new Vec3(
-            bot.entity.position.x + Math.cos(angle) * 20,
-            bot.entity.position.y,
-            bot.entity.position.z + Math.sin(angle) * 20
+            botPos.x + Math.cos(angle) * 20,
+            botPos.y,
+            botPos.z + Math.sin(angle) * 20
           )
           try {
             await pathfinder.moveTo(explorePos, { timeout: 15000, range: 2 })
@@ -832,12 +868,14 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
         let optimalStrategy = { action: 'linear', order: blockPositions }
 
-        const botPos = bot.entity.position
-        optimalStrategy.order = [...blockPositions].sort((a, b) => {
-          const distA = Math.sqrt(Math.pow(a.x - botPos.x, 2) + Math.pow(a.z - botPos.z, 2))
-          const distB = Math.sqrt(Math.pow(b.x - botPos.x, 2) + Math.pow(b.z - botPos.z, 2))
-          return distA - distB
-        })
+        const sortedBotPos = bot.entity?.position
+        if (sortedBotPos && isFinite(sortedBotPos.x) && isFinite(sortedBotPos.z)) {
+          optimalStrategy.order = [...blockPositions].sort((a, b) => {
+            const distA = Math.sqrt(Math.pow(a.x - sortedBotPos.x, 2) + Math.pow(a.z - sortedBotPos.z, 2))
+            const distB = Math.sqrt(Math.pow(b.x - sortedBotPos.x, 2) + Math.pow(b.z - sortedBotPos.z, 2))
+            return distA - distB
+          })
+        }
 
         let successCount = 0
         let failCount = 0

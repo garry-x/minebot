@@ -49,6 +49,13 @@ class Pathfinder {
     } = options;
 
     const targetVec = target instanceof Vec3 ? target : new Vec3(target.x, target.y, target.z);
+    
+    // Validate coordinates before moving
+    if (!isFinite(targetVec.x) || !isFinite(targetVec.y) || !isFinite(targetVec.z)) {
+      logger.warn(`[Pathfinder] Invalid target coordinates: ${targetVec.x}, ${targetVec.y}, ${targetVec.z}`);
+      throw new Error(`Invalid target coordinates: (${targetVec.x}, ${targetVec.y}, ${targetVec.z})`);
+    }
+    
     logger.debug(`[Pathfinder] Moving to ${targetVec.x}, ${targetVec.y}, ${targetVec.z}`);
 
     return this.moveWithPlugin(targetVec, { range, timeout });
