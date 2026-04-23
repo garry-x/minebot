@@ -354,7 +354,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
         default:
           logger.debug('Auto-gathering survival resources...')
 
-          const pos = bot.entity.position
+          let pos = bot.entity?.position
+          while (!pos || !isFinite(pos.x) || !isFinite(pos.z)) {
+            logger.debug('[Behaviors] Waiting for valid bot position...')
+            await new Promise(r => setTimeout(r, 500))
+            pos = bot.entity?.position
+          }
           if (pos.y > 70) {
             logger.debug(`Bot is at height ${pos.y}, descending to ground...`)
             const groundY = 63
@@ -397,6 +402,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
             logger.debug(`No resources found, exploring...`)
             const currentPos = bot.entity.position
 
+            if (!currentPos || !isFinite(currentPos.x) || !isFinite(currentPos.z)) {
+              logger.debug('[Behaviors] Invalid position for exploration, retrying...')
+              await new Promise(r => setTimeout(r, 500))
+              continue
+            }
+
             const exploreX = currentPos.x + (Math.random() - 0.5) * 20
             const exploreZ = currentPos.z + (Math.random() - 0.5) * 20
 
@@ -405,7 +416,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
                 timeout: 20000,
                 useJump: true
               })
-              logger.debug(`Explored to: ${bot.entity.position.x.toFixed(1)}, ${bot.entity.position.z.toFixed(1)}`)
+              logger.debug(`Explored to: ${currentPos.x.toFixed(1)}, ${currentPos.z.toFixed(1)}`)
             } catch (moveError: any) {
               logger.debug(`Explore move failed: ${moveError.message}, trying different direction...`)
 
@@ -444,6 +455,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     buildStructure: async function(options: BuildStructureOptions): Promise<boolean> {
       const { width, length, height, blockType, offsetX = 0, offsetY = 0, offsetZ = 0 } = options
 
+      const buildPos = bot.entity?.position
+      if (!buildPos || !isFinite(buildPos.x) || !isFinite(buildPos.z)) {
+        logger.warn(`[Behaviors] Cannot build: bot position invalid (${buildPos?.x}, ${buildPos?.y}, ${buildPos?.z})`)
+        return false
+      }
+
       logger.debug(`Building structure: ${width}x${length}x${height} with ${blockType}`)
       logger.debug(`At offset: ${offsetX}, ${offsetY}, ${offsetZ}`)
 
@@ -467,9 +484,9 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
               }
 
               const blockPos = {
-                x: Math.floor(bot.entity.position.x) + offsetX + x,
-                y: Math.floor(bot.entity.position.y) + offsetY + y,
-                z: Math.floor(bot.entity.position.z) + offsetZ + z
+                x: Math.floor(buildPos.x) + offsetX + x,
+                y: Math.floor(buildPos.y) + offsetY + y,
+                z: Math.floor(buildPos.z) + offsetZ + z
               }
 
               if (!isCreativeMode) {
@@ -515,6 +532,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
 
     craftItem: async function(targetItem: string, count: number = 1): Promise<boolean> {
+      const craftPos = bot.entity?.position
+      if (!craftPos || !isFinite(craftPos.x) || !isFinite(craftPos.z)) {
+        logger.warn('[Behaviors] Cannot craft: bot position invalid')
+        return false
+      }
+
       const recipes: { [key: string]: any } = {
         wooden_pickaxe: { type: 'wooden_pickaxe', count: 1, materials: { oak_planks: 3, stick: 2 } },
         stone_pickaxe: { type: 'stone_pickaxe', count: 1, materials: { cobblestone: 3, stick: 2 } },
@@ -560,7 +583,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       }
 
       const craftingTables = bot.findBlocks({
-        point: bot.entity.position,
+        point: craftPos,
         matching: 'crafting_table',
         maxDistance: 5,
         count: 1
@@ -595,6 +618,12 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     buildHouse: async function(options: BuildHouseOptions = {}): Promise<boolean> {
       const { style = 'basic', material = 'cobblestone' } = options
 
+      const housePos = bot.entity?.position
+      if (!housePos || !isFinite(housePos.x) || !isFinite(housePos.z)) {
+        logger.warn(`[Behaviors] Cannot build house: bot position invalid`)
+        return false
+      }
+
       const materials: { [key: string]: any } = {
         basic: { width: 5, length: 5, height: 3, door: true, windows: true },
         small: { width: 3, length: 3, height: 2, door: true, windows: false },
@@ -624,9 +653,9 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
       if (house.door) {
         const doorPos = {
-          x: Math.floor(bot.entity.position.x) + 3 + Math.floor(house.width / 2),
-          y: Math.floor(bot.entity.position.y) + 1,
-          z: Math.floor(bot.entity.position.z)
+          x: Math.floor(housePos.x) + 3 + Math.floor(house.width / 2),
+          y: Math.floor(housePos.y) + 1,
+          z: Math.floor(housePos.z)
         }
         try {
           const doorBlock = bot.blockAt(doorPos as any)
@@ -647,9 +676,14 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
         return false
       }
 
+      const botPos = bot.entity?.position
+      if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+        return false
+      }
+
       try {
         const targetPos = targetEntity.position
-        const distance = bot.entity.position.distanceTo(targetPos)
+        const distance = botPos.distanceTo(targetPos)
 
         if (distance > followRange) {
           await pathfinder.moveTo(targetPos, { timeout: 10000, range: 2 })
@@ -671,6 +705,11 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
     findNearestHostile: function(radius: number = 16, minEngageDistance: number = 4): any {
       const hostileMobs = ['zombie', 'skeleton', 'spider', 'creeper', 'enderman', 'piglin', 'hoglin', 'zombified_piglin', 'drowned', 'witch', 'ravager', 'vex', 'pillager']
 
+      const botPos = bot.entity?.position
+      if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+        return null
+      }
+
       let nearestHostile = null
       let nearestDist = Infinity
 
@@ -687,7 +726,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
         if (!isHostile) continue
 
-        const dist = bot.entity.position.distanceTo(entity.position)
+        const dist = botPos.distanceTo(entity.position)
         if (dist < nearestDist && dist <= radius && dist >= minEngageDistance) {
           nearestDist = dist
           nearestHostile = entity
@@ -724,11 +763,16 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       const { aggressive = true, retreatHealth = 6 } = options
       const health = bot.health || 20
 
+      const botPos = bot.entity?.position
+      if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+        return { action: 'idle', reason: 'invalid position' }
+      }
+
       if (health <= retreatHealth && retreatHealth > 0) {
         const fleePos = new Vec3(
-          bot.entity.position.x + 15,
-          bot.entity.position.y,
-          bot.entity.position.z + 15
+          botPos.x + 15,
+          botPos.y,
+          botPos.z + 15
         )
         try {
           await pathfinder.moveTo(fleePos, { timeout: 8000, range: 2 })
@@ -740,18 +784,18 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
       const target = this.findNearestHostile(20)
       if (target) {
         const strategy = this.getMobStrategy(target.name)
-        const dist = bot.entity.position.distanceTo(target.position)
+        const dist = botPos.distanceTo(target.position)
 
         logger.debug(`[Combat] ${target.name} (strategy: ${strategy.action}, dist: ${dist.toFixed(1)})`)
 
         if (target.name === 'creeper' && dist < strategy.retreatDist) {
-          const dx = bot.entity.position.x - target.position.x
-          const dz = bot.entity.position.z - target.position.z
+          const dx = botPos.x - target.position.x
+          const dz = botPos.z - target.position.z
           const len = Math.sqrt(dx * dx + dz * dz) || 1
           const fleePos = new Vec3(
-            bot.entity.position.x + (dx / len) * 12,
-            bot.entity.position.y,
-            bot.entity.position.z + (dz / len) * 12
+            botPos.x + (dx / len) * 12,
+            botPos.y,
+            botPos.z + (dz / len) * 12
           )
           try {
             await pathfinder.moveTo(fleePos, { timeout: 5000, range: 2 })
@@ -767,16 +811,16 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
             await this.attackEntity({ targetEntity: target, followRange: strategy.retreatDist })
             return { action: 'attack', target: target.name }
           } else {
-            const dx = target.position.x - bot.entity.position.x
-            const dy = target.position.y - bot.entity.position.y
-            const dz = target.position.z - bot.entity.position.z
+            const dx = target.position.x - botPos.x
+            const dy = target.position.y - botPos.y
+            const dz = target.position.z - botPos.z
             const len = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1
             const approachPos = new Vec3(
               (dx / len) * (strategy.retreatDist - 1),
               (dy / len) * (strategy.retreatDist - 1),
               (dz / len) * (strategy.retreatDist - 1)
             )
-            const targetPos = bot.entity.position.plus(approachPos)
+            const targetPos = botPos.plus(approachPos)
             try {
               await pathfinder.moveTo(targetPos, { timeout: 5000, range: 2 })
             } catch { /* ignore */ }
@@ -877,12 +921,13 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
           })
         }
 
-        let successCount = 0
-        let failCount = 0
-        const maxFailures = 10
-        const gatherStartTime = Date.now()
+          let successCount = 0
+          let failCount = 0
+          const maxFailures = 10
+          const gatherStartTime = Date.now()
+          const gatherBotPos = bot.entity?.position
 
-        const positionsToVisit = optimalStrategy.order || blockPositions
+          const positionsToVisit = optimalStrategy.order || blockPositions
 
         for (const posItem of positionsToVisit) {
           const position = (posItem as any).position || posItem
@@ -910,7 +955,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
               logger.debug(`[Behaviors] Path changed during movement, continuing to next block`)
               continue
             }
-            const dist = bot.entity.position.distanceTo(new Vec3(position.x, position.y, position.z))
+            const dist = (gatherBotPos || bot.entity.position).distanceTo(new Vec3(position.x, position.y, position.z))
             if (dist < 5) {
               logger.debug(`Close enough (dist=${dist.toFixed(1)})`)
               reachedBlock = true
@@ -1110,7 +1155,11 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
     findSafeRetreat: async function(): Promise<boolean> {
       const wrapper = getWrapper()
-      const botPos = bot.entity.position
+      const botPos = bot.entity?.position
+      if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+        logger.warn('[Behaviors] Cannot find safe retreat: bot position invalid')
+        return false
+      }
 
       const safeBlocks = ['water', 'cave_air']
       const shelterBlocks = ['oak_log', 'birch_log', 'spruce_log', 'cobblestone', 'stone']

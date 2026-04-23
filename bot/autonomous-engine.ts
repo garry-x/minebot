@@ -489,6 +489,13 @@ class AutonomousEngine {
   async executeAction(action: ActionDecision): Promise<void> {
     this.state.currentAction = action.action;
 
+    // Validate bot position before executing any action
+    const botPos = this.bot.entity?.position;
+    if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+      logger.debug(`[AutonomousEngine] Skipping action '${action.action}': bot position invalid (${botPos?.x}, ${botPos?.y}, ${botPos?.z})`);
+      return;
+    }
+
     try {
       switch (action.action) {
         case 'gather':
@@ -562,6 +569,19 @@ class AutonomousEngine {
     goalState: GoalState | null;
     usedLLM: boolean;
   }> {
+    // Skip entire cycle if bot position is invalid
+    const botPos = this.bot.entity?.position
+    if (!botPos || !isFinite(botPos.x) || !isFinite(botPos.z)) {
+      logger.debug(`[AutonomousEngine] Skipping cycle: bot position invalid (${botPos?.x}, ${botPos?.y}, ${botPos?.z})`)
+      return {
+        state: this.state,
+        assessment: this.assessState(),
+        action: { action: 'idle', reason: 'no valid position' },
+        goalState,
+        usedLLM: false
+      }
+    }
+
     const assessment = this.assessState();
     const priority = this.calculatePriority(assessment);
     const actionDecision = await this.decideAction(priority, goalState, assessment);
