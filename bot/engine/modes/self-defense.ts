@@ -1,7 +1,6 @@
 // bot/engine/modes/self-defense.ts
 
 import { BaseMode } from './base';
-import { GoalBlock } from 'mineflayer-pathfinder/lib/goals';
 
 export class SelfDefenseMode extends BaseMode {
   get name() { return 'self_defense'; }
