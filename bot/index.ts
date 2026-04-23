@@ -1,4 +1,5 @@
 import type WebSocket from 'ws';
+import { Agent } from './engine/index';
 
 type BotInstance = any;
 
@@ -68,6 +69,7 @@ class MinecraftBot {
   private _autonomousEngine: unknown;
   private goalState: unknown;
   public enableLLM: boolean;
+  private agent: Agent | null = null;
   private username: string | null;
   private accessToken: string | null;
 
@@ -300,15 +302,24 @@ class MinecraftBot {
             
             // Start automatic behavior if requested
             if (this.startAutomatic) {
-              logger.info(`[Bot] Starting automatic behavior in autonomous mode`);
-              // Start automatic behavior in the background without blocking
-              (this.behaviors as { automaticBehavior: (options: { mode: string; initialGoal: string }) => Promise<void> }).automaticBehavior({ mode: 'autonomous', initialGoal: 'basic_survival' })
-                .then(() => {
-                  logger.info(`[Bot] Automatic behavior started in autonomous mode`);
-                })
-                .catch((err) => {
-                  logger.error(`[Bot] Error in automatic behavior: ${err.message}`);
-                });
+              logger.info(`[Bot] Starting Agent in autonomous mode`);
+              // Create Agent if autonomous mode
+              let llmBrain: any = null;
+              if (this.enableLLM && process.env.USE_LLM === 'true') {
+                const { LLMBrain } = require('../llm/brain');
+                llmBrain = new LLMBrain();
+              }
+              this.agent = new Agent(this.bot!, logger, this.enableLLM, llmBrain);
+              this.agent.start(300);
+              
+              // Set initial goal
+              const goalManager = this.agent!.getGoalManager();
+              goalManager.create('SELF_PROMPTER', {
+                name: 'basic_survival',
+                description: 'Survive and gather basic resources',
+                type: 'SELF_PROMPTER',
+              });
+              this.agent!.setGoal('basic_survival', 'Survive and gather basic resources');
               isResolved = true;
               if (connectTimeout) clearTimeout(connectTimeout);
               resolve();
@@ -569,15 +580,35 @@ class MinecraftBot {
       case 'command':
         this.executeCommand(message.data as CommandData);
         break;
-      case 'build':
-        (this.behaviors as { buildStructure: (data: unknown) => void }).buildStructure(message.data);
+      case 'build': {
+        if (this.agent) {
+          const buildData = (message.data as any);
+          const params = buildData || message.data;
+          const material = (params as any)?.material || 'cobblestone';
+          const width = (params as any)?.width || 5;
+          const length = (params as any)?.length || 5;
+          const height = (params as any)?.height || 4;
+          this.agent.executeCommand('build', `material=${material}&width=${width}&length=${length}&height=${height}`);
+        }
         break;
-      case 'gather':
-        (this.behaviors as { gatherResources: (data: unknown) => void }).gatherResources(message.data);
+      }
+      case 'gather': {
+        if (this.agent) {
+          const gatherData = (message.data as any);
+          const blockType = gatherData?.blockType || gatherData?.type || 'cobblestone';
+          const radius = gatherData?.radius || 30;
+          this.agent.executeCommand('gather', `block_type=${blockType}&radius=${radius}`);
+        }
         break;
-      case 'fly':
-        (this.behaviors as { flyTo: (data: unknown) => void }).flyTo(message.data);
+      }
+      case 'fly': {
+        if (this.agent) {
+          const flyData = (message.data as any);
+          const { x, y, z } = flyData;
+          this.agent.executeCommand('goTo', `${x},${y},${z}`);
+        }
         break;
+      }
       case 'status_update':
         // Ignore status updates from server - we don't need to act on them
         break;
@@ -749,6 +780,9 @@ class MinecraftBot {
     const logger = require('./logger').default;
     
     this.shouldReconnect = false;
+    if (this.agent) {
+      this.agent.stop();
+    }
     this.stopScreenshotStream();
     
     if (this._streamCaptureInterval) {
