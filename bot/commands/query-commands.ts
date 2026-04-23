@@ -7,12 +7,12 @@ export const queryCommands: Command[] = [
     name: 'status',
     prompt: '!status',
     description: 'Get current bot status (position, health, hunger, time, weather, active mode)',
-    async execute(_params, ctx) {
+    execute(_params, ctx) {
       const { bot } = ctx;
       const pos = bot.entity.position;
       const maxHealth = (bot as any).maxHealth || 20;
       const saturation = (bot as any).foodSaturation ?? 0;
-      return `Status: pos=(${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}) health=${bot.health}/${maxHealth} food=${bot.food}/${saturation} mode=idle`;
+      return Promise.resolve(`Status: pos=(${pos.x.toFixed(1)},${pos.y.toFixed(1)},${pos.z.toFixed(1)}) health=${bot.health}/${maxHealth} food=${bot.food}/${saturation} mode=idle`);
     },
   },
   {
