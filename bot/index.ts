@@ -286,7 +286,7 @@ class MinecraftBot {
               // Start automatic behavior in the background without blocking
               (this.behaviors as { automaticBehavior: (options: { mode: string; initialGoal: string }) => Promise<void> }).automaticBehavior({ mode: 'autonomous', initialGoal: 'basic_survival' })
                 .then(() => {
-                  logger.info(`[Bot] Automatic behavior started with mode: ${automaticMode}`);
+                  logger.info(`[Bot] Automatic behavior started in autonomous mode`);
                 })
                 .catch((err) => {
                   logger.error(`[Bot] Error in automatic behavior: ${err.message}`);

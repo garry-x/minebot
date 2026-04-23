@@ -590,12 +590,11 @@ class LLMBrain {
 
   private extractJsonFromResponse(response: string): string | null {
     const trimmed = response.trim();
-    let clean = trimmed
-      .replace(/<think>[\s\S]*?</think>/gi, '')
-      .replace(/<thinking>[\s\S]*?<\/thinking>/gi, '')
-      .replace(/<[\s\S]*?>/gi, '')
-      .replace(/```[\s\S]*?```/g, '')
-      .trim();
+    
+    let clean = trimmed.replace(/<thinking>[\s\S]*?<\/thinking>/gi, '');
+    clean = clean.replace(/<[\s\S]*?>/gi, '');
+    clean = clean.replace(/```[\s\S]*?```/g, '');
+    clean = clean.trim();
 
     const jsonMatch = clean.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {

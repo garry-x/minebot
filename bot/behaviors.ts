@@ -1005,7 +1005,7 @@ function behaviors(bot: Bot, pathfinder: Pathfinder): Behaviors {
 
       const wrapper = getWrapper()
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const GoalSystem = require('./goal-system')
+      const GoalSystem = require('./goal-system').default || require('./goal-system')
 
       if (wrapper) {
         wrapper.currentMode = mode

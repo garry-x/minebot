@@ -1844,14 +1844,22 @@ app.get('/api/bot/:botId/watch', async (req, res) => {
     let autonomousState = null;
     const mineflayerBot = bot.bot;
     const botObj = (bot as any);
-    console.log('[Watch] bot.bot exists:', !!mineflayerBot);
-    console.log('[Watch] botObj keys:', Object.keys(botObj).slice(0, 10));
-    console.log('[Watch] botObj.autonomousEngine:', !!botObj.autonomousEngine);
-    console.log('[Watch] botObj.autonomousRunning:', botObj.autonomousRunning);
-    console.log('[Watch] bot.bot keys:', mineflayerBot ? Object.keys(mineflayerBot).slice(0, 10) : 'no bot');
-    console.log('[Watch] bot.bot.autonomousEngine:', mineflayerBot ? !!(mineflayerBot as any).autonomousEngine : 'N/A');
-    const engine = botObj.autonomousEngine || (mineflayerBot ? (mineflayerBot as any).autonomousEngine : null);
-    const isRunning = botObj.autonomousRunning || (mineflayerBot ? (mineflayerBot as any).autonomousRunning : null);
+    
+    // DEBUG: log what we have
+    logger.info('[Watch] botObj type:', typeof botObj);
+    logger.info('[Watch] botObj keys:', Object.keys(botObj).slice(0, 15));
+    logger.info('[Watch] botObj.autonomousEngine:', !!botObj.autonomousEngine);
+    logger.info('[Watch] botObj.autonomousRunning:', botObj.autonomousRunning);
+    if (mineflayerBot) {
+      logger.info('[Watch] mineflayerBot keys:', Object.keys(mineflayerBot).slice(0, 15));
+      logger.info('[Watch] mineflayerBot.autonomousEngine:', !!(mineflayerBot as any).autonomousEngine);
+    }
+    
+    // Try multiple locations for autonomous engine
+    let engine = botObj.autonomousEngine || (mineflayerBot ? (mineflayerBot as any).autonomousEngine : null);
+    let isRunning = botObj.autonomousRunning || (mineflayerBot ? (mineflayerBot as any).autonomousRunning : false);
+    
+    logger.info('[Watch] Final: engine found:', !!engine, 'isRunning:', isRunning);
     if (engine && isRunning) {
       console.log('[Watch] Getting engine state, engine exists:', !!engine, 'isRunning:', isRunning);
       const engineState = engine.state;
