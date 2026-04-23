@@ -45,13 +45,49 @@ function getCallerModule(): string {
   const err = new Error();
   const stack = err.stack?.split('\n') || [];
 
-  for (let i = 3; i < stack.length; i++) {
-    const match = stack[i].match(/at\s+(?:(\w+)\s+)?(?:(\w+)\.(\w+)|(\S+))\s*$/);
-    if (match && !stack[i].includes('logger.ts') && !stack[i].includes('logger.js')) {
-      const filePath = match[4] || match[5];
-      if (filePath) {
-        const fileName = path.basename(filePath);
-        if (fileName !== 'logger.ts' && fileName !== 'logger.js' && fileName !== '<anonymous>') {
+  // V8 internal modules and node internals to skip
+  const skipPatterns = [
+    'logger.ts', 'logger.js',
+    'timers', 'internal/timers',
+    'node:internal', 'node:',
+    '<anonymous>', 'native',
+    'process._tickCallback',
+    'Console.log', 'Console.warn', 'Console.error', 'Console.debug',
+  ];
+
+  for (let i = 2; i < stack.length; i++) {
+    const frame = stack[i];
+    
+    // Skip if frame matches any known pattern to skip
+    if (skipPatterns.some(p => frame.includes(p))) {
+      continue;
+    }
+    
+    // Standard V8 stack format: "at functionName (filePath:line:col)"
+    let fileMatch = frame.match(/\(([^)]+):(\d+):(\d+)\)/);
+    if (fileMatch && fileMatch[1]) {
+      const filePath = fileMatch[1];
+      // Skip node internals, node_modules, and internal modules
+      if (filePath.includes('node_modules') || 
+          filePath.startsWith('node:') || 
+          filePath.includes('internal/') ||
+          filePath.includes('<')) {
+        continue;
+      }
+      const fileName = path.basename(filePath);
+      if (fileName !== 'logger.ts' && fileName !== 'logger.js') {
+        return `[${fileName}]`;
+      }
+    }
+    
+    // Alternative format: "at functionName filePath:line:col"
+    if (!fileMatch) {
+      fileMatch = frame.match(/(\S+\.ts):\d+:\d+/);
+      if (fileMatch && fileMatch[1] && 
+          !fileMatch[1].includes('node_modules') &&
+          !fileMatch[1].includes('internal/')) {
+        const fileName = path.basename(fileMatch[1]);
+        if (fileName !== 'logger.ts' && fileName !== 'logger.js') {
           return `[${fileName}]`;
         }
       }
