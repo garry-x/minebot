@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import { add, sub, scale, length, distance, floor, equals } from "../../src/utils/vec3.js";
+import { add, sub, scale, length, distance, floor, equals, manhattan, vec3 } from "../../src/utils/vec3.js";
 
 describe("Vec3 utilities", () => {
   it("adds two vectors", () => {
@@ -27,7 +27,22 @@ describe("Vec3 utilities", () => {
     assert.ok(equals(floor({ x: 1.7, y: -2.3, z: 3.9 }), { x: 1, y: -3, z: 3 }));
   });
 
+  it("equals returns true for identical vectors", () => {
+    const a = { x: 1, y: 2, z: 3 };
+    assert.strictEqual(equals(a, a), true);
+    assert.strictEqual(equals({ x: 1, y: 2, z: 3 }, { x: 1, y: 2, z: 3 }), true);
+  });
+
   it("equals returns false for different vectors", () => {
     assert.strictEqual(equals({ x: 0, y: 0, z: 0 }, { x: 1, y: 0, z: 0 }), false);
+  });
+
+  it("computes manhattan distance", () => {
+    assert.strictEqual(manhattan({ x: 1, y: 2, z: 3 }, { x: 4, y: 5, z: 6 }), 9);
+    assert.strictEqual(manhattan({ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }), 0);
+  });
+
+  it("creates a vector with vec3", () => {
+    assert.ok(equals(vec3(1, 2, 3), { x: 1, y: 2, z: 3 }));
   });
 });
