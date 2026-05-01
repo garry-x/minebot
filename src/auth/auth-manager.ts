@@ -27,13 +27,14 @@ export class AuthManager {
     const logger = getLogger();
     logger.info("Authenticating with Microsoft...");
     try {
-      const publicKey = (
-        crypto.generateKeyPairSync("ec", {
-          namedCurve: "secp384r1",
-        }).publicKey as unknown as { toString(encoding: string): string }
-      ).toString("base64");
+      const { publicKey } = crypto.generateKeyPairSync("ec", {
+        namedCurve: "secp384r1",
+      });
+      const publicKeyBase64 = publicKey
+        .export({ type: "spki", format: "der" })
+        .toString("base64");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const token = await (this.authflow as any).getMinecraftBedrockToken(publicKey);
+      const token = await (this.authflow as any).getMinecraftBedrockToken(publicKeyBase64);
       logger.info("Authentication successful");
       return {
         chain: token.chain,
