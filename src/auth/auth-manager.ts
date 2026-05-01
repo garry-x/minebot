@@ -1,6 +1,10 @@
-import { Authflow, Titles } from "prismarine-auth";
+import { Authflow } from "prismarine-auth";
+import { createRequire } from "module";
 import crypto from "crypto";
 import { getLogger } from "../utils/logger.js";
+
+const require = createRequire(import.meta.url);
+const { Titles } = require("prismarine-auth");
 
 export interface AuthCredentials {
   email: string;
