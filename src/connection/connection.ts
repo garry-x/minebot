@@ -40,6 +40,10 @@ export class Connection {
 
     this.client = createClient(clientOpts as ClientOptions);
 
+    this.client.on("connect", () => {
+      logger.info("Connected to server");
+    });
+
     this.client.on("join", () => {
       logger.info("Joined server");
     });
