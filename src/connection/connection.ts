@@ -2,6 +2,27 @@ import { createClient, Client } from "bedrock-protocol";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 
+const HOSTILE_MOBS = new Set([
+  "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
+  "minecraft:skeleton", "minecraft:stray", "minecraft:wither_skeleton",
+  "minecraft:spider", "minecraft:cave_spider",
+  "minecraft:creeper",
+  "minecraft:witch",
+  "minecraft:enderman",
+  "minecraft:slime",
+  "minecraft:blaze", "minecraft:ghast", "minecraft:magma_cube",
+  "minecraft:silverfish", "minecraft:endermite",
+  "minecraft:guardian", "minecraft:elder_guardian",
+  "minecraft:phantom",
+  "minecraft:pillager", "minecraft:vindicator", "minecraft:evoker", "minecraft:ravager", "minecraft:vex",
+  "minecraft:hoglin", "minecraft:zoglin", "minecraft:piglin_brute",
+  "minecraft:warden",
+]);
+
+function isHostileMob(type: string): boolean {
+  return HOSTILE_MOBS.has(type);
+}
+
 export interface ConnectionOptions {
   host: string;
   port: number;
@@ -125,6 +146,36 @@ export class Connection {
     this.client.on("error", (err: Error) => {
       logger.error({ err }, "Connection error");
       this.events.emit("error", { message: err.message, error: err });
+    });
+
+    // Entity tracking
+    this.client.on("add_entity", (packet: any) => {
+      const hostile = isHostileMob(packet.entity_type);
+      this.events.emit("entity_spawn", {
+        uniqueId: packet.unique_id,
+        runtimeId: packet.runtime_id,
+        type: packet.entity_type,
+        x: packet.position?.x ?? 0,
+        y: packet.position?.y ?? 0,
+        z: packet.position?.z ?? 0,
+        velocity: { x: packet.velocity?.x ?? 0, y: packet.velocity?.y ?? 0, z: packet.velocity?.z ?? 0 },
+        isHostile: hostile,
+      });
+    });
+
+    this.client.on("remove_entity", (packet: any) => {
+      this.events.emit("entity_despawn", { uniqueId: packet.entity_id_self });
+    });
+
+    this.client.on("move_entity", (packet: any) => {
+      this.events.emit("entity_move", {
+        runtimeId: packet.runtime_entity_id,
+        x: packet.position?.x ?? 0,
+        y: packet.position?.y ?? 0,
+        z: packet.position?.z ?? 0,
+        yaw: packet.rotation?.yaw ?? 0,
+        pitch: packet.rotation?.pitch ?? 0,
+      });
     });
   }
 

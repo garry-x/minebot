@@ -143,6 +143,25 @@ export class Bot {
         getLogger().error({ err, chunkX: x, chunkZ: z }, "Failed to load chunk");
       }
     });
+
+    this.events.on("entity_spawn", (data) => {
+      this.world.addEntity({
+        id: data.uniqueId,
+        runtimeId: data.runtimeId,
+        type: data.type,
+        position: { x: data.x, y: data.y, z: data.z },
+        velocity: data.velocity,
+        isHostile: data.isHostile,
+      });
+    });
+
+    this.events.on("entity_despawn", (data) => {
+      this.world.removeEntity(data.uniqueId);
+    });
+
+    this.events.on("entity_move", (data) => {
+      this.world.updateEntityPosition(data.runtimeId, { x: data.x, y: data.y, z: data.z });
+    });
   }
 
   stop(): void {

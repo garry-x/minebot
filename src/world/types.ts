@@ -13,11 +13,11 @@ export interface BlockInfo {
 }
 
 export interface EntityInfo {
-  id: bigint;
+  id: bigint;          // unique_id
+  runtimeId: bigint;   // runtime_entity_id
   type: string;
   position: Vec3;
   velocity: Vec3;
-  health?: number;
   isHostile: boolean;
 }
 

@@ -81,9 +81,13 @@ export class WorldState {
     this.entities.delete(id);
   }
 
-  updateEntityPosition(id: bigint, pos: Vec3Type): void {
-    const entity = this.entities.get(id);
-    if (entity) entity.position = pos;
+  updateEntityPosition(runtimeId: bigint, pos: Vec3Type): void {
+    for (const entity of this.entities.values()) {
+      if (entity.runtimeId === runtimeId) {
+        entity.position = pos;
+        return;
+      }
+    }
   }
 
   clearEntities(): void {
