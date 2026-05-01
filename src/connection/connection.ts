@@ -113,16 +113,19 @@ export class Connection {
 
     this.client.on("update_attributes", (packet: any) => {
       if (packet.runtime_entity_id !== this.client?.entityId) return;
-      const attrs: Array<{ name: string; current: number; max: number }> =
-        packet.attributes ?? [];
-      for (const attr of attrs) {
-        if (attr.name === "health") {
-          this.events.emit("health_change", {
-            health: attr.current,
-            maxHealth: attr.max,
-          });
-          break;
-        }
+      const attrs: Record<string, number> = {};
+      for (const attr of packet.attributes ?? []) {
+        attrs[attr.name] = attr.current;
+      }
+      if (attrs["health"] !== undefined) {
+        this.events.emit("health_change", { health: attrs["health"], maxHealth: 20 });
+      }
+      if (attrs["player.hunger"] !== undefined) {
+        this.events.emit("hunger_change", {
+          hunger: attrs["player.hunger"],
+          saturation: attrs["player.saturation"] ?? 0,
+          exhaustion: attrs["player.exhaustion"] ?? 0,
+        });
       }
     });
 

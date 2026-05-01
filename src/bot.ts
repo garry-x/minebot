@@ -6,6 +6,7 @@ import { Inventory } from "./inventory/inventory.js";
 import { SkillManager } from "./skills/skill-manager.js";
 import { IdleSkill } from "./skills/idle.js";
 import { GatheringSkill } from "./skills/gathering.js";
+import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
 import { createLogger, getLogger } from "./utils/logger.js";
 import type { SkillContext } from "./skills/skill.js";
@@ -30,6 +31,7 @@ export class Bot {
   private movement!: Movement;
   private inventory!: Inventory;
   private skills!: SkillManager;
+  private hunger = new HungerTracker();
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
 
@@ -175,6 +177,17 @@ export class Bot {
         });
       }
     });
+
+    this.events.on("hunger_change", ({ hunger, saturation, exhaustion }) => {
+      this.hunger.hunger = hunger;
+      this.hunger.saturation = saturation;
+      this.hunger.exhaustion = exhaustion;
+      getLogger().debug({ hunger, saturation, exhaustion }, "Hunger update");
+    });
+  }
+
+  getHungerTracker(): HungerTracker {
+    return this.hunger;
   }
 
   stop(): void {

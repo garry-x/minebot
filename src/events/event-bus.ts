@@ -70,6 +70,7 @@ export interface BotEvents {
   entity_despawn: { uniqueId: bigint };
   entity_move: { runtimeId: bigint; x: number; y: number; z: number; yaw: number; pitch: number };
   inventory_change: { slot: number; item: { id: number; count: number; metadata: number } | null };
+  hunger_change: { hunger: number; saturation: number; exhaustion: number };
   player_death: { message: string };
   disconnect: { reason: string };
   error: { message: string; error: Error };
