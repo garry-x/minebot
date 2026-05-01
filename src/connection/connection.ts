@@ -24,6 +24,11 @@ export class Connection {
   }
 
   connect(): void {
+    if (this.client) {
+      getLogger().warn("Already connected, disconnecting first");
+      this.disconnect();
+    }
+
     const logger = getLogger();
     logger.info(
       { host: this.opts.host, port: this.opts.port },
@@ -105,7 +110,6 @@ export class Connection {
         this.disconnectEmitted = true;
         this.events.emit("disconnect", { reason: "Connection closed" });
       }
-      this.client = null;
     });
 
     this.client.on("error", (err: Error) => {
@@ -132,6 +136,11 @@ export class Connection {
 
   disconnect(): void {
     if (this.client) {
+      if (!this.disconnectEmitted) {
+        this.disconnectEmitted = true;
+        this.events.emit("disconnect", { reason: "Bot disconnected" });
+      }
+      this.client.removeAllListeners();
       this.client.close();
       this.client = null;
     }
