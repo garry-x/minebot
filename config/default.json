@@ -1,0 +1,15 @@
+{
+  "host": "127.0.0.1",
+  "port": 19132,
+  "viewDistance": 4,
+  "tickInterval": 50,
+  "pathfinding": {
+    "timeout": 5000,
+    "maxNodes": 10000,
+    "heuristic": "manhattan"
+  },
+  "logging": {
+    "level": "info",
+    "pretty": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "minebot",
+  "version": "0.1.0",
+  "description": "Minecraft Bedrock autonomous bot",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "bedrock-protocol": "^3.55.1",
+    "prismarine-auth": "^3.1.1",
+    "prismarine-registry": "^1.12.0",
+    "prismarine-world": "^3.7.0",
+    "prismarine-chunk": "^1.40.0",
+    "prismarine-block": "^1.23.0",
+    "prismarine-item": "^1.18.0",
+    "prismarine-entity": "^2.6.0",
+    "minecraft-data": "^3.109.1",
+    "vec3": "^0.2.0",
+    "yargs": "^17.7.2",
+    "pino": "^8.21.0",
+    "pino-pretty": "^10.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.12.0",
+    "@types/yargs": "^17.0.32",
+    "tsx": "^4.7.0"
+  }
+}
