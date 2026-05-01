@@ -142,6 +142,20 @@ export class Movement {
     });
   }
 
+  attack(targetRuntimeId: bigint): void {
+    this.connection.queue("inventory_transaction", {
+      transaction_type: 3,
+      actions: [],
+      action_type: 1,
+      entity_runtime_id: targetRuntimeId,
+      hotbar_slot: 0,
+      held_item: { network_id: 0, count: 0, metadata: 0, block_runtime_id: 0 },
+      player_pos: this.currentPosition,
+      click_pos: { x: 0, y: 0, z: 0 },
+      block_runtime_id: 0,
+    });
+  }
+
   selectHotbarSlot(slot: number): void {
     this.connection.queue("player_hotbar", {
       selected_slot: slot,
