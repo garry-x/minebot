@@ -4,7 +4,6 @@ import Registry from "prismarine-registry";
 import { Vec3 } from "vec3";
 import type { Vec3 as Vec3Type } from "../utils/vec3.js";
 import { vec3 } from "../utils/vec3.js";
-import { getLogger } from "../utils/logger.js";
 import type { EntityInfo, WorldBlockUpdate } from "./types.js";
 
 export class WorldState {
@@ -60,6 +59,11 @@ export class WorldState {
     return this.world.getLoadedColumn(x, z);
   }
 
+  /**
+   * Get all loaded chunk columns.
+   * NOTE: Accesses internal `prismarine-world` property `columns`.
+   * Compatible with prismarine-world v3.x.
+   */
   getColumns(): Map<string, any> {
     const result = new Map<string, any>();
     const columns = (this.world as any).columns ?? {};
@@ -80,6 +84,25 @@ export class WorldState {
   updateEntityPosition(id: bigint, pos: Vec3Type): void {
     const entity = this.entities.get(id);
     if (entity) entity.position = pos;
+  }
+
+  clearEntities(): void {
+    this.entities.clear();
+  }
+
+  purgeEntitiesPastDistance(center: Vec3Type, distance: number): number {
+    const dist2 = distance * distance;
+    let removed = 0;
+    for (const [id, entity] of this.entities) {
+      const dx = entity.position.x - center.x;
+      const dy = entity.position.y - center.y;
+      const dz = entity.position.z - center.z;
+      if (dx * dx + dy * dy + dz * dz > dist2) {
+        this.entities.delete(id);
+        removed++;
+      }
+    }
+    return removed;
   }
 
   getEntities(): EntityInfo[] {
