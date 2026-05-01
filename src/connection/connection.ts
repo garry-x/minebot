@@ -1,4 +1,4 @@
-import { createClient, Client, ClientOptions } from "bedrock-protocol";
+import { createClient, Client } from "bedrock-protocol";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 
@@ -8,6 +8,7 @@ export interface ConnectionOptions {
   username: string;
   chain: string[];
   token: string;
+  offline?: boolean;
   viewDistance?: number;
 }
 
@@ -15,6 +16,7 @@ export class Connection {
   private client: Client | null = null;
   private opts: ConnectionOptions;
   private events: EventBus<BotEvents>;
+  private disconnectEmitted = false;
 
   constructor(options: ConnectionOptions, events: EventBus<BotEvents>) {
     this.opts = options;
@@ -28,21 +30,24 @@ export class Connection {
       "Connecting to server..."
     );
 
+    const { chain, token } = this.opts;
+    const authflow = {
+      getMinecraftBedrockToken: async () => ({ chain, token }),
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const clientOpts = {
+    const clientOpts: any = {
       host: this.opts.host,
       port: this.opts.port,
       username: this.opts.username,
-      offline: false,
+      offline: this.opts.offline ?? false,
+      authflow,
       profilesFolder: "./.minebot-cache",
       viewDistance: this.opts.viewDistance ?? 10,
-    } as any;
+    };
 
-    this.client = createClient(clientOpts as ClientOptions);
-
-    this.client.on("connect", () => {
-      logger.info("Connected to server");
-    });
+    this.client = createClient(clientOpts);
+    this.disconnectEmitted = false;
 
     this.client.on("join", () => {
       logger.info("Joined server");
@@ -88,12 +93,19 @@ export class Connection {
     this.client.on("disconnect", (packet: any) => {
       const reason = packet?.message ?? "Unknown reason";
       logger.warn({ reason }, "Disconnected by server");
-      this.events.emit("disconnect", { reason });
+      if (!this.disconnectEmitted) {
+        this.disconnectEmitted = true;
+        this.events.emit("disconnect", { reason });
+      }
     });
 
     this.client.on("close", () => {
       logger.info("Connection closed");
-      this.events.emit("disconnect", { reason: "Connection closed" });
+      if (!this.disconnectEmitted) {
+        this.disconnectEmitted = true;
+        this.events.emit("disconnect", { reason: "Connection closed" });
+      }
+      this.client = null;
     });
 
     this.client.on("error", (err: Error) => {
