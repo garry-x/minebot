@@ -187,6 +187,11 @@ export class Connection {
       });
     });
 
+    // Crafting data
+    this.client.on("crafting_data", (packet: any) => {
+      this.events.emit("crafting_data", { recipes: packet.recipes });
+    });
+
     // Inventory sync (window_id 0 = player inventory, 120 = armor)
     this.client.on("inventory_slot", (packet: any) => {
       const winId = packet.window_id ?? 0;

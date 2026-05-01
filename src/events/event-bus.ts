@@ -74,4 +74,5 @@ export interface BotEvents {
   player_death: { message: string };
   disconnect: { reason: string };
   error: { message: string; error: Error };
+  crafting_data: { recipes: any[] };
 }

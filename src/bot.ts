@@ -7,6 +7,7 @@ import { SkillManager } from "./skills/skill-manager.js";
 import { IdleSkill } from "./skills/idle.js";
 import { GatheringSkill } from "./skills/gathering.js";
 import { CombatSkill } from "./skills/combat.js";
+import { CraftingSkill, storeRecipes } from "./skills/crafting.js";
 import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
 import { createLogger, getLogger } from "./utils/logger.js";
@@ -79,6 +80,7 @@ export class Bot {
     this.skills.register(new IdleSkill());
     this.skills.register(new GatheringSkill());
     this.skills.register(new CombatSkill());
+    this.skills.register(new CraftingSkill());
 
     // 5. Wire up event handlers (chunks, entities, etc. — stubs for Phase 1)
     this.setupEventHandlers();
@@ -202,6 +204,11 @@ export class Bot {
       this.hunger.saturation = saturation;
       this.hunger.exhaustion = exhaustion;
       getLogger().debug({ hunger, saturation, exhaustion }, "Hunger update");
+    });
+
+    this.events.on("crafting_data", ({ recipes }) => {
+      storeRecipes(recipes);
+      getLogger().debug({ count: recipes.length }, "Recipes stored");
     });
   }
 

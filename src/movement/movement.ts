@@ -185,6 +185,16 @@ export class Movement {
     });
   }
 
+  craftRecipe(windowId: string, recipeId: string): void {
+    this.connection.queue("crafting_event", {
+      window_id: windowId,
+      recipe_type: 1,
+      recipe_id: recipeId,
+      input: [],
+      result: [],
+    });
+  }
+
   getPosition(): Vec3 {
     return { ...this.currentPosition };
   }
