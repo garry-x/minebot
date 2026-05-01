@@ -167,6 +167,21 @@ export class Bot {
     });
 
     this.events.on("inventory_change", (data) => {
+      if (data.slot >= 36) {
+        const armorSlot = data.slot - 36;
+        if (data.item === null) {
+          this.inventory.setArmor(armorSlot, null);
+        } else {
+          this.inventory.setArmor(armorSlot, {
+            slot: armorSlot,
+            itemId: data.item.id,
+            count: data.item.count,
+            metadata: data.item.metadata,
+            name: this.world.getItemName(data.item.id),
+          });
+        }
+        return;
+      }
       if (data.item === null) {
         this.inventory.setSlot(data.slot, null);
       } else {

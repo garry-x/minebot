@@ -27,6 +27,7 @@ export class IdleSkill extends Skill {
   private eatingState: EatingState = "idle";
   private eatingTimer = 0;
   private foodSlot = -1;
+  private armorCheckTimer = 0;
 
   constructor() {
     super("idle", 0);
@@ -38,6 +39,7 @@ export class IdleSkill extends Skill {
     this.eatingState = "idle";
     this.eatingTimer = 0;
     this.foodSlot = -1;
+    this.armorCheckTimer = 0;
   }
 
   async tick(ctx: SkillContext): Promise<string | null> {
@@ -64,6 +66,17 @@ export class IdleSkill extends Skill {
     if (this.eatingState !== "idle") {
       this.tickEating(ctx);
       return null;
+    }
+
+    this.armorCheckTimer++;
+    if (this.armorCheckTimer >= 100) {
+      this.armorCheckTimer = 0;
+      for (let slot = 0; slot < 4; slot++) {
+        const bestSlot = ctx.inventory.findBestArmor(slot);
+        if (bestSlot >= 0) {
+          ctx.logger.info(`Auto-equipping armor slot ${slot} from inventory slot ${bestSlot}`);
+        }
+      }
     }
 
     this.wanderTimer++;
