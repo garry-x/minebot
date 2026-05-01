@@ -83,9 +83,15 @@ export class Bot {
     this.connection.connect();
 
     // 7. Wait for spawn, then start tick loop
-    this.events.once("spawned", (pos) => {
-      logger.info({ pos }, "Spawned, starting tick loop");
-      this.world.updatePlayerPosition(pos);
+    this.events.once("spawned", (packet) => {
+      logger.info({ pos: { x: packet.x, y: packet.y, z: packet.z } }, "Spawned, starting tick loop");
+      this.world.updatePlayerPosition({ x: packet.x, y: packet.y, z: packet.z });
+
+      if (packet.itemstates && packet.itemstates.length > 0) {
+        this.world.loadItemStates(packet.itemstates);
+        logger.info({ count: packet.itemstates.length }, "Item states loaded");
+      }
+
       this.isRunning = true;
 
       const ctx: SkillContext = {
@@ -127,7 +133,16 @@ export class Bot {
       this.world.updatePlayerPosition(pos);
     });
 
-    // TODO Phase 2: Wire chunk/entity/inventory events to WorldState
+    this.events.on("chunk_loaded", ({ x, z, payload }) => {
+      try {
+        const column = this.world.getColumn(x, z);
+        if (column) {
+          (column as any).load(payload, this.world.registry);
+        }
+      } catch (err) {
+        getLogger().error({ err, chunkX: x, chunkZ: z }, "Failed to load chunk");
+      }
+    });
   }
 
   stop(): void {

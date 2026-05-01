@@ -66,6 +66,16 @@ export class Connection {
         z: packet.player_position?.z ?? 0,
         yaw: packet.rotation?.x ?? 0,
         pitch: packet.rotation?.y ?? 0,
+        itemstates: packet.itemstates,
+      });
+    });
+
+    this.client.on("level_chunk", (packet: any) => {
+      this.events.emit("chunk_loaded", {
+        x: packet.x,
+        z: packet.z,
+        payload: packet.payload,
+        subChunkCount: packet.sub_chunk_count ?? 0,
       });
     });
 
