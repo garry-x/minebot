@@ -162,6 +162,19 @@ export class Bot {
     this.events.on("entity_move", (data) => {
       this.world.updateEntityPosition(data.runtimeId, { x: data.x, y: data.y, z: data.z });
     });
+
+    this.events.on("inventory_change", (data) => {
+      if (data.item === null) {
+        this.inventory.setSlot(data.slot, null);
+      } else {
+        this.inventory.setSlot(data.slot, {
+          slot: data.slot,
+          itemId: data.item.id,
+          count: data.item.count,
+          metadata: data.item.metadata,
+        });
+      }
+    });
   }
 
   stop(): void {

@@ -177,6 +177,25 @@ export class Connection {
         pitch: packet.rotation?.pitch ?? 0,
       });
     });
+
+    // Inventory sync (window_id 0 = player inventory, 120 = armor)
+    this.client.on("inventory_slot", (packet: any) => {
+      const winId = packet.window_id ?? 0;
+      if (winId !== 0 && winId !== 120) return;
+
+      const slot = packet.slot;
+      const item = packet.item;
+      const isNull = !item || item.network_id === 0 || item.network_id === -1;
+
+      this.events.emit("inventory_change", {
+        slot: winId === 120 ? 36 + slot : slot,
+        item: isNull ? null : {
+          id: item.network_id ?? 0,
+          count: item.count ?? 1,
+          metadata: item.metadata ?? 0,
+        },
+      });
+    });
   }
 
   write(name: string, params: Record<string, unknown>): void {
