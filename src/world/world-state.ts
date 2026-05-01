@@ -33,8 +33,17 @@ export class WorldState {
     );
   }
 
+  private itemRuntimeToName = new Map<number, string>();
+
   loadItemStates(itemstates: Array<{ name: string; runtime_id: number; component_based: boolean }>): void {
     (this.registry as any).loadItemStates(itemstates);
+    for (const state of itemstates) {
+      this.itemRuntimeToName.set(state.runtime_id, state.name);
+    }
+  }
+
+  getItemName(runtimeId: number): string | undefined {
+    return this.itemRuntimeToName.get(runtimeId);
   }
 
   updatePlayerPosition(pos: Vec3Type): void {

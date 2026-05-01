@@ -102,6 +102,7 @@ export class Bot {
         inventory: this.inventory,
         events: this.events,
         logger,
+        hunger: this.hunger,
       };
 
       this.skills.setCurrent("idle", ctx);
@@ -174,6 +175,7 @@ export class Bot {
           itemId: data.item.id,
           count: data.item.count,
           metadata: data.item.metadata,
+          name: this.world.getItemName(data.item.id),
         });
       }
     });

@@ -142,6 +142,35 @@ export class Movement {
     });
   }
 
+  selectHotbarSlot(slot: number): void {
+    this.connection.queue("player_hotbar", {
+      selected_slot: slot,
+      window_id: 0,
+    });
+  }
+
+  startEating(slot: number): void {
+    const entityId = this.connection.getEntityId();
+    this.connection.queue("player_action", {
+      runtime_entity_id: entityId,
+      action: "start_item_use_on",
+      position: { x: 0, y: 0, z: 0 },
+      result_position: { x: 0, y: 0, z: 0 },
+      face: 0,
+    });
+  }
+
+  stopEating(slot: number): void {
+    const entityId = this.connection.getEntityId();
+    this.connection.queue("player_action", {
+      runtime_entity_id: entityId,
+      action: "stop_item_use_on",
+      position: { x: 0, y: 0, z: 0 },
+      result_position: { x: 0, y: 0, z: 0 },
+      face: 0,
+    });
+  }
+
   getPosition(): Vec3 {
     return { ...this.currentPosition };
   }

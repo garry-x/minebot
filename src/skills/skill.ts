@@ -3,6 +3,7 @@ import type { Movement } from "../movement/movement.js";
 import type { Inventory } from "../inventory/inventory.js";
 import type { EventBus, BotEvents } from "../events/event-bus.js";
 import type { Logger } from "../utils/logger.js";
+import type { HungerTracker } from "../player/hunger.js";
 
 export interface SkillContext {
   world: WorldState;
@@ -10,6 +11,7 @@ export interface SkillContext {
   inventory: Inventory;
   events: EventBus<BotEvents>;
   logger: Logger;
+  hunger: HungerTracker;
 }
 
 export abstract class Skill {
