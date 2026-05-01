@@ -8,17 +8,33 @@ Target test server: `115.191.51.70:19132`
 
 ## Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Runtime | Node.js 18+ |
-| Language | TypeScript (strict mode) |
-| Protocol | `bedrock-protocol` npm package |
-| Authentication | `@minecraft/auth` / `prismarine-auth` |
-| Vector math | `vec3` |
-| AI Behavior | Custom HFSM (Hierarchical Finite State Machine) |
-| Pathfinding | Custom A* / JPS |
-| CLI | `commander` / `yargs` + shell wrapper |
-| Build | `tsx` / `ts-node` |
+| Layer | Technology | Status |
+|---|---|---|
+| Runtime | Node.js 18+ | - |
+| Language | TypeScript (strict mode) | - |
+| Protocol | `bedrock-protocol` ^3.x (v1.16–1.26.10) | Available |
+| Authentication | `prismarine-auth` ^2.x (Authflow.getMinecraftBedrockToken) | Available |
+| Block data | `prismarine-block` (canHarvest, digTime) | Available |
+| Item data | `prismarine-item` (fromNotch, durability) | Available |
+| Entity data | `prismarine-entity` (generic entity repr) | Available |
+| Chunk data | `prismarine-chunk` (Bedrock SubChunk, palette) | Available |
+| World state | `prismarine-world` (async chunk collection) | Available |
+| Registry | `prismarine-registry` (loadItemStates, Bedrock wrapper) | Available |
+| Static data | `minecraft-data` (blocks, items, entities, recipes, biomes) | Available |
+| Vector math | `vec3` | Available |
+| Pathfinding | Custom A* 3D (mineflayer-pathfinder is Java-only) | **Must build** |
+| Inventory/Win | Custom (prismarine-windows is Java-only) | **Must build** |
+| Recipes/Craft | Custom (prismarine-recipe is Java-only) | **Must build** |
+| AI Behavior | Custom HFSM (mineflayer is Java-only) | **Must build** |
+| CLI | `yargs` + shell wrapper | Available |
+| Logging | `pino` | Available |
+| Build | `tsx` | Available |
+
+### Key Design Implications
+
+- **Leverage Prismarine ecosystem**: `prismarine-world` + `prismarine-chunk` + `prismarine-block` provide robust Bedrock world representation. No need to build chunk management from scratch.
+- **Use `prismarine-registry`**: Wraps `minecraft-data` for Bedrock. Call `registry.loadItemStates(itemstates)` from `start_game` packet to populate runtime item registry.
+- **Build Bedrock-specific modules**: Pathfinding, window/inventory management, recipe crafting, and high-level AI behavior must all be custom-built since their Java Edition equivalents (mineflayer-pathfinder, prismarine-windows, prismarine-recipe) do not support Bedrock.
 
 ## Architecture
 
@@ -30,7 +46,7 @@ Target test server: `115.191.51.70:19132`
 ├─────────────────────────────────────┤
 │     Skill / FSM Layer               │  Mining, combat, crafting, building
 ├─────────────────────────────────────┤
-│     World State Manager             │  Blocks, entities, inventory
+│     World State Manager             │  Blocks, entities, chunks
 ├─────────────────────────────────────┤
 │     Pathfinding (A*/JPS)            │  3D navigation
 ├─────────────────────────────────────┤
@@ -96,10 +112,10 @@ Bot
 
 ### AuthManager
 
-- Accept email + password
-- Obtain Xbox Live token
-- Exchange for Minecraft Bedrock token
-- Return auth chain for server login
+- Use `prismarine-auth` Authflow class with `getMinecraftBedrockToken()`
+- AuthFlow constructor: `{ username: email, password, flow: 'live' }`
+- getMinecraftBedrockToken() returns `{ chain: string[], token: string }`
+- Pass `chain` + `token` directly to `bedrock-protocol`'s `createClient()`
 
 ### Connection
 
@@ -111,10 +127,12 @@ Bot
 
 ### WorldState
 
-- Maintain sliding window chunk cache (N chunks around player)
-- Cache block types, entities, light info
+- Backed by `prismarine-world` (async chunk collection) with `prismarine-chunk` columns
+- Uses `prismarine-registry` for Bedrock block/item mappings (loadItemStates from start_game)
+- `prismarine-block` instances for block queries (canHarvest, digTime, boundingBox, material)
+- `prismarine-entity` for entity tracking
 - Query API: `getBlock(pos)`, `getEntitiesNear(pos, radius)`, `findBlock(type, radius)`
-- Update on protocol events
+- Update on protocol events (chunk packets, block updates, entity moves, add_entity/remove_entity)
 
 ### Movement
 
@@ -150,10 +168,11 @@ SUB: wander     mine_ore    melee     craft_recipe place_block
 
 ### Inventory
 
-- Track 36 hotbar + inventory slots
-- Equipment (armor, offhand) tracking
+- Uses `prismarine-item` for item representation (fromNotch, durability, enchants, stackSize)
+- Track 36 hotbar + inventory slots + armor + offhand
 - Query: `hasItem(type)`, `countItem(type)`, `findSlot(type)`
-- Window interaction helpers (click, swap, drop)
+- Window interaction helpers (click, swap, drop, select_hotbar_slot)
+- Must be custom-built since prismarine-windows is Java-only
 
 ### EventBus
 
@@ -273,6 +292,13 @@ Deliverables:
   "dependencies": {
     "bedrock-protocol": "^3.x",
     "prismarine-auth": "^2.x",
+    "prismarine-registry": "^1.x",
+    "prismarine-world": "^3.x",
+    "prismarine-chunk": "^2.x",
+    "prismarine-block": "^1.x",
+    "prismarine-item": "^1.x",
+    "prismarine-entity": "^1.x",
+    "minecraft-data": "^3.x",
     "vec3": "^0.1.x",
     "yargs": "^17.x",
     "pino": "^8.x"
