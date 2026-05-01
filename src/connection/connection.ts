@@ -116,13 +116,19 @@ export class Connection {
       const attrs: Array<{ name: string; current: number; max: number }> =
         packet.attributes ?? [];
       for (const attr of attrs) {
-        if (attr.name === "minecraft:health") {
+        if (attr.name === "health") {
           this.events.emit("health_change", {
             health: attr.current,
             maxHealth: attr.max,
           });
           break;
         }
+      }
+    });
+
+    this.client.on("entity_event", (packet: any) => {
+      if (packet.event_id === 3 && packet.runtime_entity_id === this.getEntityId()) {
+        this.events.emit("player_death", { message: "Player died" });
       }
     });
 
