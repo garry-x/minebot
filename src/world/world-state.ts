@@ -4,6 +4,7 @@ import Registry from "prismarine-registry";
 import { Vec3 } from "vec3";
 import type { Vec3 as Vec3Type } from "../utils/vec3.js";
 import { vec3 } from "../utils/vec3.js";
+import { BlockCategory, CLIMBABLE_BLOCKS, WATER_BLOCKS, MINEABLE_BLOCKS, DOOR_BLOCKS } from "./types.js";
 import type { EntityInfo, WorldBlockUpdate } from "./types.js";
 
 export class WorldState {
@@ -190,6 +191,47 @@ export class WorldState {
     const block = this.getBlock(pos);
     if (!block) return false;
     return block.boundingBox !== "empty";
+  }
+
+  isWaterBlock(pos: Vec3Type): boolean {
+    const block = this.getBlock(pos);
+    if (!block) return false;
+    return WATER_BLOCKS.has(block.name);
+  }
+
+  isWaterSurface(pos: Vec3Type): boolean {
+    if (!this.isWaterBlock(pos)) return false;
+    const above = this.getBlock({ x: pos.x, y: pos.y + 1, z: pos.z });
+    return !above || above.boundingBox === "empty";
+  }
+
+  isClimbable(pos: Vec3Type): boolean {
+    const block = this.getBlock(pos);
+    if (!block) return false;
+    return CLIMBABLE_BLOCKS.has(block.name);
+  }
+
+  isMineable(pos: Vec3Type): boolean {
+    const block = this.getBlock(pos);
+    if (!block) return false;
+    return MINEABLE_BLOCKS.has(block.name);
+  }
+
+  isDoor(pos: Vec3Type): boolean {
+    const block = this.getBlock(pos);
+    if (!block) return false;
+    return DOOR_BLOCKS.has(block.name);
+  }
+
+  getBlockCategory(pos: Vec3Type): BlockCategory {
+    const block = this.getBlock(pos);
+    if (!block) return BlockCategory.AIR;
+    if (WATER_BLOCKS.has(block.name)) return BlockCategory.LIQUID;
+    if (CLIMBABLE_BLOCKS.has(block.name)) return BlockCategory.CLIMBABLE;
+    if (DOOR_BLOCKS.has(block.name)) return BlockCategory.DOOR;
+    if (MINEABLE_BLOCKS.has(block.name)) return BlockCategory.MINEABLE;
+    if (block.boundingBox !== "empty") return BlockCategory.SOLID;
+    return BlockCategory.AIR;
   }
 
   applyBlockUpdate(update: WorldBlockUpdate): void {
