@@ -195,6 +195,60 @@ export class Movement {
     });
   }
 
+  clickBlock(blockPos: Vec3, face: number, slot: number): void {
+    const entityId = this.connection.getEntityId();
+    this.connection.queue("player_auth_input", {
+      runtime_entity_id: entityId,
+      motion: { x: 0, y: 0, z: 0 },
+      input_data: 0x02,
+      tick: BigInt(0),
+      transaction: {
+        data: {
+          action_type: 0,
+          block_position: { x: blockPos.x, y: blockPos.y, z: blockPos.z },
+          face: face,
+          hotbar_slot: slot,
+          held_item: { network_id: 0, count: 0, metadata: 0, block_runtime_id: 0 },
+          player_pos: this.currentPosition,
+          click_pos: { x: 0, y: 0, z: 0 },
+          block_runtime_id: 0,
+        },
+      },
+    });
+  }
+
+  clickItem(slot: number): void {
+    const entityId = this.connection.getEntityId();
+    this.connection.queue("player_auth_input", {
+      runtime_entity_id: entityId,
+      motion: { x: 0, y: 0, z: 0 },
+      input_data: 0x02,
+      tick: BigInt(0),
+      transaction: {
+        data: {
+          action_type: 1,
+          block_position: { x: 0, y: 0, z: 0 },
+          face: 0,
+          hotbar_slot: slot,
+          held_item: { network_id: 0, count: 0, metadata: 0, block_runtime_id: 0 },
+          player_pos: this.currentPosition,
+          click_pos: { x: 0, y: 0, z: 0 },
+          block_runtime_id: 0,
+        },
+      },
+    });
+  }
+
+  openBlock(blockPos: Vec3): void {
+    this.connection.queue("player_action", {
+      runtime_entity_id: this.connection.getEntityId(),
+      action: "interact_block",
+      position: { x: blockPos.x, y: blockPos.y, z: blockPos.z },
+      result_position: { x: blockPos.x, y: blockPos.y, z: blockPos.z },
+      face: 0,
+    });
+  }
+
   getPosition(): Vec3 {
     return { ...this.currentPosition };
   }
