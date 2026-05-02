@@ -9,8 +9,11 @@ import { GatheringSkill } from "./skills/gathering.js";
 import { CombatSkill } from "./skills/combat.js";
 import { CraftingSkill, storeRecipes } from "./skills/crafting.js";
 import { BuildingSkill } from "./skills/building.js";
+import { StrongholdSkill } from "./skills/stronghold.js";
+import { EnderDragonHuntSkill } from "./skills/dragon-hunt.js";
 import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
+import { Planner } from "./planner/planner.js";
 import { createLogger, getLogger } from "./utils/logger.js";
 import type { SkillContext } from "./skills/skill.js";
 
@@ -35,6 +38,7 @@ export class Bot {
   private inventory!: Inventory;
   private skills!: SkillManager;
   private hunger = new HungerTracker();
+  private planner = new Planner();
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
 
@@ -83,6 +87,8 @@ export class Bot {
     this.skills.register(new CombatSkill());
     this.skills.register(new CraftingSkill());
     this.skills.register(new BuildingSkill());
+    this.skills.register(new StrongholdSkill());
+    this.skills.register(new EnderDragonHuntSkill());
 
     // 5. Wire up event handlers (chunks, entities, etc. — stubs for Phase 1)
     this.setupEventHandlers();
@@ -114,8 +120,21 @@ export class Bot {
       this.skills.setCurrent("idle", ctx);
 
       const tickInterval = this.config.tickInterval ?? 50;
+      let plannerTick = 0;
+
       this.tickTimer = setInterval(() => {
         if (!this.isRunning) return;
+
+        plannerTick++;
+        if (plannerTick % 100 === 0) {
+          const nextSkill = this.planner.getRecommendedSkill(ctx);
+          const current = this.skills.getCurrentSkillName();
+          if (nextSkill !== current) {
+            getLogger().info({ from: current, to: nextSkill }, "Planner suggests skill change");
+            this.skills.requestWithPriority(nextSkill, ctx);
+          }
+        }
+
         this.skills.tick(ctx).catch((err) => {
           logger.error({ err }, "Tick error");
         });
@@ -211,6 +230,28 @@ export class Bot {
     this.events.on("crafting_data", ({ recipes }) => {
       storeRecipes(recipes);
       getLogger().debug({ count: recipes.length }, "Recipes stored");
+    });
+
+    this.events.on("dimension_change", ({ dimension, x, y, z }) => {
+      this.world.setDimension(dimension);
+      this.world.updatePlayerPosition({ x, y, z });
+      getLogger().info({ dimension }, "Dimension changed");
+    });
+
+    this.events.on("boss_event", ({ entityId, eventType, progress }) => {
+      if (eventType === 0) {
+        getLogger().info({ entityId }, "Boss bar appeared");
+      } else if (eventType === 4 && progress !== undefined) {
+        getLogger().debug({ progress }, "Dragon health update");
+      }
+    });
+
+    this.events.on("portal_event", ({ eventType }) => {
+      if (eventType === 2) {
+        getLogger().info("End portal activated!");
+      } else if (eventType === 7) {
+        getLogger().info("Boss defeated!");
+      }
     });
   }
 

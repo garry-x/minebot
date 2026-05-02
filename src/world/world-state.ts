@@ -12,6 +12,7 @@ export class WorldState {
   private ChunkColumn: ReturnType<typeof ChunkLoader>;
   private entities = new Map<bigint, EntityInfo>();
   private playerPosition: Vec3Type = vec3(0, 0, 0);
+  private currentDimension = 0; // 0=overworld, 1=nether, 2=end
 
   static ORE_TYPES = new Set([
     "coal_ore", "deepslate_coal_ore",
@@ -52,6 +53,14 @@ export class WorldState {
 
   getPlayerPosition(): Vec3Type {
     return this.playerPosition;
+  }
+
+  setDimension(dim: number): void {
+    this.currentDimension = dim;
+  }
+
+  getDimension(): number {
+    return this.currentDimension;
   }
 
   getBlock(pos: Vec3Type): any | null {
