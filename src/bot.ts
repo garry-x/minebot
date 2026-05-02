@@ -47,6 +47,7 @@ export class Bot {
   private tree: BehaviorTree | null = null;
   private hp: number = 20;
   private daytime: boolean = true;
+  private _startGameBlockHashes: boolean = false;
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
   private metrics = new MetricsCollector();
@@ -139,10 +140,10 @@ export class Bot {
         this.isRunning = true;
       }
 
-      if (packet.itemstates && packet.itemstates.length > 0) {
-        this.world.handleStartGame(packet);
-        logger.info({ count: packet.itemstates.length }, "Block & item states loaded (handleStartGame)");
-      }
+      // Store block_network_ids_are_hashes for later use with item_registry
+      this._startGameBlockHashes = packet.block_network_ids_are_hashes ?? false;
+
+      // handleStartGame is deferred to item_registry event (post-1.21.60)
 
       this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
 
@@ -266,7 +267,8 @@ export class Bot {
           return;
         }
         (column as any).networkDecodeNoCache(payload, subChunkCount);
-      } catch (err) {
+      } catch (err: any) {
+        process.stderr.write(`[CHUNK_ERR] chunk=(${x},${z}) subCount=${subChunkCount} msg=${err?.message ?? String(err)}\n`);
         getLogger().error({ err, chunkX: x, chunkZ: z, subChunkCount }, "Failed to load chunk");
       }
     });
@@ -353,11 +355,19 @@ export class Bot {
     });
 
     this.events.on("boss_event", ({ entityId, eventType, progress }) => {
-      if (eventType === 0) {
-        getLogger().info({ entityId }, "Boss bar appeared");
-      } else if (eventType === 4 && progress !== undefined) {
-        getLogger().debug({ progress }, "Dragon health update");
-      }
+      getLogger().info({ entityId: String(entityId), eventType, progress }, "Boss event");
+    });
+
+    // item_registry event (Bedrock 1.21.60+): itemstates come here instead of start_game
+    this.events.on("item_registry", ({ itemstates }) => {
+      getLogger().info({ count: itemstates.length }, "item_registry received, calling handleStartGame");
+      this.world.handleStartGame({
+        itemstates,
+        block_network_ids_are_hashes: this._startGameBlockHashes,
+      });
+      const reg = this.world.registry as any;
+      const blockCount = reg.blocksByRuntimeId ? Object.keys(reg.blocksByRuntimeId).length : 0;
+      getLogger().info({ blockCount, blockHashes: this._startGameBlockHashes }, "blocksByRuntimeId populated from item_registry");
     });
 
     this.events.on("portal_event", ({ eventType }) => {

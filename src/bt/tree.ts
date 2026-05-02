@@ -32,11 +32,17 @@ const phaseProgress: BTNode = new Selector([
 ]);
 
 export const rootTree = new InterruptibleSelector([
+  // 1. SURVIVAL (life or death)
   survivalSubtree,
-  safehouseSubtree,
+  // 2. THREAT_RESPONSE
   threatSubtree,
+  // 3. PHASE_PROGRESS — work on current phase goals
   phaseProgress,
+  // 4. SAFEHOUSE — maintenance only (first build is in SPAWN phase)
+  safehouseSubtree,
+  // 5. MAINTENANCE
   maintenanceSubtree,
+  // 6. IDLE (fallback)
   executeIdle,
 ]);
 

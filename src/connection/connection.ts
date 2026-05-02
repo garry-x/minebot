@@ -118,6 +118,8 @@ export class Connection {
       trace("start_game", packet);
       this.metrics?.recordPacket("in", "start_game");
       logger.info("Game started");
+      const hasItemRegistry = !!packet.itemstates;
+      logger.info({ hasItemRegistry, pkKeys: Object.keys(packet).slice(0, 10) }, "start_game packet");
       this.events.emit("spawned", {
         x: packet.player_position?.x ?? 0,
         y: packet.player_position?.y ?? 0,
@@ -125,7 +127,18 @@ export class Connection {
         yaw: packet.rotation?.x ?? 0,
         pitch: packet.rotation?.y ?? 0,
         itemstates: packet.itemstates,
+        block_network_ids_are_hashes: packet.block_network_ids_are_hashes ?? false,
       });
+    });
+
+    this.client.on("item_registry", (packet: any) => {
+      trace("item_registry", packet.itemstates?.length);
+      if (packet.itemstates) {
+        logger.info({ count: packet.itemstates.length }, "item_registry packet with itemstates");
+        this.events.emit("item_registry", {
+          itemstates: packet.itemstates,
+        });
+      }
     });
 
     this.client.on("level_chunk", (packet: any) => {

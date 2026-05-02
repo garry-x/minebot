@@ -61,7 +61,8 @@ export class EventBus<TEvents extends EventMap = EventMap> {
 
 // Global bot event types
 export interface BotEvents {
-  spawned: { x: number; y: number; z: number; yaw: number; pitch: number; itemstates?: any[] };
+  spawned: { x: number; y: number; z: number; yaw: number; pitch: number; itemstates?: any[]; block_network_ids_are_hashes?: boolean };
+  item_registry: { itemstates: any[] };
   chunk_loaded: { x: number; z: number; payload: Buffer; subChunkCount: number };
   health_change: { health: number; maxHealth: number };
   player_position: { x: number; y: number; z: number; yaw: number; pitch: number };
