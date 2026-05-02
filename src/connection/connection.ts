@@ -34,7 +34,6 @@ export interface ConnectionOptions {
   port: number;
   username: string;
   email?: string;
-  password?: string;
   viewDistance?: number;
   offline?: boolean;
   tracePackets?: boolean;
@@ -81,11 +80,8 @@ export class Connection {
       profilesFolder: "./.minebot-cache",
     };
 
-    if (!this.opts.offline && this.opts.email && this.opts.password) {
+    if (!this.opts.offline && this.opts.email) {
       clientOpts.username = this.opts.email;
-      clientOpts.password = this.opts.password;
-      clientOpts.authTitle = Titles.MinecraftNintendoSwitch;
-      clientOpts.flow = "live";
     }
 
     this.client = createClient(clientOpts);
@@ -354,14 +350,19 @@ export class Connection {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    if (this.client) {
+    const client = this.client;
+    this.client = null;
+    if (client) {
       if (!this.disconnectEmitted) {
         this.disconnectEmitted = true;
         this.events.emit("disconnect", { reason: "Bot disconnected" });
       }
-      this.client.removeAllListeners();
-      this.client.close();
-      this.client = null;
+      try {
+        client.removeAllListeners();
+        client.close();
+      } catch {
+        // ignore cleanup errors
+      }
     }
   }
 

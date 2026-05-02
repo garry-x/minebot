@@ -23,7 +23,7 @@ export interface BotConfig {
   host: string;
   port: number;
   email: string;
-  password: string;
+  password?: string;
   username?: string;
   viewDistance?: number;
   tickInterval?: number;
@@ -73,7 +73,6 @@ export class Bot {
         port: this.config.port,
         username: this.config.username ?? "Minebot",
         email: this.config.email,
-        password: this.config.password,
         viewDistance: this.config.viewDistance,
         offline: this.config.offline,
         tracePackets: this.config.tracePackets,
