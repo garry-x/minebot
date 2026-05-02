@@ -24,6 +24,7 @@ export class AuthManager {
       flow: "live",
       authTitle: Titles.MinecraftNintendoSwitch,
       password: credentials.password,
+      deviceType: "Nintendo",
     });
   }
 

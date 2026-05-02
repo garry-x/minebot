@@ -70,7 +70,9 @@ export class GatheringSkill extends Skill {
           Math.floor(this.targetOre.z)
         );
 
-        const pf = new Pathfinder((p) => !world.isBlockSolid(p));
+        const pf = new Pathfinder((p) => !world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
+          ctx.metrics?.recordPathfinding(nodes, duration, failed);
+        });
         const result = pf.findPath(start, end);
 
         if (result.length > 0) {

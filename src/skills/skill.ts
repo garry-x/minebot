@@ -4,6 +4,7 @@ import type { Inventory } from "../inventory/inventory.js";
 import type { EventBus, BotEvents } from "../events/event-bus.js";
 import type { Logger } from "../utils/logger.js";
 import type { HungerTracker } from "../player/hunger.js";
+import type { MetricsCollector } from "../telemetry/metrics.js";
 
 export interface SkillContext {
   world: WorldState;
@@ -12,6 +13,7 @@ export interface SkillContext {
   events: EventBus<BotEvents>;
   logger: Logger;
   hunger: HungerTracker;
+  metrics?: MetricsCollector;
 }
 
 export abstract class Skill {

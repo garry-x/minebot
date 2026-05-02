@@ -97,7 +97,9 @@ export class StrongholdSkill extends Skill {
           this.state = StrongholdState.DIGGING;
           this.digY = Math.floor(pos.y);
         } else if (dist < 100) {
-          const pf = new Pathfinder((p) => !ctx.world.isBlockSolid(p));
+          const pf = new Pathfinder((p) => !ctx.world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
+            ctx.metrics?.recordPathfinding(nodes, duration, failed);
+          });
           const result = pf.findPath(floor(pos), floor(target));
           if (result.length > 0 && this.path.length === 0) {
             this.path = result.map((n) => vec3(n.x, n.y, n.z));

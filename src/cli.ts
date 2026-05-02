@@ -5,7 +5,7 @@ export interface CliArgs {
   host: string;
   port: number;
   email: string;
-  password: string;
+  password?: string;
   username?: string;
   debug?: boolean;
   config?: string;
@@ -30,7 +30,6 @@ export function parseArgs(argv: string[] = process.argv): CliArgs {
     })
     .option("password", {
       type: "string",
-      demandOption: true,
       description: "Microsoft account password",
     })
     .option("username", {

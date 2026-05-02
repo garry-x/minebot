@@ -1,10 +1,16 @@
 import type { Skill, SkillContext } from "./skill.js";
 import { getLogger } from "../utils/logger.js";
+import type { MetricsCollector } from "../telemetry/metrics.js";
 
 export class SkillManager {
   private skills = new Map<string, Skill>();
   private current: Skill | null = null;
   private currentPriority = -Infinity;
+  private metrics?: MetricsCollector;
+
+  setMetrics(metrics: MetricsCollector): void {
+    this.metrics = metrics;
+  }
 
   register(skill: Skill): void {
     this.skills.set(skill.name, skill);
@@ -40,6 +46,8 @@ export class SkillManager {
   }
 
   private async transition(next: Skill, ctx: SkillContext): Promise<void> {
+    this.metrics?.recordSkillTransition(next.name);
+
     const previous = this.current;
     this.current = next;
     this.currentPriority = next.priority;

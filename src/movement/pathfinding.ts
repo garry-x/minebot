@@ -26,77 +26,87 @@ const NEIGHBOR_OFFSETS = [
 export class Pathfinder {
   private isWalkable: (pos: Vec3) => boolean;
   private maxNodes: number;
+  private onPathfinding?: (nodes: number, durationMs: number, failed: boolean) => void;
 
-  constructor(isWalkable: (pos: Vec3) => boolean, maxNodes = 10000) {
+  constructor(isWalkable: (pos: Vec3) => boolean, maxNodes = 10000, onPathfinding?: (nodes: number, durationMs: number, failed: boolean) => void) {
     this.isWalkable = isWalkable;
     this.maxNodes = maxNodes;
+    this.onPathfinding = onPathfinding;
   }
 
   findPath(start: Vec3, end: Vec3): Node[] {
-    const startNode: Node = {
-      x: Math.floor(start.x), y: Math.floor(start.y), z: Math.floor(start.z),
-      g: 0, h: 0, f: 0, parent: null,
-    };
-    startNode.h = manhattan({ x: startNode.x, y: startNode.y, z: startNode.z }, end);
-    startNode.f = startNode.h;
-
-    const endFloor = { x: Math.floor(end.x), y: Math.floor(end.y), z: Math.floor(end.z) };
-    if (startNode.x === endFloor.x && startNode.y === endFloor.y && startNode.z === endFloor.z) {
-      return [startNode];
-    }
-
-    const openSet: Node[] = [startNode];
-    const closedSet = new Set<string>();
-    const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
-
+    const startTime = Date.now();
     let iterations = 0;
-    while (openSet.length > 0 && iterations < this.maxNodes) {
-      iterations++;
-      let lowestIdx = 0;
-      for (let i = 1; i < openSet.length; i++) {
-        if (openSet[i].f < openSet[lowestIdx].f) lowestIdx = i;
+
+    const result = ((): Node[] => {
+      const startNode: Node = {
+        x: Math.floor(start.x), y: Math.floor(start.y), z: Math.floor(start.z),
+        g: 0, h: 0, f: 0, parent: null,
+      };
+      startNode.h = manhattan({ x: startNode.x, y: startNode.y, z: startNode.z }, end);
+      startNode.f = startNode.h;
+
+      const endFloor = { x: Math.floor(end.x), y: Math.floor(end.y), z: Math.floor(end.z) };
+      if (startNode.x === endFloor.x && startNode.y === endFloor.y && startNode.z === endFloor.z) {
+        return [startNode];
       }
-      const current = openSet.splice(lowestIdx, 1)[0];
 
-      if (current.x === endFloor.x && current.y === endFloor.y && current.z === endFloor.z) {
-        return this.reconstructPath(current);
-      }
+      const openSet: Node[] = [startNode];
+      const closedSet = new Set<string>();
+      const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
 
-      closedSet.add(key(current.x, current.y, current.z));
+      while (openSet.length > 0 && iterations < this.maxNodes) {
+        iterations++;
+        let lowestIdx = 0;
+        for (let i = 1; i < openSet.length; i++) {
+          if (openSet[i].f < openSet[lowestIdx].f) lowestIdx = i;
+        }
+        const current = openSet.splice(lowestIdx, 1)[0];
 
-      for (const offset of NEIGHBOR_OFFSETS) {
-        const nx = current.x + offset.x;
-        const ny = current.y + offset.y;
-        const nz = current.z + offset.z;
-        const nk = key(nx, ny, nz);
-
-        if (closedSet.has(nk)) continue;
-        if (!this.isWalkable({ x: nx, y: ny, z: nz })) continue;
-
-        if (offset.x !== 0 && offset.z !== 0) {
-          if (
-            !this.isWalkable({ x: current.x + offset.x, y: ny, z: current.z }) ||
-            !this.isWalkable({ x: current.x, y: ny, z: current.z + offset.z })
-          ) continue;
+        if (current.x === endFloor.x && current.y === endFloor.y && current.z === endFloor.z) {
+          return this.reconstructPath(current);
         }
 
-        const g = current.g + (offset.x !== 0 && offset.z !== 0 ? 1.414 : offset.y !== 0 ? 1.5 : 1);
-        const h = manhattan({ x: nx, y: ny, z: nz }, endFloor);
-        const f = g + h;
+        closedSet.add(key(current.x, current.y, current.z));
 
-        const existing = openSet.find((n) => n.x === nx && n.y === ny && n.z === nz);
-        if (existing) {
-          if (g < existing.g) {
-            existing.g = g;
-            existing.f = f;
-            existing.parent = current;
+        for (const offset of NEIGHBOR_OFFSETS) {
+          const nx = current.x + offset.x;
+          const ny = current.y + offset.y;
+          const nz = current.z + offset.z;
+          const nk = key(nx, ny, nz);
+
+          if (closedSet.has(nk)) continue;
+          if (!this.isWalkable({ x: nx, y: ny, z: nz })) continue;
+
+          if (offset.x !== 0 && offset.z !== 0) {
+            if (
+              !this.isWalkable({ x: current.x + offset.x, y: ny, z: current.z }) ||
+              !this.isWalkable({ x: current.x, y: ny, z: current.z + offset.z })
+            ) continue;
           }
-        } else {
-          openSet.push({ x: nx, y: ny, z: nz, g, h, f, parent: current });
+
+          const g = current.g + (offset.x !== 0 && offset.z !== 0 ? 1.414 : offset.y !== 0 ? 1.5 : 1);
+          const h = manhattan({ x: nx, y: ny, z: nz }, endFloor);
+          const f = g + h;
+
+          const existing = openSet.find((n) => n.x === nx && n.y === ny && n.z === nz);
+          if (existing) {
+            if (g < existing.g) {
+              existing.g = g;
+              existing.f = f;
+              existing.parent = current;
+            }
+          } else {
+            openSet.push({ x: nx, y: ny, z: nz, g, h, f, parent: current });
+          }
         }
       }
-    }
-    return [];
+      return [];
+    })();
+
+    const durationMs = Date.now() - startTime;
+    this.onPathfinding?.(iterations, durationMs, result.length === 0);
+    return result;
   }
 
   private reconstructPath(node: Node): Node[] {

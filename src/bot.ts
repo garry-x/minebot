@@ -1,4 +1,3 @@
-import { AuthManager } from "./auth/auth-manager.js";
 import { Connection } from "./connection/connection.js";
 import { WorldState } from "./world/world-state.js";
 import { Movement } from "./movement/movement.js";
@@ -15,6 +14,8 @@ import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
 import { Planner } from "./planner/planner.js";
 import { createLogger, getLogger } from "./utils/logger.js";
+import { MetricsCollector } from "./telemetry/metrics.js";
+import { Dashboard } from "./telemetry/dashboard.js";
 import type { SkillContext } from "./skills/skill.js";
 
 export interface BotConfig {
@@ -38,9 +39,11 @@ export class Bot {
   private inventory!: Inventory;
   private skills!: SkillManager;
   private hunger = new HungerTracker();
-  private planner = new Planner();
+  private planner: Planner = new Planner();
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
+  private metrics = new MetricsCollector();
+  private dashboard!: Dashboard;
 
   constructor(config: BotConfig) {
     this.config = config;
@@ -54,26 +57,20 @@ export class Bot {
 
     logger.info("Minebot starting...");
 
-    // 1. Authenticate
-    const auth = new AuthManager({
-      email: this.config.email,
-      password: this.config.password,
-    });
-    const { chain, token } = await auth.authenticate();
-
-    // 2. Connect
+    // 1. Connect (bedrock-protocol handles auth internally)
     this.connection = new Connection(
       {
         host: this.config.host,
         port: this.config.port,
         username: this.config.username ?? "Minebot",
-        chain,
-        token,
+        email: this.config.email,
+        password: this.config.password,
         viewDistance: this.config.viewDistance,
         offline: this.config.offline,
       },
       this.events
     );
+    this.connection.setMetrics(this.metrics);
 
     // 3. Initialize modules
     this.world = new WorldState("bedrock_1.21");
@@ -82,6 +79,7 @@ export class Bot {
 
     // 4. Register skills
     this.skills = new SkillManager();
+    this.skills.setMetrics(this.metrics);
     this.skills.register(new IdleSkill());
     this.skills.register(new GatheringSkill());
     this.skills.register(new CombatSkill());
@@ -108,6 +106,8 @@ export class Bot {
 
       this.isRunning = true;
 
+      this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
+
       const ctx: SkillContext = {
         world: this.world,
         movement: this.movement,
@@ -115,18 +115,24 @@ export class Bot {
         events: this.events,
         logger,
         hunger: this.hunger,
+        metrics: this.metrics,
       };
 
       this.skills.setCurrent("idle", ctx);
 
+      const DASHBOARD_INTERVAL_MS = 5000;
+      const PLANNER_INTERVAL_TICKS = 100;
       const tickInterval = this.config.tickInterval ?? 50;
       let plannerTick = 0;
+      let lastDashboardPrint = 0;
 
       this.tickTimer = setInterval(() => {
         if (!this.isRunning) return;
 
+        const tickStart = Date.now();
+
         plannerTick++;
-        if (plannerTick % 100 === 0) {
+        if (plannerTick % PLANNER_INTERVAL_TICKS === 0) {
           const nextSkill = this.planner.getRecommendedSkill(ctx);
           const current = this.skills.getCurrentSkillName();
           if (nextSkill !== current) {
@@ -138,6 +144,18 @@ export class Bot {
         this.skills.tick(ctx).catch((err) => {
           logger.error({ err }, "Tick error");
         });
+
+        this.metrics.recordTick(Date.now() - tickStart);
+
+        const now = Date.now();
+        if (now - lastDashboardPrint >= DASHBOARD_INTERVAL_MS) {
+          this.metrics.updateSystemStats(
+            this.world.getEntities().length,
+            this.world.getColumns().size
+          );
+          this.dashboard.print();
+          lastDashboardPrint = now;
+        }
       }, tickInterval);
 
       logger.info(`Tick loop started (${tickInterval}ms)`);

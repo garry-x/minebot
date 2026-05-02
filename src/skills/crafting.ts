@@ -170,7 +170,9 @@ export class CraftingSkill extends Skill {
             Math.floor(this.targetWorkbench.z)
           );
 
-          const pf = new Pathfinder((p) => !ctx.world.isBlockSolid(p));
+          const pf = new Pathfinder((p) => !ctx.world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
+            ctx.metrics?.recordPathfinding(nodes, duration, failed);
+          });
           const result = pf.findPath(start, end);
 
           if (result.length > 0) {

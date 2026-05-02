@@ -2,6 +2,7 @@ import { createClient, Client } from "bedrock-protocol";
 import { Titles } from "prismarine-auth";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
+import type { MetricsCollector } from "../telemetry/metrics.js";
 
 const HOSTILE_MOBS = new Set([
   "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
@@ -39,14 +40,20 @@ export class Connection {
   private opts: ConnectionOptions;
   private events: EventBus<BotEvents>;
   private disconnectEmitted = false;
+  private metrics?: MetricsCollector;
 
   constructor(options: ConnectionOptions, events: EventBus<BotEvents>) {
     this.opts = options;
     this.events = events;
   }
 
+  setMetrics(metrics: MetricsCollector): void {
+    this.metrics = metrics;
+  }
+
   connect(): void {
     if (this.client) {
+      this.metrics?.recordReconnect();
       getLogger().warn("Already connected, disconnecting first");
       this.disconnect();
     }
@@ -72,10 +79,12 @@ export class Connection {
     this.disconnectEmitted = false;
 
     this.client.on("join", () => {
+      this.metrics?.startConnection();
       logger.info("Joined server");
     });
 
     this.client.on("start_game", (packet: any) => {
+      this.metrics?.recordPacket("in", "start_game");
       logger.info("Game started");
       this.events.emit("spawned", {
         x: packet.player_position?.x ?? 0,
@@ -88,6 +97,7 @@ export class Connection {
     });
 
     this.client.on("level_chunk", (packet: any) => {
+      this.metrics?.recordPacket("in", "level_chunk");
       this.events.emit("chunk_loaded", {
         x: packet.x,
         z: packet.z,
@@ -97,6 +107,7 @@ export class Connection {
     });
 
     this.client.on("move_player", (packet: any) => {
+      this.metrics?.recordPacket("in", "move_player");
       if (packet.runtime_id !== this.client?.entityId) return;
       this.events.emit("player_position", {
         x: packet.position?.x ?? 0,
@@ -108,6 +119,7 @@ export class Connection {
     });
 
     this.client.on("update_attributes", (packet: any) => {
+      this.metrics?.recordPacket("in", "update_attributes");
       if (packet.runtime_entity_id !== this.client?.entityId) return;
       const attrs: Record<string, number> = {};
       for (const attr of packet.attributes ?? []) {
@@ -126,6 +138,7 @@ export class Connection {
     });
 
     this.client.on("entity_event", (packet: any) => {
+      this.metrics?.recordPacket("in", "entity_event");
       if (packet.event_id === 3 && packet.runtime_entity_id === this.getEntityId()) {
         this.events.emit("player_death", { message: "Player died" });
       }
@@ -155,6 +168,7 @@ export class Connection {
 
     // Entity tracking
     this.client.on("add_entity", (packet: any) => {
+      this.metrics?.recordPacket("in", "add_entity");
       const hostile = isHostileMob(packet.entity_type);
       this.events.emit("entity_spawn", {
         uniqueId: packet.unique_id,
@@ -169,10 +183,12 @@ export class Connection {
     });
 
     this.client.on("remove_entity", (packet: any) => {
+      this.metrics?.recordPacket("in", "remove_entity");
       this.events.emit("entity_despawn", { uniqueId: packet.entity_id_self });
     });
 
     this.client.on("move_entity", (packet: any) => {
+      this.metrics?.recordPacket("in", "move_entity");
       this.events.emit("entity_move", {
         runtimeId: packet.runtime_entity_id,
         x: packet.position?.x ?? 0,
@@ -185,11 +201,13 @@ export class Connection {
 
     // Crafting data
     this.client.on("crafting_data", (packet: any) => {
+      this.metrics?.recordPacket("in", "crafting_data");
       this.events.emit("crafting_data", { recipes: packet.recipes });
     });
 
     // Inventory sync (window_id 0 = player inventory, 120 = armor)
     this.client.on("inventory_slot", (packet: any) => {
+      this.metrics?.recordPacket("in", "inventory_slot");
       const winId = packet.window_id ?? 0;
       if (winId !== 0 && winId !== 120) return;
 
@@ -209,6 +227,7 @@ export class Connection {
 
     // Dimension change
     this.client.on("change_dimension", (packet: any) => {
+      this.metrics?.recordPacket("in", "change_dimension");
       getLogger().info({ dimension: packet.dimension }, "Dimension changed");
       this.events.emit("dimension_change", {
         dimension: packet.dimension,
@@ -220,6 +239,7 @@ export class Connection {
 
     // Boss event (wither, ender dragon)
     this.client.on("boss_event", (packet: any) => {
+      this.metrics?.recordPacket("in", "boss_event");
       this.events.emit("boss_event", {
         entityId: packet.boss_entity_id,
         eventType: packet.type,
@@ -230,6 +250,7 @@ export class Connection {
 
     // Portal events (nether/end portal appearing)
     this.client.on("event", (packet: any) => {
+      this.metrics?.recordPacket("in", "event");
       if (packet.event_type === 2 || packet.event_type === 7) {
         this.events.emit("portal_event", { eventType: packet.event_type });
       }
@@ -237,6 +258,7 @@ export class Connection {
 
     // Level event (eye of ender despawn)
     this.client.on("level_event", (packet: any) => {
+      this.metrics?.recordPacket("in", "level_event");
       if (packet.event === 2003) {
         this.events.emit("level_event", {
           eventId: packet.event,
@@ -253,6 +275,7 @@ export class Connection {
       getLogger().warn("Write called before client connected");
       return;
     }
+    this.metrics?.recordPacket("out", name);
     this.client.write(name, params);
   }
 
@@ -261,6 +284,7 @@ export class Connection {
       getLogger().warn("Queue called before client connected");
       return;
     }
+    this.metrics?.recordPacket("out", name);
     this.client.queue(name, params);
   }
 
