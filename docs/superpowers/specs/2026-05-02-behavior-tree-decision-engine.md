@@ -108,9 +108,9 @@ Tick 10: SURVIVAL→FAIL, SAFEHOUSE→FAIL, THREAT→SUCCESS (zombie dead), PHAS
 | # | Phase | Goals | Stockpile (in chest) | Advance Condition | Skills |
 |---|-------|-------|----------------------|-------------------|--------|
 | 0 | **SPAWN** | Find trees, gather wood, craft chest, build mud safehouse | wood_log ×32, planks ×64, sticks ×32, crafting_table ×1, chest ×2 | Has 32 wood + safehouse + 2 chests | gathering, crafting, building |
-| 1 | **STONE** | Place workbench+furnace, mine cobblestone, craft stone pick+sword+axe, craft 2 more chests, reinforce safehouse | cobblestone ×64, stone_pickaxe ×2, stone_sword ×2, stone_axe ×1, furnace ×2 | Has stone pickaxe ×2 + stone safehouse + 4 chests | gathering, crafting, building |
-| 2 | **IRON** | Mine iron ore, smelt ingots, craft iron pick+chestplate+sword, craft more chests | iron_ingot ×20, iron_pickaxe ×2, iron_chestplate ×2, iron_sword ×2, coal ×32 | Has iron pickaxe + iron chestplate + stockpile met | gathering, crafting |
-| 3 | **DIAMOND** | Mine diamond, craft diamond pick, collect obsidian, build deep safehouse Y<12 | diamond ×3, diamond_pickaxe ×2, obsidian ×20, golden_apple ×3 | Has diamond pickaxe + 20 obsidian + stockpile met | gathering, crafting, building |
+| 1 | **STONE** | Place workbench+furnace, mine cobblestone, craft stone pick+sword+axe ×2 each, craft 2 more chests, reinforce safehouse | cobblestone ×64, stone_pickaxe ×2, stone_sword ×2, stone_axe ×1, furnace ×2 | Has stone pickaxe ×2 + stone safehouse + 4 chests | gathering, crafting, building |
+| 2 | **IRON** | Mine iron ore, smelt ingots, craft iron pick+chestplate+sword ×2 each, craft more chests | iron_ingot ×20, iron_pickaxe ×2, iron_chestplate ×2, iron_sword ×2, coal ×32 | Has iron pickaxe + iron chestplate + stockpile met | gathering, crafting |
+| 3 | **DIAMOND** | Mine diamond, craft diamond pick ×2, collect obsidian, build deep safehouse Y<12 | diamond ×3, diamond_pickaxe ×2, obsidian ×20, golden_apple ×3 | Has diamond pickaxe + 20 obsidian + stockpile met | gathering, crafting, building |
 | 4 | **NETHER_ENTRY** | Build nether portal (4×5 obsidian), ignite, enter | flint_and_steel ×2, obsidian ×4 (portal repair backup) | Current dimension = nether | building, crafting |
 | 5 | **NETHER** | Build nether foothold, find fortress, kill blazes, kill endermen, stash rods and pearls in chest | blaze_rod ×12, ender_pearl ×24, cobblestone ×64 (foothold repair) | 6 blaze rods + 12 pearls in inventory (24 pearls stashed) | combat, gathering, building |
 | 6 | **END_PREP** | Craft ender eyes, return overworld, restock safehouse, locate stronghold | ender_eye ×24, food ×32, iron_ingot ×20 (emergency backup) | 12 ender eyes in inventory + stronghold located | crafting, stronghold |
@@ -156,6 +156,10 @@ The bot maintains a **chest-based reserve** so that death does not reset all pro
    - Chest 6: miscellaneous (sticks, flint, string, feathers)
 4. **Deposit trigger:** inventory slots > 80% full → return to nearest safehouse → deposit all non-hotbar items to correct chests.
 5. **Restock trigger:** leave safehouse for phase tasks only when hotbar has: 1 pickaxe, 1 sword, 1 food stack (16+), 1 building block stack (64+), 1 torch stack (32+), 1 empty slot minimum.
+6. **Crafting backup rule:** When crafting any S-Tier or A-Tier item (tools, weapons, armor), the bot MUST craft **at least 2 copies** if materials allow:
+   - 1 for inventory/hotbar (active use)
+   - 1+ for chest (backup)
+   When crafting from scarce materials (diamonds, blaze rods), craft as many copies as materials permit, keeping 1 backup minimum.
 
 ### Item Organization & Priority System
 
