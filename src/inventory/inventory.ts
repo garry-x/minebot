@@ -137,6 +137,32 @@ export class Inventory {
     return -1;
   }
 
+  getDurability(slot: number): number {
+    const item = this.getSlot(slot);
+    if (!item) return 1;
+    return item.durability ?? 1;
+  }
+
+  getBestDurability(itemName: string): { slot: number; durability: number } | null {
+    let bestSlot = -1;
+    let bestDurability = -1;
+    for (const [slot, item] of this.slots) {
+      if (item.name === itemName && (item.durability ?? 1) > bestDurability) {
+        bestDurability = item.durability ?? 1;
+        bestSlot = slot;
+      }
+    }
+    return bestSlot >= 0 ? { slot: bestSlot, durability: bestDurability } : null;
+  }
+
+  findBrokenTool(): number {
+    for (const [slot, item] of this.slots) {
+      const dur = item.durability ?? 1;
+      if (dur < 0.1) return slot;
+    }
+    return -1;
+  }
+
   getEmptySlots(): number[] {
     const empty: number[] = [];
     for (let i = 0; i < INVENTORY_SLOTS; i++) {

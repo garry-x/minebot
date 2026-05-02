@@ -27,6 +27,7 @@ export interface InventorySlot {
   count: number;
   metadata?: number;
   durability?: number;
+  maxDurability?: number;
   name?: string;
 }
 

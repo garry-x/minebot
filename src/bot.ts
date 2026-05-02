@@ -269,12 +269,16 @@ export class Bot {
         if (data.item === null) {
           this.inventory.setArmor(armorSlot, null);
         } else {
+          const itemName = this.world.getItemName(data.item.id);
+          const durability = this.computeDurability(itemName, data.item.damage);
           this.inventory.setArmor(armorSlot, {
             slot: armorSlot,
             itemId: data.item.id,
             count: data.item.count,
             metadata: data.item.metadata,
-            name: this.world.getItemName(data.item.id),
+            name: itemName,
+            durability,
+            maxDurability: durability < 1 ? this.getMaxDurability(itemName) : undefined,
           });
         }
         return;
@@ -282,12 +286,16 @@ export class Bot {
       if (data.item === null) {
         this.inventory.setSlot(data.slot, null);
       } else {
+        const itemName = this.world.getItemName(data.item.id);
+        const durability = this.computeDurability(itemName, data.item.damage);
         this.inventory.setSlot(data.slot, {
           slot: data.slot,
           itemId: data.item.id,
           count: data.item.count,
           metadata: data.item.metadata,
-          name: this.world.getItemName(data.item.id),
+          name: itemName,
+          durability,
+          maxDurability: durability < 1 ? this.getMaxDurability(itemName) : undefined,
         });
       }
     });
@@ -339,6 +347,23 @@ export class Bot {
       metrics: this.metrics,
       circuitBreaker: this.circuitBreaker,
     };
+  }
+
+  private computeDurability(itemName: string | undefined, damage: number | undefined): number {
+    if (!damage || damage <= 0) return 1;
+    if (!itemName) return 1;
+    const max = this.getMaxDurability(itemName);
+    if (max <= 0) return 1;
+    return Math.max(0, 1 - (damage / max));
+  }
+
+  private getMaxDurability(itemName: string | undefined): number {
+    if (!itemName) return 0;
+    try {
+      const regItem = (this.world as any).registry?.itemsByName?.[itemName];
+      if (regItem?.maxDurability) return regItem.maxDurability;
+    } catch { /* registry might not have item */ }
+    return 0;
   }
 
   getHungerTracker(): HungerTracker {

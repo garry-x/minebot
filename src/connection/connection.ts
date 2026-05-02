@@ -276,12 +276,21 @@ export class Connection {
       const item = packet.item;
       const isNull = !item || item.network_id === 0 || item.network_id === -1;
 
+      let damage = 0;
+      if (item && item.nbt) {
+        const nbt = typeof item.nbt === "string" ? JSON.parse(item.nbt) : item.nbt;
+        if (nbt?.value?.Damage?.value !== undefined) {
+          damage = nbt.value.Damage.value;
+        }
+      }
+
       this.events.emit("inventory_change", {
         slot: winId === 120 ? 36 + slot : slot,
         item: isNull ? null : {
           id: item.network_id ?? 0,
           count: item.count ?? 1,
           metadata: item.metadata ?? 0,
+          damage: damage > 0 ? damage : undefined,
         },
       });
     });
