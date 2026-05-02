@@ -208,14 +208,21 @@ export class Bot {
       this.world.clearEntities();
     });
 
-    this.events.on("chunk_loaded", ({ x, z, payload }) => {
+    this.events.on("chunk_loaded", ({ x, z, payload, subChunkCount }) => {
       try {
-        const column = this.world.getColumn(x, z);
-        if (column) {
-          (column as any).load(payload, this.world.registry);
+        let column = this.world.getColumn(x, z);
+        if (!column) {
+          column = this.world.createColumn(x, z);
+          this.world.addColumn(x, z, column);
         }
+        if (subChunkCount === -1 || subChunkCount === -2) {
+          // Cached chunk mode — not supported yet
+          getLogger().debug({ x, z, subChunkCount }, "Cached chunk mode skipped");
+          return;
+        }
+        (column as any).networkDecodeNoCache(payload, subChunkCount);
       } catch (err) {
-        getLogger().error({ err, chunkX: x, chunkZ: z }, "Failed to load chunk");
+        getLogger().error({ err, chunkX: x, chunkZ: z, subChunkCount }, "Failed to load chunk");
       }
     });
 

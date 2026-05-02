@@ -17,7 +17,7 @@ export class Movement {
   setPosition(x: number, y: number, z: number): void {
     this.currentPosition = { x, y, z };
     this.connection.queue("move_player", {
-      runtime_id: this.connection.getEntityId(),
+      runtime_id: Number(this.connection.getEntityId()),
       position: { x, y, z },
       pitch: this.currentPitch,
       yaw: this.currentYaw,
@@ -33,7 +33,7 @@ export class Movement {
     this.currentYaw = yaw;
     this.currentPitch = pitch;
     this.connection.queue("move_player", {
-      runtime_id: this.connection.getEntityId(),
+      runtime_id: Number(this.connection.getEntityId()),
       position: this.currentPosition,
       pitch,
       yaw,

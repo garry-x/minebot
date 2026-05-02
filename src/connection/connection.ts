@@ -6,7 +6,7 @@ import type { MetricsCollector } from "../telemetry/metrics.js";
 import { ReconnectPolicy } from "./reconnect-policy.js";
 
 const require = createRequire(import.meta.url);
-const { Titles } = require("prismarine-auth");
+const { Authflow, Titles } = require("prismarine-auth");
 
 const HOSTILE_MOBS = new Set([
   "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
@@ -82,6 +82,16 @@ export class Connection {
 
     if (!this.opts.offline && this.opts.email) {
       clientOpts.username = this.opts.email;
+      // Create a custom authflow that skips title auth to workaround
+      // getTitleToken 403 errors (Xbox Live may block title auth for some regions/accounts)
+      const authflow = new Authflow(this.opts.email, "./.minebot-cache", {
+        flow: "live",
+        authTitle: Titles.MinecraftNintendoSwitch,
+        deviceType: "Nintendo",
+      });
+      // @ts-ignore - internal property to skip getTitleToken
+      authflow.doTitleAuth = false;
+      clientOpts.authflow = authflow;
     }
 
     this.client = createClient(clientOpts);

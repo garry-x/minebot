@@ -77,6 +77,10 @@ export class WorldState {
     return this.world.getLoadedColumn(x, z);
   }
 
+  createColumn(x: number, z: number): any {
+    return new this.ChunkColumn({ x, z });
+  }
+
   /**
    * Get all loaded chunk columns.
    * NOTE: Accesses internal `prismarine-world` property `columns`.
