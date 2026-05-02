@@ -23,7 +23,6 @@ export class GatheringSkill extends Skill {
   private scanCooldown = 0;
   private emptyScanCount = 0;
   private wanderTarget: { x: number; z: number } | null = null;
-  private debugLogged = false;
 
   constructor() {
     super("gathering", 5);
@@ -59,34 +58,6 @@ export class GatheringSkill extends Skill {
             else movement.setPosition(this.wanderTarget.x, pos.y, this.wanderTarget.z);
           }
           break;
-        }
-        if (!this.debugLogged) {
-          this.debugLogged = true;
-          const cx = Math.floor(pos.x);
-          const cy = Math.floor(pos.y);
-          const cz = Math.floor(pos.z);
-          let scanned = 0;
-          let nullCount = 0;
-          const uniqueNames = new Set<string>();
-          for (let dx = -SCAN_RADIUS; dx <= SCAN_RADIUS; dx++) {
-            for (let dy = -SCAN_RADIUS; dy <= SCAN_RADIUS; dy++) {
-              for (let dz = -SCAN_RADIUS; dz <= SCAN_RADIUS; dz++) {
-                scanned++;
-                const bpos = vec3(cx + dx, cy + dy, cz + dz);
-                const block = world.getBlock(bpos);
-                if (block === null) {
-                  nullCount++;
-                } else {
-                  uniqueNames.add(block.name);
-                }
-              }
-            }
-          }
-          const fixedCount = scanned - nullCount;
-          const sample = [...uniqueNames].slice(0, 10);
-          ctx.logger.info(
-            `[DEBUG] pos=(${cx},${cy},${cz}) scanned=${scanned}, nullCount=${nullCount}, fixedCount=${fixedCount}, sample=[${sample.join(", ")}]`
-          );
         }
         const ores = world.findOres(pos, SCAN_RADIUS);
         if (ores.length > 0) {
