@@ -2,7 +2,6 @@ import { Skill, SkillContext } from "./skill.js";
 import { Pathfinder } from "../movement/pathfinding.js";
 import { TraversalContext } from "../movement/pathfinding-types.js";
 import { Vec3, vec3, distance } from "../utils/vec3.js";
-import { markGatherFailed } from "../planner/planner.js";
 const SCAN_RADIUS = 32;
 const MINE_REACH = 4;
 const SCAN_COOLDOWN_TICKS = 40;
@@ -77,7 +76,6 @@ export class GatheringSkill extends Skill {
             ctx.logger.info("No resources after 3 scans, returning to idle");
             this.emptyScanCount = 0;
             this.wanderTarget = null;
-            markGatherFailed();
             return "idle";
           }
           this.wanderTarget = {

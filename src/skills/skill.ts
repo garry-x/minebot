@@ -16,6 +16,8 @@ export interface SkillContext {
   hunger: HungerTracker;
   metrics?: MetricsCollector;
   circuitBreaker?: PathfindingCircuitBreaker;
+  hp: number;
+  daytime: boolean;
 }
 
 export abstract class Skill {

@@ -3,9 +3,8 @@ import { getLogger } from "../utils/logger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
 
 export class SkillManager {
-  private skills = new Map<string, Skill>();
+  private skills: Map<string, Skill> = new Map();
   private current: Skill | null = null;
-  private currentPriority = -Infinity;
   private metrics?: MetricsCollector;
 
   setMetrics(metrics: MetricsCollector): void {
@@ -16,75 +15,30 @@ export class SkillManager {
     this.skills.set(skill.name, skill);
   }
 
-  unregister(name: string): void {
-    if (this.current?.name === name) {
-      getLogger().warn(`Cannot unregister active skill: ${name}`);
-      return;
-    }
-    this.skills.delete(name);
-  }
-
   setCurrent(name: string, ctx: SkillContext): void {
     const skill = this.skills.get(name);
     if (!skill) {
-      getLogger().warn(`Skill not found: ${name}`);
+      ctx.logger?.warn(`Skill "${name}" not registered`);
       return;
     }
-    this.transition(skill, ctx);
-  }
-
-  requestWithPriority(name: string, ctx: SkillContext): void {
-    const skill = this.skills.get(name);
-    if (!skill) {
-      getLogger().warn(`Skill not found: ${name}`);
-      return;
+    if (this.current) {
+      void this.current.exit(ctx);
     }
-    if (this.current && skill.priority <= this.currentPriority) {
-      return;
-    }
-    this.transition(skill, ctx);
-  }
-
-  private async transition(next: Skill, ctx: SkillContext): Promise<void> {
-    this.metrics?.recordSkillTransition(next.name);
-
-    const previous = this.current;
-    this.current = next;
-    this.currentPriority = next.priority;
-
-    const enterPromise = next.enter(ctx);
-
-    if (previous && previous.name !== next.name) {
-      const logger = getLogger();
-      logger.info(`Skill transition: ${previous.name} -> ${next.name}`);
-      try {
-        await previous.exit(ctx);
-      } catch (err) {
-        logger.error({ err }, `Error exiting skill: ${previous.name}`);
-      }
-    }
-
-    try {
-      await enterPromise;
-    } catch (err) {
-      getLogger().error({ err }, `Error entering skill: ${next.name}`);
-    }
+    this.current = skill;
+    void skill.enter(ctx);
+    this.metrics?.recordSkillTransition(name);
   }
 
   async tick(ctx: SkillContext): Promise<void> {
     if (!this.current) return;
     try {
       const next = await this.current.tick(ctx);
-      if (next && next !== this.current.name) {
+      if (next && next !== this.current.name && this.skills.has(next)) {
         this.setCurrent(next, ctx);
       }
     } catch (err) {
-      getLogger().error({ err, skill: this.current.name }, "Skill tick crashed");
-      ctx.events.emit("error", { message: `Skill ${this.current.name} crashed`, error: err as Error });
-      // Transition to idle
-      if (this.current.name !== "idle") {
-        this.setCurrent("idle", ctx);
-      }
+      getLogger().error({ err }, `Skill "${this.current.name}" crashed`);
+      this.setCurrent("idle", ctx);
     }
   }
 
@@ -93,6 +47,6 @@ export class SkillManager {
   }
 
   getCurrentPriority(): number {
-    return this.currentPriority;
+    return this.current?.priority ?? 0;
   }
 }

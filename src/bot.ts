@@ -12,7 +12,9 @@ import { StrongholdSkill } from "./skills/stronghold.js";
 import { EnderDragonHuntSkill } from "./skills/dragon-hunt.js";
 import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
-import { Planner } from "./planner/planner.js";
+import { BehaviorTree } from "./bt/behavior-tree.js";
+import { rootTree, determinePhase } from "./bt/tree.js";
+import { PhaseType, type Blackboard, type SafehouseState, type StockpileState, type OrganizationState } from "./bt/types.js";
 import { createLogger, getLogger } from "./utils/logger.js";
 import { MetricsCollector } from "./telemetry/metrics.js";
 import { Dashboard } from "./telemetry/dashboard.js";
@@ -42,7 +44,9 @@ export class Bot {
   private inventory!: Inventory;
   private skills!: SkillManager;
   private hunger = new HungerTracker();
-  private planner: Planner = new Planner();
+  private tree: BehaviorTree | null = null;
+  private hp: number = 20;
+  private daytime: boolean = true;
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
   private metrics = new MetricsCollector();
@@ -101,6 +105,25 @@ export class Bot {
     // 5. Wire up event handlers (chunks, entities, etc. — stubs for Phase 1)
     this.setupEventHandlers();
 
+    this.events.once("spawned", () => {
+      const ctx = this.getSkillContext();
+      const bb: Blackboard = {
+        ctx,
+        currentPhase: PhaseType.SPAWN,
+        phaseData: {},
+        safehouseState: { built: false, position: null, hasWorkbench: false, hasFurnace: false, hasTorches: false, chestCount: 0 },
+        stockpileState: { trackedChests: [], lastDepositTime: 0, stockpileMet: false },
+        organizationState: { hotbarLayoutOk: true, hasGarbage: false, lastSortTime: 0 },
+        hp: this.hp,
+        daytime: this.daytime,
+        dimension: this.world?.getDimension() ?? 0,
+        lastSkill: this.skills?.getCurrentSkillName() ?? null,
+      };
+      bb.currentPhase = determinePhase(bb);
+      logger.info(`BT: determined initial phase = ${PhaseType[bb.currentPhase]}`);
+      this.tree = new BehaviorTree(rootTree, bb);
+    });
+
     // 6. Connect to server
     this.connection.connect();
 
@@ -131,7 +154,6 @@ export class Bot {
       const DASHBOARD_INTERVAL_MS = 5000;
       const PLANNER_INTERVAL_TICKS = 100;
       const TICK_THROTTLE_THRESHOLD_MS = 100;
-      const TICK_THROTTLE_SKIP_PLANNER = 200;
       const tickInterval = this.config.tickInterval ?? 50;
       let plannerTick = 0;
       let lastDashboardPrint = 0;
@@ -152,17 +174,19 @@ export class Bot {
         }
 
         plannerTick++;
-        const skipPlanner = avgTick > TICK_THROTTLE_SKIP_PLANNER;
-        if (plannerTick % PLANNER_INTERVAL_TICKS === 0 && !skipPlanner) {
-          const nextSkill = this.planner.getRecommendedSkill(ctx);
-          const current = this.skills.getCurrentSkillName();
-          // Prevent planner from switching to pathfinding-heavy skills when circuit breaker is active
-          const pathfindingSkills = ["gathering", "combat", "stronghold", "dragon_hunt", "building", "crafting"];
-          if (this.circuitBreaker.isDisabled() && nextSkill && pathfindingSkills.includes(nextSkill)) {
-            getLogger().warn({ skill: nextSkill }, "Circuit breaker active — blocking pathfinding-heavy skill switch");
-          } else if (nextSkill !== current) {
-            getLogger().info({ from: current, to: nextSkill }, "Planner suggests skill change");
-            this.skills.requestWithPriority(nextSkill, ctx);
+        if (plannerTick % PLANNER_INTERVAL_TICKS === 0) {
+          if (this.tree) {
+            const bb = this.tree.getBlackboard();
+            bb.hp = this.hp;
+            bb.daytime = this.daytime;
+            bb.dimension = this.world.getDimension();
+            bb.lastSkill = this.skills.getCurrentSkillName();
+            bb.currentPhase = determinePhase(bb);
+
+            const nextSkill = this.tree.tick();
+            if (nextSkill && nextSkill !== this.skills.getCurrentSkillName()) {
+              this.skills.setCurrent(nextSkill, ctx);
+            }
           }
         }
 
@@ -218,8 +242,17 @@ export class Bot {
     this.events.on("player_death", ({ message }) => {
       getLogger().warn({ message }, "Bot died, pausing tick loop");
       this.isRunning = false;
+      this.tree?.reset();
       this.skills.setCurrent("idle", this.getSkillContext());
       this.world.clearEntities();
+    });
+
+    this.events.on("health_change", ({ health }) => {
+      this.hp = Math.max(0, Math.min(20, health));
+    });
+
+    this.events.on("time_change", ({ time }) => {
+      this.daytime = (time % 24000) < 13000;
     });
 
     this.events.on("chunk_loaded", ({ x, z, payload, subChunkCount }) => {
@@ -346,6 +379,8 @@ export class Bot {
       hunger: this.hunger,
       metrics: this.metrics,
       circuitBreaker: this.circuitBreaker,
+      hp: this.hp,
+      daytime: this.daytime,
     };
   }
 

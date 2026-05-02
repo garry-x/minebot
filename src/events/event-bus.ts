@@ -80,4 +80,5 @@ export interface BotEvents {
   boss_event: { entityId: bigint; eventType: number; progress?: number; title?: string };
   portal_event: { eventType: number };
   level_event: { eventId: number; x: number; y: number; z: number };
+  time_change: { time: number };
 }

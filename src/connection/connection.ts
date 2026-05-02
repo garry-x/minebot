@@ -342,6 +342,12 @@ export class Connection {
         });
       }
     });
+
+    this.client.on("set_time", (packet: any) => {
+      trace("set_time");
+      this.metrics?.recordPacket("in", "set_time");
+      this.events.emit("time_change", { time: packet.time ?? 0 });
+    });
   }
 
   write(name: string, params: Record<string, unknown>): void {
