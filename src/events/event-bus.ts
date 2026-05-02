@@ -73,6 +73,7 @@ export interface BotEvents {
   hunger_change: { hunger: number; saturation: number; exhaustion: number };
   player_death: { message: string };
   disconnect: { reason: string };
+  fatal_disconnect: { reason: string };
   error: { message: string; error: Error };
   crafting_data: { recipes: any[] };
   dimension_change: { dimension: number; x: number; y: number; z: number };

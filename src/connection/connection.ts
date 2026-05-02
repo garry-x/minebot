@@ -3,6 +3,7 @@ import { Titles } from "prismarine-auth";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
+import { ReconnectPolicy } from "./reconnect-policy.js";
 
 const HOSTILE_MOBS = new Set([
   "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
@@ -41,6 +42,8 @@ export class Connection {
   private events: EventBus<BotEvents>;
   private disconnectEmitted = false;
   private metrics?: MetricsCollector;
+  private reconnectPolicy = new ReconnectPolicy();
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: ConnectionOptions, events: EventBus<BotEvents>) {
     this.opts = options;
@@ -52,6 +55,11 @@ export class Connection {
   }
 
   connect(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
     if (this.client) {
       this.metrics?.recordReconnect();
       getLogger().warn("Already connected, disconnecting first");
@@ -79,6 +87,7 @@ export class Connection {
     this.disconnectEmitted = false;
 
     this.client.on("join", () => {
+      this.reconnectPolicy.reset();
       this.metrics?.startConnection();
       logger.info("Joined server");
     });
@@ -151,6 +160,16 @@ export class Connection {
         this.disconnectEmitted = true;
         this.events.emit("disconnect", { reason });
       }
+      const delay = this.reconnectPolicy.nextDelay();
+      if (delay !== null) {
+        getLogger().info({ delayMs: delay, attempt: this.reconnectPolicy.getAttempts() }, `Reconnecting in ${delay}ms...`);
+        this.reconnectTimer = setTimeout(() => {
+          this.connect();
+        }, delay);
+      } else {
+        getLogger().error("Max reconnection attempts exceeded");
+        this.events.emit("fatal_disconnect", { reason: "Max reconnection attempts exceeded" });
+      }
     });
 
     this.client.on("close", () => {
@@ -158,6 +177,16 @@ export class Connection {
       if (!this.disconnectEmitted) {
         this.disconnectEmitted = true;
         this.events.emit("disconnect", { reason: "Connection closed" });
+      }
+      const delay = this.reconnectPolicy.nextDelay();
+      if (delay !== null) {
+        getLogger().info({ delayMs: delay, attempt: this.reconnectPolicy.getAttempts() }, `Reconnecting in ${delay}ms...`);
+        this.reconnectTimer = setTimeout(() => {
+          this.connect();
+        }, delay);
+      } else {
+        getLogger().error("Max reconnection attempts exceeded");
+        this.events.emit("fatal_disconnect", { reason: "Max reconnection attempts exceeded" });
       }
     });
 
@@ -289,6 +318,10 @@ export class Connection {
   }
 
   disconnect(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     if (this.client) {
       if (!this.disconnectEmitted) {
         this.disconnectEmitted = true;
