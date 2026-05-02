@@ -64,6 +64,7 @@ export const MINEABLE_BLOCKS = new Set([
   "minecraft:cherry_log", "minecraft:oak_leaves", "minecraft:birch_leaves",
   "minecraft:spruce_leaves", "minecraft:jungle_leaves", "minecraft:acacia_leaves",
   "minecraft:dark_oak_leaves", "minecraft:mangrove_leaves",
+  "minecraft:cherry_leaves",
 ]);
 
 export const DOOR_BLOCKS = new Set([
