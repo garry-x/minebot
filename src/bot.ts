@@ -95,29 +95,23 @@ export class Bot {
     this.connection.connect();
 
     // 7. Wait for spawn, then start tick loop
-    this.events.once("spawned", (packet) => {
+    this.events.on("spawned", (packet) => {
       logger.info({ pos: { x: packet.x, y: packet.y, z: packet.z } }, "Spawned, starting tick loop");
       this.world.updatePlayerPosition({ x: packet.x, y: packet.y, z: packet.z });
+
+      if (!this.isRunning) {
+        getLogger().info("Respawned, resuming tick loop");
+        this.isRunning = true;
+      }
 
       if (packet.itemstates && packet.itemstates.length > 0) {
         this.world.loadItemStates(packet.itemstates);
         logger.info({ count: packet.itemstates.length }, "Item states loaded");
       }
 
-      this.isRunning = true;
-
       this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
 
-      const ctx: SkillContext = {
-        world: this.world,
-        movement: this.movement,
-        inventory: this.inventory,
-        events: this.events,
-        logger,
-        hunger: this.hunger,
-        metrics: this.metrics,
-      };
-
+      const ctx = this.getSkillContext();
       this.skills.setCurrent("idle", ctx);
 
       const DASHBOARD_INTERVAL_MS = 5000;
@@ -177,6 +171,13 @@ export class Bot {
     // Track player position
     this.events.on("player_position", (pos) => {
       this.world.updatePlayerPosition(pos);
+    });
+
+    this.events.on("player_death", ({ message }) => {
+      getLogger().warn({ message }, "Bot died, pausing tick loop");
+      this.isRunning = false;
+      this.skills.setCurrent("idle", this.getSkillContext());
+      this.world.clearEntities();
     });
 
     this.events.on("chunk_loaded", ({ x, z, payload }) => {
@@ -271,6 +272,18 @@ export class Bot {
         getLogger().info("Boss defeated!");
       }
     });
+  }
+
+  private getSkillContext(): SkillContext {
+    return {
+      world: this.world,
+      movement: this.movement,
+      inventory: this.inventory,
+      events: this.events,
+      logger: getLogger(),
+      hunger: this.hunger,
+      metrics: this.metrics,
+    };
   }
 
   getHungerTracker(): HungerTracker {

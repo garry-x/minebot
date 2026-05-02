@@ -79,7 +79,9 @@ export class SkillManager {
         this.setCurrent(next, ctx);
       }
     } catch (err) {
-      getLogger().error({ err }, `Error ticking skill: ${this.current.name}`);
+      getLogger().error({ err, skill: this.current.name }, "Skill tick crashed");
+      ctx.events.emit("error", { message: `Skill ${this.current.name} crashed`, error: err as Error });
+      // Transition to idle
       if (this.current.name !== "idle") {
         this.setCurrent("idle", ctx);
       }
