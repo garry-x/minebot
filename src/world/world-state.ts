@@ -40,9 +40,17 @@ export class WorldState {
   private itemRuntimeToName = new Map<number, string>();
 
   loadItemStates(itemstates: Array<{ name: string; runtime_id: number; component_based: boolean }>): void {
-    (this.registry as any).loadItemStates(itemstates);
     for (const state of itemstates) {
       this.itemRuntimeToName.set(state.runtime_id, state.name);
+    }
+  }
+
+  handleStartGame(packet: any): void {
+    this.registry.handleStartGame(packet);
+    if (packet.itemstates) {
+      for (const state of packet.itemstates) {
+        this.itemRuntimeToName.set(state.runtime_id, state.name);
+      }
     }
   }
 

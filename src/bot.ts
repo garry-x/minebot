@@ -140,8 +140,8 @@ export class Bot {
       }
 
       if (packet.itemstates && packet.itemstates.length > 0) {
-        this.world.loadItemStates(packet.itemstates);
-        logger.info({ count: packet.itemstates.length }, "Item states loaded");
+        this.world.handleStartGame(packet);
+        logger.info({ count: packet.itemstates.length }, "Block & item states loaded (handleStartGame)");
       }
 
       this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
