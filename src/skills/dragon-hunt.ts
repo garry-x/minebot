@@ -1,6 +1,7 @@
 import { Skill, SkillContext } from "./skill.js";
 import { vec3, distance, floor } from "../utils/vec3.js";
 import { Pathfinder } from "../movement/pathfinding.js";
+import { TraversalContext } from "../movement/pathfinding-types.js";
 import type { EntityInfo } from "../world/types.js";
 
 enum DragonState {
@@ -78,7 +79,15 @@ export class EnderDragonHuntSkill extends Skill {
           this.state = DragonState.DESTROY_CRYSTAL;
           break;
         }
-        const pf = new Pathfinder((p) => ctx.world.isBlockSolid(floor(p)) ? false : true, 10000, (nodes, duration, failed) => {
+        const tctx: TraversalContext = {
+          isBlockSolid: (p) => ctx.world.isBlockSolid(p),
+          isWaterBlock: (p) => ctx.world.isWaterBlock(p),
+          isWaterSurface: (p) => ctx.world.isWaterSurface(p),
+          isClimbable: (p) => ctx.world.isClimbable(p),
+          isMineable: (p) => ctx.world.isMineable(p),
+          isDoor: (p) => ctx.world.isDoor(p),
+        };
+        const pf = new Pathfinder(tctx, 10000, (nodes, duration, failed) => {
           ctx.metrics?.recordPathfinding(nodes, duration, failed);
           ctx.circuitBreaker?.recordResult(failed);
         }, ctx.circuitBreaker);

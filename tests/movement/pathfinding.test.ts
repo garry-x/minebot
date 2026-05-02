@@ -1,17 +1,25 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 import { Pathfinder } from "../../src/movement/pathfinding.js";
+import { TraversalContext, MoveType } from "../../src/movement/pathfinding-types.js";
 import { vec3 } from "../../src/utils/vec3.js";
 
-function createBlockGetter(walls: { x: number; y: number; z: number }[]) {
+function createTraversalContext(walls: { x: number; y: number; z: number }[]): TraversalContext {
   const wallSet = new Set(walls.map((w) => `${w.x},${w.y},${w.z}`));
-  return (pos: { x: number; y: number; z: number }) => {
-    return !wallSet.has(`${pos.x},${pos.y},${pos.z}`);
+  const checker = (pos: { x: number; y: number; z: number }) =>
+    pos.y === 63 || wallSet.has(`${pos.x},${pos.y},${pos.z}`);
+  return {
+    isBlockSolid: checker,
+    isWaterBlock: () => false,
+    isWaterSurface: () => false,
+    isClimbable: () => false,
+    isMineable: () => false,
+    isDoor: () => false,
   };
 }
 
 function createPathfinder(walls: { x: number; y: number; z: number }[]) {
-  return new Pathfinder(createBlockGetter(walls));
+  return new Pathfinder(createTraversalContext(walls));
 }
 
 describe("Pathfinder", () => {

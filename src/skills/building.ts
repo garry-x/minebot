@@ -1,5 +1,6 @@
 import { Skill, SkillContext } from "./skill.js";
 import { Pathfinder } from "../movement/pathfinding.js";
+import { TraversalContext } from "../movement/pathfinding-types.js";
 import { Vec3, vec3, floor, distance } from "../utils/vec3.js";
 
 interface BuildBlock {
@@ -71,7 +72,15 @@ export class BuildingSkill extends Skill {
           this.state = BuildState.PLACING;
           break;
         }
-        const pf = new Pathfinder((p) => world.isBlockSolid(floor(p)) ? false : true, 10000, (nodes, duration, failed) => {
+        const tctx: TraversalContext = {
+          isBlockSolid: (p) => world.isBlockSolid(p),
+          isWaterBlock: (p) => world.isWaterBlock(p),
+          isWaterSurface: (p) => world.isWaterSurface(p),
+          isClimbable: (p) => world.isClimbable(p),
+          isMineable: (p) => world.isMineable(p),
+          isDoor: (p) => world.isDoor(p),
+        };
+        const pf = new Pathfinder(tctx, 10000, (nodes, duration, failed) => {
           ctx.metrics?.recordPathfinding(nodes, duration, failed);
           ctx.circuitBreaker?.recordResult(failed);
         }, ctx.circuitBreaker);
