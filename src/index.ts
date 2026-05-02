@@ -1,4 +1,5 @@
 import * as readline from "node:readline";
+import { ping } from "bedrock-protocol";
 import { parseArgs } from "./cli.js";
 import { Bot } from "./bot.js";
 
@@ -82,8 +83,28 @@ async function resolvePassword(args: {
   return password;
 }
 
+async function pingServer(host: string, port: number): Promise<void> {
+  try {
+    const result = await ping({ host, port });
+    console.log(`Server: ${host}:${port}`);
+    console.log(`Version: ${(result as any).version?.name ?? "unknown"}`);
+    console.log(`Players: ${(result as any).players?.online ?? 0}/${(result as any).players?.max ?? 0}`);
+    console.log(`Latency: ${(result as any).latency ?? "unknown"}ms`);
+    console.log(`Status: Online`);
+  } catch (err) {
+    console.error(`Failed to ping ${host}:${port}:`, (err as Error).message);
+    process.exit(1);
+  }
+}
+
 async function main(): Promise<void> {
   const args = parseArgs();
+
+  if (args.pingOnly) {
+    await pingServer(args.host, args.port);
+    return;
+  }
+
   const password = await resolvePassword(args);
 
   const bot = new Bot({
@@ -93,6 +114,7 @@ async function main(): Promise<void> {
     password,
     username: args.username,
     debug: args.debug,
+    diagnose: args.diagnose,
   });
 
   process.on("SIGINT", () => {

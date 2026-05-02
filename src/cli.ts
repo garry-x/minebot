@@ -9,6 +9,9 @@ export interface CliArgs {
   username?: string;
   debug?: boolean;
   config?: string;
+  pingOnly?: boolean;
+  diagnose?: boolean;
+  tracePackets?: boolean;
 }
 
 export function parseArgs(argv: string[] = process.argv): CliArgs {
@@ -44,6 +47,21 @@ export function parseArgs(argv: string[] = process.argv): CliArgs {
     .option("config", {
       type: "string",
       description: "Path to config file",
+    })
+    .option("ping-only", {
+      type: "boolean",
+      default: false,
+      description: "Ping server only, do not login",
+    })
+    .option("diagnose", {
+      type: "boolean",
+      default: false,
+      description: "Print connection stage timings",
+    })
+    .option("trace-packets", {
+      type: "boolean",
+      default: false,
+      description: "Trace all packets sent/received",
     })
     .parseSync() as CliArgs;
 }

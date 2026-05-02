@@ -28,6 +28,8 @@ export interface BotConfig {
   tickInterval?: number;
   debug?: boolean;
   offline?: boolean;
+  diagnose?: boolean;
+  tracePackets?: boolean;
 }
 
 export class Bot {
@@ -57,6 +59,11 @@ export class Bot {
 
     logger.info("Minebot starting...");
 
+    const diag = this.config.diagnose ? (label: string) => {
+      logger.info(`[DIAG] ${label} (${Date.now() - diagStart}ms)`);
+    } : () => {};
+    let diagStart = Date.now();
+
     // 1. Connect (bedrock-protocol handles auth internally)
     this.connection = new Connection(
       {
@@ -67,10 +74,12 @@ export class Bot {
         password: this.config.password,
         viewDistance: this.config.viewDistance,
         offline: this.config.offline,
+        tracePackets: this.config.tracePackets,
       },
       this.events
     );
     this.connection.setMetrics(this.metrics);
+    diag("Connection created");
 
     // 3. Initialize modules
     this.world = new WorldState("bedrock_1.21");
@@ -96,6 +105,7 @@ export class Bot {
 
     // 7. Wait for spawn, then start tick loop
     this.events.on("spawned", (packet) => {
+      diag("Spawned");
       logger.info({ pos: { x: packet.x, y: packet.y, z: packet.z } }, "Spawned, starting tick loop");
       this.world.updatePlayerPosition({ x: packet.x, y: packet.y, z: packet.z });
 
