@@ -8,6 +8,7 @@ import { IdleSkill } from "./skills/idle.js";
 import { GatheringSkill } from "./skills/gathering.js";
 import { CombatSkill } from "./skills/combat.js";
 import { CraftingSkill, storeRecipes } from "./skills/crafting.js";
+import { BuildingSkill } from "./skills/building.js";
 import { HungerTracker } from "./player/hunger.js";
 import { EventBus, BotEvents } from "./events/event-bus.js";
 import { createLogger, getLogger } from "./utils/logger.js";
@@ -81,6 +82,7 @@ export class Bot {
     this.skills.register(new GatheringSkill());
     this.skills.register(new CombatSkill());
     this.skills.register(new CraftingSkill());
+    this.skills.register(new BuildingSkill());
 
     // 5. Wire up event handlers (chunks, entities, etc. — stubs for Phase 1)
     this.setupEventHandlers();
