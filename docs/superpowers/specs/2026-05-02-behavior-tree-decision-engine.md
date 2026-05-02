@@ -387,5 +387,5 @@ BehaviorTree emits events to the existing `MetricsCollector`:
 6. Bot dynamically switches between combat/survival/mining/depositing/sorting based on real-time state
 7. Bot advances through all 9 phases autonomously, meeting stockpile requirements before each advance
 8. On death, bot returns to safehouse, retrieves backup gear from chests, and resumes at appropriate phase
-9. Bot kills the Ender Dragon on `115.191.51.70:19132`
+9. Bot kills the Ender Dragon on target Minecraft Bedrock server
 10. Existing 7 skills continue to function without regression
