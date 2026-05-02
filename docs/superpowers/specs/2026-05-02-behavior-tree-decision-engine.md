@@ -61,11 +61,16 @@ Root (InterruptibleSelector — re-evaluates from top every tick)
 │   ├── END_PREP: craft ender eyes → return overworld → restock safehouse → locate stronghold
 │   ├── STRONGHOLD: build entrance foothold+chest → navigate portal room → activate
 │   └── END: full gear check → enter portal → destroy crystals → kill dragon
-│   ├── inventory full → return to safehouse → deposit to chest
+│
+├── 5. MAINTENANCE (daily upkeep when safe + no phase work)
+│   ├── inventory full → return to safehouse → deposit + sort
+│   ├── hotbar layout incorrect → rearrange to standard
 │   ├── any chest missing → craft chest + place in safehouse
-│   ├── stockpile below minimum → gather missing resources + stash
+│   ├── chest contents disorganized → sort by priority/category
+│   ├── inventory contains garbage → drop low-priority items
+│   ├── stockpile below minimum → gather missing + stash
 │   ├── tool durability low → craft replacement + stash spare
-│   └── daytime idle → repair/expand safehouse, sort chest
+│   └── daytime idle → sort chests, repair/expand safehouse
 │
 └── 6. IDLE (fallback: wander)
 ```
@@ -151,6 +156,65 @@ The bot maintains a **chest-based reserve** so that death does not reset all pro
 4. **Deposit trigger:** inventory slots > 80% full → return to nearest safehouse → deposit all non-hotbar items to correct chests.
 5. **Restock trigger:** leave safehouse for phase tasks only when hotbar has: 1 pickaxe, 1 sword, 1 food stack (16+), 1 building block stack (64+), 1 torch stack (32+), 1 empty slot minimum.
 
+### Item Organization & Priority System
+
+The bot must actively organize items in hotbar, inventory, and chests based on **priority** and **category**. This prevents carrying garbage, ensures fast access to critical items, and keeps chests searchable.
+
+#### Item Priority Tiers
+
+Items are ranked S (critical) through E (disposable). When inventory is full, the lowest-tier items are dropped first.
+
+| Tier | Type | Examples | Rule |
+|------|------|----------|------|
+| **S** | Combat/Progress | diamond_pickaxe, diamond_sword, ender_eyes, blaze_rods, golden_apple, totem_of_undying | Never drop. Always keep in hotbar/chest. |
+| **A** | Tools/Weapons | iron_pickaxe, iron_sword, iron_axe, diamond, iron_ingot, obsidian, bow, arrows, flint_and_steel | Keep. Stash spares in chest. |
+| **B** | Armor/Food | iron_chestplate, cooked_beef, bread, golden_carrot | Keep. Stash spares. |
+| **C** | Building/Mining | cobblestone, dirt, coal, torches, sticks, planks, raw_iron, raw_copper | Keep stacks. Deposit excess. |
+| **D** | Crafting Material | string, feathers, leather, flint, seeds, gravel, sand | Keep small stacks. Drop if full. |
+| **E** | Garbage | rotten_flesh, poisonous_potato, spider_eye, dirt (excess), cobblestone (excess), seeds (excess) | Drop immediately when inventory > 80% full. |
+
+#### Hotbar Standard Layout (9 slots, left to right)
+
+The hotbar is always organized to this standard layout. Any deviation triggers a rearrange.
+
+| Slot | Item | Priority | Reason |
+|------|------|----------|--------|
+| 1 | Sword (best available) | S | Immediate combat access |
+| 2 | Pickaxe (best available) | S | Immediate mining access |
+| 3 | Axe or shovel | A | Secondary tool |
+| 4 | Food (best available, stack 16+) | B | Quick eating |
+| 5 | Building blocks (cobblestone/dirt, stack 64) | C | Quick placement, bridging, pillaring |
+| 6 | Torches (stack 32+) | C | Lighting, preventing mob spawns |
+| 7 | Water bucket | B | Fall damage cancel, lava handling |
+| 8 | Ender eyes / bow / situational | A | Depends on phase |
+| 9 | Empty or utility | - | Block interaction space |
+
+#### Inventory Sorting Rules (non-hotbar, 27 slots)
+
+1. **Density sort:** higher-tier items closer to the top (lower slot numbers). Same tier → larger stacks first.
+2. **Tool comparison:** when multiple picks/swords exist, equip the best one in hotbar. Move the second-best to chest. Drop worse ones if chest unavailable.
+3. **Stack merging:** always merge partial stacks of the same item type.
+4. **Drop-on-full:** when returning to safehouse isn't possible (e.g. in Nether), drop E-tier items immediately, then D-tier if still full.
+
+#### Chest Organization Rules (per safehouse)
+
+1. **Chest assignment by category (see §3 Chest Organization).** New items go to the correct category chest.
+2. **Within each chest:** S-tier items in top slots, A-tier below, then B, C, D. Garbage never enters chests.
+3. **Stack consolidation:** when depositing, always merge with existing partial stacks first.
+4. **Restock extraction:** when leaving safehouse, pull items FROM chests to hotbar in reverse: first fill hotbar slot 9, then 8, 7, etc. ensuring the standard layout.
+
+#### Organization Triggers (checked in Maintenance)
+
+| Trigger | Action |
+|---------|--------|
+| Hotbar doesn't match standard layout | Rearrange hotbar slots |
+| Inventory has E-tier items | Drop them |
+| Inventory > 80% full | Return to safehouse → deposit by category → sort chests |
+| Chest has items in wrong category | Move to correct chest |
+| Chest has unmerged stacks | Merge stacks |
+| Multiple tools of same type | Keep 2 best, drop/discard rest |
+| After crafting new tool | Compare with equipped → keep best, stash/drop worse |
+
 ---
 
 ## 4. File Structure
@@ -170,12 +234,14 @@ src/bt/
 │   ├── inventory.ts      # hasItem, isInventoryFull, hasPickaxe, hasWood, hasStone
 │   ├── environment.ts    # isNight, hostilesInRange, isExposed, isInNether, isInEnd
 │   ├── stockpile.ts      # isStockpileMet, chestCountEnough, hasBackupGear, needsRestock
+│   ├── organization.ts   # isHotbarOkay, hasGarbageInInventory, chestNeedsSort
 │   └── phase.ts          # isPhase, hasReachedPhase, getPhaseAdvanceCondition
 ├── actions/
 │   ├── skill.ts          # executeGathering, executeCombat, executeCrafting, executeBuilding
 │   ├── survival.ts       # eatFood, fleeToSafety, digHideHole
 │   ├── safehouse.ts      # buildSafehouse, placeWorkbench, placeFurnace, placeTorches, buildFoothold
 │   ├── storage.ts        # placeChest, depositItems, restockFromChest, sortChests, countChestItems
+│   ├── organization.ts   # standardizeHotbar, sortInventory, mergeStacks, dropGarbage, sortChestByCategory
 │   └── utility.ts        # wait, dropItem
 ├── phases/
 │   ├── spawn.ts          # SPAWN phase subtree
@@ -239,6 +305,11 @@ interface Blackboard {
     trackedChests: Vec3[];       // known chest positions
     lastDepositTime: number;     // timestamp of last deposit
     stockpileMet: boolean;       // current phase stockpile minimum met
+  };
+  organizationState: {
+    hotbarLayoutOk: boolean;     // hotbar matches standard layout
+    hasGarbage: boolean;         // inventory contains E-tier items
+    lastSortTime: number;        // timestamp of last inventory sort
   };
 }
 
@@ -311,8 +382,10 @@ BehaviorTree emits events to the existing `MetricsCollector`:
 1. Bot connects to server and immediately prioritizes survival
 2. Bot builds a safehouse with chests before pursuing any phase goal
 3. Bot crafts and places chests, deposits excess items, and maintains stockpile minimums per phase
-4. Bot dynamically switches between combat/survival/mining/depositing based on real-time state
-5. Bot advances through all 9 phases autonomously, meeting stockpile requirements before each advance
-6. On death, bot returns to safehouse, retrieves backup gear from chests, and resumes at appropriate phase
-7. Bot kills the Ender Dragon on `115.191.51.70:19132`
-8. Existing 7 skills continue to function without regression
+4. Bot organizes items by priority (S/A/B/C/D/E tiers), maintains standard hotbar layout, and drops garbage
+5. Bot sorts chest contents by category and priority, merging partial stacks
+6. Bot dynamically switches between combat/survival/mining/depositing/sorting based on real-time state
+7. Bot advances through all 9 phases autonomously, meeting stockpile requirements before each advance
+8. On death, bot returns to safehouse, retrieves backup gear from chests, and resumes at appropriate phase
+9. Bot kills the Ender Dragon on `115.191.51.70:19132`
+10. Existing 7 skills continue to function without regression
