@@ -4,7 +4,7 @@ import { hideBin } from "yargs/helpers";
 export interface CliArgs {
   host: string;
   port: number;
-  email: string;
+  email?: string;
   password?: string;
   username?: string;
   debug?: boolean;
@@ -12,6 +12,7 @@ export interface CliArgs {
   pingOnly?: boolean;
   diagnose?: boolean;
   tracePackets?: boolean;
+  offline?: boolean;
 }
 
 export function parseArgs(argv: string[] = process.argv): CliArgs {
@@ -28,7 +29,6 @@ export function parseArgs(argv: string[] = process.argv): CliArgs {
     })
     .option("email", {
       type: "string",
-      demandOption: true,
       description: "Microsoft account email",
     })
     .option("password", {
@@ -62,6 +62,11 @@ export function parseArgs(argv: string[] = process.argv): CliArgs {
       type: "boolean",
       default: false,
       description: "Trace all packets sent/received",
+    })
+    .option("offline", {
+      type: "boolean",
+      default: false,
+      description: "Connect to offline-mode server (no auth)",
     })
     .parseSync() as CliArgs;
 }

@@ -105,16 +105,22 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (!args.email) {
+    console.error("Error: --email is required");
+    process.exit(1);
+  }
+
   const password = await resolvePassword(args);
 
   const bot = new Bot({
     host: args.host,
     port: args.port,
-    email: args.email,
+    email: args.email ?? "",
     password,
     username: args.username,
     debug: args.debug,
     diagnose: args.diagnose,
+    offline: args.offline,
   });
 
   process.on("SIGINT", () => {

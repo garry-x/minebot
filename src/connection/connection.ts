@@ -1,9 +1,12 @@
 import { createClient, Client } from "bedrock-protocol";
-import { Titles } from "prismarine-auth";
+import { createRequire } from "node:module";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
 import { ReconnectPolicy } from "./reconnect-policy.js";
+
+const require = createRequire(import.meta.url);
+const { Titles } = require("prismarine-auth");
 
 const HOSTILE_MOBS = new Set([
   "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
@@ -82,6 +85,7 @@ export class Connection {
       clientOpts.username = this.opts.email;
       clientOpts.password = this.opts.password;
       clientOpts.authTitle = Titles.MinecraftNintendoSwitch;
+      clientOpts.flow = "live";
     }
 
     this.client = createClient(clientOpts);
