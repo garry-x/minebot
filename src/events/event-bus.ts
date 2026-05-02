@@ -75,4 +75,8 @@ export interface BotEvents {
   disconnect: { reason: string };
   error: { message: string; error: Error };
   crafting_data: { recipes: any[] };
+  dimension_change: { dimension: number; x: number; y: number; z: number };
+  boss_event: { entityId: bigint; eventType: number; progress?: number; title?: string };
+  portal_event: { eventType: number };
+  level_event: { eventId: number; x: number; y: number; z: number };
 }

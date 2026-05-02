@@ -210,6 +210,46 @@ export class Connection {
         },
       });
     });
+
+    // Dimension change
+    this.client.on("change_dimension", (packet: any) => {
+      getLogger().info({ dimension: packet.dimension }, "Dimension changed");
+      this.events.emit("dimension_change", {
+        dimension: packet.dimension,
+        x: packet.position?.x ?? 0,
+        y: packet.position?.y ?? 0,
+        z: packet.position?.z ?? 0,
+      });
+    });
+
+    // Boss event (wither, ender dragon)
+    this.client.on("boss_event", (packet: any) => {
+      this.events.emit("boss_event", {
+        entityId: packet.boss_entity_id,
+        eventType: packet.type,
+        progress: packet.progress,
+        title: packet.title,
+      });
+    });
+
+    // Portal events (nether/end portal appearing)
+    this.client.on("event", (packet: any) => {
+      if (packet.event_type === 2 || packet.event_type === 7) {
+        this.events.emit("portal_event", { eventType: packet.event_type });
+      }
+    });
+
+    // Level event (eye of ender despawn)
+    this.client.on("level_event", (packet: any) => {
+      if (packet.event === 2003) {
+        this.events.emit("level_event", {
+          eventId: packet.event,
+          x: packet.position?.x ?? 0,
+          y: packet.position?.y ?? 0,
+          z: packet.position?.z ?? 0,
+        });
+      }
+    });
   }
 
   write(name: string, params: Record<string, unknown>): void {
