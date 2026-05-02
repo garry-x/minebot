@@ -1,4 +1,5 @@
 import { createClient, Client } from "bedrock-protocol";
+import { Titles } from "prismarine-auth";
 import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 
@@ -27,10 +28,10 @@ export interface ConnectionOptions {
   host: string;
   port: number;
   username: string;
-  chain: string[];
-  token: string;
-  offline?: boolean;
+  email?: string;
+  password?: string;
   viewDistance?: number;
+  offline?: boolean;
 }
 
 export class Connection {
@@ -51,26 +52,21 @@ export class Connection {
     }
 
     const logger = getLogger();
-    logger.info(
-      { host: this.opts.host, port: this.opts.port },
-      "Connecting to server..."
-    );
+    logger.info({ host: this.opts.host, port: this.opts.port }, "Connecting to server...");
 
-    const { chain, token } = this.opts;
-    const authflow = {
-      getMinecraftBedrockToken: async () => ({ chain, token }),
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const clientOpts: any = {
       host: this.opts.host,
       port: this.opts.port,
       username: this.opts.username,
       offline: this.opts.offline ?? false,
-      authflow,
       profilesFolder: "./.minebot-cache",
-      viewDistance: this.opts.viewDistance ?? 10,
     };
+
+    if (!this.opts.offline && this.opts.email && this.opts.password) {
+      clientOpts.username = this.opts.email;
+      clientOpts.password = this.opts.password;
+      clientOpts.authTitle = Titles.MinecraftNintendoSwitch;
+    }
 
     this.client = createClient(clientOpts);
     this.disconnectEmitted = false;
