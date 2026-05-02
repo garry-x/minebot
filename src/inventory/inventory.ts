@@ -145,6 +145,13 @@ export class Inventory {
     return empty;
   }
 
+  getEmptyHotbarSlot(): number {
+    for (let i = 0; i < HOTBAR_SIZE; i++) {
+      if (!this.slots.has(i)) return i;
+    }
+    return -1;
+  }
+
   isFull(): boolean {
     return this.slots.size >= INVENTORY_SLOTS;
   }

@@ -51,7 +51,6 @@ export class CombatSkill extends Skill {
 
     if (this.attackDelay > 0) {
       this.attackDelay--;
-      return null;
     }
 
     switch (this.state) {
@@ -87,22 +86,29 @@ export class CombatSkill extends Skill {
           break;
         }
 
-        const start = vec3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z));
-        const end = vec3(
-          Math.floor(targetPos.x),
-          Math.floor(targetPos.y),
-          Math.floor(targetPos.z)
-        );
+        if (this.path.length === 0) {
+          const start = vec3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z));
+          const end = vec3(
+            Math.floor(targetPos.x),
+            Math.floor(targetPos.y),
+            Math.floor(targetPos.z)
+          );
 
-        const pf = new Pathfinder((p) => !world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
-          ctx.metrics?.recordPathfinding(nodes, duration, failed);
-          ctx.circuitBreaker?.recordResult(failed);
-        }, ctx.circuitBreaker);
-        const result = pf.findPath(start, end);
+          const pf = new Pathfinder((p) => !world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
+            ctx.metrics?.recordPathfinding(nodes, duration, failed);
+            ctx.circuitBreaker?.recordResult(failed);
+          }, ctx.circuitBreaker);
+          const result = pf.findPath(start, end);
 
-        if (result.length > 0) {
-          this.path = result.map((n) => ({ x: n.x, y: n.y, z: n.z }));
-          this.pathIndex = 0;
+          if (result.length > 0) {
+            this.path = result.map((n) => ({ x: n.x, y: n.y, z: n.z }));
+            this.pathIndex = 0;
+          } else {
+            ctx.logger.warn("No path to target, skipping");
+            this.targetEntity = null;
+            this.state = CombatState.FIND;
+            break;
+          }
         }
 
         if (this.pathIndex < this.path.length) {
@@ -114,6 +120,9 @@ export class CombatSkill extends Skill {
           if (wpDist < 1.5) {
             this.pathIndex++;
           }
+        } else {
+          this.path = [];
+          this.pathIndex = 0;
         }
         break;
       }
@@ -141,9 +150,20 @@ export class CombatSkill extends Skill {
           break;
         }
 
+        const distToTarget = distance(pos, this.targetEntity.position);
+        if (distToTarget > ATTACK_RANGE) {
+          ctx.logger.debug({ dist: distToTarget }, "Target moved away, re-pathing");
+          this.state = CombatState.PATH;
+          this.path = [];
+          break;
+        }
+
         movement.lookAt(this.targetEntity.position);
-        movement.attack(this.targetEntity.runtimeId);
-        this.attackDelay = ATTACK_COOLDOWN;
+        if (this.attackDelay <= 0) {
+          movement.attack(this.targetEntity.runtimeId, this.targetEntity.position);
+          this.attackDelay = ATTACK_COOLDOWN;
+          ctx.logger.info({ id: String(this.targetEntity.runtimeId), type: this.targetEntity.type, pos: this.targetEntity.position }, "Attacking target");
+        }
         break;
       }
 

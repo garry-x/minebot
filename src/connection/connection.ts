@@ -78,7 +78,11 @@ export class Connection {
       username: this.opts.username,
       offline: this.opts.offline ?? false,
       profilesFolder: "./.minebot-cache",
+      viewDistance: this.opts.viewDistance ?? 8,
     };
+    if (this.opts.offline !== true) {
+      clientOpts.disableChunkCaching = true;
+    }
 
     if (!this.opts.offline && this.opts.email) {
       clientOpts.username = this.opts.email;

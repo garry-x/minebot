@@ -3,6 +3,8 @@ import { vec3 } from "../utils/vec3.js";
 
 const WANDER_INTERVAL = 60;
 const HOSTILE_SCAN_RADIUS = 30;
+const HOSTILE_SAFE_DISTANCE = 8;
+const FLEE_WARN_COOLDOWN = 100;
 const EAT_TIMEOUT = 30;
 
 const FOOD_ITEMS = [
@@ -28,6 +30,7 @@ export class IdleSkill extends Skill {
   private eatingTimer = 0;
   private foodSlot = -1;
   private armorCheckTimer = 0;
+  private fleeWarnCooldown = 0;
 
   constructor() {
     super("idle", 0);
@@ -40,6 +43,7 @@ export class IdleSkill extends Skill {
     this.eatingTimer = 0;
     this.foodSlot = -1;
     this.armorCheckTimer = 0;
+    this.fleeWarnCooldown = 0;
   }
 
   async tick(ctx: SkillContext): Promise<string | null> {
@@ -47,18 +51,55 @@ export class IdleSkill extends Skill {
     const hostiles = ctx.world.getNearbyEntities(pos, HOSTILE_SCAN_RADIUS)
       .filter((e) => e.isHostile);
     if (hostiles.length > 0) {
-      ctx.logger.warn({ count: hostiles.length }, "Hostile mobs detected, switching to combat");
-      return "combat";
+      const closestHostile = hostiles[0];
+      const distToHostile = Math.sqrt(
+        (pos.x - closestHostile.position.x) ** 2 +
+        (pos.z - closestHostile.position.z) ** 2
+      );
+      if (this.fleeWarnCooldown > 0) {
+        this.fleeWarnCooldown--;
+      } else {
+        ctx.logger.warn({ count: hostiles.length, closest: distToHostile.toFixed(1) }, "Hostile mobs detected, fleeing");
+        this.fleeWarnCooldown = FLEE_WARN_COOLDOWN;
+      }
+      const hPos = closestHostile.position;
+      const dx = pos.x - hPos.x;
+      const dz = pos.z - hPos.z;
+      const d = Math.sqrt(dx * dx + dz * dz) || 1;
+      const away = {
+        x: pos.x + (dx / d) * 5,
+        y: pos.y,
+        z: pos.z + (dz / d) * 5,
+      };
+      ctx.movement.lookAt(away);
+      ctx.movement.setPosition(away.x, away.y, away.z);
+      if (distToHostile < HOSTILE_SAFE_DISTANCE) {
+        ctx.movement.startSprinting();
+      } else {
+        ctx.movement.stopSprinting();
+      }
+      return null;
     }
 
     if (ctx.hunger.shouldEat() && this.eatingState === "idle") {
       for (const food of FOOD_ITEMS) {
-        const slot = ctx.inventory.findHotbarItem(food);
+        let slot = ctx.inventory.findHotbarItem(food);
         if (slot !== -1) {
           this.foodSlot = slot;
           this.eatingState = "selecting";
           ctx.logger.info({ food, slot }, "Auto-eating");
           break;
+        }
+        slot = ctx.inventory.findItem(food);
+        if (slot !== -1) {
+          const emptyHotbar = ctx.inventory.getEmptyHotbarSlot();
+          if (emptyHotbar >= 0) {
+            ctx.movement.swapSlots(slot, emptyHotbar);
+            this.foodSlot = emptyHotbar;
+            this.eatingState = "selecting";
+            ctx.logger.info({ food, fromSlot: slot, toSlot: emptyHotbar }, "Swapping food to hotbar");
+            break;
+          }
         }
       }
     }

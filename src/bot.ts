@@ -109,6 +109,7 @@ export class Bot {
       diag("Spawned");
       logger.info({ pos: { x: packet.x, y: packet.y, z: packet.z } }, "Spawned, starting tick loop");
       this.world.updatePlayerPosition({ x: packet.x, y: packet.y, z: packet.z });
+      this.movement.updateServerPosition(packet.x, packet.y, packet.z);
 
       if (!this.isRunning) {
         getLogger().info("Respawned, resuming tick loop");
@@ -121,6 +122,8 @@ export class Bot {
       }
 
       this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
+
+      if (this.tickTimer) return;
 
       const ctx = this.getSkillContext();
       this.skills.setCurrent("idle", ctx);
@@ -167,6 +170,16 @@ export class Bot {
           logger.error({ err }, "Tick error");
         });
 
+        this.movement.flush();
+
+        const movePos = this.movement.getPosition();
+        const worldPos = this.world.getPlayerPosition();
+        if (Math.abs(movePos.x - worldPos.x) > 0.01 ||
+            Math.abs(movePos.y - worldPos.y) > 0.01 ||
+            Math.abs(movePos.z - worldPos.z) > 0.01) {
+          this.world.updatePlayerPosition(movePos);
+        }
+
         this.metrics.recordTick(Date.now() - tickStart);
 
         const now = Date.now();
@@ -199,6 +212,7 @@ export class Bot {
     // Track player position
     this.events.on("player_position", (pos) => {
       this.world.updatePlayerPosition(pos);
+      this.movement.updateServerPosition(pos.x, pos.y, pos.z);
     });
 
     this.events.on("player_death", ({ message }) => {
@@ -216,8 +230,6 @@ export class Bot {
           this.world.addColumn(x, z, column);
         }
         if (subChunkCount === -1 || subChunkCount === -2) {
-          // Cached chunk mode — not supported yet
-          getLogger().debug({ x, z, subChunkCount }, "Cached chunk mode skipped");
           return;
         }
         (column as any).networkDecodeNoCache(payload, subChunkCount);
@@ -238,10 +250,16 @@ export class Bot {
     });
 
     this.events.on("entity_despawn", (data) => {
+      getLogger().debug({ uniqueId: String(data.uniqueId) }, "Entity despawn");
       this.world.removeEntity(data.uniqueId);
     });
 
+    let entityMoveCount = 0;
     this.events.on("entity_move", (data) => {
+      entityMoveCount++;
+      if (entityMoveCount <= 3) {
+        getLogger().info({ runtimeId: String(data.runtimeId), x: data.x, y: data.y, z: data.z }, "entity_move");
+      }
       this.world.updateEntityPosition(data.runtimeId, { x: data.x, y: data.y, z: data.z });
     });
 
@@ -289,6 +307,7 @@ export class Bot {
     this.events.on("dimension_change", ({ dimension, x, y, z }) => {
       this.world.setDimension(dimension);
       this.world.updatePlayerPosition({ x, y, z });
+      this.movement.updateServerPosition(x, y, z);
       getLogger().info({ dimension }, "Dimension changed");
     });
 

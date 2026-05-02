@@ -1,9 +1,10 @@
 import { Skill, SkillContext } from "./skill.js";
 import { Pathfinder } from "../movement/pathfinding.js";
 import { Vec3, vec3, distance } from "../utils/vec3.js";
-
+import { markGatherFailed } from "../planner/planner.js";
 const SCAN_RADIUS = 32;
 const MINE_REACH = 4;
+const SCAN_COOLDOWN_TICKS = 40;
 
 enum GatheringState {
   SCANNING,
@@ -19,6 +20,9 @@ export class GatheringSkill extends Skill {
   private pathIndex = 0;
   private mineProgress = 0;
   private isDigging = false;
+  private scanCooldown = 0;
+  private emptyScanCount = 0;
+  private wanderTarget: { x: number; z: number } | null = null;
 
   constructor() {
     super("gathering", 5);
@@ -44,16 +48,42 @@ export class GatheringSkill extends Skill {
 
     switch (this.state) {
       case GatheringState.SCANNING: {
+        if (this.scanCooldown > 0) {
+          this.scanCooldown--;
+          if (this.wanderTarget) {
+            const dist = Math.sqrt(
+              (this.wanderTarget.x - pos.x) ** 2 + (this.wanderTarget.z - pos.z) ** 2
+            );
+            if (dist < 2) this.wanderTarget = null;
+            else movement.setPosition(this.wanderTarget.x, pos.y, this.wanderTarget.z);
+          }
+          break;
+        }
         const ores = world.findOres(pos, SCAN_RADIUS);
         if (ores.length > 0) {
           this.targetOre = ores.reduce((a, b) =>
             distance(pos, a) < distance(pos, b) ? a : b
           );
+          this.wanderTarget = null;
           ctx.logger.info({ pos: this.targetOre }, "Ore found, pathing...");
           this.state = GatheringState.PATHING;
+          this.scanCooldown = 0;
+          this.emptyScanCount = 0;
         } else {
-          ctx.logger.debug("No ores in range");
-          return "idle";
+          ctx.logger.info("No resources in range");
+          this.emptyScanCount++;
+          if (this.emptyScanCount >= 3) {
+            ctx.logger.info("No resources after 3 scans, returning to idle");
+            this.emptyScanCount = 0;
+            this.wanderTarget = null;
+            markGatherFailed();
+            return "idle";
+          }
+          this.wanderTarget = {
+            x: pos.x + (Math.random() - 0.5) * 20,
+            z: pos.z + (Math.random() - 0.5) * 20,
+          };
+          this.scanCooldown = SCAN_COOLDOWN_TICKS;
         }
         break;
       }

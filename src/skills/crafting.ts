@@ -23,24 +23,24 @@ const CRAFT_PRIORITIES = [
 
 let rawRecipes: any[] = [];
 const recipeMap = new Map<string, any>();
+let recipeMapBuilt = false;
 
 export function storeRecipes(recipes: any[]): void {
   rawRecipes = recipes;
+  recipeMapBuilt = false;
 }
 
 function ensureRecipeMap(world: WorldState): void {
-  if (recipeMap.size > 0 || rawRecipes.length === 0) return;
+  if (recipeMapBuilt && recipeMap.size > 0) return;
 
-  for (const recipe of rawRecipes) {
-    const outputs = recipe.output || recipe.result || [];
-    const output = outputs[0];
-    if (!output || output.network_id == null) continue;
-
-    const name = world.getItemName(output.network_id);
-    if (name) {
-      recipeMap.set(name, recipe);
-    }
+  for (const r of rawRecipes) {
+    const recipe = r.recipe;
+    if (!recipe) continue;
+    const id = recipe.recipe_id;
+    if (!id) continue;
+    recipeMap.set(id, recipe);
   }
+  recipeMapBuilt = true;
 }
 
 export class CraftingSkill extends Skill {
@@ -97,15 +97,19 @@ export class CraftingSkill extends Skill {
         const recipe = recipeMap.get(this.targetItemName);
         if (!recipe) {
           ctx.logger.warn(`No recipe found for: ${this.targetItemName}`);
-          return "gathering";
+          return "idle";
         }
 
         this.currentRecipe = recipe;
 
-        const ingredients = recipe.ingredients || recipe.input || [];
+        const rawInput = recipe.input || [];
+        const is2D = Array.isArray(rawInput[0]) || (rawInput.length > 0 && Array.isArray(rawInput));
+        const flatInputs = is2D ? (rawInput as any[][]).flat() : rawInput;
+
         let hasAll = true;
-        for (const ing of ingredients) {
-          if (!ing || ing.network_id == null || ing.network_id === -1) continue;
+        for (const ing of flatInputs) {
+          if (!ing || ing.type === "invalid") continue;
+          if (ing.network_id == null || ing.network_id === -1) continue;
           const needed = ing.count ?? 1;
           const name = ctx.world.getItemName(ing.network_id);
           if (!name) continue;
@@ -120,14 +124,11 @@ export class CraftingSkill extends Skill {
         }
 
         if (!hasAll) {
-          ctx.logger.info("Missing ingredients, transitioning to gathering");
-          return "gathering";
+          ctx.logger.info("Missing ingredients, returning to idle");
+          return "idle";
         }
 
-        const totalInputs = ingredients.length;
-        const shapeW = recipe.width ?? 0;
-        const shapeH = recipe.height ?? 0;
-        this.needsWorkbench = shapeW > 2 || shapeH > 2 || totalInputs > 4;
+        this.needsWorkbench = (recipe.width ?? 0) > 2 || (recipe.height ?? 0) > 2 || flatInputs.length > 4;
 
         ctx.logger.info(
           { needsWorkbench: this.needsWorkbench },

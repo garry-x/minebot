@@ -14,7 +14,7 @@ export class WorldState {
   private playerPosition: Vec3Type = vec3(0, 0, 0);
   private currentDimension = 0; // 0=overworld, 1=nether, 2=end
 
-  static ORE_TYPES = new Set([
+  static RESOURCE_TYPES = new Set([
     "coal_ore", "deepslate_coal_ore",
     "iron_ore", "deepslate_iron_ore",
     "copper_ore", "deepslate_copper_ore",
@@ -23,6 +23,8 @@ export class WorldState {
     "emerald_ore", "deepslate_emerald_ore",
     "redstone_ore", "deepslate_redstone_ore",
     "lapis_ore", "deepslate_lapis_ore",
+    "oak_log", "spruce_log", "birch_log", "jungle_log", "acacia_log", "dark_oak_log", "mangrove_log", "cherry_log",
+    "stone", "cobblestone", "diorite", "andesite", "granite", "deepslate",
   ]);
 
   constructor(version: string) {
@@ -44,7 +46,15 @@ export class WorldState {
   }
 
   getItemName(runtimeId: number): string | undefined {
-    return this.itemRuntimeToName.get(runtimeId);
+    const name = this.itemRuntimeToName.get(runtimeId);
+    if (name) return name;
+
+    const item = this.registry.items?.[runtimeId];
+    if (item?.name) {
+      this.itemRuntimeToName.set(runtimeId, item.name);
+      return item.name;
+    }
+    return undefined;
   }
 
   updatePlayerPosition(pos: Vec3Type): void {
@@ -170,7 +180,7 @@ export class WorldState {
 
   findOres(center: Vec3Type, radius: number): Vec3Type[] {
     return this.findBlocks(
-      (block) => WorldState.ORE_TYPES.has(block.name),
+      (block) => WorldState.RESOURCE_TYPES.has(block.name),
       center,
       radius
     );
@@ -178,7 +188,7 @@ export class WorldState {
 
   isBlockSolid(pos: Vec3Type): boolean {
     const block = this.getBlock(pos);
-    if (!block) return true;
+    if (!block) return false;
     return block.boundingBox !== "empty";
   }
 
