@@ -5,6 +5,7 @@ import type { EventBus, BotEvents } from "../events/event-bus.js";
 import type { Logger } from "../utils/logger.js";
 import type { HungerTracker } from "../player/hunger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
+import type { PathfindingCircuitBreaker } from "../movement/circuit-breaker.js";
 
 export interface SkillContext {
   world: WorldState;
@@ -14,6 +15,7 @@ export interface SkillContext {
   logger: Logger;
   hunger: HungerTracker;
   metrics?: MetricsCollector;
+  circuitBreaker?: PathfindingCircuitBreaker;
 }
 
 export abstract class Skill {

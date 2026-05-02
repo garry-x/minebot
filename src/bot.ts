@@ -16,6 +16,7 @@ import { Planner } from "./planner/planner.js";
 import { createLogger, getLogger } from "./utils/logger.js";
 import { MetricsCollector } from "./telemetry/metrics.js";
 import { Dashboard } from "./telemetry/dashboard.js";
+import { PathfindingCircuitBreaker } from "./movement/circuit-breaker.js";
 import type { SkillContext } from "./skills/skill.js";
 
 export interface BotConfig {
@@ -46,6 +47,7 @@ export class Bot {
   private isRunning = false;
   private metrics = new MetricsCollector();
   private dashboard!: Dashboard;
+  private circuitBreaker = new PathfindingCircuitBreaker();
 
   constructor(config: BotConfig) {
     this.config = config;
@@ -293,6 +295,7 @@ export class Bot {
       logger: getLogger(),
       hunger: this.hunger,
       metrics: this.metrics,
+      circuitBreaker: this.circuitBreaker,
     };
   }
 

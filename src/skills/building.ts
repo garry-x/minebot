@@ -73,7 +73,8 @@ export class BuildingSkill extends Skill {
         }
         const pf = new Pathfinder((p) => world.isBlockSolid(floor(p)) ? false : true, 10000, (nodes, duration, failed) => {
           ctx.metrics?.recordPathfinding(nodes, duration, failed);
-        });
+          ctx.circuitBreaker?.recordResult(failed);
+        }, ctx.circuitBreaker);
         const result = pf.findPath(floor(pos), floor(target));
         if (result.length > 0) {
           this.path = result.map((n) => ({ x: n.x, y: n.y, z: n.z }));

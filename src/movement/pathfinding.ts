@@ -23,18 +23,26 @@ const NEIGHBOR_OFFSETS = [
   { x: 0, y: -1, z: 0 },
 ];
 
+import type { PathfindingCircuitBreaker } from "./circuit-breaker.js";
+
 export class Pathfinder {
   private isWalkable: (pos: Vec3) => boolean;
   private maxNodes: number;
   private onPathfinding?: (nodes: number, durationMs: number, failed: boolean) => void;
+  private circuitBreaker?: PathfindingCircuitBreaker;
 
-  constructor(isWalkable: (pos: Vec3) => boolean, maxNodes = 10000, onPathfinding?: (nodes: number, durationMs: number, failed: boolean) => void) {
+  constructor(isWalkable: (pos: Vec3) => boolean, maxNodes = 10000, onPathfinding?: (nodes: number, durationMs: number, failed: boolean) => void, circuitBreaker?: PathfindingCircuitBreaker) {
     this.isWalkable = isWalkable;
     this.maxNodes = maxNodes;
     this.onPathfinding = onPathfinding;
+    this.circuitBreaker = circuitBreaker;
   }
 
   findPath(start: Vec3, end: Vec3): Node[] {
+    if (this.circuitBreaker?.isDisabled()) {
+      this.onPathfinding?.(0, 0, true);
+      return [];
+    }
     const startTime = Date.now();
     let iterations = 0;
 

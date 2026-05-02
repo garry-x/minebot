@@ -72,7 +72,8 @@ export class GatheringSkill extends Skill {
 
         const pf = new Pathfinder((p) => !world.isBlockSolid(p), 10000, (nodes, duration, failed) => {
           ctx.metrics?.recordPathfinding(nodes, duration, failed);
-        });
+          ctx.circuitBreaker?.recordResult(failed);
+        }, ctx.circuitBreaker);
         const result = pf.findPath(start, end);
 
         if (result.length > 0) {
