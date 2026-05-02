@@ -1,5 +1,6 @@
 import type { Connection } from "../connection/connection.js";
 import type { Vec3 } from "../utils/vec3.js";
+import { MoveType, type PathNode } from "./pathfinding-types.js";
 
 export class Movement {
   private connection: Connection;
@@ -12,6 +13,11 @@ export class Movement {
   private moveY = 0;
   private tick = 0;
   private pendingAttack: { runtimeId: bigint; pos?: { x: number; y: number; z: number } } | null = null;
+  private currentPathNode: number = 0;
+  private pathNodes: PathNode[] = [];
+  private isFollowingPath: boolean = false;
+  private diggingTarget: { x: number; y: number; z: number } | null = null;
+  private digTimer: number = 0;
 
   constructor(connection: Connection) {
     this.connection = connection;
@@ -391,5 +397,109 @@ export class Movement {
 
   getPosition(): Vec3 {
     return { ...this.currentPosition };
+  }
+
+  getCurrentPosition(): Vec3 {
+    return this.currentPosition;
+  }
+
+  getPathProgress(): { current: number; total: number; isDigging: boolean } {
+    return {
+      current: this.currentPathNode,
+      total: this.pathNodes.length,
+      isDigging: this.diggingTarget !== null,
+    };
+  }
+
+  clearPath(): void {
+    this.pathNodes = [];
+    this.currentPathNode = 0;
+    this.isFollowingPath = false;
+    this.diggingTarget = null;
+    this.digTimer = 0;
+  }
+
+  initPath(nodes: PathNode[]): void {
+    this.pathNodes = nodes;
+    this.currentPathNode = 0;
+    this.isFollowingPath = nodes.length > 0;
+    this.diggingTarget = null;
+    this.digTimer = 0;
+  }
+
+  tickPath(): boolean {
+    if (!this.isFollowingPath || this.currentPathNode >= this.pathNodes.length) {
+      return true;
+    }
+
+    const node = this.pathNodes[this.currentPathNode];
+    const target = { x: node.x + 0.5, y: node.y, z: node.z + 0.5 };
+
+    switch (node.moveType) {
+      case MoveType.WALK:
+      case MoveType.FALL:
+      case MoveType.SWIM:
+        this.lookAt(target);
+        this.setPosition(target.x, target.y, target.z);
+        if (this.atPosition(target)) {
+          this.currentPathNode++;
+        }
+        break;
+
+      case MoveType.JUMP: {
+        const dx = target.x - this.currentPosition.x;
+        const dz = target.z - this.currentPosition.z;
+        this.lookAt(target);
+        this.setPosition(target.x, target.y, target.z);
+        if (Math.abs(dx) < 1.5 && Math.abs(dz) < 1.5) {
+          this.jump();
+        }
+        if (this.atPosition(target)) {
+          this.currentPathNode++;
+        }
+        break;
+      }
+
+      case MoveType.CLIMB:
+        this.lookAt(target);
+        this.setPosition(target.x, target.y, target.z);
+        if (this.atPosition(target, 1.5)) {
+          this.currentPathNode++;
+        }
+        break;
+
+      case MoveType.DIG:
+        if (!this.diggingTarget) {
+          this.diggingTarget = { x: node.x, y: node.y, z: node.z };
+          this.startDigging({ x: node.x, y: node.y, z: node.z });
+          this.digTimer = 0;
+        }
+        this.digTimer++;
+        if (this.digTimer > 60) {
+          this.stopDigging({ x: node.x, y: node.y, z: node.z });
+          this.diggingTarget = null;
+          this.digTimer = 0;
+          this.currentPathNode++;
+        }
+        break;
+
+      case MoveType.BOAT:
+        this.lookAt(target);
+        this.setPosition(target.x, target.y, target.z);
+        if (this.atPosition(target, 2)) {
+          this.currentPathNode++;
+        }
+        break;
+    }
+
+    return this.currentPathNode >= this.pathNodes.length;
+  }
+
+  private atPosition(target: { x: number; y: number; z: number }, threshold = 1.0): boolean {
+    const pos = this.currentPosition;
+    const dx = target.x - pos.x;
+    const dy = target.y - pos.y;
+    const dz = target.z - pos.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz) < threshold;
   }
 }
