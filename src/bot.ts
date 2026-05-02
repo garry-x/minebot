@@ -128,20 +128,37 @@ export class Bot {
 
       const DASHBOARD_INTERVAL_MS = 5000;
       const PLANNER_INTERVAL_TICKS = 100;
+      const TICK_THROTTLE_THRESHOLD_MS = 100;
+      const TICK_THROTTLE_SKIP_PLANNER = 200;
       const tickInterval = this.config.tickInterval ?? 50;
       let plannerTick = 0;
       let lastDashboardPrint = 0;
+      let throttleWarned = false;
 
       this.tickTimer = setInterval(() => {
         if (!this.isRunning) return;
 
         const tickStart = Date.now();
+        const avgTick = this.metrics.getAvgTickDurationMs();
+
+        if (avgTick > TICK_THROTTLE_THRESHOLD_MS && !throttleWarned) {
+          getLogger().warn({ avgTickMs: avgTick }, "Tick throttling — high latency detected");
+          throttleWarned = true;
+        } else if (avgTick <= TICK_THROTTLE_THRESHOLD_MS && throttleWarned) {
+          getLogger().info({ avgTickMs: avgTick }, "Tick latency normalized");
+          throttleWarned = false;
+        }
 
         plannerTick++;
-        if (plannerTick % PLANNER_INTERVAL_TICKS === 0) {
+        const skipPlanner = avgTick > TICK_THROTTLE_SKIP_PLANNER;
+        if (plannerTick % PLANNER_INTERVAL_TICKS === 0 && !skipPlanner) {
           const nextSkill = this.planner.getRecommendedSkill(ctx);
           const current = this.skills.getCurrentSkillName();
-          if (nextSkill !== current) {
+          // Prevent planner from switching to pathfinding-heavy skills when circuit breaker is active
+          const pathfindingSkills = ["gathering", "combat", "stronghold", "dragon_hunt", "building", "crafting"];
+          if (this.circuitBreaker.isDisabled() && nextSkill && pathfindingSkills.includes(nextSkill)) {
+            getLogger().warn({ skill: nextSkill }, "Circuit breaker active — blocking pathfinding-heavy skill switch");
+          } else if (nextSkill !== current) {
             getLogger().info({ from: current, to: nextSkill }, "Planner suggests skill change");
             this.skills.requestWithPriority(nextSkill, ctx);
           }
