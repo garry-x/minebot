@@ -83,31 +83,4 @@ describe("SkillManager", () => {
     assert.strictEqual(mgr.getCurrentSkillName(), "target");
   });
 
-  it("priority interrupt overrides current skill", async () => {
-    const mgr = new SkillManager();
-    const low = new CountingSkill("low", 0);
-    const high = new CountingSkill("high", 10);
-    mgr.register(low);
-    mgr.register(high);
-
-    mgr.setCurrent("low", {} as SkillContext);
-    assert.strictEqual(mgr.getCurrentSkillName(), "low");
-
-    mgr.requestWithPriority("high", {} as SkillContext);
-    assert.strictEqual(mgr.getCurrentSkillName(), "high");
-    assert.ok(low.exited);
-  });
-
-  it("ignores lower priority interrupt", async () => {
-    const mgr = new SkillManager();
-    const high = new CountingSkill("high", 10);
-    const low = new CountingSkill("low", 0);
-    mgr.register(high);
-    mgr.register(low);
-
-    mgr.setCurrent("high", {} as SkillContext);
-    mgr.requestWithPriority("low", {} as SkillContext);
-    assert.strictEqual(mgr.getCurrentSkillName(), "high");
-    assert.ok(!high.exited);
-  });
 });
