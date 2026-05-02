@@ -65,11 +65,12 @@ Root (InterruptibleSelector — re-evaluates from top every tick)
 ├── 5. MAINTENANCE (daily upkeep when safe + no phase work)
 │   ├── inventory full → return to safehouse → deposit + sort
 │   ├── hotbar layout incorrect → rearrange to standard
+│   ├── tool durability < 25% → craft replacement → swap → stash old
+│   ├── armor durability < 20% → craft replacement → swap → discard old
 │   ├── any chest missing → craft chest + place in safehouse
 │   ├── chest contents disorganized → sort by priority/category
 │   ├── inventory contains garbage → drop low-priority items
 │   ├── stockpile below minimum → gather missing + stash
-│   ├── tool durability low → craft replacement + stash spare
 │   └── daytime idle → sort chests, repair/expand safehouse
 │
 └── 6. IDLE (fallback: wander)
@@ -215,6 +216,58 @@ The hotbar is always organized to this standard layout. Any deviation triggers a
 | Multiple tools of same type | Keep 2 best, drop/discard rest |
 | After crafting new tool | Compare with equipped → keep best, stash/drop worse |
 
+### Durability Management
+
+Tools and armor degrade with use. The bot must track durability from incoming packets, proactively replace worn items, and stash spares.
+
+#### Durability Data Source
+
+Bedrock `inventory_slot` packets include NBT data with the item's current damage value. The bot extracts this into `InventorySlot.durability` (remaining uses, where 0 = broken). When a slot update arrives, the bot also records `maxDurability` via `minecraft-data` item registry lookup.
+
+#### Replacement Thresholds
+
+| Remaining % | Action for Hotbar Tools | Action for Armor |
+|---|---|---|
+| > 50% | Keep using | Keep wearing |
+| 25–50% | Craft replacement, swap when ready | Craft replacement, wear when ready |
+| 10–25% | Replace immediately if spare in chest/inventory | Replace immediately |
+| < 10% | Retire to chest (emergency backup) or discard | Discard (broken armor has no value) |
+
+For wood/stone tools (< 100 max durability), thresholds are doubled (e.g. "25–50%" becomes "50–100%") because they break much faster.
+
+#### Pre-Critical-Phase Durability Check
+
+Before entering **Nether** or **End**, the bot checks ALL equipped items:
+
+| Check | Requirement | Action if Fail |
+|---|---|---|
+| Pickaxe durability | > 50% remaining | Craft new one, stash old |
+| Sword durability | > 50% remaining | Craft new one, stash old |
+| Armor durability (each piece) | > 40% remaining | Craft replacement piece |
+| Backup pickaxe in inventory | Must have one | Craft one before leaving |
+| Backup food in inventory | 32+ total | Gather/cook more |
+
+This check is a **blocking gate** — the bot will NOT enter the portal until all durability requirements are met.
+
+#### Durability Maintenance Rules
+
+1. **Best tool first:** When multiple tools of same type exist, auto-equip the one with highest remaining durability. Stash the lower one.
+2. **Tool rotation:** After extended mining (> 50 blocks mined), re-check pickaxe durability. If < 25%, swap to backup and queue crafting a new one.
+3. **Broken tool handling:** If a tool breaks mid-use (slot suddenly empty), switch to backup in hotbar. If no backup, retreat to safehouse and craft.
+4. **Armor durability:** Track armor durability the same way. Broken armor = no protection = high risk. Replace piece immediately.
+5. **Golden tools special case:** Golden tools have very low max durability (33). Always discard them (E tier) — never keep or stash.
+
+#### Data Flow
+
+```
+inventory_slot packet
+  → extract item.damage (NBT)
+  → compute durability_pct = 1 - (damage / maxDurability)
+  → store on InventorySlot.durability
+  → emit inventory_change with durability
+  → BT conditions read InventorySlot.durability for decisions
+```
+
 ---
 
 ## 4. File Structure
@@ -233,6 +286,7 @@ src/bt/
 │   ├── health.ts         # isHealthLow, isStarving, hasArmor, hasFood
 │   ├── inventory.ts      # hasItem, isInventoryFull, hasPickaxe, hasWood, hasStone
 │   ├── environment.ts    # isNight, hostilesInRange, isExposed, isInNether, isInEnd
+│   ├── durability.ts     # toolDurabilityLow, armorDurabilityLow, hasBackupTool, needsPrePortalCheck
 │   ├── stockpile.ts      # isStockpileMet, chestCountEnough, hasBackupGear, needsRestock
 │   ├── organization.ts   # isHotbarOkay, hasGarbageInInventory, chestNeedsSort
 │   └── phase.ts          # isPhase, hasReachedPhase, getPhaseAdvanceCondition
@@ -267,6 +321,9 @@ src/bt/
 | `src/bot.ts` | Replace Planner with BehaviorTree; simplify tick loop; add day/night tracking; add hp tracking field |
 | `src/skills/skill-manager.ts` | Remove `requestWithPriority()` and priority interrupt logic; keep `setCurrent()` + `tick()` |
 | `src/skills/skill.ts` | Add `hp: number` and `daytime: boolean` to SkillContext |
+| `src/connection/connection.ts` | Extract item damage/durability from `inventory_slot` NBT data; pass in `inventory_change` event |
+| `src/world/types.ts` | Add `maxDurability: number` to `InventorySlot` |
+| `src/inventory/inventory.ts` | Add `getDurability(slot)`, `getBestDurability(itemType)`, `findBrokenTool()` |
 
 **Files to remove:**
 
