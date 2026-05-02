@@ -65,12 +65,13 @@ Root (InterruptibleSelector — re-evaluates from top every tick)
 ├── 5. MAINTENANCE (daily upkeep when safe + no phase work)
 │   ├── inventory full → return to safehouse → deposit + sort
 │   ├── hotbar layout incorrect → rearrange to standard
+│   ├── has raw meat → return to furnace → cook all raw meat
+│   ├── food stockpile < phase target → hunt + cook + stash
 │   ├── tool durability < 25% → craft replacement → swap → stash old
 │   ├── armor durability < 20% → craft replacement → swap → discard old
 │   ├── any chest missing → craft chest + place in safehouse
 │   ├── chest contents disorganized → sort by priority/category
 │   ├── inventory contains garbage → drop low-priority items
-│   ├── stockpile below minimum → gather missing + stash
 │   └── daytime idle → sort chests, repair/expand safehouse
 │
 └── 6. IDLE (fallback: wander)
@@ -272,6 +273,81 @@ inventory_slot packet
   → BT conditions read InventorySlot.durability for decisions
 ```
 
+### Food Crafting & Supply
+
+The bot must proactively ensure a food supply. Eating existing food is not enough — it must hunt, cook, and stockpile.
+
+#### Food Priority by Quality
+
+| Quality | Examples | Saturation | Priority |
+|---------|----------|------------|----------|
+| **Best** | cooked_beef, cooked_porkchop, golden_carrot, golden_apple | High | Always cook raw → cooked when possible |
+| **Good** | bread, cooked_chicken, cooked_mutton, cooked_salmon | Medium | Acceptable; cook raw equivalent |
+| **Poor** | raw_beef, raw_porkchop, apple, carrot, melon_slice | Low | Eat only if no cooked food available |
+| **Emergency** | rotten_flesh, spider_eye, poisonous_potato | Negative | Eat only if starving (hunger == 0) |
+
+#### Food Crafting Matrix
+
+| Input | Process | Output | Tool Needed |
+|-------|---------|--------|-------------|
+| raw_beef → furnace + fuel | cook | cooked_beef | Any furnace |
+| raw_porkchop → furnace + fuel | cook | cooked_porkchop | Any furnace |
+| raw_chicken → furnace + fuel | cook | cooked_chicken | Any furnace |
+| raw_mutton → furnace + fuel | cook | cooked_mutton | Any furnace |
+| raw_rabbit → furnace + fuel | cook | cooked_rabbit | Any furnace |
+| raw_cod → furnace + fuel | cook | cooked_cod | Any furnace |
+| raw_salmon → furnace + fuel | cook | cooked_salmon | Any furnace |
+| wheat ×3 → crafting table | craft | bread ×1 | Workbench |
+
+#### Furnace Fuel Priority
+
+The furnace needs fuel. Bot auto-selects fuel in this order:
+
+| Priority | Fuel | Burn Time |
+|----------|------|-----------|
+| 1 | coal / charcoal | 80s per item |
+| 2 | wooden tools (worn out) | 10s per item |
+| 3 | planks | 15s per item |
+| 4 | sticks | 5s per item |
+| 5 | saplings | 5s per item |
+| NEVER | blaze_rods, diamonds, ender_eyes | — reserved for crafting |
+
+#### Food Crafting Triggers
+
+| Trigger | Action |
+|---------|--------|
+| Inventory has raw_meat + furnace has fuel | Cook ALL raw meat immediately |
+| Hunger < 15 + no food in hotbar | Top priority: find or craft food |
+| Food in chest < 2 stacks (128 items) | Hunt animals → cook meat → stash |
+| Near animals + food stockpile < 2 stacks | Kill animals for raw meat |
+| About to enter Nether/End | Ensure hotbar has 2+ stacks cooked food |
+| Furnace has finished cooking | Extract cooked items, load more raw meat |
+
+#### Auto-Cooking Flow
+
+```
+Sequence: has raw meat in inventory?
+  → path to safehouse furnace
+  → check furnace fuel
+    → no fuel? add coal/planks/wooden tool
+  → open furnace
+  → move raw meat to furnace input slot
+  → wait for cooking (10 seconds per item)
+  → extract cooked meat
+  → repeat until all raw meat cooked
+  → stash cooked meat in food chest
+```
+
+#### Food Stockpile Targets
+
+| Phase | Minimum Food in Chest | Hotbar Minimum |
+|-------|----------------------|-----------------|
+| SPAWN-STONE | 32 cooked food | 16 |
+| IRON-DIAMOND | 64 cooked food | 32 |
+| NETHER_ENTRY | 96 cooked food | 64 (for Nether trip) |
+| NETHER | 32 cooked food (in nether chest) | 32 |
+| END_PREP-END | 64 cooked food + 3 golden_apples | 32 + 3 golden_apples |
+
 ---
 
 ## 4. File Structure
@@ -298,6 +374,7 @@ src/bt/
 │   ├── skill.ts          # executeGathering, executeCombat, executeCrafting, executeBuilding
 │   ├── survival.ts       # eatFood, fleeToSafety, digHideHole
 │   ├── safehouse.ts      # buildSafehouse, placeWorkbench, placeFurnace, placeTorches, buildFoothold
+│   ├── food.ts           # huntAnimal, cookRawMeat, craftBread, manageFurnaceFuel, stockpileFood
 │   ├── storage.ts        # placeChest, depositItems, restockFromChest, sortChests, countChestItems
 │   ├── organization.ts   # standardizeHotbar, sortInventory, mergeStacks, dropGarbage, sortChestByCategory
 │   └── utility.ts        # wait, dropItem
