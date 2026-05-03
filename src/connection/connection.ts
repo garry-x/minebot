@@ -4,6 +4,7 @@ import { EventBus, BotEvents } from "../events/event-bus.js";
 import { getLogger } from "../utils/logger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
 import { ReconnectPolicy } from "./reconnect-policy.js";
+import { SubchunkRequestManager } from "./subchunk-manager.js";
 
 const require = createRequire(import.meta.url);
 const { Authflow, Titles } = require("prismarine-auth");
@@ -47,6 +48,7 @@ export class Connection {
   private metrics?: MetricsCollector;
   private reconnectPolicy = new ReconnectPolicy();
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private subchunkManager: SubchunkRequestManager | null = null;
 
   constructor(options: ConnectionOptions, events: EventBus<BotEvents>) {
     this.opts = options;
@@ -99,6 +101,7 @@ export class Connection {
     }
 
     this.client = createClient(clientOpts);
+    this.subchunkManager = new SubchunkRequestManager(this.client);
     this.disconnectEmitted = false;
 
     const trace = (name: string, params?: any) => {
@@ -141,6 +144,18 @@ export class Connection {
       }
     });
 
+    this.client.on("subchunk", (packet: any) => {
+      trace("subchunk", { origin: packet.origin, entries: packet.entries?.length ?? 0 });
+      this.metrics?.recordPacket("in", "subchunk");
+      this.subchunkManager?.onSubchunk(packet);
+    });
+
+    this.client.on("update_subchunk_blocks", (packet: any) => {
+      trace("update_subchunk_blocks", { x: packet.x, z: packet.z, blocks: packet.blocks?.length ?? 0 });
+      this.metrics?.recordPacket("in", "update_subchunk_blocks");
+      this.subchunkManager?.onUpdateSubchunkBlocks(packet);
+    });
+
     this.client.on("level_chunk", (packet: any) => {
       trace("level_chunk");
       this.metrics?.recordPacket("in", "level_chunk");
@@ -149,6 +164,7 @@ export class Connection {
         z: packet.z,
         payload: packet.payload,
         subChunkCount: packet.sub_chunk_count ?? 0,
+        dimension: packet.dimension ?? 0,
       });
     });
 
@@ -395,6 +411,8 @@ export class Connection {
     const client = this.client;
     this.client = null;
     if (client) {
+      this.subchunkManager?.destroy();
+      this.subchunkManager = null;
       if (!this.disconnectEmitted) {
         this.disconnectEmitted = true;
         this.events.emit("disconnect", { reason: "Bot disconnected" });
@@ -414,5 +432,9 @@ export class Connection {
 
   getEntityId(): bigint | undefined {
     return this.client?.entityId as bigint | undefined;
+  }
+
+  getSubchunkManager(): SubchunkRequestManager | null {
+    return this.subchunkManager;
   }
 }
