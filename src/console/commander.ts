@@ -73,8 +73,7 @@ export class Commander {
     });
 
     this.rl.on("close", () => {
-      process.stdout.write("Console closed. Exiting...\n");
-      process.exit(2);
+      // stdin closed (non-TTY or parent exit) — don't force process exit
     });
   }
 

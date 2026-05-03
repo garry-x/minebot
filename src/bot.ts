@@ -436,7 +436,8 @@ export class Bot {
   }
 
   getPhase(): string {
-    return String(this.tree?.getBlackboard().currentPhase ?? "SPAWN");
+    const phase = this.tree?.getBlackboard().currentPhase;
+    return phase !== undefined ? PhaseType[phase] : "SPAWN";
   }
 
   getInventorySummary(): string {

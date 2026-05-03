@@ -162,7 +162,8 @@ export class Renderer {
     const lines: string[] = [];
     for (let i = 0; i < maxLines; i++) {
       if (i < entries.length) {
-        const e = entries[entries.length - maxLines + i];
+        const idx = entries.length <= maxLines ? i : entries.length - maxLines + i;
+        const e = entries[idx];
         const ts = `${C.DIM}${e.timestamp}${C.RESET}`;
         const src = `${sourceColor(e.source)}${e.source}${C.RESET}`;
         const line = `${ts} ${src}: ${e.message}`;
