@@ -9,7 +9,7 @@ export class RingBuffer<T> {
   private head = 0;
   private _count = 0;
 
-  constructor(private capacity: number) {
+  constructor(private capacity: number = 200) {
     this.buffer = new Array<T>(capacity);
   }
 
