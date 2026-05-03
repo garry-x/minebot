@@ -109,6 +109,8 @@ export class Console {
       hostileMobs: raw.hostileMobs ?? "0",
       passiveMobs: raw.passiveMobs ?? "0",
       neutralMobs: raw.neutralMobs ?? "0",
+      friendlyMobs: raw.friendlyMobs ?? "0",
+      playerMobs: raw.playerMobs ?? "0",
       safehouse: typeof raw.safehouse === "object" ? raw.safehouse : { hasBench: false, hasFurnace: false, hasChests: 0, built: false },
     };
   }

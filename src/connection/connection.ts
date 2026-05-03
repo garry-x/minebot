@@ -5,29 +5,106 @@ import { getLogger } from "../utils/logger.js";
 import type { MetricsCollector } from "../telemetry/metrics.js";
 import { ReconnectPolicy } from "./reconnect-policy.js";
 import { SubchunkRequestManager } from "./subchunk-manager.js";
+import { MobCategory } from "../world/types.js";
 
 const require = createRequire(import.meta.url);
 const { Authflow, Titles } = require("prismarine-auth");
 
-const HOSTILE_MOBS = new Set([
-  "minecraft:zombie", "minecraft:husk", "minecraft:drowned", "minecraft:zombie_villager",
-  "minecraft:skeleton", "minecraft:stray", "minecraft:wither_skeleton",
-  "minecraft:spider", "minecraft:cave_spider",
-  "minecraft:creeper",
-  "minecraft:witch",
-  "minecraft:enderman",
-  "minecraft:slime",
-  "minecraft:blaze", "minecraft:ghast", "minecraft:magma_cube",
-  "minecraft:silverfish", "minecraft:endermite",
-  "minecraft:guardian", "minecraft:elder_guardian",
-  "minecraft:phantom",
-  "minecraft:pillager", "minecraft:vindicator", "minecraft:evoker", "minecraft:ravager", "minecraft:vex",
-  "minecraft:hoglin", "minecraft:zoglin", "minecraft:piglin_brute",
-  "minecraft:warden",
-]);
+const MOB_CATEGORIES: Record<string, MobCategory> = {
+  // --- HOSTILE (27 types) ---
+  "minecraft:zombie": MobCategory.HOSTILE,
+  "minecraft:husk": MobCategory.HOSTILE,
+  "minecraft:drowned": MobCategory.HOSTILE,
+  "minecraft:zombie_villager": MobCategory.HOSTILE,
+  "minecraft:skeleton": MobCategory.HOSTILE,
+  "minecraft:stray": MobCategory.HOSTILE,
+  "minecraft:wither_skeleton": MobCategory.HOSTILE,
+  "minecraft:creeper": MobCategory.HOSTILE,
+  "minecraft:witch": MobCategory.HOSTILE,
+  "minecraft:spider": MobCategory.HOSTILE,
+  "minecraft:cave_spider": MobCategory.HOSTILE,
+  "minecraft:slime": MobCategory.HOSTILE,
+  "minecraft:silverfish": MobCategory.HOSTILE,
+  "minecraft:endermite": MobCategory.HOSTILE,
+  "minecraft:blaze": MobCategory.HOSTILE,
+  "minecraft:ghast": MobCategory.HOSTILE,
+  "minecraft:magma_cube": MobCategory.HOSTILE,
+  "minecraft:guardian": MobCategory.HOSTILE,
+  "minecraft:elder_guardian": MobCategory.HOSTILE,
+  "minecraft:phantom": MobCategory.HOSTILE,
+  "minecraft:pillager": MobCategory.HOSTILE,
+  "minecraft:vindicator": MobCategory.HOSTILE,
+  "minecraft:evoker": MobCategory.HOSTILE,
+  "minecraft:vex": MobCategory.HOSTILE,
+  "minecraft:ravager": MobCategory.HOSTILE,
+  "minecraft:hoglin": MobCategory.HOSTILE,
+  "minecraft:zoglin": MobCategory.HOSTILE,
+  "minecraft:piglin_brute": MobCategory.HOSTILE,
+  "minecraft:warden": MobCategory.HOSTILE,
+  "minecraft:breeze": MobCategory.HOSTILE,
+  "minecraft:bogged": MobCategory.HOSTILE,
+  // --- NEUTRAL (hostile when provoked) ---
+  "minecraft:enderman": MobCategory.NEUTRAL,
+  "minecraft:zombified_piglin": MobCategory.NEUTRAL,
+  "minecraft:piglin": MobCategory.NEUTRAL,
+  "minecraft:wolf": MobCategory.NEUTRAL,
+  "minecraft:dolphin": MobCategory.NEUTRAL,
+  "minecraft:polar_bear": MobCategory.NEUTRAL,
+  "minecraft:llama": MobCategory.NEUTRAL,
+  "minecraft:trader_llama": MobCategory.NEUTRAL,
+  "minecraft:bee": MobCategory.NEUTRAL,
+  "minecraft:goat": MobCategory.NEUTRAL,
+  "minecraft:panda": MobCategory.NEUTRAL,
+  "minecraft:fox": MobCategory.NEUTRAL,
+  // --- FRIENDLY (NPCs, utility mobs, never hostile) ---
+  "minecraft:villager": MobCategory.FRIENDLY,
+  "minecraft:villager_v2": MobCategory.FRIENDLY,
+  "minecraft:wandering_trader": MobCategory.FRIENDLY,
+  "minecraft:snow_golem": MobCategory.FRIENDLY,
+  // --- PASSIVE (ambient/utility, no combat value) ---
+  "minecraft:cow": MobCategory.PASSIVE,
+  "minecraft:sheep": MobCategory.PASSIVE,
+  "minecraft:pig": MobCategory.PASSIVE,
+  "minecraft:chicken": MobCategory.PASSIVE,
+  "minecraft:rabbit": MobCategory.PASSIVE,
+  "minecraft:horse": MobCategory.PASSIVE,
+  "minecraft:donkey": MobCategory.PASSIVE,
+  "minecraft:mule": MobCategory.PASSIVE,
+  "minecraft:cat": MobCategory.PASSIVE,
+  "minecraft:parrot": MobCategory.PASSIVE,
+  "minecraft:turtle": MobCategory.PASSIVE,
+  "minecraft:squid": MobCategory.PASSIVE,
+  "minecraft:axolotl": MobCategory.PASSIVE,
+  "minecraft:frog": MobCategory.PASSIVE,
+  "minecraft:cod": MobCategory.PASSIVE,
+  "minecraft:salmon": MobCategory.PASSIVE,
+  "minecraft:tropical_fish": MobCategory.PASSIVE,
+  "minecraft:pufferfish": MobCategory.PASSIVE,
+  "minecraft:mooshroom": MobCategory.PASSIVE,
+  "minecraft:ocelot": MobCategory.PASSIVE,
+  "minecraft:bat": MobCategory.PASSIVE,
+  "minecraft:allay": MobCategory.PASSIVE,
+  "minecraft:armadillo": MobCategory.PASSIVE,
+  "minecraft:sniffer": MobCategory.PASSIVE,
+  "minecraft:camel": MobCategory.PASSIVE,
+  "minecraft:glow_squid": MobCategory.PASSIVE,
+  "minecraft:tadpole": MobCategory.PASSIVE,
+  // duplicates in NEUTRAL above, kept there: wolf, polar_bear, llama, trader_llama, bee, goat, panda, fox
+};
 
-function isHostileMob(type: string): boolean {
-  return HOSTILE_MOBS.has(type);
+const PLAYER_TYPES = new Set(["minecraft:player", "player"]);
+
+function classifyMob(type: string): { category: MobCategory; isHostile: boolean; isFriendly: boolean; isPlayer: boolean } {
+  if (PLAYER_TYPES.has(type)) {
+    return { category: MobCategory.PLAYER, isHostile: false, isFriendly: true, isPlayer: true };
+  }
+  const cat = MOB_CATEGORIES[type] ?? MobCategory.PASSIVE;
+  return {
+    category: cat,
+    isHostile: cat === MobCategory.HOSTILE,
+    isFriendly: cat === MobCategory.FRIENDLY,
+    isPlayer: false,
+  };
 }
 
 export interface ConnectionOptions {
@@ -255,7 +332,7 @@ export class Connection {
     this.client.on("add_entity", (packet: any) => {
       trace("add_entity");
       this.metrics?.recordPacket("in", "add_entity");
-      const hostile = isHostileMob(packet.entity_type);
+      const cls = classifyMob(packet.entity_type);
       this.events.emit("entity_spawn", {
         uniqueId: packet.unique_id,
         runtimeId: packet.runtime_id,
@@ -264,7 +341,10 @@ export class Connection {
         y: packet.position?.y ?? 0,
         z: packet.position?.z ?? 0,
         velocity: { x: packet.velocity?.x ?? 0, y: packet.velocity?.y ?? 0, z: packet.velocity?.z ?? 0 },
-        isHostile: hostile,
+        isHostile: cls.isHostile,
+        isPlayer: cls.isPlayer,
+        isFriendly: cls.isFriendly,
+        category: cls.category,
       });
     });
 

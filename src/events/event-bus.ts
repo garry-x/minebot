@@ -67,7 +67,7 @@ export interface BotEvents {
   health_change: { health: number; maxHealth: number };
   player_position: { x: number; y: number; z: number; yaw: number; pitch: number };
   block_update: { x: number; y: number; z: number; blockStateId: number };
-  entity_spawn: { uniqueId: bigint; runtimeId: bigint; type: string; x: number; y: number; z: number; velocity: { x: number; y: number; z: number }; isHostile: boolean };
+  entity_spawn: { uniqueId: bigint; runtimeId: bigint; type: string; x: number; y: number; z: number; velocity: { x: number; y: number; z: number }; isHostile: boolean; isPlayer: boolean; isFriendly: boolean; category: import("../world/types.js").MobCategory };
   entity_despawn: { uniqueId: bigint };
   entity_move: { runtimeId: bigint; x: number; y: number; z: number; yaw: number; pitch: number };
   inventory_change: { slot: number; item: { id: number; count: number; metadata: number; damage?: number } | null };

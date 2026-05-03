@@ -12,13 +12,24 @@ export interface BlockInfo {
   light: number;
 }
 
+export enum MobCategory {
+  HOSTILE = "hostile",
+  NEUTRAL = "neutral",
+  FRIENDLY = "friendly",
+  PASSIVE = "passive",
+  PLAYER = "player",
+}
+
 export interface EntityInfo {
-  id: bigint;          // unique_id
-  runtimeId: bigint;   // runtime_entity_id
+  id: bigint;
+  runtimeId: bigint;
   type: string;
   position: Vec3;
   velocity: Vec3;
   isHostile: boolean;
+  isPlayer: boolean;
+  isFriendly: boolean;
+  category: MobCategory;
 }
 
 export interface InventorySlot {

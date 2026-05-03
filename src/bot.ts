@@ -293,6 +293,9 @@ export class Bot {
         position: { x: data.x, y: data.y, z: data.z },
         velocity: data.velocity,
         isHostile: data.isHostile,
+        isPlayer: data.isPlayer,
+        isFriendly: data.isFriendly,
+        category: data.category,
       });
     });
 
@@ -486,26 +489,32 @@ export class Bot {
     return `${stats.received}/${stats.requested || stats.received}`;
   }
 
-  getMobSummary(): {hostile: string; passive: string; neutral: string} {
+  getMobSummary(): {hostile: string; passive: string; neutral: string; friendly: string; players: string} {
     const pos = this.world.getPlayerPosition();
     const nearby = this.world.getNearbyEntities(pos, 32);
     const hostile: Map<string, number> = new Map();
     const passive: Map<string, number> = new Map();
     const neutral: Map<string, number> = new Map();
-    const HOSTILE_SET = new Set(["zombie","husk","drowned","zombie_villager","skeleton","stray","wither_skeleton","spider","cave_spider","creeper","witch","enderman","slime","blaze","ghast","magma_cube","silverfish","endermite","guardian","elder_guardian","phantom","pillager","vindicator","evoker","ravager","vex","hoglin","zoglin","piglin_brute","warden"]);
-    const PASSIVE_SET = new Set(["cow","sheep","pig","chicken","rabbit","horse","donkey","mule","fox","wolf","cat","parrot","turtle","squid","bee","goat","axolotl","frog","cod","salmon","tropical_fish","pufferfish","mooshroom","ocelot","panda","polar_bear","villager","wandering_trader","trader_llama","llama","bat","allay","armadillo","sniffer","camel"]);
+    const friendly: Map<string, number> = new Map();
+    const players: Map<string, number> = new Map();
     for (const entity of nearby) {
       const name = entity.type?.replace("minecraft:", "") || "unknown";
-      if (HOSTILE_SET.has(name)) { hostile.set(name, (hostile.get(name) || 0) + 1); }
-      else if (PASSIVE_SET.has(name)) { passive.set(name, (passive.get(name) || 0) + 1); }
-      else { neutral.set(name, (neutral.get(name) || 0) + 1); }
+      if (entity.isPlayer) {
+        players.set(name, (players.get(name) || 0) + 1);
+      } else if (entity.isHostile) {
+        hostile.set(name, (hostile.get(name) || 0) + 1);
+      } else if (entity.isFriendly) {
+        friendly.set(name, (friendly.get(name) || 0) + 1);
+      } else {
+        passive.set(name, (passive.get(name) || 0) + 1);
+      }
     }
     const fmt = (m: Map<string, number>) => {
       const total = [...m.values()].reduce((a,b)=>a+b,0);
       const detail = [...m.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}×${v}`).join(" ");
       return detail ? `${total} (${detail})` : "0";
     };
-    return { hostile: fmt(hostile), passive: fmt(passive), neutral: fmt(neutral) };
+    return { hostile: fmt(hostile), passive: fmt(passive), neutral: fmt(neutral), friendly: fmt(friendly), players: fmt(players) };
   }
 
   getEnvironmentInfo(): {biome: string; lightLevel: number; groundBlock: string; nearbyResources: string; nearestWater: number; nearestLava: number} {
@@ -592,6 +601,8 @@ export class Bot {
       hostileMobs: mobs.hostile,
       passiveMobs: mobs.passive,
       neutralMobs: mobs.neutral,
+      friendlyMobs: mobs.friendly,
+      playerMobs: mobs.players,
       safehouse: this.getSafehouseState(),
     };
   }

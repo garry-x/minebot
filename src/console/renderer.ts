@@ -31,6 +31,8 @@ export interface StatusSnapshot {
   hostileMobs: string;
   passiveMobs: string;
   neutralMobs: string;
+  friendlyMobs: string;
+  playerMobs: string;
   safehouse: { hasBench: boolean; hasFurnace: boolean; hasChests: number; built: boolean };
 }
 
@@ -150,11 +152,13 @@ export class Renderer {
     const hostileStr = `${s.hostileMobs ? C.RED + C.BOLD : C.DIM}H:${s.hostileMobs || "0"}${C.RESET}`;
     const passiveStr = `P:${s.passiveMobs || "0"}`;
     const neutralStr = `N:${s.neutralMobs || "0"}`;
-    const bench = s.safehouse.hasBench ? `${C.GREEN}BENCH${C.RESET}` : `${C.DIM}BENCH${C.RESET}`;
-    const furnace = s.safehouse.hasFurnace ? `${C.GREEN}FURN${C.RESET}` : `${C.DIM}FURN${C.RESET}`;
-    const chests = `Box:${s.safehouse.hasChests}`;
-    const built = s.safehouse.built ? `${C.GREEN}Safehouse${C.RESET}` : `${C.DIM}Safehouse${C.RESET}`;
-    const line = `Mobs: ${hostileStr}  ${passiveStr}  ${neutralStr} | ${bench}  ${furnace}  ${chests}  ${built}`;
+    const friendlyStr = `F:${s.friendlyMobs || "0"}`;
+    const playerStr = `${s.playerMobs ? C.GREEN : ""}R:${s.playerMobs || "0"}${C.RESET}`;
+    const bench = s.safehouse.hasBench ? `${C.GREEN}WBench:✓${C.RESET}` : "WBench:✗";
+    const furnace = s.safehouse.hasFurnace ? `${C.GREEN}Furnace:✓${C.RESET}` : "Furnace:✗";
+    const chests = `Box×${s.safehouse.hasChests}`;
+    const built = s.safehouse.built ? `${C.GREEN}Built✓${C.RESET}` : "";
+    const line = `Mobs: ${hostileStr}  ${passiveStr}  ${neutralStr}  ${friendlyStr}  ${playerStr} | ${bench}  ${furnace}  ${chests}  ${built}`;
     return this.pad(line, this.width);
   }
 
