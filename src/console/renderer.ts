@@ -85,6 +85,7 @@ export class Renderer {
       const msg = `Terminal too small (${this.width}x${this.height}). Need ${MIN_WIDTH}x${MIN_HEIGHT}.`;
       if (this.needsFullRedraw) {
         process.stdout.write(`\x1b[2J\x1b[H${msg}`);
+        this.needsFullRedraw = false;
       }
       return;
     }
