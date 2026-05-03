@@ -17,7 +17,7 @@ import { rootTree, determinePhase } from "./bt/tree.js";
 import { PhaseType, type Blackboard, type SafehouseState, type StockpileState, type OrganizationState } from "./bt/types.js";
 import { createLogger, getLogger } from "./utils/logger.js";
 import { MetricsCollector } from "./telemetry/metrics.js";
-import { Dashboard } from "./telemetry/dashboard.js";
+import { Console } from "./console/console.js";
 import { PathfindingCircuitBreaker } from "./movement/circuit-breaker.js";
 import type { SkillContext } from "./skills/skill.js";
 
@@ -51,7 +51,7 @@ export class Bot {
   private tickTimer: ReturnType<typeof setInterval> | null = null;
   private isRunning = false;
   private metrics = new MetricsCollector();
-  private dashboard!: Dashboard;
+  private console!: Console;
   private circuitBreaker = new PathfindingCircuitBreaker();
   private startTime: number = 0;
 
@@ -147,7 +147,9 @@ export class Bot {
 
       // handleStartGame is deferred to item_registry event (post-1.21.60)
 
-      this.dashboard = new Dashboard(this.metrics, this.world, this.skills, this.hunger);
+      this.console = new Console(this);
+      this.console.start();
+      this.console.log("SYS", "Bot spawned and running");
 
       if (this.tickTimer) return;
 
@@ -188,6 +190,7 @@ export class Bot {
 
             const nextSkill = this.tree.tick();
             if (nextSkill && nextSkill !== this.skills.getCurrentSkillName()) {
+              this.console.log("BT", `switching ${this.skills.getCurrentSkillName()} → ${nextSkill}`);
               this.skills.setCurrent(nextSkill, ctx);
             }
           }
@@ -215,7 +218,6 @@ export class Bot {
             this.world.getEntities().length,
             this.world.getColumns().size
           );
-          this.dashboard.print();
           lastDashboardPrint = now;
         }
       }, tickInterval);
@@ -244,6 +246,7 @@ export class Bot {
 
     this.events.on("player_death", ({ message }) => {
       getLogger().warn({ message }, "Bot died, pausing tick loop");
+      this.console.log("SYS", "Bot died, pausing");
       this.isRunning = false;
       this.tree?.reset();
       this.skills.setCurrent("idle", this.getSkillContext());
@@ -433,7 +436,7 @@ export class Bot {
   }
 
   getPhase(): string {
-    return this.tree?.getBlackboard().currentPhase ?? "SPAWN";
+    return String(this.tree?.getBlackboard().currentPhase ?? "SPAWN");
   }
 
   getInventorySummary(): string {
@@ -491,7 +494,7 @@ export class Bot {
     const HOSTILE_SET = new Set(["zombie","husk","drowned","zombie_villager","skeleton","stray","wither_skeleton","spider","cave_spider","creeper","witch","enderman","slime","blaze","ghast","magma_cube","silverfish","endermite","guardian","elder_guardian","phantom","pillager","vindicator","evoker","ravager","vex","hoglin","zoglin","piglin_brute","warden"]);
     const PASSIVE_SET = new Set(["cow","sheep","pig","chicken","rabbit","horse","donkey","mule","fox","wolf","cat","parrot","turtle","squid","bee","goat","axolotl","frog","cod","salmon","tropical_fish","pufferfish","mooshroom","ocelot","panda","polar_bear","villager","wandering_trader","trader_llama","llama","bat","allay","armadillo","sniffer","camel"]);
     for (const entity of nearby) {
-      const name = entity.name?.replace("minecraft:", "") || "unknown";
+      const name = entity.type?.replace("minecraft:", "") || "unknown";
       if (HOSTILE_SET.has(name)) { hostile.set(name, (hostile.get(name) || 0) + 1); }
       else if (PASSIVE_SET.has(name)) { passive.set(name, (passive.get(name) || 0) + 1); }
       else { neutral.set(name, (neutral.get(name) || 0) + 1); }
@@ -532,7 +535,8 @@ export class Bot {
     const ores = this.world.findOres?.(pos, 16) || [];
     const oreCount: Map<string, number> = new Map();
     for (const o of ores) {
-      const n = o.name?.replace("minecraft:", "") || "unknown";
+      const block = (this.world as any).getBlock(o);
+      const n = block?.name?.replace("minecraft:", "") || "unknown";
       oreCount.set(n, (oreCount.get(n) || 0) + 1);
     }
     const nearby = [...oreCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}×${v}`).join(" ");
@@ -571,7 +575,7 @@ export class Bot {
       avgTickMs: this.metrics?.getAvgTickDurationMs?.() ?? 0,
       hp: this.hp,
       maxHp: 20,
-      hunger: Math.round((this.hunger as any).getHungerRatio?.() * 20 ?? 20),
+      hunger: Math.round((this.hunger as any).getHungerRatio?.() * 20 || 0),
       armorMaterial: armorMat,
       pos: this.world.getPlayerPosition(),
       phase: this.getPhase(),
@@ -624,6 +628,7 @@ export class Bot {
   }
 
   stop(): void {
+    this.console?.stop();
     this.isRunning = false;
     if (this.tickTimer) {
       clearInterval(this.tickTimer);
