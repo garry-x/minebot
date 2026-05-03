@@ -69,13 +69,14 @@ export const BOX = {
   SR: "\u2562",
 } as const;
 
+const ANSI_RE = /\x1b\[[0-9;]*m/g;
+
 export function stripAnsi(s: string): string {
-  return s.replace(/\x1b\[[0-9;]*m/g, '');
+  return s.replace(ANSI_RE, '');
 }
 
 export function truncate(text: string, maxWidth: number): string {
-  const ansiRegex = /\x1b\[[0-9;]*m/g;
-  const plain = text.replace(ansiRegex, '');
+  const plain = text.replace(ANSI_RE, '');
 
   if (plain.length <= maxWidth) {
     return text + ' '.repeat(maxWidth - plain.length);
@@ -91,6 +92,7 @@ export function truncate(text: string, maxWidth: number): string {
   while (i < text.length && visibleCount < targetVisible) {
     if (text[i] === '\x1b' && text[i + 1] === '[') {
       const end = text.indexOf('m', i);
+      if (end === -1) break;
       result += text.slice(i, end + 1);
       i = end + 1;
     } else {
@@ -100,7 +102,8 @@ export function truncate(text: string, maxWidth: number): string {
     }
   }
 
-  result += '\u2026';
+  result += C.RESET + '\u2026';
+  const resultPlain = result.replace(ANSI_RE, '');
 
-  return result;
+  return result + ' '.repeat(Math.max(0, maxWidth - resultPlain.length));
 }
