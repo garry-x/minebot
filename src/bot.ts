@@ -256,19 +256,26 @@ export class Bot {
       this.daytime = (time % 24000) < 13000;
     });
 
-    this.events.on("chunk_loaded", ({ x, z, payload, subChunkCount }) => {
+    this.events.on("chunk_loaded", ({ x, z, payload, subChunkCount, dimension }) => {
       try {
         let column = this.world.getColumn(x, z);
         if (!column) {
           column = this.world.createColumn(x, z);
           this.world.addColumn(x, z, column);
         }
-        if (subChunkCount === -1 || subChunkCount === -2) {
+        if (subChunkCount === -1) {
+          return;
+        }
+        if (subChunkCount === -2) {
+          (column as any).networkDecodeNoCache(payload, -2);
+          const manager = this.connection.getSubchunkManager();
+          if (manager) {
+            manager.onLevelChunk(x, z, dimension ?? this.world.getDimension(), column);
+          }
           return;
         }
         (column as any).networkDecodeNoCache(payload, subChunkCount);
       } catch (err: any) {
-        process.stderr.write(`[CHUNK_ERR] chunk=(${x},${z}) subCount=${subChunkCount} msg=${err?.message ?? String(err)}\n`);
         getLogger().error({ err, chunkX: x, chunkZ: z, subChunkCount }, "Failed to load chunk");
       }
     });
