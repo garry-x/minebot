@@ -53,12 +53,14 @@ export class Bot {
   private metrics = new MetricsCollector();
   private dashboard!: Dashboard;
   private circuitBreaker = new PathfindingCircuitBreaker();
+  private startTime: number = 0;
 
   constructor(config: BotConfig) {
     this.config = config;
   }
 
   async start(): Promise<void> {
+    this.startTime = Date.now();
     const logger = createLogger({
       level: this.config.debug ? "debug" : "info",
       pretty: true,
@@ -420,6 +422,205 @@ export class Bot {
 
   getHungerTracker(): HungerTracker {
     return this.hunger;
+  }
+
+  getUptime(): string {
+    if (!this.startTime) return "0s";
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    return m > 0 ? `${m}m${s}s` : `${s}s`;
+  }
+
+  getPhase(): string {
+    return this.tree?.getBlackboard().currentPhase ?? "SPAWN";
+  }
+
+  getInventorySummary(): string {
+    const items = this.inventory.getAllItems();
+    const used = Array.from(items.values()).filter(s => s !== null).length;
+    return `${used}/${items.size}`;
+  }
+
+  getToolDurability(): Array<{name: string; pct: number}> {
+    const results: Array<{name: string; pct: number}> = [];
+    const items = this.inventory.getAllItems();
+    const priority = ["sword", "pickaxe", "axe", "shovel", "hoe"];
+    for (const [slot, item] of items) {
+      if (!item || !item.name) continue;
+      const name = item.name || "";
+      const isTool = ["sword", "pickaxe", "axe", "shovel", "hoe"].some(t => name.includes(t));
+      if (!isTool) continue;
+      const dur = this.inventory.getDurability(slot);
+      if (dur === undefined || dur === null) continue;
+      results.push({ name, pct: dur });
+    }
+    results.sort((a, b) => {
+      const aP = priority.findIndex(p => a.name.includes(p));
+      const bP = priority.findIndex(p => b.name.includes(p));
+      if (aP !== bP) return aP - bP;
+      return b.pct - a.pct;
+    });
+    return results.slice(0, 3);
+  }
+
+  getPathfindingStatus(): string {
+    const progress = this.movement.getPathProgress?.();
+    if (!progress || progress.total === 0) return "idle";
+    const breakdown = (this.movement as any).getPathBreakdown?.() || {};
+    const parts: string[] = [];
+    for (const [type, count] of Object.entries(breakdown)) {
+      parts.push(`${type}×${count}`);
+    }
+    return `${progress.total} nodes ${parts.join(" ")}`;
+  }
+
+  getSubchunkStatus(): string {
+    const mgr = (this.connection as any).getSubchunkManager?.();
+    if (!mgr) return "N/A";
+    const stats = mgr.getStats?.() || { received: 0, requested: 0, pending: 0 };
+    return `${stats.received}/${stats.requested || stats.received}`;
+  }
+
+  getMobSummary(): {hostile: string; passive: string; neutral: string} {
+    const pos = this.world.getPlayerPosition();
+    const nearby = this.world.getNearbyEntities(pos, 32);
+    const hostile: Map<string, number> = new Map();
+    const passive: Map<string, number> = new Map();
+    const neutral: Map<string, number> = new Map();
+    const HOSTILE_SET = new Set(["zombie","husk","drowned","zombie_villager","skeleton","stray","wither_skeleton","spider","cave_spider","creeper","witch","enderman","slime","blaze","ghast","magma_cube","silverfish","endermite","guardian","elder_guardian","phantom","pillager","vindicator","evoker","ravager","vex","hoglin","zoglin","piglin_brute","warden"]);
+    const PASSIVE_SET = new Set(["cow","sheep","pig","chicken","rabbit","horse","donkey","mule","fox","wolf","cat","parrot","turtle","squid","bee","goat","axolotl","frog","cod","salmon","tropical_fish","pufferfish","mooshroom","ocelot","panda","polar_bear","villager","wandering_trader","trader_llama","llama","bat","allay","armadillo","sniffer","camel"]);
+    for (const entity of nearby) {
+      const name = entity.name?.replace("minecraft:", "") || "unknown";
+      if (HOSTILE_SET.has(name)) { hostile.set(name, (hostile.get(name) || 0) + 1); }
+      else if (PASSIVE_SET.has(name)) { passive.set(name, (passive.get(name) || 0) + 1); }
+      else { neutral.set(name, (neutral.get(name) || 0) + 1); }
+    }
+    const fmt = (m: Map<string, number>) => {
+      const total = [...m.values()].reduce((a,b)=>a+b,0);
+      const detail = [...m.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}×${v}`).join(" ");
+      return detail ? `${total} (${detail})` : "0";
+    };
+    return { hostile: fmt(hostile), passive: fmt(passive), neutral: fmt(neutral) };
+  }
+
+  getEnvironmentInfo(): {biome: string; lightLevel: number; groundBlock: string; nearbyResources: string; nearestWater: number; nearestLava: number} {
+    const pos = this.world.getPlayerPosition();
+    const ground = this.world.getBlock({ x: pos.x, y: pos.y - 1, z: pos.z });
+    const groundName = ground?.name?.replace("minecraft:", "") || "air";
+    
+    let nearestWater = -1;
+    let nearestLava = -1;
+    for (let r = 1; r <= 32; r++) {
+      for (const dx of [-r, r]) {
+        for (let dz = -r; dz <= r; dz++) {
+          if (nearestWater < 0 && this.world.isWaterBlock?.({ x: pos.x + dx, y: pos.y, z: pos.z + dz })) nearestWater = r;
+          const b = this.world.getBlock({ x: pos.x + dx, y: pos.y, z: pos.z + dz });
+          if (nearestLava < 0 && b?.name?.includes("lava")) nearestLava = r;
+        }
+      }
+      for (const dz of [-r, r]) {
+        for (let dx = -r; dx <= r; dx++) {
+          if (nearestWater < 0 && this.world.isWaterBlock?.({ x: pos.x + dx, y: pos.y, z: pos.z + dz })) nearestWater = r;
+          const b = this.world.getBlock({ x: pos.x + dx, y: pos.y, z: pos.z + dz });
+          if (nearestLava < 0 && b?.name?.includes("lava")) nearestLava = r;
+        }
+      }
+      if (nearestWater > 0 && nearestLava > 0) break;
+    }
+    
+    const ores = this.world.findOres?.(pos, 16) || [];
+    const oreCount: Map<string, number> = new Map();
+    for (const o of ores) {
+      const n = o.name?.replace("minecraft:", "") || "unknown";
+      oreCount.set(n, (oreCount.get(n) || 0) + 1);
+    }
+    const nearby = [...oreCount.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}×${v}`).join(" ");
+    
+    return {
+      biome: "unknown",
+      lightLevel: 0,
+      groundBlock: groundName,
+      nearbyResources: nearby || "none",
+      nearestWater,
+      nearestLava,
+    };
+  }
+
+  getSafehouseState(): string {
+    const bb = this.tree?.getBlackboard();
+    const sh = bb?.safehouseState;
+    if (!sh) return "no safehouse";
+    const bench = sh.hasWorkbench ? "✓" : "✗";
+    const furnace = sh.hasFurnace ? "✓" : "✗";
+    const chests = sh.chestCount ?? 0;
+    return `WBench:${bench} Furn:${furnace} Box×${chests}`;
+  }
+
+  getStatus(): object {
+    const mobs = this.getMobSummary();
+    const env = this.getEnvironmentInfo();
+    const tools = this.getToolDurability();
+    const dimMap = ["Overworld", "Nether", "End"];
+    const armorSlot = this.inventory.getArmor?.(1); // chestplate
+    const armorMat = armorSlot?.name?.split("_")[1] || "none";
+    return {
+      host: this.config.host,
+      port: this.config.port,
+      uptime: this.getUptime(),
+      avgTickMs: this.metrics?.getAvgTickDurationMs?.() ?? 0,
+      hp: this.hp,
+      maxHp: 20,
+      hunger: Math.round((this.hunger as any).getHungerRatio?.() * 20 ?? 20),
+      armorMaterial: armorMat,
+      pos: this.world.getPlayerPosition(),
+      phase: this.getPhase(),
+      dimension: dimMap[this.world.getDimension()] || "Unknown",
+      daytime: this.daytime ? "day" : "night",
+      skill: this.skills.getCurrentSkillName?.() || "idle",
+      inventorySlots: parseInt(this.getInventorySummary().split("/")[0]) || 0,
+      toolDurability: tools,
+      ...env,
+      pathfinding: this.getPathfindingStatus(),
+      chunkCount: (this.world as any).world?.columns?.size ?? 0,
+      subchunkCount: this.getSubchunkStatus(),
+      hostileMobs: mobs.hostile,
+      passiveMobs: mobs.passive,
+      neutralMobs: mobs.neutral,
+      safehouse: this.getSafehouseState(),
+    };
+  }
+
+  goto(x: number, y: number, z: number): boolean {
+    const { Pathfinder } = require("../movement/pathfinding.js");
+    const { TraversalContext } = require("../movement/pathfinding-types.js");
+    const ctx: any = new TraversalContext(this.world);
+    ctx.inventory = this.inventory;
+    const pf = new Pathfinder(ctx, 10000, undefined, this.circuitBreaker);
+    const start = this.world.getPlayerPosition();
+    const path = pf.findPath(start, { x, y, z });
+    if (path.length === 0) return false;
+    this.movement.initPath(path);
+    return true;
+  }
+
+  say(message: string): void {
+    this.connection.queue("text", { message, type: "chat" });
+  }
+
+  serverCommand(command: string): void {
+    this.connection.queue("command_request", {
+      command: `/${command}`,
+      origin: { type: "player", uuid: "", request_id: "" },
+    });
+  }
+
+  addConsoleLog(source: string, message: string): void {
+    (this as any)._console?.log(source, message);
+  }
+
+  setConsole(c: any): void {
+    (this as any)._console = c;
   }
 
   stop(): void {
