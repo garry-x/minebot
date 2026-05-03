@@ -26,8 +26,9 @@ src/console/
 ┌─ Panels ───────────────────────────────────────────────────────────────────────┐
 │ HP:20/20  Hunger:20  Armor:Iron  Pos:(120,64,-45)  Phase:IRON  Day  Skill:COMBAT │
 │ Inv: 28/36 slots | Tools: iron_pick(63%) iron_sword(72%) diamond_shovel(91%)     │
+│ Env: Plains(day) | Ground:grass_block L7 | Nearby: oak_log×2 coal_ore×1 water:12m │
 │ Path: 8 nodes JMP✕3 WALK✕5 | Chunks: 213/213 | Subchunks: 4560/4560             │
-│ Mobs: H:5 P:2 N:1 | Workbench:✓  Furnace:✓  Chest×6  Safehouse:(-5,64,10)      │
+│ Mobs: H:5(zombie×3 skeleton×2) P:2(cow×2) N:1(enderman) | WBench:✓ Furn:✓ Box×6  │
 └────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─ Event Log ────────────────────────────────────────────────────────────────────┐
@@ -42,7 +43,12 @@ src/console/
 ```
 
 - **Status Bar** (1 line): connection info, uptime, tick metrics
-- **Detail Panels** (4 lines): HP, hunger, armor, position, phase, dimension, daytime, skill, inventory slot count, tool durability, pathfinding status, chunk/subchunk counts, mob counts, safehouse state
+- **Detail Panels** (5 lines):
+  1. HP, hunger, armor, position, phase, dimension, daytime, skill
+  2. Inventory slot count, tool durability
+  3. **Environment**: biome, daylight, ground block type, light level, nearest ores/resources in range, nearest water/lava distance
+  4. Pathfinding status, chunk/subchunk counts
+  5. Mob breakdown (hostile/passive/neutral with names and counts), safehouse state
 - **Event Log** (5 lines): timestamped recent events, most recent at bottom
 - **Command Prompt** (1 line): `/` prefix plus readline input with history
 
@@ -54,14 +60,15 @@ Total rows: 1+4+5+1 = 11 minimum. If terminal is smaller, scale down: event log 
 [1]  Status Bar
 [2]  Health | Phase | Pos
 [3]  Inventory | Tools
-[4]  Pathfinding | Chunks
-[5]  Mobs | Safehouse
-[6]  Event Log ────
-[7]  Event Log
+[4]  Environment | Ground | Nearby | Light
+[5]  Pathfinding | Chunks
+[6]  Mobs | Safehouse
+[7]  Event Log ────
 [8]  Event Log
 [9]  Event Log
-[10] Event Log ────
-[11] Cmd Prompt
+[10] Event Log
+[11] Event Log ────
+[12] Cmd Prompt
 ```
 
 ## ANSI Color Scheme
@@ -333,12 +340,22 @@ export interface StatusSnapshot {
   skill: string;
   inventorySlots: number;
   toolDurability: { name: string; pct: number }[];
+  // Environment fields
+  biome: string;
+  lightLevel: number;
+  groundBlock: string;
+  nearbyResources: string;     // "oak_log×2 coal_ore×1" (within 16 blocks)
+  nearestWater: number;        // distance in blocks or -1
+  nearestLava: number;         // distance in blocks or -1
+  // Pathfinding & chunks
   pathfinding: { nodeCount: number; moveTypes: string };
   chunkCount: number;
   subchunkCount: number;
-  hostileMobs: number;
-  passiveMobs: number;
-  neutralMobs: number;
+  // Mobs
+  hostileMobs: string;         // "5 (zombie×3 skeleton×2)"
+  passiveMobs: string;
+  neutralMobs: string;
+  // Safehouse
   safehouse: { hasBench: boolean; hasFurnace: boolean; hasChests: number };
 }
 ```
