@@ -53,3 +53,54 @@ export function sourceColor(s: string): string {
     default:       return C.RESET;
   }
 }
+
+export const BOX = {
+  H:  "\u2500",
+  V:  "\u2502",
+  DH: "\u2550",
+  DV: "\u2551",
+  TL: "\u2554",
+  TR: "\u2557",
+  BL: "\u255A",
+  BR: "\u255D",
+  DL: "\u2560",
+  DR: "\u2563",
+  SL: "\u255F",
+  SR: "\u2562",
+} as const;
+
+export function stripAnsi(s: string): string {
+  return s.replace(/\x1b\[[0-9;]*m/g, '');
+}
+
+export function truncate(text: string, maxWidth: number): string {
+  const ansiRegex = /\x1b\[[0-9;]*m/g;
+  const plain = text.replace(ansiRegex, '');
+
+  if (plain.length <= maxWidth) {
+    return text + ' '.repeat(maxWidth - plain.length);
+  }
+
+  if (maxWidth < 1) return '';
+
+  let result = '';
+  let visibleCount = 0;
+  const targetVisible = maxWidth - 1;
+  let i = 0;
+
+  while (i < text.length && visibleCount < targetVisible) {
+    if (text[i] === '\x1b' && text[i + 1] === '[') {
+      const end = text.indexOf('m', i);
+      result += text.slice(i, end + 1);
+      i = end + 1;
+    } else {
+      result += text[i];
+      visibleCount++;
+      i++;
+    }
+  }
+
+  result += '\u2026';
+
+  return result;
+}
