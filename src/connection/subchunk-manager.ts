@@ -4,8 +4,8 @@ import { getLogger } from "../utils/logger.js";
 
 const require = createRequire(import.meta.url);
 const SubChunk118 = require("prismarine-chunk/src/bedrock/1.18/SubChunk");
-const { Stream } = require("prismarine-chunk/src/bedrock/common/Stream");
-const { StorageType } = require("prismarine-chunk/src/bedrock/common/constants");
+const Stream = require("prismarine-chunk/src/bedrock/common/Stream");
+const StorageType = require("prismarine-chunk/src/bedrock/common/constants").StorageType;
 
 interface PendingChunk {
   x: number;
@@ -21,6 +21,7 @@ const REQUEST_BATCH_INTERVAL_MS = 50;
 const CHUNK_TIMEOUT_MS = 10000;
 const SECTION_MIN_Y = -4;
 const SECTION_MAX_Y = 19;
+const CHUNKS_PER_FLUSH = 4;
 
 export class SubchunkRequestManager {
   private client: Client;
@@ -50,10 +51,10 @@ export class SubchunkRequestManager {
     const key = `${packet.origin.x},${packet.origin.z},${packet.dimension}`;
     const pending = this.pending.get(key);
     if (!pending) return;
-    const entries: Array<{ dx: number; dy: number; dz: number; result: number; payload?: Uint8Array }> = packet.entries ?? [];
+    const entries: Array<{ dx: number; dy: number; dz: number; result: string | number; payload?: Uint8Array }> = packet.entries ?? [];
     for (const entry of entries) {
       pending.remaining.delete(entry.dy);
-      if (entry.result === 1 && entry.payload) {
+      if ((entry.result === "success" || entry.result === 1) && entry.payload) {
         this.decodeSection(pending.column, entry.dy, entry.payload);
       }
     }
@@ -84,19 +85,24 @@ export class SubchunkRequestManager {
 
   private flushBatch(): void {
     if (this.requestQueue.length === 0) return;
-    const entries = this.requestQueue.splice(0, this.requestQueue.length);
+    const entries = this.requestQueue.splice(0, CHUNKS_PER_FLUSH);
     for (const { x, z, dimension } of entries) {
       const requests: Array<{ dx: number; dy: number; dz: number }> = [];
       for (let y = SECTION_MIN_Y; y <= SECTION_MAX_Y; y++) requests.push({ dx: 0, dy: y, dz: 0 });
       this.client.queue("subchunk_request", { dimension, origin: { x, y: 0, z }, requests });
     }
+    if (this.requestQueue.length > 0) this.scheduleBatch();
   }
 
   private decodeSection(column: any, y: number, payload: Uint8Array): void {
-    const section = new SubChunk118(column.registry, column.Block, { y, subChunkVersion: column.subChunkVersion ?? 9 });
-    const buf = Buffer.isBuffer(payload) ? payload : Buffer.from(payload);
-    const stream = new Stream(buf);
-    section.decode(StorageType.Runtime, stream);
-    column.setSection(y, section);
+    try {
+      const section = new SubChunk118(column.registry, column.Block, { y, subChunkVersion: column.subChunkVersion ?? 9 });
+      const buf = Buffer.isBuffer(payload) ? payload : Buffer.from(payload);
+      const stream = new Stream(buf);
+      section.decode(StorageType.Runtime, stream);
+      column.setSection(y, section);
+    } catch (e: any) {
+      getLogger().error({ err: e, y }, "Failed to decode subchunk section");
+    }
   }
 }
