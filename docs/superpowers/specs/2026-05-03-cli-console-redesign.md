@@ -64,6 +64,83 @@ Total rows: 1+4+5+1 = 11 minimum. If terminal is smaller, scale down: event log 
 [11] Cmd Prompt
 ```
 
+## ANSI Color Scheme
+
+```typescript
+// Color utility helpers in src/console/colors.ts
+const C = {
+  RESET:     "\x1b[0m",
+  BOLD:      "\x1b[1m",
+  DIM:       "\x1b[2m",
+  RED:       "\x1b[31m",
+  GREEN:     "\x1b[32m",
+  YELLOW:    "\x1b[33m",
+  BLUE:      "\x1b[34m",
+  MAGENTA:   "\x1b[35m",
+  CYAN:      "\x1b[36m",
+  WHITE:     "\x1b[37m",
+  BG_RED:    "\x1b[41m",
+  BG_GREEN:  "\x1b[42m",
+  BG_BLUE:   "\x1b[44m",
+} as const;
+
+function pct(pct: number): string {
+  if (pct > 50) return C.GREEN;
+  if (pct > 25) return C.YELLOW;
+  return C.RED;
+}
+function hpColor(hp: number, max: number): string {
+  const ratio = hp / max;
+  if (ratio > 0.7) return C.GREEN;
+  if (ratio > 0.3) return C.YELLOW;
+  return C.RED + C.BOLD;
+}
+function hungerColor(h: number): string {
+  if (h > 15) return C.GREEN;
+  if (h > 5) return C.YELLOW;
+  return C.RED + C.BOLD;
+}
+```
+
+### Element Color Mapping
+
+| Element | Condition | Color |
+|---------|-----------|-------|
+| **HP** | >70% | `32` green |
+| | 30-70% | `33` yellow |
+| | <30% | `31;1` bold red |
+| **Hunger** | >15 | `32` green |
+| | 6-15 | `33` yellow |
+| | ≤5 | `31;1` bold red |
+| **Tool durability** | >50% | `32` green |
+| | 25-50% | `33` yellow |
+| | <25% | `31` red |
+| **Hostile mobs** | 0 | dim white |
+| | >0 | `31;1` bold red |
+| **Daytime** | Day | `33` yellow |
+| | Night | `34` blue |
+| **Phase** | — | `36` cyan |
+| **Skill** | — | `33` yellow |
+| **Armor** | — | `33` yellow |
+| **Event log timestamp** | — | `2` dim |
+| **Event log source** | BT | `36` cyan |
+| | GATHER | `32` green |
+| | COMBAT | `31` red |
+| | CRAFT | `33` yellow |
+| | SYS | `34` blue |
+| **Cmd prompt** | — | `7` inverse video |
+| **Status bar host** | connected | `32` green bold |
+| | reconnecting | `33` yellow bold |
+| **Uptime** | — | `32` green |
+| **Tick avg** | <20ms | `32` green |
+| | 20-50ms | `33` yellow |
+| | >50ms | `31` red |
+| **Chunk ratio** | 100% | `32` green |
+| | >80% | `33` yellow |
+| | <80% | `31` red |
+
+All colors resolve at render time each refresh cycle — no cached state on the renderer side.
+
 ## Renderer
 
 ### `src/console/renderer.ts`
@@ -147,6 +224,17 @@ export class Renderer {
 | `\x1b[?1049l` | Disable alternate screen buffer |
 | `\x1b[7m` | Invert colors (for prompt line) |
 | `\x1b[0m` | Reset all attributes |
+| `\x1b[1m` | Bold |
+| `\x1b[2m` | Dim |
+| `\x1b[31m` | Red foreground |
+| `\x1b[32m` | Green foreground |
+| `\x1b[33m` | Yellow foreground |
+| `\x1b[34m` | Blue foreground |
+| `\x1b[35m` | Magenta foreground |
+| `\x1b[36m` | Cyan foreground |
+| `\x1b[41m` | Red background |
+| `\x1b[42m` | Green background |
+| `\x1b[44m` | Blue background |
 | `\x1b[K` | Clear line from cursor to end |
 
 No external library dependency (yargs already used for CLI args; readline is built-in).
